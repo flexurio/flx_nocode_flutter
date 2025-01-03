@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# File yang berisi pesan commit
+COMMIT_MSG_FILE=$1
+
+# Baca isi pesan commit
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Hitung jumlah kata dalam pesan commit
+WORD_COUNT=$(echo "$COMMIT_MSG" | wc -w)
+
+# Hitung jumlah karakter dalam pesan commit
+CHAR_COUNT=$(echo "$COMMIT_MSG" | wc -m)
+
+# Periksa apakah pesan commit hanya 1 kata dan kurang dari 10 karakter
+if [[ "$WORD_COUNT" -eq 1 && "$CHAR_COUNT" -le 10 ]]; then
+    echo "Waduh, cuma 1 kata dan kurang dari 10 karakter? Tambahin sedikit penjelasan dong!"
+    exit 1
+fi
+
+# Jika tidak ada masalah, izinkan commit
+exit 0

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+en_file="asset/translation/en.json"
+id_file="asset/translation/id.json"
+
+# Cek apakah kedua file ada
+if [[ ! -f "$en_file" ]]; then
+    echo "Eh, file $en_file nggak ketemu nih. Cek lagi deh!"
+    exit 1
+fi
+
+if [[ ! -f "$id_file" ]]; then
+    echo "Eh, file $id_file nggak ketemu nih. Cek lagi deh!"
+    exit 1
+fi
+
+# Bandingin jumlah baris di kedua file
+en_lines=$(wc -l < "$en_file")
+id_lines=$(wc -l < "$id_file")
+
+if [[ "$en_lines" -ne "$id_lines" ]]; then
+    echo "Waduh, jumlah baris en.json ($en_lines) sama id.json ($id_lines) beda nih!"
+    exit 1
+fi

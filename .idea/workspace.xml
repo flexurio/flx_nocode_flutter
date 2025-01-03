@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="805882a8-216a-407b-bb87-7e41cd69ed72" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/payment_create/payment_create_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/payment_create/payment_create_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/payment_create/widget/transactions_form.dart" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/payment_create/widget/transactions_form.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/transaction_journal/widget/create_payment_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/transaction_journal/widget/create_payment_button.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/transaction_journal/widget/data_table.dart" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/transaction_journal/widget/data_table.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/flexurio_chiron_marketing" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_chiron_marketing" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/flexurio_chiron_marketing/asset/translation/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_chiron_marketing/asset/translation/en.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/flexurio_chiron_marketing/asset/translation/id.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_chiron_marketing/asset/translation/id.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/packages/flexurio_erp_core" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2GnQLpSCTGNtoYP1w8mEWG37YmQ" />
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1" />
+    <panes>
+      <pane id="ProjectPane">
+        <option name="show-excluded-files" value="false" />
+      </pane>
+    </panes>
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter.MF Development.executor": "Debug",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "com.codeium.enabled": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/muali/Documents/Development/project/vneu/appointment/packages/flexurio_chiron_accounting",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\muali\Documents\Development\project\vneu\appointment\packages\flexurio_chiron_material_stock\lib\src\app\model" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="805882a8-216a-407b-bb87-7e41cd69ed72" name="Changes" comment="" />
+      <created>1667021817948</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1667021817948</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <editor active="true" />
+    <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+    </layout>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/packages/flexurio_chiron_product_stock/lib/src/app/resource/product_distribution.dart</url>
+          <line>41</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/packages/flexurio_chiron_product_stock/lib/src/app/resource/product_distribution.dart</url>
+          <line>46</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="Dart">
+          <url>file://$PROJECT_DIR$/packages/flexurio_chiron_product_stock/lib/src/app/resource/product_distribution.dart</url>
+          <line>27</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

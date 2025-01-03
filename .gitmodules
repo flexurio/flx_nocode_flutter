@@ -1,0 +1,9 @@
+[submodule "packages/flexurio_erp_core"]
+	path = packages/flexurio_erp_core
+	url = https://gitlab.com/VNEU/flexurio-erp-core.git
+[submodule "packages/flexurio_chiron_marketing"]
+	path = packages/flexurio_chiron_marketing
+	url = https://gitlab.com/VNEU/flexurio-chiron-marketing-field-force.git
+[submodule "packages/flexurio_chiron_finance"]
+	path = packages/flexurio_chiron_finance
+	url = https://gitlab.com/VNEU/flexurio-chiron-finance.git

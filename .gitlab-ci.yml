@@ -1,0 +1,220 @@
+stages:
+  - check
+  - build
+  - deploy
+
+# cspell_check:
+#   stage: check
+#   image: codereviewer/cspell:5.14.0
+#   script:
+#     - cspell "asset/translation/en.json"
+#   only:
+#     - branches
+#   except:
+#     - master
+#     - main
+
+Test:
+  image: ghcr.io/cirruslabs/flutter:3.24.4
+  stage: check
+  script:
+    - git config --global url."https://${ACCESS_TOKEN}@gitlab.com".insteadOf "https://gitlab.com"
+    - git submodule update --init --recursive
+    - make ts
+  only:
+    - branches
+  except:
+    - master
+    - main
+
+# check_branch_name:
+#   stage: check
+#   script:
+#     - |
+#       branch_name=$(echo $CI_COMMIT_REF_NAME)
+      
+#       # Cek apakah branch bukan master atau main
+#       if [[ "$branch_name" == "master" || "$branch_name" == "main" ]]; then
+#           echo "Branch master atau main tidak diperiksa."
+#           exit 0
+#       fi
+      
+#       # Pola untuk ClickUp ID
+#       pattern_cu_id='(CU-[a-zA-Z0-9]{9}|#[a-zA-Z0-9]{9})'
+      
+#       # Cari semua kemunculan ClickUp ID
+#       matches=$(echo "$branch_name" | grep -oE "$pattern_cu_id")
+      
+#       # Cek apakah tidak ada ClickUp ID
+#       if [[ -z "$matches" ]]; then
+#           echo "Error: Nama branch harus mengandung tepat 1 ClickUp ID!"
+#           exit 1
+#       fi
+      
+#       # Hitung jumlah ClickUp ID di nama branch
+#       count=$(echo "$matches" | wc -l)
+      
+#       if [[ "$count" -ne 1 ]]; then
+#           echo "Error: Nama branch mengandung lebih dari 1 ClickUp ID! Hanya boleh ada 1 ID."
+#           exit 1
+#       fi
+      
+#       echo "Nama branch valid dengan ClickUp ID: $matches"
+#   only:
+#     - branches
+#   except:
+#     - master
+#     - main
+
+validate_translation:
+  stage: check
+  script:
+    - |
+      en_file="asset/translation/en.json"
+      id_file="asset/translation/id.json"
+
+      # Cek apakah kedua file ada
+      if [[ ! -f "$en_file" ]]; then
+          echo "Eh, file $en_file nggak ketemu nih. Cek lagi deh!"
+          exit 1
+      fi
+
+      if [[ ! -f "$id_file" ]]; then
+          echo "Eh, file $id_file nggak ketemu nih. Cek lagi deh!"
+          exit 1
+      fi
+
+      # Bandingin jumlah baris di kedua file
+      en_lines=$(wc -l < "$en_file")
+      id_lines=$(wc -l < "$id_file")
+
+      if [[ "$en_lines" -ne "$id_lines" ]]; then
+          echo "Waduh, jumlah baris en.json ($en_lines) sama id.json ($id_lines) beda nih!"
+          exit 1
+      fi
+      echo "Semua aman, jumlah baris en.json sama id.json sama!"
+  only:
+    - branches
+  except:
+    - master
+    - main
+
+Deploy AP Development:
+  image: debian:latest
+  stage: deploy
+  only:
+    variables:
+      - $CI_COMMIT_TAG =~ /^v\d+.\d+.\d+-(m|rc).*$/
+  variables:
+    DEPLOY_PATH: /home/DOCKER/NGINX/html/ANTON-PAAR-ERP/
+  before_script:
+    - "command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )"
+    - eval $(ssh-agent -s)
+    - echo "$SERVER_THINKBUNTU_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $SERVER_THINKBUNTU_HOST >> ~/.ssh/known_hosts
+  script:
+    - ssh $SERVER_THINKBUNTU_USER@$SERVER_THINKBUNTU_HOST "cd $DEPLOY_PATH &&
+      make fetch CI_COMMIT_TAG='$(echo "$CI_COMMIT_TAG")' CI_REPOSITORY_URL='$(echo "$CI_REPOSITORY_URL")' ACCESS_TOKEN='$(echo "$ACCESS_TOKEN")' && 
+      make bldapd TAG='$(echo "$CI_COMMIT_TAG" | sed 's/^v//')'"
+
+Deploy CR Development:
+  image: debian:latest
+  stage: deploy
+  only:
+    variables:
+      - $CI_COMMIT_TAG =~ /^v\d+.\d+.\d+-(m|rc).*$/
+  variables:
+    DEPLOY_PATH: /home/DOCKER/NGINX/html/CHIRON-ERP/
+  before_script:
+    - "command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )"
+    - eval $(ssh-agent -s)
+    - echo "$SERVER_THINKBUNTU_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $SERVER_THINKBUNTU_HOST >> ~/.ssh/known_hosts
+  script:
+    - ssh $SERVER_THINKBUNTU_USER@$SERVER_THINKBUNTU_HOST "cd $DEPLOY_PATH &&
+      make fetch CI_COMMIT_TAG='$(echo "$CI_COMMIT_TAG")' CI_REPOSITORY_URL='$(echo "$CI_REPOSITORY_URL")' ACCESS_TOKEN='$(echo "$ACCESS_TOKEN")' && 
+      make bldcrd TAG='$( "$echoCI_COMMIT_TAG" | sed 's/^v//')'"
+
+Deploy MF Development:
+  image: debian:latest
+  stage: deploy
+  only:
+    variables:
+      - $CI_COMMIT_TAG =~ /^v\d+.\d+.\d+-(m|rc).*$/
+  variables:
+    DEPLOY_PATH: /home/DOCKER/NGINX/html/FARMASYS-ERP/
+  before_script:
+    - "command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )"
+    - eval $(ssh-agent -s)
+    - echo "$SERVER_THINKBUNTU_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $SERVER_THINKBUNTU_HOST >> ~/.ssh/known_hosts
+  script:
+    - ssh $SERVER_THINKBUNTU_USER@$SERVER_THINKBUNTU_HOST "cd $DEPLOY_PATH &&
+      make fetch CI_COMMIT_TAG='$(echo "$CI_COMMIT_TAG")' CI_REPOSITORY_URL='$(echo "$CI_REPOSITORY_URL")' ACCESS_TOKEN='$(echo "$ACCESS_TOKEN")' && 
+      make bldmfd TAG='$(echo "$CI_COMMIT_TAG" | sed 's/^v//')'"
+
+Deploy MF Production:
+  image: debian:latest
+  stage: deploy
+  only:
+    variables:
+      - $CI_COMMIT_TAG =~ /^v\d+.\d+.\d+-(release).*$/
+  variables:
+    DEPLOY_PATH: /home/DOCKER/NGINX/html/FARMASYS-ERP/
+  before_script:
+    - "command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )"
+    - eval $(ssh-agent -s)
+    - echo "$SERVER_METISKA_1_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SERVER_METISKA_1_SSH_KEY" >> ~/.ssh/known_hosts
+  script:
+    - ssh $SERVER_METISKA_1_USER@$SERVER_METISKA_1_HOST "cd $DEPLOY_PATH &&
+      make fetch CI_COMMIT_TAG='$(echo "$CI_COMMIT_TAG")' CI_REPOSITORY_URL='$(echo "$CI_REPOSITORY_URL")' ACCESS_TOKEN='$(echo "$ACCESS_TOKEN")' && 
+      make bldmfp TAG='$(echo "$CI_COMMIT_TAG" | sed 's/^v//')'"
+
+Deploy TL Development:
+  image: debian:latest
+  stage: deploy
+  only:
+    variables:
+      - $CI_COMMIT_TAG =~ /^v\d+.\d+.\d+-(m|rc).*$/
+  variables:
+    DEPLOY_PATH: /home/DOCKER/NGINX/html/FARMASYS-ERP-TL/
+  before_script:
+    - "command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )"
+    - eval $(ssh-agent -s)
+    - echo "$SERVER_THINKBUNTU_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $SERVER_THINKBUNTU_HOST >> ~/.ssh/known_hosts
+  script:
+    - ssh $SERVER_THINKBUNTU_USER@$SERVER_THINKBUNTU_HOST "cd $DEPLOY_PATH &&
+      make fetch CI_COMMIT_TAG='$(echo "$CI_COMMIT_TAG")' CI_REPOSITORY_URL='$(echo "$CI_REPOSITORY_URL")' ACCESS_TOKEN='$(echo "$ACCESS_TOKEN")' && 
+      make bldtld TAG='$(echo "$CI_COMMIT_TAG" | sed 's/^v//')'"
+
+Deploy TL Production:
+  image: debian:latest
+  stage: deploy
+  only:
+    variables:
+      - $CI_COMMIT_TAG =~ /^v\d+.\d+.\d+-(release).*$/
+  variables:
+    DEPLOY_PATH: /home/DOCKER/NGINX/html/FARMASYS-ERP-TL/
+  before_script:
+    - "command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )"
+    - eval $(ssh-agent -s)
+    - echo "$SERVER_METISKA_1_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SERVER_METISKA_1_SSH_KEY" >> ~/.ssh/known_hosts
+  script:
+    - ssh $SERVER_METISKA_1_USER@$SERVER_METISKA_1_HOST "cd $DEPLOY_PATH &&
+      make fetch CI_COMMIT_TAG='$(echo "$CI_COMMIT_TAG")' CI_REPOSITORY_URL='$(echo "$CI_REPOSITORY_URL")' ACCESS_TOKEN='$(echo "$ACCESS_TOKEN")' && 
+      make bldtlp TAG='$(echo "$CI_COMMIT_TAG" | sed 's/^v//')'"

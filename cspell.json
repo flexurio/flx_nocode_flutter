@@ -1,0 +1,25 @@
+{
+    "dictionaries": [
+        "custom"
+    ],
+    "dictionaryDefinitions": [
+        {
+            "name": "custom",
+            "path": ".cspell/custom.txt",
+            "addWords": true
+        }
+    ],
+    "ignorePaths": [
+        "lib/src/app/resource/presence_const.dart",
+        "lib/constant/user_department.dart",
+        "lib/constant/example_access_token.dart",
+        "lib/constant/area.dart",
+        "lib/src/app/resource/ticket_repository.dart",
+        "lib/src/app/resource/click_up_repository.dart",
+        "**/*.freezed.dart",
+        "lib/constant/menu.dart",
+        "test/**",
+        "lib/constant/finance_customer.dart",
+        "lib/src/app/view/page/material_request/util/pdf_material_request.dart"
+    ]
+}
