@@ -25,7 +25,7 @@ class MenuCustom extends StatelessWidget {
         const Gap(12),
         SizedBox(
           width: MediaQuery.of(context).size.width,
-          child: MenuDataTableCustom(entity: entity),
+          child: MenuDataTableCustom.prepare(entity: entity),
         ),
       ],
     );

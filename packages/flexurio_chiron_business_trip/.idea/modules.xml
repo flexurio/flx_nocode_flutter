@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/flexurio_chiron_business_trip.iml" filepath="$PROJECT_DIR$/flexurio_chiron_business_trip.iml" />
-      <module fileurl="file://$PROJECT_DIR$/android/flexurio_chiron_business_trip_android.iml" filepath="$PROJECT_DIR$/android/flexurio_chiron_business_trip_android.iml" />
-    </modules>
-  </component>
-</project>

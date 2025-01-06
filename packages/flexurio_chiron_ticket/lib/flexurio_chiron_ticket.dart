@@ -1,1 +1,0 @@
-library flexurio_chiron_ticket;

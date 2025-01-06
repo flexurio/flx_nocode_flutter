@@ -6,10 +6,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:appointment/src/app/model/configuration.dart' as configuration;
 
 class MenuDataTableCustom extends StatefulWidget {
-  const MenuDataTableCustom({
+  const MenuDataTableCustom._({
     super.key,
     required this.entity,
   });
+
+  static Widget prepare({
+    required configuration.Entity entity,
+  }) {
+    return BlocProvider(
+      create: (_) => EntityCustomQueryBloc(entity),
+      child: MenuDataTableCustom._(entity: entity),
+    );
+  }
 
   final configuration.Entity entity;
 
