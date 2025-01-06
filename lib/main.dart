@@ -1,7 +1,7 @@
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 
-import 'src/app/view/page/widget/editor/component_library.dart';
+import 'src/app/view/page/editor/widget/component_library.dart';
 import 'package:appointment/constant/flavor.dart';
 
 void main() => runApp(NoCodeAppEditor());

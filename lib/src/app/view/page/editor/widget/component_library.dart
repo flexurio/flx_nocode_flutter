@@ -1,3 +1,4 @@
+import 'package:appointment/src/app/view/page/editor/widget/card_component.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -11,41 +12,53 @@ class SidebarWidgetLibrary extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Core Components',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const Gap(12),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
+          Gap(12),
+          ComponentGroup(
+            title: 'Core Components',
             children: [
               TextWidget(),
               ButtonWidget(),
             ],
-          )
+          ),
+          Gap(24),
+          ComponentGroup(
+            title: 'Layout Components',
+            children: [
+              TextWidget(),
+              ButtonWidget(),
+            ],
+          ),
         ],
       ),
     );
   }
 }
 
-class CardComponent extends StatelessWidget {
-  const CardComponent({super.key, required this.child});
-  final Widget child;
+class ComponentGroup extends StatelessWidget {
+  const ComponentGroup({
+    super.key,
+    required this.title,
+    required this.children,
+  });
+  final String title;
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 80,
-      width: 80,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade800,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Center(
-        child: child,
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const Gap(12),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: children,
+        ),
+      ],
     );
   }
 }
