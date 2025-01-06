@@ -1,16 +1,36 @@
 import 'dart:convert';
 
+import 'package:appointment/src/app/view/widget/menu_home_custom.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class Configuration {
   final List<Entity> entities;
   final List<MenuGroup> menuGroups;
+  final Company company;
+  final Theme theme;
+  final String appName;
 
-  Configuration({required this.entities, required this.menuGroups});
+  Configuration({
+    required this.entities,
+    required this.menuGroups,
+    required this.company,
+    required this.theme,
+    required this.appName,
+  });
+
+  static Future<Configuration> load() async {
+    final path = 'asset/configuration.json';
+    final data = await rootBundle.loadString(path);
+    return Configuration.fromJson(json.decode(data));
+  }
 
   factory Configuration.fromJson(Map<String, dynamic> json) {
     return Configuration(
+      appName: json['app_name'],
+      company: Company.fromJson(json['company']),
+      theme: Theme.fromJson(json['theme']),
       entities: (json['entity'] as List<dynamic>)
           .map((e) => Entity.fromJson(e))
           .toList(),
@@ -22,10 +42,28 @@ class Configuration {
 
   Map<String, dynamic> toJson() {
     return {
+      'app_name': appName,
       'entity': entities.map((e) => e.toJson()).toList(),
       'menu_group': menuGroups.map((e) => e.toJson()).toList(),
+      'company': company.toJson(),
+      'theme': theme.toJson(),
     };
   }
+
+  Entity getEntity(String id) => entities.firstWhere((e) => e.id == id);
+
+  FlavorConfig get flavorConfig => FlavorConfig(
+        companyId: company.id,
+        companyName: company.name,
+        companyPhone: company.phone,
+        companyWebsite: company.website,
+        companyAddress: company.address,
+        apiUrl: '',
+        color: const Color(0XFF4D81F1),
+        colorSoft: const Color(0XFF4D81F1).lighten(.3),
+        backgroundLoginPage: 'asset/image/background-3.jpg',
+        applicationConfig: null,
+      );
 
   List<Menu1> get menu {
     return menuGroups
@@ -41,7 +79,7 @@ class Configuration {
                         .map(
                           (e) => Menu3(
                             label: e.label,
-                            home: home,
+                            home: MenuCustom(entity: getEntity(e.entity)),
                             permissions: [],
                             permission: null,
                           ),
@@ -56,18 +94,74 @@ class Configuration {
   }
 }
 
+class Theme {
+  final String color;
+  final String colorSoft;
+
+  Theme({
+    required this.color,
+    required this.colorSoft,
+  });
+
+  factory Theme.fromJson(Map<String, dynamic> json) {
+    return Theme(
+      color: json['color'],
+      colorSoft: json['color_soft'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'color': color,
+      'color_soft': colorSoft,
+    };
+  }
+}
+
+class Company {
+  final String id;
+  final String name;
+  final String phone;
+  final String website;
+  final String address;
+
+  Company({
+    required this.id,
+    required this.name,
+    required this.phone,
+    required this.website,
+    required this.address,
+  });
+
+  factory Company.fromJson(Map<String, dynamic> json) {
+    return Company(
+      id: json['id'],
+      name: json['name'],
+      phone: json['phone'],
+      website: json['website'],
+      address: json['address'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'phone': phone,
+      'website': website,
+      'address': address,
+    };
+  }
+}
+
 class Entity {
   final String id;
-  final String menuGroup;
-  final String menu;
   final String label;
   final List<Field> fields;
   final Backend backend;
 
   Entity({
     required this.id,
-    required this.menuGroup,
-    required this.menu,
     required this.label,
     required this.fields,
     required this.backend,
@@ -76,8 +170,6 @@ class Entity {
   factory Entity.fromJson(Map<String, dynamic> json) {
     return Entity(
       id: json['id'],
-      menuGroup: json['menu_group'],
-      menu: json['menu'],
       label: json['label'],
       fields: (json['fields'] as List<dynamic>)
           .map((e) => Field.fromJson(e))
@@ -89,8 +181,6 @@ class Entity {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'menu_group': menuGroup,
-      'menu': menu,
       'label': label,
       'fields': fields.map((e) => e.toJson()).toList(),
       'backend': backend.toJson(),

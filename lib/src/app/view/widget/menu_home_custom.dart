@@ -1,10 +1,11 @@
 import 'package:appointment/src/app/model/configuration.dart' as configuration;
+import 'package:appointment/src/app/view/widget/menu_data_table_custom.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-class MenuHome extends StatelessWidget {
-  const MenuHome({
+class MenuCustom extends StatelessWidget {
+  const MenuCustom({
     super.key,
     required this.entity,
   });
@@ -24,7 +25,7 @@ class MenuHome extends StatelessWidget {
         const Gap(12),
         SizedBox(
           width: MediaQuery.of(context).size.width,
-          child: MaterialDataTable(isExternal: isExternal),
+          child: MenuDataTableCustom(entity: entity),
         ),
       ],
     );
