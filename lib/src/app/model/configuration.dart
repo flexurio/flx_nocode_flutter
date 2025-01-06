@@ -59,8 +59,8 @@ class Configuration {
         companyWebsite: company.website,
         companyAddress: company.address,
         apiUrl: '',
-        color: const Color(0XFF4D81F1),
-        colorSoft: const Color(0XFF4D81F1).lighten(.3),
+        color: colorFromHex(theme.color),
+        colorSoft: colorFromHex(theme.colorSoft),
         backgroundLoginPage: 'asset/image/background-3.jpg',
         applicationConfig: null,
       );
@@ -157,12 +157,14 @@ class Company {
 class Entity {
   final String id;
   final String label;
+  final String description;
   final List<Field> fields;
   final Backend backend;
 
   Entity({
     required this.id,
     required this.label,
+    required this.description,
     required this.fields,
     required this.backend,
   });
@@ -171,6 +173,7 @@ class Entity {
     return Entity(
       id: json['id'],
       label: json['label'],
+      description: json['description'],
       fields: (json['fields'] as List<dynamic>)
           .map((e) => Field.fromJson(e))
           .toList(),
@@ -184,6 +187,7 @@ class Entity {
       'label': label,
       'fields': fields.map((e) => e.toJson()).toList(),
       'backend': backend.toJson(),
+      'description': description,
     };
   }
 }

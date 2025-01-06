@@ -8,13 +8,14 @@
         "address": "Jl. Kebayoran Lama No. 1, Jakarta Selatan, Indonesia"
     },
     "theme": {
-        "color": "#1A202C",
-        "color_soft": "#2D3748"
+        "color": "#795548",
+        "color_soft": "#D7CCC8"
     },
     "entity": [
         {
             "id": "bank_type",
             "label": "Bank Type",
+            "description": "Specifies the type of bank associated with the transaction or account, such as 'Commercial', 'Central', or 'Development'.",
             "fields": [
                 {
                     "label": "ID",
@@ -60,6 +61,7 @@
         {
             "id": "bank",
             "label": "Bank",
+            "description": "The name of the bank where the account is held, used for identifying the financial institution associated with the transaction or account.",
             "fields": [
                 {
                     "label": "ID",

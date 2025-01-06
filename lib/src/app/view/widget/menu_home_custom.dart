@@ -19,7 +19,7 @@ class MenuCustom extends StatelessWidget {
       children: [
         TitlePageCustom(
           title: entity.label,
-          subtitle: 'ipsum dolor sit amet',
+          subtitle: entity.description,
           iconPath: 'bill',
         ),
         const Gap(12),

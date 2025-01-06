@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flexurio_erp_authentication/flexurio_erp_authentication.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 
 class EntityCustomRepository extends Repository {
@@ -10,7 +9,7 @@ class EntityCustomRepository extends Repository {
 
   static EntityCustomRepository instance = EntityCustomRepository(
     dio: Api.dio,
-    onUnauthorized: AuthenticationRepository.logout,
+    onUnauthorized: () {},
   );
 
   Future<PageOptions<Map>> fetch({
