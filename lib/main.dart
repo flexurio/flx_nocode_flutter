@@ -64,9 +64,51 @@ class CanvasApp extends StatefulWidget {
 
 class _CanvasAppState extends State<CanvasApp> {
   final List<Widget> components = [];
+  int? showFrameIndex = null;
+
+  void _addComponent(Widget component, int index) {
+    if (index == -1) {
+      components.add(component);
+    } else {
+      components.insert(index, component);
+    }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> items = List.generate(
+      components.length,
+      (i) {
+        final e = components[i];
+        return Column(
+          children: [
+            _dragTarget(i),
+            GestureDetector(
+              onSecondaryTap: () {
+                setState(() {
+                  components.removeAt(i);
+                });
+              },
+              child: InkWell(
+                child: AbsorbPointer(
+                  child: ComponentFrame(
+                    child: e,
+                    showFrame: showFrameIndex == i,
+                  ),
+                ),
+                onTap: () {
+                  setState(() {
+                    showFrameIndex = i;
+                  });
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
     return Container(
       color: Colors.grey[800],
       child: Center(
@@ -80,28 +122,14 @@ class _CanvasAppState extends State<CanvasApp> {
           width: 600,
           height: 600,
           child: Center(
-            child: Column(
-              children: [
-                ...(components.map((e) {
-                  return Column(
-                    children: [
-                      _dragTarget(),
-                      GestureDetector(
-                        onSecondaryTap: () {
-                          final index = components.indexOf(e);
-                          if (index != -1) {
-                            setState(() {
-                              components.removeAt(index);
-                            });
-                          }
-                        },
-                        child: AbsorbPointer(child: e),
-                      ),
-                    ],
-                  );
-                }).toList()),
-                _dragTarget(),
-              ],
+            child: ComponentFrame(
+              showFrame: false,
+              child: Column(
+                children: [
+                  ...items,
+                  _dragTarget(-1),
+                ],
+              ),
             ),
           ),
         ),
@@ -109,11 +137,10 @@ class _CanvasAppState extends State<CanvasApp> {
     );
   }
 
-  DragTarget<Widget> _dragTarget() {
+  DragTarget<Widget> _dragTarget(int index) {
     return DragTarget<Widget>(
       onAcceptWithDetails: (data) {
-        components.add(data.data);
-        setState(() {});
+        _addComponent(data.data, index);
       },
       builder: (context, candidateData, rejectedData) {
         return Container(
@@ -126,6 +153,50 @@ class _CanvasAppState extends State<CanvasApp> {
           height: candidateData.isNotEmpty ? 10 : 2,
         );
       },
+    );
+  }
+}
+
+class ComponentFrame extends StatelessWidget {
+  const ComponentFrame({
+    super.key,
+    required this.child,
+    required this.showFrame,
+  });
+  final Widget child;
+  final bool showFrame;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!showFrame) return child;
+
+    final color = Colors.orange;
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        child,
+        Positioned(
+          top: -20,
+          left: 0,
+          child: Container(
+            padding: const EdgeInsets.all(3),
+            color: color,
+            child: Text(
+              'Column',
+              style: TextStyle(color: Colors.white, fontSize: 10),
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: IgnorePointer(
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: color, width: 2),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
