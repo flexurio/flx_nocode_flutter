@@ -7,7 +7,6 @@ import 'package:flexurio_chiron_company/src/app/view/page/office/office_page.dar
 import 'package:flexurio_chiron_presence/src/app/view/page/presence_monthly_report/presence_monthly_report_page.dart';
 import 'package:flexurio_chiron_presence/src/app/view/page/presence_monthly_report_per_employee/presence_monthly_report_per_employee_page.dart';
 import 'package:flexurio_chiron_purchase_request/src/app/view/page/request_form/request_form_page.dart';
-import 'package:appointment/src/app/view/page/role/role_page.dart';
 import 'package:flexurio_chiron_ticket/src/app/view/page/ticket/ticket_page.dart';
 import 'package:flexurio_chiron_business_trip/src/app/view/page/vehicle/vehicle_page.dart';
 import 'package:flexurio_chiron_finance/flexurio_chiron_finance.dart'
@@ -32,7 +31,6 @@ import 'package:flexurio_chiron_vendor/flexurio_chiron_vendor.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 
 part 'menu_human_resource.dart';
-part 'menu_it_development.dart';
 part 'menu_ppic.dart';
 part 'menu_purchasing.dart';
 part 'menu_rnd.dart';
@@ -42,7 +40,6 @@ final menu = [
   flexurio_chiron_finance.menu.first,
   flexurio_chiron_sales_order.menu.first,
   menuHumanResource,
-  menuItDevelopment,
   flexurio_chiron_marketing.menu.first,
   menuPpic,
   menuPurchasing,

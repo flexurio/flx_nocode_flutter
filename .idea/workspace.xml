@@ -5,13 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="805882a8-216a-407b-bb87-7e41cd69ed72" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/payment_create/payment_create_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/payment_create/payment_create_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/payment_create/widget/transactions_form.dart" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/payment_create/widget/transactions_form.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/transaction_journal/widget/create_payment_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/transaction_journal/widget/create_payment_button.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/transaction_journal/widget/data_table.dart" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_chiron_accounting/lib/src/app/view/page/transaction_journal/widget/data_table.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/flexurio_chiron_marketing" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_chiron_marketing" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/flexurio_chiron_marketing/asset/translation/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_chiron_marketing/asset/translation/en.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/flexurio_chiron_marketing/asset/translation/id.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_chiron_marketing/asset/translation/id.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/MF_Development.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/launch.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main_anton_paar_development.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main_chiron_demo.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main_mf_development.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main_mf_production.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main_tl_development.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main_tl_production.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/role_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/create_button.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/data_table.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/delete_button.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/edit_button.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/employee_toggle.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/permission_edit_button.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/users.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/users_button.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role_create/role_create_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role_permission/role_permission_page.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role_permission/widget/employee_toggle.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role_permission/widget/permission_panel.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role_permission/widget/role_employee.dart" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,7 +40,7 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/packages/flexurio_erp_core" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -46,22 +64,27 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Flutter.MF Development.executor": "Debug",
+    "Flutter.Main.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "com.codeium.enabled": "true",
     "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
     "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/muali/Documents/Development/project/vneu/appointment/packages/flexurio_chiron_accounting",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "preferences.keymap",
     "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\lib\src\app\view\page\widget\editor" />
       <recent name="C:\Users\muali\Documents\Development\project\vneu\appointment\packages\flexurio_chiron_material_stock\lib\src\app\model" />
     </key>
   </component>
