@@ -91,21 +91,20 @@ class ButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final widget = Button(
+      action: DataAction.submit,
+      onPressed: () {},
+      permission: null,
+    );
+
     return CardComponent(
       child: Draggable<Widget>(
-        data: Button(
-          action: DataAction.submit,
-          onPressed: () {},
-          permission: null,
-        ),
+        data: widget,
         feedback: Material(
           color: Colors.transparent,
-          child: Text(
-            'Button',
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.blue,
-            ),
+          child: Theme(
+            data: Theme.of(context),
+            child: widget,
           ),
         ),
         childWhenDragging: Text(

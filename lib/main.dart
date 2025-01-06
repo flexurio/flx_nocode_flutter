@@ -70,32 +70,62 @@ class _CanvasAppState extends State<CanvasApp> {
     return Container(
       color: Colors.grey[800],
       child: Center(
-        child: DragTarget<Widget>(
-          onAcceptWithDetails: (data) {
-            components.add(data.data);
-          },
-          builder: (context, candidateData, rejectedData) {
-            return Container(
-              decoration: BoxDecoration(
-                color: candidateData.isNotEmpty
-                    ? Colors.green[200] // Highlight when an item hovers
-                    : Colors.white,
-                border: Border.all(color: Colors.grey),
-              ),
-              width: 200,
-              height: 200,
-              child: Center(
-                child: candidateData.isNotEmpty
-                    ? Text(
-                        'Drop Here',
-                        style: TextStyle(color: Colors.black),
-                      )
-                    : Column(children: components),
-              ),
-            );
-          },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey),
+          ),
+          padding: const EdgeInsets.all(12),
+          width: 600,
+          height: 600,
+          child: Center(
+            child: Column(
+              children: [
+                ...(components.map((e) {
+                  return Column(
+                    children: [
+                      _dragTarget(),
+                      GestureDetector(
+                        onSecondaryTap: () {
+                          final index = components.indexOf(e);
+                          if (index != -1) {
+                            setState(() {
+                              components.removeAt(index);
+                            });
+                          }
+                        },
+                        child: AbsorbPointer(child: e),
+                      ),
+                    ],
+                  );
+                }).toList()),
+                _dragTarget(),
+              ],
+            ),
+          ),
         ),
       ),
+    );
+  }
+
+  DragTarget<Widget> _dragTarget() {
+    return DragTarget<Widget>(
+      onAcceptWithDetails: (data) {
+        components.add(data.data);
+        setState(() {});
+      },
+      builder: (context, candidateData, rejectedData) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: candidateData.isNotEmpty ? Colors.blue[200] : Colors.white,
+          ),
+          padding: const EdgeInsets.all(12),
+          width: 600,
+          height: candidateData.isNotEmpty ? 10 : 2,
+        );
+      },
     );
   }
 }
