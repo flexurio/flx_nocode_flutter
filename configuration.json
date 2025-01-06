@@ -2,8 +2,6 @@
     "entity": [
         {
             "id": "bank_type",
-            "menu_group": "Master",
-            "menu": "Finance",
             "label": "Bank Type",
             "fields": [
                 {
@@ -49,8 +47,6 @@
         },
         {
             "id": "bank",
-            "menu_group": "Master",
-            "menu": "Finance",
             "label": "Bank",
             "fields": [
                 {
@@ -167,7 +163,17 @@
             "menu": [
                 {
                     "label": "Finance",
-                    "icon": "fa fa-bank"
+                    "icon": "fa fa-bank",
+                    "menu_sub": [
+                        {
+                            "label": "Bank Type",
+                            "entity": "bank_type"
+                        },
+                        {
+                            "label": "Bank",
+                            "entity": "bank"
+                        }
+                    ]
                 }
             ]
         }

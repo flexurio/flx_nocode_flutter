@@ -39,11 +39,7 @@ final menu = [
   flexurio_chiron_accounting.menu.first,
   flexurio_chiron_finance.menu.first,
   flexurio_chiron_sales_order.menu.first,
-  menuHumanResource,
   flexurio_chiron_marketing.menu.first,
-  menuPpic,
-  menuPurchasing,
   flexurio_chiron_production.menu.first,
-  menuRnd,
   flexurio_chiron_tax.menu.first,
 ];
