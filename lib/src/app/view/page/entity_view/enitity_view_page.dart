@@ -20,8 +20,7 @@ class EntityViewPage extends StatelessWidget {
       builder: (context) => MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => EntityCustomQueryBloc(entity)
-              ..add(EntityCustomQueryEvent.fetchById(data['id'].toString())),
+            create: (context) => EntityCustomQueryBloc(entity),
           ),
         ],
         child: EntityViewPage._(entity: entity, data: data),
@@ -29,8 +28,15 @@ class EntityViewPage extends StatelessWidget {
     );
   }
 
+  void _fetch(BuildContext context) {
+    context.read<EntityCustomQueryBloc>().add(
+          EntityCustomQueryEvent.fetchById(data['id'].toString()),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
+    _fetch(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
@@ -79,6 +85,98 @@ class EntityViewPage extends StatelessWidget {
 
   List<Widget> _buildEntityCustomActions(
       configuration.Entity entity, BuildContext context) {
-    return [];
+    return [
+      LightButton(
+        permission: null,
+        action: DataAction.edit,
+        onPressed: () async {
+          // await showDialogClosePurchaseOrder(context, purchaseOrderBloc);
+        },
+      ),
+      EntityDeleteButton.prepare(
+        entity: entity,
+        data: data,
+      ),
+    ];
+  }
+}
+
+class EntityDeleteButton extends StatelessWidget {
+  const EntityDeleteButton._({
+    required this.entity,
+    required this.data,
+  });
+
+  final Map<String, dynamic> data;
+
+  static Widget prepare({
+    required configuration.Entity entity,
+    required Map<String, dynamic> data,
+  }) {
+    return BlocProvider(
+      create: (context) => EntityBloc(entity),
+      child: EntityDeleteButton._(entity: entity, data: data),
+    );
+  }
+
+  final configuration.Entity entity;
+
+  @override
+  Widget build(BuildContext context) {
+    return LightButton(
+      permission: null,
+      action: DataAction.delete,
+      onPressed: () async {
+        final bloc = context.read<EntityBloc>();
+        final success = await _showConfirmationDialog(context, bloc);
+        if (success ?? false) {
+          Navigator.pop(context);
+        }
+      },
+    );
+  }
+
+  Future<bool?> _showConfirmationDialog(
+    BuildContext context,
+    EntityBloc bloc,
+  ) {
+    return showDialog<bool?>(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        const action = DataAction.delete;
+        return BlocListener<EntityBloc, EntityState>(
+          bloc: bloc,
+          listener: (context, state) {
+            state.maybeWhen(
+              success: (_) {
+                Toast(context).dataChanged(action, entity.coreEntity);
+                Navigator.pop(context, true);
+              },
+              error: (error) => Toast(context).fail(error),
+              orElse: () {},
+            );
+          },
+          child: BlocBuilder<EntityBloc, EntityState>(
+            bloc: bloc,
+            builder: (context, state) {
+              final isInProgress = state.maybeWhen(
+                loading: () => true,
+                orElse: () => false,
+              );
+              return CardConfirmation(
+                isProgress: isInProgress,
+                action: action,
+                data: entity.coreEntity,
+                label: data['id'].toString(),
+                onConfirm: () {
+                  bloc.add(EntityEvent.delete(id: data['id'].toString()));
+                },
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 }

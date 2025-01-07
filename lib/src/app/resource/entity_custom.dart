@@ -26,28 +26,31 @@ class EntityCustomRepository extends Repository {
       RequestHeader.authorization: 'Bearer $accessToken',
     };
 
+    final url =
+        path.replaceFirst('{backend_host}', Configuration.instance.backendHost);
+
     switch (method.toUpperCase()) {
       case 'GET':
         return dio.get<T>(
-          path,
+          url,
           queryParameters: queryParameters,
           options: Options(headers: headers),
         );
       case 'POST':
         return dio.post<T>(
-          path,
+          url,
           data: body != null ? jsonEncode(body) : null,
           options: Options(headers: headers),
         );
       case 'PUT':
         return dio.put<T>(
-          path,
+          url,
           data: body != null ? jsonEncode(body) : null,
           options: Options(headers: headers),
         );
       case 'DELETE':
         return dio.delete<T>(
-          path,
+          url,
           options: Options(headers: headers),
         );
       default:
@@ -62,10 +65,9 @@ class EntityCustomRepository extends Repository {
     required String method,
   }) async {
     try {
-      final backendHost = Configuration.instance.backendHost;
       final response = await _request<Map<String, dynamic>>(
         accessToken: accessToken,
-        path: path.replaceFirst('{backend_host}', backendHost),
+        path: path,
         method: method,
       );
 
@@ -92,9 +94,7 @@ class EntityCustomRepository extends Repository {
     try {
       final response = await _request<Map<String, dynamic>>(
         accessToken: accessToken,
-        path: path
-            .replaceFirst('{id}', id)
-            .replaceFirst('{backend_host}', Configuration.instance.backendHost),
+        path: path.replaceFirst('{id}', id),
         method: method,
       );
       return response.data!;

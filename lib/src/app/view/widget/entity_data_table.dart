@@ -17,8 +17,7 @@ class MenuDataTableCustom extends StatefulWidget {
     required configuration.Entity entity,
   }) {
     return BlocProvider(
-      create: (_) =>
-          EntityCustomQueryBloc(entity)..add(EntityCustomQueryEvent.fetch()),
+      create: (_) => EntityCustomQueryBloc(entity),
       child: MenuDataTableCustom._(entity: entity),
     );
   }
@@ -30,6 +29,12 @@ class MenuDataTableCustom extends StatefulWidget {
 }
 
 class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
+  @override
+  void initState() {
+    super.initState();
+    _fetch();
+  }
+
   void _fetch({
     PageOptions<Map<String, dynamic>>? pageOptions,
   }) {
@@ -93,14 +98,15 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                         entity[e.reference],
                         index != 0
                             ? null
-                            : () {
-                                Navigator.push(
+                            : () async {
+                                await Navigator.push(
                                   context,
                                   EntityViewPage.route(
                                     entity: widget.entity,
                                     data: entity,
                                   ),
                                 );
+                                _fetch();
                               },
                       ),
                     ),
