@@ -168,10 +168,14 @@ class Entity {
     required this.backend,
   });
 
-  static Future<Entity> getEntity(String id) async {
-    final path = 'asset/configuration/entity/$id.json';
-    final data = await rootBundle.loadString(path);
-    return Entity.fromJson(json.decode(data));
+  static Future<Entity?> getEntity(String id) async {
+    try {
+      final path = 'asset/configuration/entity/$id.json';
+      final data = await rootBundle.loadString(path);
+      return Entity.fromJson(json.decode(data));
+    } catch (e, s) {
+      return null;
+    }
   }
 
   factory Entity.fromJson(Map<String, dynamic> json) {

@@ -47,7 +47,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           width: MediaQuery.of(context).size.width,
           child: DataTableBackend<Map>(
             freezeFirstColumn: true,
-            freezeLastColumn: true,
+            freezeLastColumn: false,
             onRefresh: () => _fetch(),
             key: ValueKey(state.hashCode),
             status: state.maybeWhen(
@@ -77,7 +77,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             columns: [
               ...(widget.entity.fields.map(
                 (e) => DTColumn(
-                  widthFlex: 10,
+                  widthFlex: e.columnWidth ?? 5,
                   head: DTHead(
                     backendColumn: e.reference,
                     label: e.label,
@@ -91,18 +91,18 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                   ),
                 ),
               )),
-              DTColumn(
-                widthFlex: 13,
-                head: DTHead(
-                  backendColumn: '',
-                  label: 'actions'.tr(),
-                ),
-                body: (material) => DataCell(
-                  Row(
-                    children: [],
-                  ),
-                ),
-              ),
+              // DTColumn(
+              //   widthFlex: 13,
+              //   head: DTHead(
+              //     backendColumn: '',
+              //     label: 'actions'.tr(),
+              //   ),
+              //   body: (material) => DataCell(
+              //     Row(
+              //       children: [],
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         );

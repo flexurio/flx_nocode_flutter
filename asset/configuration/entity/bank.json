@@ -7,12 +7,14 @@
             "label": "ID",
             "reference": "id",
             "type": "number",
+            "column_width": 3,
             "auto_generated": true
         },
         {
             "label": "Name",
             "reference": "name",
             "type": "text",
+            "column_width": 3,
             "required": true,
             "pattern": "^[a-zA-Z0-9 ]{3,}$",
             "min_length": 3,
@@ -24,6 +26,7 @@
             "label": "Bank Type ID",
             "reference": "bank_type_id",
             "type": "number",
+            "column_width": 3,
             "required": true,
             "source": "backend.bank_type({id}-{name})",
             "allow_create": true,
@@ -33,12 +36,14 @@
             "label": "Bank Type Name",
             "reference": "bank_type_name",
             "type": "text",
+            "column_width": 3,
             "auto_generated": true
         },
         {
             "label": "Created At",
             "reference": "created_at",
-            "type": "date",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
+            "column_width": 3,
             "auto_generated": true
         }
     ],

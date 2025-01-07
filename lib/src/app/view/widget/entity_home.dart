@@ -14,7 +14,7 @@ class MenuCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<configuration.Entity>(
+    return FutureBuilder<configuration.Entity?>(
       future: configuration.Entity.getEntity(entityId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
