@@ -97,7 +97,7 @@ class EntityCustomRepository extends Repository {
         path: path.replaceFirst('{id}', id),
         method: method,
       );
-      return response.data!;
+      return (response.data!)['data'][0];
     } catch (error) {
       throw checkErrorApi(error);
     }

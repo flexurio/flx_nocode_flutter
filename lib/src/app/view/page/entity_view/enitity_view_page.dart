@@ -2,6 +2,7 @@ import 'package:appointment/src/app/bloc/entity/entity_bloc.dart';
 import 'package:appointment/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:appointment/src/app/model/configuration.dart' as configuration;
 import 'package:appointment/src/app/model/entity_field.dart';
+import 'package:appointment/src/app/view/page/entity_create/entity_create_page.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,7 +52,7 @@ class EntityViewPage extends StatelessWidget {
                 size: SingleFormPanelSize.large,
                 actions: _buildEntityCustomActions(entity, context),
                 children: [
-                  _buildData(),
+                  _buildData(pageOptions.data.first),
                 ],
               );
             },
@@ -61,7 +62,7 @@ class EntityViewPage extends StatelessWidget {
     );
   }
 
-  Widget _buildData() {
+  Widget _buildData(Map<String, dynamic> data) {
     final children = <Widget>[];
     var isFirst = true;
     for (final field in entity.fields) {
@@ -84,13 +85,22 @@ class EntityViewPage extends StatelessWidget {
   }
 
   List<Widget> _buildEntityCustomActions(
-      configuration.Entity entity, BuildContext context) {
+    configuration.Entity entity,
+    BuildContext context,
+  ) {
     return [
       LightButton(
         permission: null,
         action: DataAction.edit,
         onPressed: () async {
-          // await showDialogClosePurchaseOrder(context, purchaseOrderBloc);
+          Navigator.push(
+            context,
+            EntityCreatePage.route(
+              entity: entity,
+              data: data,
+              onSuccess: () => _fetch(context),
+            ),
+          );
         },
       ),
       EntityDeleteButton.prepare(

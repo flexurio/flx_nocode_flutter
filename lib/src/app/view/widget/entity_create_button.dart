@@ -22,7 +22,7 @@ class EntityCreateButton extends StatelessWidget {
       onPressed: () async {
         final success = await Navigator.push(
           context,
-          EntityCreatePage.route(entity: entity),
+          EntityCreatePage.route(entity: entity, onSuccess: onSuccess),
         );
         if (success ?? false) {
           onSuccess();

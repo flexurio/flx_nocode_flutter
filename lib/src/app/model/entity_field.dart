@@ -72,13 +72,11 @@ class EntityField {
       [void Function()? onTap]) {
     final field = entity.fields.firstWhere((e) => e.reference == label);
     late Widget widget;
-    if (field.type == 'number') {
-      widget = Text(value.toString());
-    } else if (field.isDateTime) {
+    if (field.isDateTime) {
       final date = DateTime.parse(value);
       widget = Text(DateFormat(field.dateTimeFormat).format(date));
     } else {
-      widget = Text(value);
+      widget = Text(value.toString());
     }
 
     if (widget is Text && onTap != null) {

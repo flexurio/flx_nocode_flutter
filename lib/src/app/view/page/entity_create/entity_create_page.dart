@@ -10,14 +10,17 @@ class EntityCreatePage extends StatefulWidget {
   const EntityCreatePage._(
     this.data,
     this.entity,
+    this.onSuccess,
   );
 
   final Map<String, dynamic>? data;
   final configuration.Entity entity;
+  final VoidCallback onSuccess;
 
   static Route<bool?> route({
     required configuration.Entity entity,
     Map<String, dynamic>? data,
+    required VoidCallback onSuccess,
   }) {
     return PageTransition(
       opaque: true,
@@ -26,7 +29,7 @@ class EntityCreatePage extends StatefulWidget {
         providers: [
           BlocProvider(create: (context) => EntityBloc(entity)),
         ],
-        child: EntityCreatePage._(data, entity),
+        child: EntityCreatePage._(data, entity, onSuccess),
       ),
     );
   }
@@ -38,11 +41,7 @@ class EntityCreatePage extends StatefulWidget {
 class _EntityCreatePageState extends State<EntityCreatePage> {
   final _formKey = GlobalKey<FormState>();
   final _controllers = <String, TextEditingController>{};
-  final _idController = TextEditingController();
-  final _packSizeController = TextEditingController();
-  bool? _isAssets;
   late DataAction _action;
-  String? _companyId;
 
   @override
   void initState() {
@@ -55,7 +54,8 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     _action = createOrEdit(widget.data);
     if (_action.isEdit) {
       for (final field in widget.entity.fields) {
-        _controllers[field.reference]!.text = widget.data![field.reference];
+        _controllers[field.reference]!.text =
+            widget.data![field.reference].toString();
       }
     }
   }
@@ -72,9 +72,9 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     if (_formKey.currentState!.validate()) {
       late EntityEvent event;
       if (_action.isEdit) {
-        event = EntityEvent.create(data: _data);
-      } else {
         event = EntityEvent.edit(data: _data);
+      } else {
+        event = EntityEvent.create(data: _data);
       }
 
       context.read<EntityBloc>().add(event);
@@ -88,6 +88,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
       listener: (context, state) {
         state.maybeWhen(
           success: (_) {
+            widget.onSuccess();
             Toast(context).dataChanged(_action, coreEntity);
             Navigator.pop(context, true);
           },
