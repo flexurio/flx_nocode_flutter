@@ -5,42 +5,51 @@
     "fields": [
         {
             "label": "ID",
-            "reference": "bank_type.id",
+            "reference": "id",
             "type": "number",
+            "column_width": 3,
             "auto_generated": true
         },
         {
             "label": "Name",
-            "reference": "bank_type.name",
+            "reference": "name",
             "type": "text",
+            "column_width": 3,
             "required": true,
             "pattern": "^[a-zA-Z0-9 ]{3,}$",
             "min_length": 3,
             "max_length": 255,
             "allow_create": true,
             "allow_update": true
+        },
+        {
+            "label": "Created At",
+            "reference": "created_at",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
+            "column_width": 3,
+            "auto_generated": true
         }
     ],
     "backend": {
         "read_all": {
             "method": "GET",
-            "url": "/bank_types"
+            "url": "{backend_host}/bank_types"
         },
         "read": {
             "method": "GET",
-            "url": "/bank_types/{id}"
+            "url": "{backend_host}/bank_types/{id}"
         },
         "create": {
             "method": "POST",
-            "url": "/bank_types"
+            "url": "{backend_host}/bank_types"
         },
         "update": {
             "method": "PUT",
-            "url": "/bank_types/{id}"
+            "url": "{backend_host}/bank_types/{id}"
         },
         "delete": {
             "method": "DELETE",
-            "url": "/bank_types/{id}"
+            "url": "{backend_host}/bank_types/{id}"
         }
     }
 }

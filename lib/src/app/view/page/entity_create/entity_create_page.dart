@@ -128,9 +128,6 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     final children = <Widget>[];
     var first = true;
     for (final field in widget.entity.fields) {
-      if (first) {
-        first = false;
-      }
       final fieldWidget =
           field.buildForm(_action, _controllers[field.reference]);
 
@@ -138,6 +135,10 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
         if (!first) Gap(12),
         fieldWidget,
       ]);
+
+      if (first) {
+        first = false;
+      }
     }
     return Column(children: children);
   }

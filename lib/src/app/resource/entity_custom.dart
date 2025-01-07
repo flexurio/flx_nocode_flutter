@@ -55,9 +55,9 @@ class EntityCustomRepository extends Repository {
     }
   }
 
-  Future<PageOptions<Map>> fetch({
+  Future<PageOptions<Map<String, dynamic>>> fetch({
     required String accessToken,
-    required PageOptions<Map> pageOptions,
+    required PageOptions<Map<String, dynamic>> pageOptions,
     required String path,
     required String method,
   }) async {
@@ -78,6 +78,26 @@ class EntityCustomRepository extends Repository {
         data: (response.data!['data'] as List).cast(),
         totalRows: totalData,
       );
+    } catch (error) {
+      throw checkErrorApi(error);
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchById({
+    required String accessToken,
+    required String path,
+    required String method,
+    required String id,
+  }) async {
+    try {
+      final response = await _request<Map<String, dynamic>>(
+        accessToken: accessToken,
+        path: path
+            .replaceFirst('{id}', id)
+            .replaceFirst('{backend_host}', Configuration.instance.backendHost),
+        method: method,
+      );
+      return response.data!;
     } catch (error) {
       throw checkErrorApi(error);
     }

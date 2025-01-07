@@ -10,10 +10,10 @@ part 'entity_custom_query_bloc.freezed.dart';
 class EntityCustomQueryState with _$EntityCustomQueryState {
   const factory EntityCustomQueryState.initial() = _Initial;
   const factory EntityCustomQueryState.loading(
-    PageOptions<Map> pageOptions,
+    PageOptions<Map<String, dynamic>> pageOptions,
   ) = _Loading;
   const factory EntityCustomQueryState.loaded(
-    PageOptions<Map> pageOptions,
+    PageOptions<Map<String, dynamic>> pageOptions,
   ) = _Loaded;
   const factory EntityCustomQueryState.error(String error) = _Error;
 }
@@ -21,8 +21,9 @@ class EntityCustomQueryState with _$EntityCustomQueryState {
 @freezed
 class EntityCustomQueryEvent with _$EntityCustomQueryEvent {
   const factory EntityCustomQueryEvent.fetch({
-    PageOptions<Map>? pageOptions,
+    PageOptions<Map<String, dynamic>>? pageOptions,
   }) = _Fetch;
+  const factory EntityCustomQueryEvent.fetchById(String id) = _FetchById;
 }
 
 class EntityCustomQueryBloc
@@ -32,6 +33,20 @@ class EntityCustomQueryBloc
     on<EntityCustomQueryEvent>(
       (event, emit) async {
         await event.when(
+          fetchById: (id) async {
+            emit(_Loading(_pageOptions));
+            try {
+              final data = await EntityCustomRepository.instance.fetchById(
+                accessToken: '',
+                id: id,
+                method: entity.backend.read!.method,
+                path: entity.backend.read!.url,
+              );
+              emit(_Loaded(_pageOptions.copyWith(data: [data])));
+            } catch (error) {
+              emit(_Error(errorMessage(error)));
+            }
+          },
           fetch: (pageOptions) async {
             emit(_Loading(_pageOptions));
             try {
@@ -53,5 +68,5 @@ class EntityCustomQueryBloc
       },
     );
   }
-  PageOptions<Map> _pageOptions = PageOptions.empty();
+  PageOptions<Map<String, dynamic>> _pageOptions = PageOptions.empty();
 }

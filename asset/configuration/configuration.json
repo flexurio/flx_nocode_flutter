@@ -7,7 +7,7 @@
         "website": "https://vneu.co.id",
         "address": "Jl. Kebayoran Lama No. 1, Jakarta Selatan, Indonesia"
     },
-    "backend_host": "http://localhost:8090",
+    "backend_host": "http://103.106.78.186:4000",
     "theme": {
         "color": "#795548",
         "color_soft": "#D7CCC8"

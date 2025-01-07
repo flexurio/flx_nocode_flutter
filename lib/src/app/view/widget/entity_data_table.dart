@@ -1,5 +1,6 @@
 import 'package:appointment/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:appointment/src/app/model/entity_field.dart';
+import 'package:appointment/src/app/view/page/entity_view/enitity_view_page.dart';
 import 'package:appointment/src/app/view/widget/entity_create_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
@@ -30,7 +31,7 @@ class MenuDataTableCustom extends StatefulWidget {
 
 class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   void _fetch({
-    PageOptions<Map<dynamic, dynamic>>? pageOptions,
+    PageOptions<Map<String, dynamic>>? pageOptions,
   }) {
     context.read<EntityCustomQueryBloc>().add(
           EntityCustomQueryEvent.fetch(
@@ -45,7 +46,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       builder: (context, state) {
         return SizedBox(
           width: MediaQuery.of(context).size.width,
-          child: DataTableBackend<Map>(
+          child: DataTableBackend<Map<String, dynamic>>(
             freezeFirstColumn: true,
             freezeLastColumn: false,
             onRefresh: () => _fetch(),
@@ -75,34 +76,37 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 ),
             ],
             columns: [
-              ...(widget.entity.fields.map(
-                (e) => DTColumn(
-                  widthFlex: e.columnWidth ?? 5,
-                  head: DTHead(
-                    backendColumn: e.reference,
-                    label: e.label,
-                  ),
-                  body: (entity) => DataCell(
-                    EntityField.buildDisplay(
-                      widget.entity,
-                      e.reference,
-                      entity[e.reference],
+              ...List.generate(
+                widget.entity.fields.length,
+                (index) {
+                  final e = widget.entity.fields.elementAt(index);
+                  return DTColumn(
+                    widthFlex: e.columnWidth ?? 5,
+                    head: DTHead(
+                      backendColumn: e.reference,
+                      label: e.label,
                     ),
-                  ),
-                ),
-              )),
-              // DTColumn(
-              //   widthFlex: 13,
-              //   head: DTHead(
-              //     backendColumn: '',
-              //     label: 'actions'.tr(),
-              //   ),
-              //   body: (material) => DataCell(
-              //     Row(
-              //       children: [],
-              //     ),
-              //   ),
-              // ),
+                    body: (entity) => DataCell(
+                      EntityField.buildDisplay(
+                        widget.entity,
+                        e.reference,
+                        entity[e.reference],
+                        index != 0
+                            ? null
+                            : () {
+                                Navigator.push(
+                                  context,
+                                  EntityViewPage.route(
+                                    entity: widget.entity,
+                                    data: entity,
+                                  ),
+                                );
+                              },
+                      ),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         );

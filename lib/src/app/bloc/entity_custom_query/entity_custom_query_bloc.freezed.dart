@@ -19,24 +19,26 @@ mixin _$EntityCustomQueryState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function(PageOptions<Map> pageOptions) loading,
-    required TResult Function(PageOptions<Map> pageOptions) loaded,
+    required TResult Function(PageOptions<Map<String, dynamic>> pageOptions)
+        loading,
+    required TResult Function(PageOptions<Map<String, dynamic>> pageOptions)
+        loaded,
     required TResult Function(String error) error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function(PageOptions<Map> pageOptions)? loading,
-    TResult? Function(PageOptions<Map> pageOptions)? loaded,
+    TResult? Function(PageOptions<Map<String, dynamic>> pageOptions)? loading,
+    TResult? Function(PageOptions<Map<String, dynamic>> pageOptions)? loaded,
     TResult? Function(String error)? error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function(PageOptions<Map> pageOptions)? loading,
-    TResult Function(PageOptions<Map> pageOptions)? loaded,
+    TResult Function(PageOptions<Map<String, dynamic>> pageOptions)? loading,
+    TResult Function(PageOptions<Map<String, dynamic>> pageOptions)? loaded,
     TResult Function(String error)? error,
     required TResult orElse(),
   }) =>
@@ -132,8 +134,10 @@ class _$InitialImpl implements _Initial {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function(PageOptions<Map> pageOptions) loading,
-    required TResult Function(PageOptions<Map> pageOptions) loaded,
+    required TResult Function(PageOptions<Map<String, dynamic>> pageOptions)
+        loading,
+    required TResult Function(PageOptions<Map<String, dynamic>> pageOptions)
+        loaded,
     required TResult Function(String error) error,
   }) {
     return initial();
@@ -143,8 +147,8 @@ class _$InitialImpl implements _Initial {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function(PageOptions<Map> pageOptions)? loading,
-    TResult? Function(PageOptions<Map> pageOptions)? loaded,
+    TResult? Function(PageOptions<Map<String, dynamic>> pageOptions)? loading,
+    TResult? Function(PageOptions<Map<String, dynamic>> pageOptions)? loaded,
     TResult? Function(String error)? error,
   }) {
     return initial?.call();
@@ -154,8 +158,8 @@ class _$InitialImpl implements _Initial {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function(PageOptions<Map> pageOptions)? loading,
-    TResult Function(PageOptions<Map> pageOptions)? loaded,
+    TResult Function(PageOptions<Map<String, dynamic>> pageOptions)? loading,
+    TResult Function(PageOptions<Map<String, dynamic>> pageOptions)? loaded,
     TResult Function(String error)? error,
     required TResult orElse(),
   }) {
@@ -213,7 +217,7 @@ abstract class _$$LoadingImplCopyWith<$Res> {
           _$LoadingImpl value, $Res Function(_$LoadingImpl) then) =
       __$$LoadingImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({PageOptions<Map> pageOptions});
+  $Res call({PageOptions<Map<String, dynamic>> pageOptions});
 }
 
 /// @nodoc
@@ -235,7 +239,7 @@ class __$$LoadingImplCopyWithImpl<$Res>
       null == pageOptions
           ? _value.pageOptions
           : pageOptions // ignore: cast_nullable_to_non_nullable
-              as PageOptions<Map>,
+              as PageOptions<Map<String, dynamic>>,
     ));
   }
 }
@@ -246,7 +250,7 @@ class _$LoadingImpl implements _Loading {
   const _$LoadingImpl(this.pageOptions);
 
   @override
-  final PageOptions<Map> pageOptions;
+  final PageOptions<Map<String, dynamic>> pageOptions;
 
   @override
   String toString() {
@@ -277,8 +281,10 @@ class _$LoadingImpl implements _Loading {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function(PageOptions<Map> pageOptions) loading,
-    required TResult Function(PageOptions<Map> pageOptions) loaded,
+    required TResult Function(PageOptions<Map<String, dynamic>> pageOptions)
+        loading,
+    required TResult Function(PageOptions<Map<String, dynamic>> pageOptions)
+        loaded,
     required TResult Function(String error) error,
   }) {
     return loading(pageOptions);
@@ -288,8 +294,8 @@ class _$LoadingImpl implements _Loading {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function(PageOptions<Map> pageOptions)? loading,
-    TResult? Function(PageOptions<Map> pageOptions)? loaded,
+    TResult? Function(PageOptions<Map<String, dynamic>> pageOptions)? loading,
+    TResult? Function(PageOptions<Map<String, dynamic>> pageOptions)? loaded,
     TResult? Function(String error)? error,
   }) {
     return loading?.call(pageOptions);
@@ -299,8 +305,8 @@ class _$LoadingImpl implements _Loading {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function(PageOptions<Map> pageOptions)? loading,
-    TResult Function(PageOptions<Map> pageOptions)? loaded,
+    TResult Function(PageOptions<Map<String, dynamic>> pageOptions)? loading,
+    TResult Function(PageOptions<Map<String, dynamic>> pageOptions)? loaded,
     TResult Function(String error)? error,
     required TResult orElse(),
   }) {
@@ -349,9 +355,10 @@ class _$LoadingImpl implements _Loading {
 }
 
 abstract class _Loading implements EntityCustomQueryState {
-  const factory _Loading(final PageOptions<Map> pageOptions) = _$LoadingImpl;
+  const factory _Loading(final PageOptions<Map<String, dynamic>> pageOptions) =
+      _$LoadingImpl;
 
-  PageOptions<Map> get pageOptions;
+  PageOptions<Map<String, dynamic>> get pageOptions;
 
   /// Create a copy of EntityCustomQueryState
   /// with the given fields replaced by the non-null parameter values.
@@ -366,7 +373,7 @@ abstract class _$$LoadedImplCopyWith<$Res> {
           _$LoadedImpl value, $Res Function(_$LoadedImpl) then) =
       __$$LoadedImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({PageOptions<Map> pageOptions});
+  $Res call({PageOptions<Map<String, dynamic>> pageOptions});
 }
 
 /// @nodoc
@@ -388,7 +395,7 @@ class __$$LoadedImplCopyWithImpl<$Res>
       null == pageOptions
           ? _value.pageOptions
           : pageOptions // ignore: cast_nullable_to_non_nullable
-              as PageOptions<Map>,
+              as PageOptions<Map<String, dynamic>>,
     ));
   }
 }
@@ -399,7 +406,7 @@ class _$LoadedImpl implements _Loaded {
   const _$LoadedImpl(this.pageOptions);
 
   @override
-  final PageOptions<Map> pageOptions;
+  final PageOptions<Map<String, dynamic>> pageOptions;
 
   @override
   String toString() {
@@ -430,8 +437,10 @@ class _$LoadedImpl implements _Loaded {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function(PageOptions<Map> pageOptions) loading,
-    required TResult Function(PageOptions<Map> pageOptions) loaded,
+    required TResult Function(PageOptions<Map<String, dynamic>> pageOptions)
+        loading,
+    required TResult Function(PageOptions<Map<String, dynamic>> pageOptions)
+        loaded,
     required TResult Function(String error) error,
   }) {
     return loaded(pageOptions);
@@ -441,8 +450,8 @@ class _$LoadedImpl implements _Loaded {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function(PageOptions<Map> pageOptions)? loading,
-    TResult? Function(PageOptions<Map> pageOptions)? loaded,
+    TResult? Function(PageOptions<Map<String, dynamic>> pageOptions)? loading,
+    TResult? Function(PageOptions<Map<String, dynamic>> pageOptions)? loaded,
     TResult? Function(String error)? error,
   }) {
     return loaded?.call(pageOptions);
@@ -452,8 +461,8 @@ class _$LoadedImpl implements _Loaded {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function(PageOptions<Map> pageOptions)? loading,
-    TResult Function(PageOptions<Map> pageOptions)? loaded,
+    TResult Function(PageOptions<Map<String, dynamic>> pageOptions)? loading,
+    TResult Function(PageOptions<Map<String, dynamic>> pageOptions)? loaded,
     TResult Function(String error)? error,
     required TResult orElse(),
   }) {
@@ -502,9 +511,10 @@ class _$LoadedImpl implements _Loaded {
 }
 
 abstract class _Loaded implements EntityCustomQueryState {
-  const factory _Loaded(final PageOptions<Map> pageOptions) = _$LoadedImpl;
+  const factory _Loaded(final PageOptions<Map<String, dynamic>> pageOptions) =
+      _$LoadedImpl;
 
-  PageOptions<Map> get pageOptions;
+  PageOptions<Map<String, dynamic>> get pageOptions;
 
   /// Create a copy of EntityCustomQueryState
   /// with the given fields replaced by the non-null parameter values.
@@ -582,8 +592,10 @@ class _$ErrorImpl implements _Error {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function(PageOptions<Map> pageOptions) loading,
-    required TResult Function(PageOptions<Map> pageOptions) loaded,
+    required TResult Function(PageOptions<Map<String, dynamic>> pageOptions)
+        loading,
+    required TResult Function(PageOptions<Map<String, dynamic>> pageOptions)
+        loaded,
     required TResult Function(String error) error,
   }) {
     return error(this.error);
@@ -593,8 +605,8 @@ class _$ErrorImpl implements _Error {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function(PageOptions<Map> pageOptions)? loading,
-    TResult? Function(PageOptions<Map> pageOptions)? loaded,
+    TResult? Function(PageOptions<Map<String, dynamic>> pageOptions)? loading,
+    TResult? Function(PageOptions<Map<String, dynamic>> pageOptions)? loaded,
     TResult? Function(String error)? error,
   }) {
     return error?.call(this.error);
@@ -604,8 +616,8 @@ class _$ErrorImpl implements _Error {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function(PageOptions<Map> pageOptions)? loading,
-    TResult Function(PageOptions<Map> pageOptions)? loaded,
+    TResult Function(PageOptions<Map<String, dynamic>> pageOptions)? loading,
+    TResult Function(PageOptions<Map<String, dynamic>> pageOptions)? loaded,
     TResult Function(String error)? error,
     required TResult orElse(),
   }) {
@@ -667,44 +679,44 @@ abstract class _Error implements EntityCustomQueryState {
 
 /// @nodoc
 mixin _$EntityCustomQueryEvent {
-  PageOptions<Map>? get pageOptions => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(PageOptions<Map>? pageOptions) fetch,
+    required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions)
+        fetch,
+    required TResult Function(String id) fetchById,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(PageOptions<Map>? pageOptions)? fetch,
+    TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions)? fetch,
+    TResult? Function(String id)? fetchById,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(PageOptions<Map>? pageOptions)? fetch,
+    TResult Function(PageOptions<Map<String, dynamic>>? pageOptions)? fetch,
+    TResult Function(String id)? fetchById,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Fetch value) fetch,
+    required TResult Function(_FetchById value) fetchById,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Fetch value)? fetch,
+    TResult? Function(_FetchById value)? fetchById,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Fetch value)? fetch,
+    TResult Function(_FetchById value)? fetchById,
     required TResult orElse(),
   }) =>
-      throw _privateConstructorUsedError;
-
-  /// Create a copy of EntityCustomQueryEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $EntityCustomQueryEventCopyWith<EntityCustomQueryEvent> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -713,8 +725,6 @@ abstract class $EntityCustomQueryEventCopyWith<$Res> {
   factory $EntityCustomQueryEventCopyWith(EntityCustomQueryEvent value,
           $Res Function(EntityCustomQueryEvent) then) =
       _$EntityCustomQueryEventCopyWithImpl<$Res, EntityCustomQueryEvent>;
-  @useResult
-  $Res call({PageOptions<Map>? pageOptions});
 }
 
 /// @nodoc
@@ -730,29 +740,15 @@ class _$EntityCustomQueryEventCopyWithImpl<$Res,
 
   /// Create a copy of EntityCustomQueryEvent
   /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? pageOptions = freezed,
-  }) {
-    return _then(_value.copyWith(
-      pageOptions: freezed == pageOptions
-          ? _value.pageOptions
-          : pageOptions // ignore: cast_nullable_to_non_nullable
-              as PageOptions<Map>?,
-    ) as $Val);
-  }
 }
 
 /// @nodoc
-abstract class _$$FetchImplCopyWith<$Res>
-    implements $EntityCustomQueryEventCopyWith<$Res> {
+abstract class _$$FetchImplCopyWith<$Res> {
   factory _$$FetchImplCopyWith(
           _$FetchImpl value, $Res Function(_$FetchImpl) then) =
       __$$FetchImplCopyWithImpl<$Res>;
-  @override
   @useResult
-  $Res call({PageOptions<Map>? pageOptions});
+  $Res call({PageOptions<Map<String, dynamic>>? pageOptions});
 }
 
 /// @nodoc
@@ -774,7 +770,7 @@ class __$$FetchImplCopyWithImpl<$Res>
       pageOptions: freezed == pageOptions
           ? _value.pageOptions
           : pageOptions // ignore: cast_nullable_to_non_nullable
-              as PageOptions<Map>?,
+              as PageOptions<Map<String, dynamic>>?,
     ));
   }
 }
@@ -785,7 +781,7 @@ class _$FetchImpl implements _Fetch {
   const _$FetchImpl({this.pageOptions});
 
   @override
-  final PageOptions<Map>? pageOptions;
+  final PageOptions<Map<String, dynamic>>? pageOptions;
 
   @override
   String toString() {
@@ -815,7 +811,9 @@ class _$FetchImpl implements _Fetch {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(PageOptions<Map>? pageOptions) fetch,
+    required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions)
+        fetch,
+    required TResult Function(String id) fetchById,
   }) {
     return fetch(pageOptions);
   }
@@ -823,7 +821,8 @@ class _$FetchImpl implements _Fetch {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(PageOptions<Map>? pageOptions)? fetch,
+    TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions)? fetch,
+    TResult? Function(String id)? fetchById,
   }) {
     return fetch?.call(pageOptions);
   }
@@ -831,7 +830,8 @@ class _$FetchImpl implements _Fetch {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(PageOptions<Map>? pageOptions)? fetch,
+    TResult Function(PageOptions<Map<String, dynamic>>? pageOptions)? fetch,
+    TResult Function(String id)? fetchById,
     required TResult orElse(),
   }) {
     if (fetch != null) {
@@ -844,6 +844,7 @@ class _$FetchImpl implements _Fetch {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Fetch value) fetch,
+    required TResult Function(_FetchById value) fetchById,
   }) {
     return fetch(this);
   }
@@ -852,6 +853,7 @@ class _$FetchImpl implements _Fetch {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Fetch value)? fetch,
+    TResult? Function(_FetchById value)? fetchById,
   }) {
     return fetch?.call(this);
   }
@@ -860,6 +862,7 @@ class _$FetchImpl implements _Fetch {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Fetch value)? fetch,
+    TResult Function(_FetchById value)? fetchById,
     required TResult orElse(),
   }) {
     if (fetch != null) {
@@ -870,15 +873,155 @@ class _$FetchImpl implements _Fetch {
 }
 
 abstract class _Fetch implements EntityCustomQueryEvent {
-  const factory _Fetch({final PageOptions<Map>? pageOptions}) = _$FetchImpl;
+  const factory _Fetch({final PageOptions<Map<String, dynamic>>? pageOptions}) =
+      _$FetchImpl;
 
-  @override
-  PageOptions<Map>? get pageOptions;
+  PageOptions<Map<String, dynamic>>? get pageOptions;
 
   /// Create a copy of EntityCustomQueryEvent
   /// with the given fields replaced by the non-null parameter values.
-  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$FetchImplCopyWith<_$FetchImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$FetchByIdImplCopyWith<$Res> {
+  factory _$$FetchByIdImplCopyWith(
+          _$FetchByIdImpl value, $Res Function(_$FetchByIdImpl) then) =
+      __$$FetchByIdImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String id});
+}
+
+/// @nodoc
+class __$$FetchByIdImplCopyWithImpl<$Res>
+    extends _$EntityCustomQueryEventCopyWithImpl<$Res, _$FetchByIdImpl>
+    implements _$$FetchByIdImplCopyWith<$Res> {
+  __$$FetchByIdImplCopyWithImpl(
+      _$FetchByIdImpl _value, $Res Function(_$FetchByIdImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of EntityCustomQueryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+  }) {
+    return _then(_$FetchByIdImpl(
+      null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$FetchByIdImpl implements _FetchById {
+  const _$FetchByIdImpl(this.id);
+
+  @override
+  final String id;
+
+  @override
+  String toString() {
+    return 'EntityCustomQueryEvent.fetchById(id: $id)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$FetchByIdImpl &&
+            (identical(other.id, id) || other.id == id));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, id);
+
+  /// Create a copy of EntityCustomQueryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$FetchByIdImplCopyWith<_$FetchByIdImpl> get copyWith =>
+      __$$FetchByIdImplCopyWithImpl<_$FetchByIdImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions)
+        fetch,
+    required TResult Function(String id) fetchById,
+  }) {
+    return fetchById(id);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions)? fetch,
+    TResult? Function(String id)? fetchById,
+  }) {
+    return fetchById?.call(id);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(PageOptions<Map<String, dynamic>>? pageOptions)? fetch,
+    TResult Function(String id)? fetchById,
+    required TResult orElse(),
+  }) {
+    if (fetchById != null) {
+      return fetchById(id);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Fetch value) fetch,
+    required TResult Function(_FetchById value) fetchById,
+  }) {
+    return fetchById(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Fetch value)? fetch,
+    TResult? Function(_FetchById value)? fetchById,
+  }) {
+    return fetchById?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Fetch value)? fetch,
+    TResult Function(_FetchById value)? fetchById,
+    required TResult orElse(),
+  }) {
+    if (fetchById != null) {
+      return fetchById(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _FetchById implements EntityCustomQueryEvent {
+  const factory _FetchById(final String id) = _$FetchByIdImpl;
+
+  String get id;
+
+  /// Create a copy of EntityCustomQueryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$FetchByIdImplCopyWith<_$FetchByIdImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

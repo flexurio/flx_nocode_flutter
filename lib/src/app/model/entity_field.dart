@@ -68,16 +68,23 @@ class EntityField {
     );
   }
 
-  static Widget buildDisplay(Entity entity, String label, dynamic value) {
+  static Widget buildDisplay(Entity entity, String label, dynamic value,
+      [void Function()? onTap]) {
     final field = entity.fields.firstWhere((e) => e.reference == label);
+    late Widget widget;
     if (field.type == 'number') {
-      return Text(value.toString());
+      widget = Text(value.toString());
     } else if (field.isDateTime) {
       final date = DateTime.parse(value);
-      return Text(DateFormat(field.dateTimeFormat).format(date));
+      widget = Text(DateFormat(field.dateTimeFormat).format(date));
     } else {
-      return Text(value);
+      widget = Text(value);
     }
+
+    if (widget is Text && onTap != null) {
+      return widget.canCopy(onTap: onTap);
+    }
+    return widget;
   }
 
   bool _enabled(core.DataAction action) {
