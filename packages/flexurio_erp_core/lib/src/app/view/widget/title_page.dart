@@ -14,34 +14,12 @@ class TitlePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TitlePageCustom(
-      title: '${entity.title}${suffixText != null ? ' $suffixText' : ''}',
-      subtitle: entity.subtitle,
-      iconPath: entity.iconPath,
-    );
-  }
-}
-
-class TitlePageCustom extends StatelessWidget {
-  const TitlePageCustom({
-    required this.title,
-    required this.subtitle,
-    required this.iconPath,
-    super.key,
-  });
-
-  final String title;
-  final String subtitle;
-  final String iconPath;
-
-  @override
-  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Row(
         children: [
           Image.asset(
-            'asset/image/icon/$iconPath.png',
+            'asset/image/icon/${entity.iconPath}.png',
             width: 64,
             height: 64,
           ),
@@ -51,14 +29,14 @@ class TitlePageCustom extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  '${entity.title}${suffixText != null ? ' $suffixText' : ''}',
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const Gap(6),
-                Text(subtitle),
+                Text(entity.subtitle),
               ],
             ),
           ),

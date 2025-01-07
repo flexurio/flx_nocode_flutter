@@ -1,4 +1,5 @@
 import 'package:appointment/src/app/model/configuration.dart' as configuration;
+import 'package:appointment/src/app/view/page/entity_create/entity_create_page.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +22,7 @@ class EntityCreateButton extends StatelessWidget {
       onPressed: () async {
         final success = await Navigator.push(
           context,
-          MaterialCreatePage.route(isExternal: isExternal),
+          EntityCreatePage.route(entity: entity),
         );
         if (success ?? false) {
           onSuccess();

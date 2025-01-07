@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 
@@ -12,6 +14,46 @@ class EntityCustomRepository extends Repository {
     onUnauthorized: () {},
   );
 
+  Future<Response<T>> _request<T>({
+    required String accessToken,
+    required String path,
+    required String method,
+    Map<String, dynamic>? queryParameters,
+    Map<String, dynamic>? body,
+  }) {
+    final headers = {
+      RequestHeader.authorization: 'Bearer $accessToken',
+    };
+
+    switch (method.toUpperCase()) {
+      case 'GET':
+        return dio.get<T>(
+          path,
+          queryParameters: queryParameters,
+          options: Options(headers: headers),
+        );
+      case 'POST':
+        return dio.post<T>(
+          path,
+          data: body != null ? jsonEncode(body) : null,
+          options: Options(headers: headers),
+        );
+      case 'PUT':
+        return dio.put<T>(
+          path,
+          data: body != null ? jsonEncode(body) : null,
+          options: Options(headers: headers),
+        );
+      case 'DELETE':
+        return dio.delete<T>(
+          path,
+          options: Options(headers: headers),
+        );
+      default:
+        throw UnsupportedError('Unsupported HTTP method: $method');
+    }
+  }
+
   Future<PageOptions<Map>> fetch({
     required String accessToken,
     required PageOptions<Map> pageOptions,
@@ -19,28 +61,11 @@ class EntityCustomRepository extends Repository {
     required String method,
   }) async {
     try {
-      final headers = {
-        RequestHeader.authorization: 'Bearer $accessToken',
-      };
-
-      Response<Map<String, dynamic>> response;
-      switch (method.toUpperCase()) {
-        case 'GET':
-          response = await dio.get<Map<String, dynamic>>(
-            path,
-            queryParameters: pageOptions.toUrlQueryMap(),
-            options: Options(headers: headers),
-          );
-          break;
-        case 'POST':
-          response = await dio.post<Map<String, dynamic>>(
-            path,
-            options: Options(headers: headers),
-          );
-          break;
-        default:
-          throw UnsupportedError('Unsupported HTTP method: $method');
-      }
+      final response = await _request<Map<String, dynamic>>(
+        accessToken: accessToken,
+        path: path,
+        method: method,
+      );
 
       var totalData = 0;
       if (response.data!.containsKey('total_data')) {
@@ -51,6 +76,25 @@ class EntityCustomRepository extends Repository {
         data: (response.data!['data'] as List).cast(),
         totalRows: totalData,
       );
+    } catch (error) {
+      throw checkErrorApi(error);
+    }
+  }
+
+  Future<Map<String, dynamic>> modify({
+    required String accessToken,
+    required String path,
+    required String method,
+    Map<String, dynamic>? data,
+  }) async {
+    try {
+      final response = await _request<Map<String, dynamic>?>(
+        accessToken: accessToken,
+        path: path,
+        method: method,
+        body: data,
+      );
+      return response.data!;
     } catch (error) {
       throw checkErrorApi(error);
     }

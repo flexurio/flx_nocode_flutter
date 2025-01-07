@@ -1,5 +1,5 @@
 import 'package:appointment/src/app/model/configuration.dart' as configuration;
-import 'package:appointment/src/app/view/widget/entity_data_table_custom.dart';
+import 'package:appointment/src/app/view/widget/entity_data_table.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -34,10 +34,8 @@ class MenuCustom extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
       children: [
-        TitlePageCustom(
-          title: entity.label,
-          subtitle: entity.description,
-          iconPath: 'bill',
+        TitlePage(
+          entity: entity.coreEntity,
         ),
         const Gap(12),
         SizedBox(

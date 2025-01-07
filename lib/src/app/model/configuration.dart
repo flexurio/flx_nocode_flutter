@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:appointment/src/app/model/entity_field.dart';
-import 'package:appointment/src/app/view/widget/entity_home_custom.dart';
-import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:appointment/src/app/view/widget/entity_home.dart';
+import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -45,32 +45,32 @@ class Configuration {
     };
   }
 
-  FlavorConfig get flavorConfig => FlavorConfig(
+  core.FlavorConfig get flavorConfig => core.FlavorConfig(
         companyId: company.id,
         companyName: company.name,
         companyPhone: company.phone,
         companyWebsite: company.website,
         companyAddress: company.address,
         apiUrl: '',
-        color: colorFromHex(theme.color),
-        colorSoft: colorFromHex(theme.colorSoft),
+        color: core.colorFromHex(theme.color),
+        colorSoft: core.colorFromHex(theme.colorSoft),
         backgroundLoginPage: 'asset/image/background-3.jpg',
         applicationConfig: null,
       );
 
-  List<Menu1> get menu {
+  List<core.Menu1> get menu {
     return menuGroups
         .map(
-          (e) => Menu1(
+          (e) => core.Menu1(
             label: e.label,
             menu: e.menu
                 .map(
-                  (e) => Menu2(
+                  (e) => core.Menu2(
                     label: e.label,
                     icon: Icons.list,
                     menu: e.menuSub
                         .map(
-                          (e) => Menu3(
+                          (e) => core.Menu3(
                             label: e.label,
                             home: MenuCustom(entityId: e.entity),
                             permissions: [],
@@ -189,6 +189,12 @@ class Entity {
       'description': description,
     };
   }
+
+  core.Entity get coreEntity => core.Entity(
+        titleX: label,
+        iconPath: 'bill',
+        subtitleX: description,
+      );
 
   bool get allowCreate => backend.create != null;
   bool get allowUpdate => backend.update != null;

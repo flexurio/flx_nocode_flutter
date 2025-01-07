@@ -1,12 +1,10 @@
+import 'package:appointment/src/app/bloc/entity/entity_bloc.dart';
 import 'package:appointment/src/app/model/configuration.dart' as configuration;
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:form_field_validator/form_field_validator.dart';
 import 'package:gap/gap.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:appointment/src/app/model/config.dart';
 
 class EntityCreatePage extends StatefulWidget {
   const EntityCreatePage._(
@@ -18,7 +16,7 @@ class EntityCreatePage extends StatefulWidget {
   final configuration.Entity entity;
 
   static Route<bool?> route({
-    required configuration.Entity material,
+    required configuration.Entity entity,
     Map<String, dynamic>? data,
   }) {
     return PageTransition(
@@ -26,9 +24,9 @@ class EntityCreatePage extends StatefulWidget {
       type: PageTransitionType.rightToLeft,
       child: MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => EntityBloc()),
+          BlocProvider(create: (context) => EntityBloc(entity)),
         ],
-        child: EntityCreatePage._(data, material),
+        child: EntityCreatePage._(data, entity),
       ),
     );
   }
@@ -120,8 +118,8 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     return BlocListener<EntityBloc, EntityState>(
       listener: (context, state) {
         state.maybeWhen(
-          success: () {
-            Toast(context).dataChanged(_action, Entity.material);
+          success: (_) {
+            Toast(context).dataChanged(_action, widget.entity.coreEntity);
             Navigator.pop(context, true);
           },
           error: (error) => Toast(context).fail(error),

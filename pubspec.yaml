@@ -23,48 +23,8 @@ dependencies:
   equatable: ^2.0.3
   expandable: ^5.0.1
   file_picker: ^5.2.5
-  flexurio_chiron_marketing:
-    path: packages/flexurio_chiron_marketing/
-  flexurio_chiron_vendor:
-    path: packages/flexurio_chiron_vendor/
-  flexurio_chiron_purchase_request:
-    path: packages/flexurio_chiron_purchase_request/
-  flexurio_chiron_accounting:
-    path: packages/flexurio_chiron_accounting/
-  flexurio_chiron_material:
-    path: packages/flexurio_chiron_material/
-  flexurio_chiron_material_stock:
-    path: packages/flexurio_chiron_material_stock/
-  flexurio_chiron_product:
-    path: packages/flexurio_chiron_product/
-  flexurio_chiron_product_stock:
-    path: packages/flexurio_chiron_product_stock/
-  flexurio_chiron_purchase_order:
-    path: packages/flexurio_chiron_purchase_order/
-  flexurio_chiron_production:
-    path: packages/flexurio_chiron_production/
-  flexurio_erp_authentication:
-    path: packages/flexurio_erp_authentication/
   flexurio_erp_core:
     path: packages/flexurio_erp_core/
-  flexurio_erp_employee:
-    path: packages/flexurio_erp_employee/
-  flexurio_chiron_finance:
-    path: packages/flexurio_chiron_finance/
-  flexurio_chiron_tax:
-    path: packages/flexurio_chiron_tax/
-  flexurio_chiron_sales_order:
-    path: packages/flexurio_chiron_sales_order/
-  flexurio_chiron_company:
-    path: packages/flexurio_chiron_company/
-  flexurio_chiron_presence:
-    path: packages/flexurio_chiron_presence/
-  flexurio_chiron_customer:
-    path: packages/flexurio_chiron_customer/
-  flexurio_chiron_ticket:
-    path: packages/flexurio_chiron_ticket/
-  flexurio_chiron_business_trip:
-    path: packages/flexurio_chiron_business_trip/
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.6

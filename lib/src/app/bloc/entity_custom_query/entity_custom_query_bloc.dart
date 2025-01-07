@@ -41,8 +41,8 @@ class EntityCustomQueryBloc
               _pageOptions = await EntityCustomRepository.instance.fetch(
                 accessToken: 'text',
                 pageOptions: _pageOptions,
-                method: entity.backend.readAll.method,
-                path: entity.backend.readAll.url,
+                method: entity.backend.readAll!.method,
+                path: entity.backend.readAll!.url,
               );
               emit(_Loaded(_pageOptions));
             } catch (error) {
