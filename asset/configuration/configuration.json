@@ -1,0 +1,36 @@
+{
+    "app_name": "Flexurio",
+    "company": {
+        "id": "03",
+        "name": "VNEU Teknologi Indonesia",
+        "phone": "+628123456789",
+        "website": "https://vneu.co.id",
+        "address": "Jl. Kebayoran Lama No. 1, Jakarta Selatan, Indonesia"
+    },
+    "theme": {
+        "color": "#795548",
+        "color_soft": "#D7CCC8"
+    },
+    "menu_group": [
+        {
+            "label": "Master",
+            "menu": [
+                {
+                    "label": "Finance",
+                    "icon": "fa fa-bank",
+                    "menu_sub": [
+                        {
+                            "label": "Bank Type",
+                            "entity": "bank_type"
+                        },
+                        {
+                            "label": "Bank",
+                            "entity": "bank"
+                        }
+                     
+                    ]
+                }
+            ]
+        }
+    ]
+}

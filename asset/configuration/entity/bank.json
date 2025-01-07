@@ -1,0 +1,112 @@
+{
+    "id": "bank",
+    "label": "Bank",
+    "description": "The name of the bank where the account is held, used for identifying the financial institution associated with the transaction or account.",
+    "fields": [
+        {
+            "label": "ID",
+            "reference": "bank.id",
+            "type": "number",
+            "auto_generated": true
+        },
+        {
+            "label": "Name",
+            "reference": "bank.name",
+            "type": "text",
+            "required": true,
+            "pattern": "^[a-zA-Z0-9 ]{3,}$",
+            "min_length": 3,
+            "max_length": 255,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Address",
+            "reference": "bank.address",
+            "type": "text",
+            "required": true,
+            "min_length": 5,
+            "max_length": 500,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Phone Number",
+            "reference": "bank.phone_number",
+            "type": "text",
+            "required": false,
+            "pattern": "^\\+?[0-9]{10,15}$",
+            "min_length": 10,
+            "max_length": 15,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Email",
+            "reference": "bank.email",
+            "type": "text",
+            "required": false,
+            "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+            "max_length": 255,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Status",
+            "reference": "bank.status",
+            "type": "radio",
+            "required": true,
+            "pattern": "^(Active|Inactive)$",
+            "max_length": 50,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Bank Type",
+            "reference": "bank.bank_type_id",
+            "type": "select",
+            "options": {
+                "source": "bank_type",
+                "label_field": "name",
+                "value_field": "id"
+            },
+            "required": true,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Created At",
+            "reference": "bank.created_at",
+            "type": "date",
+            "auto_generated": true
+        },
+        {
+            "label": "Updated At",
+            "reference": "bank.updated_at",
+            "type": "date",
+            "auto_generated": true
+        }
+    ],
+    "backend": {
+        "read_all": {
+            "method": "GET",
+            "url": "/banks"
+        },
+        "read": {
+            "method": "GET",
+            "url": "/banks/{id}"
+        },
+        "create": {
+            "method": "POST",
+            "url": "/banks"
+        },
+        "update": {
+            "method": "PUT",
+            "url": "/banks/{id}"
+        },
+        "delete": {
+            "method": "DELETE",
+            "url": "/banks/{id}"
+        }
+    }
+}

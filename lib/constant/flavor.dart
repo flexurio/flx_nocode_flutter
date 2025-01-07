@@ -87,7 +87,7 @@ final configFlavorTeguhsindoProduction = FlavorConfig(
 AppConfig metiskaFarmaConfig() {
   return AppConfig(
     companyId: 'MF',
-    companyExternals: ['MF','TL'],
+    companyExternals: ['MF', 'TL'],
     purchaseRequestCreateFilterMaterialGroup: ({
       required department,
       required materialGroups,
