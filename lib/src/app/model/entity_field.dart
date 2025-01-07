@@ -1,4 +1,5 @@
-import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:appointment/src/app/model/configuration.dart';
+import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 
@@ -47,14 +48,15 @@ class EntityField {
     );
   }
 
-  Widget build(DataAction action, TextEditingController? controller) {
-    return FTextFormField(
+  Widget buildForm(core.DataAction action, TextEditingController? controller) {
+    final enabled = _enabled(action);
+    return core.FTextFormField(
       labelText: label,
       enabled: _enabled(action),
       controller: controller,
       validator: MultiValidator([
-        requiredValidator,
-        LengthValidator(
+        if (required ?? false) core.requiredValidator,
+        core.LengthValidator(
           minLength: minLength,
           maxLength: maxLength,
         ),
@@ -62,10 +64,19 @@ class EntityField {
     );
   }
 
-  bool _enabled(DataAction action) {
-    if (action == DataAction.create) {
+  static Widget buildDisplay(Entity entity, String label, dynamic value) {
+    final field = entity.fields.firstWhere((e) => e.reference == label);
+    if (field.type == 'number') {
+      return Text(value.toString());
+    } else {
+      return Text(value);
+    }
+  }
+
+  bool _enabled(core.DataAction action) {
+    if (action == core.DataAction.create) {
       return allowCreate ?? false;
-    } else if (action == DataAction.edit) {
+    } else if (action == core.DataAction.edit) {
       return allowUpdate ?? false;
     } else {
       return false;

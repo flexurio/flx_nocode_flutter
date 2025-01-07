@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final configuration = await Configuration.load();
+  await Configuration.load();
+  final configuration = Configuration.instance;
   final router = GoRouter(
     initialLocation: '/',
     routes: [

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:appointment/src/app/model/configuration.dart';
 import 'package:dio/dio.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 
@@ -61,9 +62,10 @@ class EntityCustomRepository extends Repository {
     required String method,
   }) async {
     try {
+      final backendHost = Configuration.instance.backendHost;
       final response = await _request<Map<String, dynamic>>(
         accessToken: accessToken,
-        path: path,
+        path: path.replaceFirst('{backend_host}', backendHost),
         method: method,
       );
 

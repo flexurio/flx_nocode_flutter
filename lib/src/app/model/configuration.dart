@@ -11,22 +11,27 @@ class Configuration {
   final Company company;
   final Theme theme;
   final String appName;
+  final String backendHost;
 
-  Configuration({
+  Configuration._({
     required this.menuGroups,
     required this.company,
     required this.theme,
     required this.appName,
+    required this.backendHost,
   });
 
-  static Future<Configuration> load() async {
-    final path = 'asset/configuration.json';
+  static late Configuration instance;
+
+  static load() async {
+    final path = 'asset/configuration/configuration.json';
     final data = await rootBundle.loadString(path);
-    return Configuration.fromJson(json.decode(data));
+    Configuration.instance = Configuration.fromJson(json.decode(data));
   }
 
   factory Configuration.fromJson(Map<String, dynamic> json) {
-    return Configuration(
+    return Configuration._(
+      backendHost: json['backend_host'],
       appName: json['app_name'],
       company: Company.fromJson(json['company']),
       theme: Theme.fromJson(json['theme']),
@@ -38,6 +43,7 @@ class Configuration {
 
   Map<String, dynamic> toJson() {
     return {
+      'backend_host': backendHost,
       'app_name': appName,
       'menu_group': menuGroups.map((e) => e.toJson()).toList(),
       'company': company.toJson(),
@@ -164,7 +170,7 @@ class Entity {
 
   static Future<Entity> getEntity(String id) async {
     final path = 'asset/configuration/entity/$id.json';
-    final data = rootBundle.loadString(path) as String;
+    final data = await rootBundle.loadString(path);
     return Entity.fromJson(json.decode(data));
   }
 

@@ -60,66 +60,35 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     }
   }
 
-  void _submit() {
-    // if (_formKey.currentState!.validate()) {
-    //   late EntityEvent event;
-    //   bool? valueGet() {
-    //     if (_isAssets == null) {
-    //       return false;
-    //     } else {
-    //       return _isAssets;
-    //     }
-    //   }
-
-    //   final packSize = stringToInt(_packSizeController.text);
-
-    //   if (_action.isEdit) {
-    //     event = EntityEvent.edit(
-    //       isAssets: valueGet(),
-    //       name: _nameController.text,
-    //       materialGroup: _materialGroup!,
-    //       materialUnit: _materialUnit!,
-    //       id: _idController.text,
-    //       packSize: packSize,
-    //       type: _type!,
-    //     );
-    //   } else {
-    //     event = EntityEvent.create(
-    //       name: _nameController.text,
-    //       materialUnit: _materialUnit!,
-    //       stockUnit: _stockUnit!,
-    //       materialGroup: _materialGroup!,
-    //       id: _idController.text,
-    //       isAssets: valueGet(),
-    //       packSize: packSize,
-    //       type: _type!,
-    //       companyId: _companyId!,
-    //     );
-    //   }
-
-    //   context.read<EntityBloc>().add(event);
-    // }
+  Map<String, dynamic> get _data {
+    final data = <String, dynamic>{};
+    for (final field in widget.entity.fields) {
+      data[field.reference] = _controllers[field.reference]!.text;
+    }
+    return data;
   }
 
-  // void _updateUnitConvert() {
-  //   if (_materialUnit != null && _stockUnit != null) {
-  //     context.read<UnitConvertQueryBloc>().add(
-  //           UnitConvertQueryEvent.fetch(
-  //             unitFrom: _materialUnit!,
-  //             unitTo: _stockUnit!,
-  //             pageOptions: PageOptions.emptyNoLimit(),
-  //           ),
-  //         );
-  //   }
-  // }
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      late EntityEvent event;
+      if (_action.isEdit) {
+        event = EntityEvent.create(data: _data);
+      } else {
+        event = EntityEvent.edit(data: _data);
+      }
+
+      context.read<EntityBloc>().add(event);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final coreEntity = widget.entity.coreEntity;
     return BlocListener<EntityBloc, EntityState>(
       listener: (context, state) {
         state.maybeWhen(
           success: (_) {
-            Toast(context).dataChanged(_action, widget.entity.coreEntity);
+            Toast(context).dataChanged(_action, coreEntity);
             Navigator.pop(context, true);
           },
           error: (error) => Toast(context).fail(error),
@@ -131,7 +100,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
         body: SingleFormPanel(
           formKey: _formKey,
           action: _action,
-          entity: Entity.material,
+          entity: coreEntity,
           actions: [
             BlocBuilder<EntityBloc, EntityState>(
               builder: (context, state) {
@@ -162,7 +131,8 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
       if (first) {
         first = false;
       }
-      final fieldWidget = field.build(_action, _controllers[field.reference]);
+      final fieldWidget =
+          field.buildForm(_action, _controllers[field.reference]);
 
       children.addAll([
         if (!first) Gap(12),

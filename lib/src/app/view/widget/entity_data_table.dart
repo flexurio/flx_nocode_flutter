@@ -1,4 +1,5 @@
 import 'package:appointment/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart';
+import 'package:appointment/src/app/model/entity_field.dart';
 import 'package:appointment/src/app/view/widget/entity_create_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
@@ -15,7 +16,8 @@ class MenuDataTableCustom extends StatefulWidget {
     required configuration.Entity entity,
   }) {
     return BlocProvider(
-      create: (_) => EntityCustomQueryBloc(entity),
+      create: (_) =>
+          EntityCustomQueryBloc(entity)..add(EntityCustomQueryEvent.fetch()),
       child: MenuDataTableCustom._(entity: entity),
     );
   }
@@ -80,7 +82,13 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                     backendColumn: e.reference,
                     label: e.label,
                   ),
-                  body: (entity) => DataCell(Text(entity[e.reference])),
+                  body: (entity) => DataCell(
+                    EntityField.buildDisplay(
+                      widget.entity,
+                      e.reference,
+                      entity[e.reference],
+                    ),
+                  ),
                 ),
               )),
               DTColumn(

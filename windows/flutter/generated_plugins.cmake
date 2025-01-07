@@ -8,7 +8,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   just_audio_windows
   printing
   smart_auth
-  syncfusion_pdfviewer_windows
   url_launcher_windows
 )
 
