@@ -5,31 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="805882a8-216a-407b-bb87-7e41cd69ed72" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/MF_Development.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/launch.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main_anton_paar_development.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main_chiron_demo.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main_mf_development.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main_mf_production.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main_tl_development.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main_tl_production.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/role_page.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/create_button.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/data_table.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/delete_button.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/edit_button.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/employee_toggle.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/permission_edit_button.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/users.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role/widget/users_button.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role_create/role_create_page.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role_permission/role_permission_page.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role_permission/widget/employee_toggle.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role_permission/widget/permission_panel.dart" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/role_permission/widget/role_employee.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/model/entity_field.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/model/entity_field.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/resource/entity_custom.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/resource/entity_custom.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/entity_view/enitity_view_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/page/entity_view/enitity_view_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/widget/entity_drop_down.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/widget/entity_drop_down.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/widget/entity_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/widget/entity_home.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/flexurio_erp_core" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_erp_core" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/flexurio_erp_core/lib/src/app/view/widget/title_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_erp_core/lib/src/app/view/widget/title_page.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +59,7 @@
     "ignore.virus.scanning.warn.message": "true",
     "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/muali/Documents/Development/project/vneu/appointment/packages/flexurio_chiron_accounting",
+    "last_opened_file_path": "C:/Users/muali/Documents/Development/project/vneu/voltunes/erp-web-app",
     "settings.editor.selected.configurable": "preferences.keymap",
     "show.migrate.to.gradle.popup": "false"
   }

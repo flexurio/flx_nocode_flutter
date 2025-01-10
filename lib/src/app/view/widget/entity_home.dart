@@ -34,9 +34,7 @@ class MenuCustom extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
       children: [
-        TitlePage(
-          entity: entity.coreEntity,
-        ),
+        TitlePage(entity: entity.coreEntity, x: true),
         const Gap(12),
         SizedBox(
           width: MediaQuery.of(context).size.width,

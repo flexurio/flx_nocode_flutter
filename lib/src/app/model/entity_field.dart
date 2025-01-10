@@ -84,10 +84,10 @@ class EntityField {
     if (source != null) {
       return FDropDownSearchEntity(
         entityField: this,
-        initialValue: {'id': controller!.text},
+        initialValue: action.isEdit ? {'id': controller!.text} : null,
         enabled: _enabled(action),
         onChanged: (value) {
-          controller.text = value!['id'].toString();
+          controller!.text = value!['id'].toString();
         },
       );
     }

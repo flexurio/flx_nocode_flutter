@@ -69,6 +69,7 @@ class EntityCustomRepository extends Repository {
         accessToken: accessToken,
         path: path,
         method: method,
+        queryParameters: pageOptions.toUrlQueryMap(),
       );
 
       var totalData = 0;

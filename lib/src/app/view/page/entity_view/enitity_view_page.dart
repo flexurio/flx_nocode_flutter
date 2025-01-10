@@ -46,13 +46,14 @@ class EntityViewPage extends StatelessWidget {
             orElse: SomethingWrong.new,
             loading: (_) => const ProgressingIndicator(),
             loaded: (pageOptions) {
+              final data = pageOptions.data.first;
               return SingleFormPanel(
                 action: DataAction.view,
                 entity: entity.coreEntity,
                 size: SingleFormPanelSize.large,
-                actions: _buildEntityCustomActions(entity, context),
+                actions: _buildEntityCustomActions(entity, context, data),
                 children: [
-                  _buildData(pageOptions.data.first),
+                  _buildData(data),
                 ],
               );
             },
@@ -63,30 +64,51 @@ class EntityViewPage extends StatelessWidget {
   }
 
   Widget _buildData(Map<String, dynamic> data) {
-    final children = <Widget>[];
+    final leftColumnChildren = <Widget>[];
+    final rightColumnChildren = <Widget>[];
     var isFirst = true;
-    for (final field in entity.fields) {
-      children.addAll([
-        if (!isFirst) Gap(12),
-        TileDataVertical(
-          label: field.label,
-          child: EntityField.buildDisplay(
-            entity,
-            field.reference,
-            data[field.reference],
-          ),
-        ),
-      ]);
+
+    for (int i = 0; i < entity.fields.length; i++) {
+      final field = entity.fields[i];
+
+      if (!isFirst) {
+        leftColumnChildren.add(Gap(12));
+        rightColumnChildren.add(Gap(12));
+      }
       if (isFirst) {
         isFirst = false;
       }
+
+      final widget = TileDataVertical(
+        label: field.label,
+        child: EntityField.buildDisplay(
+          entity,
+          field.reference,
+          data[field.reference],
+        ),
+      );
+
+      // Add alternating widgets to each column
+      if (i % 2 == 0) {
+        leftColumnChildren.add(widget);
+      } else {
+        rightColumnChildren.add(widget);
+      }
     }
-    return Column(children: children);
+
+    // Return a Row containing both columns
+    return RowFields(
+      children: [
+        Column(children: leftColumnChildren),
+        Column(children: rightColumnChildren),
+      ],
+    );
   }
 
   List<Widget> _buildEntityCustomActions(
     configuration.Entity entity,
     BuildContext context,
+    Map<String, dynamic> data,
   ) {
     return [
       LightButton(

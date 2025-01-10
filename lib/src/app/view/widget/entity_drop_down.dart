@@ -80,11 +80,13 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
           enabled: widget.enabled,
           labelText: entity.coreEntity.title,
           onChanged: widget.onChanged,
-          initialValue: state.maybeWhen(
-            orElse: () => null,
-            loaded: (data) => data.data.firstWhere(
-                (e) => e['id'].toString() == widget.initialValue?['id']),
-          ),
+          initialValue: widget.initialValue == null
+              ? null
+              : state.maybeWhen(
+                  orElse: () => null,
+                  loaded: (data) => data.data.firstWhere(
+                      (e) => e['id'].toString() == widget.initialValue?['id']),
+                ),
           validator: validator,
           itemAsString: (data) => '${data[keyId]} - ${data[value]}',
           items: widget.items ??
