@@ -19,7 +19,7 @@ bld:
 	flutter pub run build_runner build --delete-conflicting-outputs
 
 bldmfp:
-	sed -i "s/version: 1.0.1+1/version: $(TAG)-$(TIME)/g" pubspec.yaml && flutter build web --release --web-renderer html --target=lib/main_mf_production.dart && sed -i "s/src=\"main.dart.js\"/src=\"main.dart.js?v=$(TAG)\"/g" build/web/index.html
+	sed -i "s/version: 1.0.1+1/version: $(TAG)-$(TIME)/g" pubspec.yaml && flutter build web --release --web-renderer html --target=lib/main.dart && sed -i "s/src=\"main.dart.js\"/src=\"main.dart.js?v=$(TAG)\"/g" build/web/index.html
 
 cspell:
 	cspell "lib/**" --config cspell.json 
