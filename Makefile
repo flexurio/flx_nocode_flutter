@@ -18,65 +18,8 @@ bldh:
 bld:
 	flutter pub run build_runner build --delete-conflicting-outputs
 
-dsk:
-	cp lib/src/app/util/picker_file_desktop lib/src/app/util/picker_file.dart
-
-wb:
-	cp lib/src/app/util/picker_file_web lib/src/app/util/picker_file.dart
-
-bldwb:
-	cp lib/src/app/util/picker_file_web lib/src/app/util/picker_file.dart && flutter build web --release --web-renderer html --target=lib/main_chiron_demo.dart
-
-bldapd:
-	sed -i "s/version: 1.0.1+1/version: $(TAG)-$(TIME)/g" pubspec.yaml && source ~/.bash_profile && cp lib/src/app/util/picker_file_web lib/src/app/util/picker_file.dart && flutter build web --release --web-renderer html --target=lib/main_anton_paar_development.dart && sed -i "s/src=\"main.dart.js\"/src=\"main.dart.js?v=$(TAG)\"/g" build/web/index.html
-
-bldcrd:
-	sed -i "s/version: 1.0.1+1/version: $(TAG)-$(TIME)/g" pubspec.yaml && source ~/.bash_profile && cp lib/src/app/util/picker_file_web lib/src/app/util/picker_file.dart && flutter build web --release --web-renderer html --target=lib/main_chiron_demo.dart && sed -i "s/src=\"main.dart.js\"/src=\"main.dart.js?v=$(TAG)\"/g" build/web/index.html
-
-bldmfd:
-	sed -i "s/version: 1.0.1+1/version: $(TAG)-$(TIME)/g" pubspec.yaml && source ~/.bash_profile && cp lib/src/app/util/picker_file_web lib/src/app/util/picker_file.dart && flutter build web --release --web-renderer html --target=lib/main_mf_development.dart && sed -i "s/src=\"main.dart.js\"/src=\"main.dart.js?v=$(TAG)\"/g" build/web/index.html
-
 bldmfp:
-	sed -i "s/version: 1.0.1+1/version: $(TAG)-$(TIME)/g" pubspec.yaml && cp lib/src/app/util/picker_file_web lib/src/app/util/picker_file.dart && flutter build web --release --web-renderer html --target=lib/main_mf_production.dart && sed -i "s/src=\"main.dart.js\"/src=\"main.dart.js?v=$(TAG)\"/g" build/web/index.html
-
-bldtld:
-	sed -i "s/version: 1.0.1+1/version: $(TAG)-$(TIME)/g" pubspec.yaml && source ~/.bash_profile && cp lib/src/app/util/picker_file_web lib/src/app/util/picker_file.dart && flutter build web --release --web-renderer html --target=lib/main_tl_development.dart && sed -i "s/src=\"main.dart.js\"/src=\"main.dart.js?v=$(TAG)\"/g" build/web/index.html
-
-bldtlp:
-	sed -i "s/version: 1.0.1+1/version: $(TAG)-$(TIME)/g" pubspec.yaml && cp lib/src/app/util/picker_file_web lib/src/app/util/picker_file.dart && flutter build web --release --web-renderer html --target=lib/main_tl_production.dart && sed -i "s/src=\"main.dart.js\"/src=\"main.dart.js?v=$(TAG)\"/g" build/web/index.html
-
-bldfin:
-	cd packages/flexurio_chiron_finance && flutter pub run build_runner build --delete-conflicting-outputs && cd ../..
-
-bldacc:
-	cd packages/flexurio_chiron_accounting && flutter pub run build_runner build --delete-conflicting-outputs && cd ../..
-
-bldprs:
-	cd packages/flexurio_chiron_product_stock && flutter pub run build_runner build --delete-conflicting-outputs && cd ../..
-
-bldpr:
-	cd packages/flexurio_chiron_product && flutter pub run build_runner build --delete-conflicting-outputs && cd ../..
-
-bldpo:
-	cd packages/flexurio_chiron_purchase_order && flutter pub run build_runner build --delete-conflicting-outputs && cd ../..
-
-bldso:
-	cd packages/flexurio_chiron_sales_order && flutter pub run build_runner build --delete-conflicting-outputs && cd ../..
-
-bldmst:
-	cd packages/flexurio_chiron_material_stock && flutter pub run build_runner build --delete-conflicting-outputs && cd ../..
-
-bldpst:
-	cd packages/flexurio_chiron_product_stock && flutter pub run build_runner build --delete-conflicting-outputs && cd ../..
-
-bldvnd:
-	cd packages/flexurio_chiron_vendor && flutter pub run build_runner build --delete-conflicting-outputs && cd ../..
-
-bldmtr:
-	cd packages/flexurio_chiron_material && flutter pub run build_runner build --delete-conflicting-outputs && cd ../..
-
-bldprq:
-	cd packages/flexurio_chiron_purchase_request && flutter pub run build_runner build --delete-conflicting-outputs && cd ../..
+	sed -i "s/version: 1.0.1+1/version: $(TAG)-$(TIME)/g" pubspec.yaml && flutter build web --release --web-renderer html --target=lib/main_mf_production.dart && sed -i "s/src=\"main.dart.js\"/src=\"main.dart.js?v=$(TAG)\"/g" build/web/index.html
 
 cspell:
 	cspell "lib/**" --config cspell.json 
