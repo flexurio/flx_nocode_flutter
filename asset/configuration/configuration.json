@@ -7,28 +7,80 @@
         "website": "https://vneu.co.id",
         "address": "Jl. Kebayoran Lama No. 1, Jakarta Selatan, Indonesia"
     },
-    "backend_host": "http://103.106.78.186:4000",
+    "backend_host": "https://mf-marketing-api.flexurio.com",
     "theme": {
         "color": "#795548",
         "color_soft": "#D7CCC8"
     },
     "menu_group": [
         {
-            "label": "Master",
+            "label": "Insentive",
             "menu": [
                 {
-                    "label": "Finance",
-                    "icon": "fa fa-bank",
+                    "label": "Master",
+                    "icon": "fa fa-money",
                     "menu_sub": [
                         {
-                            "label": "Bank Type",
-                            "entity": "bank_type"
+                            "label": "Sales Product",
+                            "entity": "incentive_sales_product"
                         },
                         {
-                            "label": "Bank",
-                            "entity": "bank"
+                            "label": "Sales Category Product",
+                            "entity": "incentive_base_sales_category_product"
+                        },
+                        {
+                            "label": "Sales Structure",
+                            "entity": "incentive_base_sales_structure"
+                        },
+                        {
+                            "label": "Subordinate Structure",
+                            "entity": "incentive_base_subordinate_structure"
+                        },
+                        {
+                            "label": "Target Category Product",
+                            "entity": "incentive_base_target_category_product"
+                        },
+                        {
+                            "label": "Target Product",
+                            "entity": "incentive_base_target_product"
+                        },
+                        {
+                            "label": "Cn Customer",
+                            "entity": "incentive_base_cn_customer"
+                        },
+                        {
+                            "label": "Cn Discount Product",
+                            "entity": "incentive_base_cn_discount_product"
+                        },
+                        {
+                            "label": "Cn Customer Outlet Product Type",
+                            "entity": "incentive_base_cn_customer_outlet_product_type"
                         }
-                     
+                    ]
+                },
+                {
+                    "label": "Transaction",
+                    "icon": "fa fa-money",
+                    "menu_sub": [
+                        {
+                            "label": "Incentive Header",
+                            "entity": "incentive_header"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Monitoring",
+            "menu": [
+                {
+                    "label": "Incentive",
+                    "icon": "fa fa-money",
+                    "menu_sub": [
+                        {
+                            "label": "Incentive",
+                            "entity": "incentive_monitoring"
+                        }
                     ]
                 }
             ]

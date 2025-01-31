@@ -63,13 +63,14 @@ class EntityCustomRepository extends Repository {
     required PageOptions<Map<String, dynamic>> pageOptions,
     required String path,
     required String method,
+    required Map<String, dynamic> filterMap,
   }) async {
     try {
       final response = await _request<Map<String, dynamic>>(
         accessToken: accessToken,
         path: path,
         method: method,
-        queryParameters: pageOptions.toUrlQueryMap(),
+        queryParameters: pageOptions.toUrlQueryMap()..addAll(filterMap),
       );
 
       var totalData = 0;
@@ -97,6 +98,7 @@ class EntityCustomRepository extends Repository {
         accessToken: accessToken,
         path: path.replaceFirst('{id}', id),
         method: method,
+        queryParameters: PageOptions.empty().toUrlQueryMap(),
       );
       return (response.data!)['data'][0];
     } catch (error) {

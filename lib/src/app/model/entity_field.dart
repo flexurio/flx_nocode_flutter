@@ -83,6 +83,7 @@ class EntityField {
   Widget buildForm(core.DataAction action, TextEditingController? controller) {
     if (source != null) {
       return FDropDownSearchEntity(
+        itemAsString: (id, label) => '$id - $label',
         entityField: this,
         initialValue: action.isEdit ? {'id': controller!.text} : null,
         enabled: _enabled(action),

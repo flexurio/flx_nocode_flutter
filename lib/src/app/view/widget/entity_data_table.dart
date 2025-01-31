@@ -2,7 +2,7 @@ import 'package:appointment/src/app/bloc/entity_custom_query/entity_custom_query
 import 'package:appointment/src/app/model/entity_field.dart';
 import 'package:appointment/src/app/view/page/entity_view/enitity_view_page.dart';
 import 'package:appointment/src/app/view/widget/entity_create_button.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:appointment/src/app/view/widget/filter.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,18 +29,19 @@ class MenuDataTableCustom extends StatefulWidget {
 }
 
 class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
+  var _filters = <Filter>[];
+
   @override
   void initState() {
     super.initState();
     _fetch();
   }
 
-  void _fetch({
-    PageOptions<Map<String, dynamic>>? pageOptions,
-  }) {
+  void _fetch({PageOptions<Map<String, dynamic>>? pageOptions}) {
     context.read<EntityCustomQueryBloc>().add(
           EntityCustomQueryEvent.fetch(
             pageOptions: pageOptions,
+            filters: _filters,
           ),
         );
   }
@@ -71,6 +72,14 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             },
             actionLeft: [],
             actionRight: (refreshButton) => [
+              FilterButton(
+                fields: widget.entity.fields,
+                currentFilters: _filters,
+                onFilterChanged: (filters) {
+                  _filters = filters;
+                  _fetch();
+                },
+              ),
               refreshButton,
               if (widget.entity.allowCreate)
                 EntityCreateButton(

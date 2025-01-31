@@ -15,6 +15,7 @@ class FDropDownSearchEntity extends StatefulWidget
     this.label,
     this.enabled = true,
     this.items,
+    required this.itemAsString,
     required this.entityField,
   });
 
@@ -36,6 +37,8 @@ class FDropDownSearchEntity extends StatefulWidget
   final List<Map<String, dynamic>>? items;
 
   final EntityField entityField;
+
+  final String Function(String id, dynamic label) itemAsString;
 
   @override
   State<FDropDownSearchEntity> createState() => _FDropDownSearchEntityState();
@@ -88,7 +91,7 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
                       (e) => e['id'].toString() == widget.initialValue?['id']),
                 ),
           validator: validator,
-          itemAsString: (data) => '${data[keyId]} - ${data[value]}',
+          itemAsString: (data) => widget.itemAsString(data[keyId], data[value]),
           items: widget.items ??
               state.maybeWhen(
                 orElse: () => [],

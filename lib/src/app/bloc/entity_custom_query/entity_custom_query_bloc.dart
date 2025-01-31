@@ -1,5 +1,6 @@
 import 'package:appointment/src/app/model/configuration.dart' as configuration;
 import 'package:appointment/src/app/resource/entity_custom.dart';
+import 'package:appointment/src/app/view/widget/filter.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -22,6 +23,7 @@ class EntityCustomQueryState with _$EntityCustomQueryState {
 class EntityCustomQueryEvent with _$EntityCustomQueryEvent {
   const factory EntityCustomQueryEvent.fetch({
     PageOptions<Map<String, dynamic>>? pageOptions,
+    List<Filter>? filters,
   }) = _Fetch;
   const factory EntityCustomQueryEvent.fetchById(String id) = _FetchById;
 }
@@ -47,17 +49,24 @@ class EntityCustomQueryBloc
               emit(_Error(errorMessage(error)));
             }
           },
-          fetch: (pageOptions) async {
+          fetch: (pageOptions, filter) async {
             emit(_Loading(_pageOptions));
             try {
               if (pageOptions != null) {
                 _pageOptions = pageOptions;
               }
+
+              final filterMap = <String, dynamic>{};
+              for (final filter in filter ?? []) {
+                filterMap[filter.reference + '.eq'] = filter.value;
+              }
+
               _pageOptions = await EntityCustomRepository.instance.fetch(
                 accessToken: 'text',
                 pageOptions: _pageOptions,
                 method: entity.backend.readAll!.method,
                 path: entity.backend.readAll!.url,
+                filterMap: filterMap,
               );
               emit(_Loaded(_pageOptions));
             } catch (error) {

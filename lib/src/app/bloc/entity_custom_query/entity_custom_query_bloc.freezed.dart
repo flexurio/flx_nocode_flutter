@@ -681,20 +681,25 @@ abstract class _Error implements EntityCustomQueryState {
 mixin _$EntityCustomQueryEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions)
+    required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters)
         fetch,
     required TResult Function(String id) fetchById,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions)? fetch,
+    TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters)?
+        fetch,
     TResult? Function(String id)? fetchById,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(PageOptions<Map<String, dynamic>>? pageOptions)? fetch,
+    TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters)?
+        fetch,
     TResult Function(String id)? fetchById,
     required TResult orElse(),
   }) =>
@@ -748,7 +753,8 @@ abstract class _$$FetchImplCopyWith<$Res> {
           _$FetchImpl value, $Res Function(_$FetchImpl) then) =
       __$$FetchImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({PageOptions<Map<String, dynamic>>? pageOptions});
+  $Res call(
+      {PageOptions<Map<String, dynamic>>? pageOptions, List<Filter>? filters});
 }
 
 /// @nodoc
@@ -765,12 +771,17 @@ class __$$FetchImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? pageOptions = freezed,
+    Object? filters = freezed,
   }) {
     return _then(_$FetchImpl(
       pageOptions: freezed == pageOptions
           ? _value.pageOptions
           : pageOptions // ignore: cast_nullable_to_non_nullable
               as PageOptions<Map<String, dynamic>>?,
+      filters: freezed == filters
+          ? _value._filters
+          : filters // ignore: cast_nullable_to_non_nullable
+              as List<Filter>?,
     ));
   }
 }
@@ -778,14 +789,24 @@ class __$$FetchImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$FetchImpl implements _Fetch {
-  const _$FetchImpl({this.pageOptions});
+  const _$FetchImpl({this.pageOptions, final List<Filter>? filters})
+      : _filters = filters;
 
   @override
   final PageOptions<Map<String, dynamic>>? pageOptions;
+  final List<Filter>? _filters;
+  @override
+  List<Filter>? get filters {
+    final value = _filters;
+    if (value == null) return null;
+    if (_filters is EqualUnmodifiableListView) return _filters;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'EntityCustomQueryEvent.fetch(pageOptions: $pageOptions)';
+    return 'EntityCustomQueryEvent.fetch(pageOptions: $pageOptions, filters: $filters)';
   }
 
   @override
@@ -794,11 +815,13 @@ class _$FetchImpl implements _Fetch {
         (other.runtimeType == runtimeType &&
             other is _$FetchImpl &&
             (identical(other.pageOptions, pageOptions) ||
-                other.pageOptions == pageOptions));
+                other.pageOptions == pageOptions) &&
+            const DeepCollectionEquality().equals(other._filters, _filters));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, pageOptions);
+  int get hashCode => Object.hash(
+      runtimeType, pageOptions, const DeepCollectionEquality().hash(_filters));
 
   /// Create a copy of EntityCustomQueryEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -811,31 +834,36 @@ class _$FetchImpl implements _Fetch {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions)
+    required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters)
         fetch,
     required TResult Function(String id) fetchById,
   }) {
-    return fetch(pageOptions);
+    return fetch(pageOptions, filters);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions)? fetch,
+    TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters)?
+        fetch,
     TResult? Function(String id)? fetchById,
   }) {
-    return fetch?.call(pageOptions);
+    return fetch?.call(pageOptions, filters);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(PageOptions<Map<String, dynamic>>? pageOptions)? fetch,
+    TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters)?
+        fetch,
     TResult Function(String id)? fetchById,
     required TResult orElse(),
   }) {
     if (fetch != null) {
-      return fetch(pageOptions);
+      return fetch(pageOptions, filters);
     }
     return orElse();
   }
@@ -873,10 +901,12 @@ class _$FetchImpl implements _Fetch {
 }
 
 abstract class _Fetch implements EntityCustomQueryEvent {
-  const factory _Fetch({final PageOptions<Map<String, dynamic>>? pageOptions}) =
-      _$FetchImpl;
+  const factory _Fetch(
+      {final PageOptions<Map<String, dynamic>>? pageOptions,
+      final List<Filter>? filters}) = _$FetchImpl;
 
   PageOptions<Map<String, dynamic>>? get pageOptions;
+  List<Filter>? get filters;
 
   /// Create a copy of EntityCustomQueryEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -953,7 +983,8 @@ class _$FetchByIdImpl implements _FetchById {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions)
+    required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters)
         fetch,
     required TResult Function(String id) fetchById,
   }) {
@@ -963,7 +994,9 @@ class _$FetchByIdImpl implements _FetchById {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions)? fetch,
+    TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters)?
+        fetch,
     TResult? Function(String id)? fetchById,
   }) {
     return fetchById?.call(id);
@@ -972,7 +1005,9 @@ class _$FetchByIdImpl implements _FetchById {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(PageOptions<Map<String, dynamic>>? pageOptions)? fetch,
+    TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters)?
+        fetch,
     TResult Function(String id)? fetchById,
     required TResult orElse(),
   }) {
