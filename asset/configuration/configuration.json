@@ -65,6 +65,10 @@
                         {
                             "label": "Incentive Header",
                             "entity": "incentive_header"
+                        },
+                        {
+                            "label": "Incentive Detail",
+                            "entity": "incentive_detail"
                         }
                     ]
                 }

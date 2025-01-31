@@ -12,18 +12,24 @@ import 'package:appointment/src/app/model/configuration.dart' as configuration;
 class MenuDataTableCustom extends StatefulWidget {
   const MenuDataTableCustom._({
     required this.entity,
+    required this.initialFilters,
   });
 
   static Widget prepare({
     required configuration.Entity entity,
+    required List<Filter> initialFilters,
   }) {
     return BlocProvider(
       create: (_) => EntityCustomQueryBloc(entity),
-      child: MenuDataTableCustom._(entity: entity),
+      child: MenuDataTableCustom._(
+        entity: entity,
+        initialFilters: initialFilters,
+      ),
     );
   }
 
   final configuration.Entity entity;
+  final List<Filter> initialFilters;
 
   @override
   State<MenuDataTableCustom> createState() => _MenuDataTableCustomState();
@@ -35,6 +41,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   @override
   void initState() {
     super.initState();
+    _filters.addAll(widget.initialFilters);
     _fetch();
   }
 
@@ -71,7 +78,9 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             onChanged: (pageOptions) {
               _fetch(pageOptions: pageOptions);
             },
-            actionLeft: [],
+            actionLeft: [
+              _buildFilterInformation(),
+            ],
             actionRight: (refreshButton) => [
               FilterButton(
                 fields: widget.entity.fields,
@@ -133,8 +142,12 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                   Row(
                     children: [
                       ActionsButton(
-                        children: EntityViewPage.actions(context, data,
-                            widget.entity, (context) => _fetch()),
+                        children: EntityViewPage.actions(
+                          context,
+                          data,
+                          widget.entity,
+                          (context) => _fetch(),
+                        ),
                       )
                     ],
                   ),
@@ -144,6 +157,21 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildFilterInformation() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        color: Colors.black.withOpacity(.1),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Wrap(
+        spacing: 12,
+        children: _filters.map((e) => Text('${e.label}=${e.value}')).toList(),
+      ),
     );
   }
 }

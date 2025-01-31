@@ -124,6 +124,7 @@ class _FormFilterState extends State<FormFilter> {
       _filters.add(
         Filter(
           reference: field.reference,
+          label: field.label,
           value: '',
         ),
       );
@@ -160,16 +161,19 @@ class _FormFilterState extends State<FormFilter> {
 }
 
 class Filter {
+  final String label;
   final String reference;
   final String value;
 
-  Filter({required this.reference, required this.value});
+  Filter({required this.label, required this.reference, required this.value});
 
   Filter copyWith({
     String? reference,
     String? value,
+    String? label,
   }) {
     return Filter(
+      label: label ?? this.label,
       reference: reference ?? this.reference,
       value: value ?? this.value,
     );

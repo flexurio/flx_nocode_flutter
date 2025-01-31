@@ -1,5 +1,6 @@
 import 'package:appointment/src/app/model/configuration.dart' as configuration;
 import 'package:appointment/src/app/view/widget/entity_data_table.dart';
+import 'package:appointment/src/app/view/widget/filter.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -8,9 +9,11 @@ class MenuCustom extends StatelessWidget {
   const MenuCustom({
     super.key,
     required this.entityId,
+    this.initialFilters = const [],
   });
 
   final String entityId;
+  final List<Filter> initialFilters;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +41,10 @@ class MenuCustom extends StatelessWidget {
         const Gap(12),
         SizedBox(
           width: MediaQuery.of(context).size.width,
-          child: MenuDataTableCustom.prepare(entity: entity),
+          child: MenuDataTableCustom.prepare(
+            entity: entity,
+            initialFilters: initialFilters,
+          ),
         ),
       ],
     );

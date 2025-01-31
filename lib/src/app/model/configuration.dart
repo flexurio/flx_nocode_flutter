@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:appointment/src/app/model/entity_field.dart';
 import 'package:appointment/src/app/view/widget/entity_home.dart';
+import 'package:appointment/src/app/view/widget/filter.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -175,7 +176,7 @@ class Entity {
       final path = 'asset/configuration/entity/$id.json';
       final data = await rootBundle.loadString(path);
       return Entity.fromJson(json.decode(data));
-    } catch (e, s) {
+    } catch (e) {
       return null;
     }
   }
@@ -217,8 +218,8 @@ class Entity {
   bool get allowUpdate => backend.update != null;
   bool get allowDelete => backend.delete != null;
 
-  List<Widget> buttonActions(context) {
-    return views.map((e) => e.button(context)).toList();
+  List<Widget> buttonActions(BuildContext context, Map<String, dynamic> data) {
+    return views.map((e) => e.button(context, data)).toList();
   }
 }
 
@@ -384,7 +385,20 @@ class View {
     };
   }
 
-  Widget button(BuildContext context) {
+  List<Filter> _filters(Entity entity, Map<String, dynamic> data) {
+    final filters = <Filter>[];
+    for (final key in filter.keys) {
+      final value = data[filter[key]];
+      if (value != null) {
+        final label = entity.fields.firstWhere((e) => e.reference == key).label;
+        filters
+            .add(Filter(reference: key, value: value.toString(), label: label));
+      }
+    }
+    return filters;
+  }
+
+  Widget button(BuildContext context, Map<String, dynamic> data) {
     return FutureBuilder<Entity?>(
         future: Entity.getEntity(entity),
         builder: (context, snapshot) {
@@ -399,7 +413,10 @@ class View {
                 : () async {
                     core.MenuBloc.instance.add(
                       core.Menu3Selected(
-                        home: MenuCustom(entityId: entity.id),
+                        home: MenuCustom(
+                          entityId: entity.id,
+                          initialFilters: _filters(entity, data),
+                        ),
                         label: entity.label,
                       ),
                     );
