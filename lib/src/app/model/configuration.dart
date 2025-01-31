@@ -158,6 +158,7 @@ class Entity {
   final String label;
   final String description;
   final List<EntityField> fields;
+  final List<View> views;
   final Backend backend;
 
   Entity({
@@ -165,6 +166,7 @@ class Entity {
     required this.label,
     required this.description,
     required this.fields,
+    required this.views,
     required this.backend,
   });
 
@@ -186,6 +188,11 @@ class Entity {
       fields: (json['fields'] as List<dynamic>)
           .map((e) => EntityField.fromJson(e))
           .toList(),
+      views: json.containsKey('views')
+          ? (json['views'] as List<dynamic>)
+              .map((e) => View.fromJson(e))
+              .toList()
+          : [],
       backend: Backend.fromJson(json['backend']),
     );
   }
@@ -209,6 +216,10 @@ class Entity {
   bool get allowCreate => backend.create != null;
   bool get allowUpdate => backend.update != null;
   bool get allowDelete => backend.delete != null;
+
+  List<Widget> get buttonActions {
+    return views.map((e) => e.button()).toList();
+  }
 }
 
 class Backend {
@@ -347,5 +358,42 @@ class MenuSub {
       'label': label,
       'entity': entity,
     };
+  }
+}
+
+class View {
+  final String label;
+  final String entity;
+  final Map<String, String> filter;
+
+  View({required this.label, required this.entity, required this.filter});
+
+  factory View.fromJson(Map<String, dynamic> json) {
+    return View(
+      label: json['label'],
+      entity: json['entity'],
+      filter: Map<String, String>.from(json['filter']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'label': label,
+      'entity': entity,
+      'filter': filter,
+    };
+  }
+
+  Widget button() {
+    return core.LightButton(
+      action: core.DataAction.view,
+      title: label,
+      permission: null,
+      onPressed: () {
+        // context.read<PettyCashDetailQueryBloc>().add(
+        //       PettyCashDetailQueryEvent.fetchByPettyCashId(pettyCash.id),
+        //     );
+      },
+    );
   }
 }

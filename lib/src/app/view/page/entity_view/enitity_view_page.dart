@@ -20,13 +20,50 @@ class EntityViewPage extends StatelessWidget {
     return MaterialPageRoute(
       builder: (context) => MultiBlocProvider(
         providers: [
-          BlocProvider(
-            create: (context) => EntityCustomQueryBloc(entity),
-          ),
+          BlocProvider(create: (context) => EntityCustomQueryBloc(entity)),
         ],
         child: EntityViewPage._(entity: entity, data: data),
       ),
     );
+  }
+
+  static List<Widget> actions(
+    BuildContext context,
+    Map<String, dynamic> data,
+    configuration.Entity entity,
+    void Function(BuildContext) onRefresh,
+  ) {
+    final modifyActions =
+        _buildEntityCustomActions(entity, context, data, onRefresh);
+    return entity.buttonActions..addAll(modifyActions);
+  }
+
+  static List<Widget> _buildEntityCustomActions(
+    configuration.Entity entity,
+    BuildContext context,
+    Map<String, dynamic> data,
+    void Function(BuildContext context) onRefresh,
+  ) {
+    return [
+      LightButton(
+        permission: null,
+        action: DataAction.edit,
+        onPressed: () async {
+          Navigator.push(
+            context,
+            EntityCreatePage.route(
+              entity: entity,
+              data: data,
+              onSuccess: () => onRefresh(context),
+            ),
+          );
+        },
+      ),
+      EntityDeleteButton.prepare(
+        entity: entity,
+        data: data,
+      ),
+    ];
   }
 
   void _fetch(BuildContext context) {
@@ -51,7 +88,12 @@ class EntityViewPage extends StatelessWidget {
                 action: DataAction.view,
                 entity: entity.coreEntity,
                 size: SingleFormPanelSize.large,
-                actions: _buildEntityCustomActions(entity, context, data),
+                actions: EntityViewPage.actions(
+                  context,
+                  data,
+                  entity,
+                  (context) => _fetch(context),
+                ),
                 children: [
                   _buildData(data),
                 ],
@@ -103,33 +145,6 @@ class EntityViewPage extends StatelessWidget {
         Column(children: rightColumnChildren),
       ],
     );
-  }
-
-  List<Widget> _buildEntityCustomActions(
-    configuration.Entity entity,
-    BuildContext context,
-    Map<String, dynamic> data,
-  ) {
-    return [
-      LightButton(
-        permission: null,
-        action: DataAction.edit,
-        onPressed: () async {
-          Navigator.push(
-            context,
-            EntityCreatePage.route(
-              entity: entity,
-              data: data,
-              onSuccess: () => _fetch(context),
-            ),
-          );
-        },
-      ),
-      EntityDeleteButton.prepare(
-        entity: entity,
-        data: data,
-      ),
-    ];
   }
 }
 
