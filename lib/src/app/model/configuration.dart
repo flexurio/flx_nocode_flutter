@@ -217,8 +217,8 @@ class Entity {
   bool get allowUpdate => backend.update != null;
   bool get allowDelete => backend.delete != null;
 
-  List<Widget> get buttonActions {
-    return views.map((e) => e.button()).toList();
+  List<Widget> buttonActions(context) {
+    return views.map((e) => e.button(context)).toList();
   }
 }
 
@@ -384,16 +384,27 @@ class View {
     };
   }
 
-  Widget button() {
-    return core.LightButton(
-      action: core.DataAction.view,
-      title: label,
-      permission: null,
-      onPressed: () {
-        // context.read<PettyCashDetailQueryBloc>().add(
-        //       PettyCashDetailQueryEvent.fetchByPettyCashId(pettyCash.id),
-        //     );
-      },
-    );
+  Widget button(BuildContext context) {
+    return FutureBuilder<Entity?>(
+        future: Entity.getEntity(entity),
+        builder: (context, snapshot) {
+          final entity = snapshot.data;
+
+          return core.LightButton(
+            action: core.DataAction.view,
+            title: label,
+            permission: null,
+            onPressed: entity == null
+                ? null
+                : () async {
+                    core.MenuBloc.instance.add(
+                      core.Menu3Selected(
+                        home: MenuCustom(entityId: entity.id),
+                        label: entity.label,
+                      ),
+                    );
+                  },
+          );
+        });
   }
 }

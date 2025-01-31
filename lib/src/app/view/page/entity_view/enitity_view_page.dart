@@ -35,7 +35,7 @@ class EntityViewPage extends StatelessWidget {
   ) {
     final modifyActions =
         _buildEntityCustomActions(entity, context, data, onRefresh);
-    return entity.buttonActions..addAll(modifyActions);
+    return entity.buttonActions(context)..addAll(modifyActions);
   }
 
   static List<Widget> _buildEntityCustomActions(
