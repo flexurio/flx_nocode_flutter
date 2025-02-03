@@ -13,6 +13,8 @@ Future<void> main() async {
       GoRoute(
         path: '/',
         builder: (context, state) => MenuPage.prepare(
+          logoNamed: configuration.logoNamedUrl,
+          logoUrl: configuration.logoUrl,
           appName: configuration.appName,
           menu: configuration.menu,
           accountPermissions: [],

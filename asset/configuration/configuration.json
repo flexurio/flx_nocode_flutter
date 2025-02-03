@@ -7,10 +7,12 @@
         "website": "https://vneu.co.id",
         "address": "Jl. Kebayoran Lama No. 1, Jakarta Selatan, Indonesia"
     },
+    "logo_url": "https://is1-ssl.mzstatic.com/image/thumb/Purple115/v4/52/0d/3d/520d3d72-de02-38c3-133e-86b0076b281a/AppIcon-1x_U007emarketing-0-10-0-0-85-220.png/230x0w.webp",
+    "logo_named_url": "https://ski-compliance-metiska-farma.flexurio.com/src/assets/image/farmasys-resize.png",
     "backend_host": "https://mf-marketing-api.flexurio.com",
     "theme": {
-        "color": "#795548",
-        "color_soft": "#D7CCC8"
+        "color": "#03A9F4",
+        "color_soft": "#B3E5FC"
     },
     "menu_group": [
         {

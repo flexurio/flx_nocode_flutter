@@ -13,6 +13,8 @@ class Configuration {
   final Theme theme;
   final String appName;
   final String backendHost;
+  final String logoUrl;
+  final String logoNamedUrl;
 
   Configuration._({
     required this.menuGroups,
@@ -20,6 +22,8 @@ class Configuration {
     required this.theme,
     required this.appName,
     required this.backendHost,
+    required this.logoUrl,
+    required this.logoNamedUrl,
   });
 
   static late Configuration instance;
@@ -36,6 +40,8 @@ class Configuration {
       appName: json['app_name'],
       company: Company.fromJson(json['company']),
       theme: Theme.fromJson(json['theme']),
+      logoUrl: json['logo_url'],
+      logoNamedUrl: json['logo_named_url'],
       menuGroups: (json['menu_group'] as List<dynamic>)
           .map((e) => MenuGroup.fromJson(e))
           .toList(),
@@ -49,6 +55,8 @@ class Configuration {
       'menu_group': menuGroups.map((e) => e.toJson()).toList(),
       'company': company.toJson(),
       'theme': theme.toJson(),
+      'logo_url': logoUrl,
+      'logo_named_url': logoNamedUrl,
     };
   }
 

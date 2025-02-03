@@ -79,7 +79,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
               _fetch(pageOptions: pageOptions);
             },
             actionLeft: [
-              _buildFilterInformation(),
+              _buildFilterInformation(Theme.of(context).colorScheme.primary),
             ],
             actionRight: (refreshButton) => [
               FilterButton(
@@ -160,18 +160,27 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     );
   }
 
-  Widget _buildFilterInformation() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        color: Colors.black.withOpacity(.1),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Wrap(
-        spacing: 12,
-        children: _filters.map((e) => Text('${e.label}=${e.value}')).toList(),
-      ),
+  Widget _buildFilterInformation(Color primaryColor) {
+    return Wrap(
+      spacing: 12,
+      children: _filters
+          .map(
+            (e) => Chip(
+              side: BorderSide.none,
+              backgroundColor: primaryColor,
+              label: Text(
+                '${e.label}: ${e.value}',
+                style: const TextStyle(color: Colors.white),
+              ),
+              iconTheme: const IconThemeData(color: Colors.white),
+              onDeleted: () {
+                setState(() {
+                  _filters.remove(e);
+                });
+              },
+            ),
+          )
+          .toList(),
     );
   }
 }
