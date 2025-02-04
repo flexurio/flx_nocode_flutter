@@ -1,6 +1,5 @@
 import 'package:appointment/src/app/model/entity_field.dart';
 import 'package:appointment/src/app/model/filter.dart';
-import 'package:appointment/src/app/model/view.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
@@ -86,8 +85,8 @@ class _FormFilterState extends State<FormFilter> {
                   Expanded(child: _buildFieldName(index)),
                   Gap(12),
                   Expanded(
-                    child: FTextFormField(
-                      labelText: 'value'.tr(),
+                    child: FTextFieldSmall(
+                      hintText: 'value'.tr(),
                       controller:
                           TextEditingController(text: _filters[index].value),
                       onChanged: (p0) {
@@ -124,10 +123,7 @@ class _FormFilterState extends State<FormFilter> {
   void _addFilter(int index, EntityField field) {
     if (index == -1) {
       _filters.add(
-        Filter(
-          reference: field.reference,
-          value: '',
-        ),
+        Filter(reference: field.reference, value: ''),
       );
     } else {
       _filters[index] = _filters[index].copyWith(reference: field.reference);
@@ -146,7 +142,8 @@ class _FormFilterState extends State<FormFilter> {
   }
 
   Widget _buildFieldName(int index) {
-    return FDropDownSearch<EntityField>(
+    return FDropDownSearchSmall<EntityField>(
+      width: 300,
       labelText: 'field'.tr(),
       initialValue: index == -1
           ? null
@@ -157,6 +154,49 @@ class _FormFilterState extends State<FormFilter> {
       onChanged: (entityField) {
         _addFilter(index, entityField!);
       },
+      iconField: Icons.business_rounded,
+    );
+  }
+}
+
+class FTextFieldSmall extends StatelessWidget {
+  const FTextFieldSmall({
+    super.key,
+    required this.controller,
+    required this.hintText,
+    required this.onChanged,
+  });
+
+  final TextEditingController controller;
+  final String hintText;
+  final void Function(String value) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final borderColor = theme.modeCondition(
+      Colors.blueGrey.shade100,
+      const Color(0xff343640),
+    );
+
+    final border = OutlineInputBorder(
+        borderSide: BorderSide(color: borderColor),
+        borderRadius: BorderRadius.circular(6));
+
+    return SizedBox(
+      height: 32,
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: hintText,
+          contentPadding: EdgeInsets.symmetric(vertical: 1, horizontal: 12),
+          enabledBorder: border,
+          border: border,
+          focusedBorder: border,
+        ),
+        style: const TextStyle(fontSize: 14),
+        controller: controller,
+        onChanged: onChanged,
+      ),
     );
   }
 }
