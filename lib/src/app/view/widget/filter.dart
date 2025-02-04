@@ -79,7 +79,7 @@ class _FormFilterState extends State<FormFilter> {
           ...List.generate(
             _filters.length,
             (index) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: 6),
               child: Row(
                 children: [
                   Expanded(child: _buildFieldName(index)),
@@ -106,8 +106,18 @@ class _FormFilterState extends State<FormFilter> {
               ),
             ),
           ),
-        if (_filters.isEmpty) Gap(12),
-        _buildFieldName(-1),
+        if (_filters.isEmpty) Gap(6),
+        Row(
+          children: [
+            Expanded(child: _buildFieldName(-1)),
+            Gap(12),
+            Spacer(),
+            Gap(12),
+            SizedBox(
+              width: 39,
+            ),
+          ],
+        ),
         Gap(12),
         Button(
           action: DataAction.applyFilter,
@@ -120,13 +130,14 @@ class _FormFilterState extends State<FormFilter> {
     );
   }
 
-  void _addFilter(int index, EntityField field) {
+  void _addFilter(int index, List<EntityField> field) {
+    final reference = field.map((e) => e.reference).join('|');
     if (index == -1) {
       _filters.add(
-        Filter(reference: field.reference, value: ''),
+        Filter(reference: reference, value: ''),
       );
     } else {
-      _filters[index] = _filters[index].copyWith(reference: field.reference);
+      _filters[index] = _filters[index].copyWith(reference: reference);
     }
 
     setState(() {});
@@ -141,18 +152,35 @@ class _FormFilterState extends State<FormFilter> {
     setState(() {});
   }
 
+  // Widget _buildFieldName(int index) {
+  //   return FDropDownSearchSmall<EntityField>(
+  //     labelText: 'field'.tr(),
+  //     initialValue: index == -1
+  //         ? null
+  //         : widget.fields
+  //             .firstWhere((e) => e.reference == _filters[index].reference),
+  //     itemAsString: (data) => data.label,
+  //     items: widget.fields,
+  //     onChanged: (entityField) {
+  //       _addFilter(index, entityField!);
+  //     },
+  //     iconField: Icons.business_rounded,
+  //   );
+  // }
+
   Widget _buildFieldName(int index) {
-    return FDropDownSearchSmall<EntityField>(
-      width: 300,
+    return FDropDownSearchSmallMultiple<EntityField>(
       labelText: 'field'.tr(),
       initialValue: index == -1
-          ? null
+          ? []
           : widget.fields
-              .firstWhere((e) => e.reference == _filters[index].reference),
+              .where((e) =>
+                  _filters[index].reference.split('|').contains(e.reference))
+              .toList(),
       itemAsString: (data) => data.label,
       items: widget.fields,
       onChanged: (entityField) {
-        _addFilter(index, entityField!);
+        _addFilter(index, entityField);
       },
       iconField: Icons.business_rounded,
     );
