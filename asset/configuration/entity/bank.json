@@ -11,7 +11,7 @@
             "auto_generated": true
         },
         {
-            "label": "Name",
+            "label": "Name Mur",
             "reference": "name",
             "type": "text",
             "column_width": 3,

@@ -1,4 +1,6 @@
 import 'package:appointment/src/app/model/entity_field.dart';
+import 'package:appointment/src/app/model/filter.dart';
+import 'package:appointment/src/app/model/view.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
@@ -124,7 +126,6 @@ class _FormFilterState extends State<FormFilter> {
       _filters.add(
         Filter(
           reference: field.reference,
-          label: field.label,
           value: '',
         ),
       );
@@ -156,26 +157,6 @@ class _FormFilterState extends State<FormFilter> {
       onChanged: (entityField) {
         _addFilter(index, entityField!);
       },
-    );
-  }
-}
-
-class Filter {
-  final String label;
-  final String reference;
-  final String value;
-
-  Filter({required this.label, required this.reference, required this.value});
-
-  Filter copyWith({
-    String? reference,
-    String? value,
-    String? label,
-  }) {
-    return Filter(
-      label: label ?? this.label,
-      reference: reference ?? this.reference,
-      value: value ?? this.value,
     );
   }
 }

@@ -1,4 +1,6 @@
 import 'package:appointment/src/app/model/configuration.dart' as configuration;
+import 'package:appointment/src/app/model/filter.dart';
+import 'package:appointment/src/app/model/view.dart';
 import 'package:appointment/src/app/resource/entity_custom.dart';
 import 'package:appointment/src/app/view/widget/filter.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
@@ -58,7 +60,7 @@ class EntityCustomQueryBloc
 
               final filterMap = <String, dynamic>{};
               for (final filter in filter ?? []) {
-                filterMap[filter.reference + '.eq'] = filter.value;
+                filterMap[filter.getKeyBackend()] = filter.value;
               }
 
               _pageOptions = await EntityCustomRepository.instance.fetch(

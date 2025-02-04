@@ -1,5 +1,7 @@
 import 'package:appointment/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:appointment/src/app/model/entity_field.dart';
+import 'package:appointment/src/app/model/filter.dart';
+import 'package:appointment/src/app/model/view.dart';
 import 'package:appointment/src/app/view/page/entity_view/enitity_view_page.dart';
 import 'package:appointment/src/app/view/widget/entity_create_button.dart';
 import 'package:appointment/src/app/view/widget/filter.dart';
@@ -169,7 +171,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
               side: BorderSide.none,
               backgroundColor: primaryColor,
               label: Text(
-                '${e.label}: ${e.value}',
+                '${e.getLabel(widget.entity)}: ${e.value}',
                 style: const TextStyle(color: Colors.white),
               ),
               iconTheme: const IconThemeData(color: Colors.white),

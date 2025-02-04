@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:appointment/src/app/model/entity_field.dart';
+import 'package:appointment/src/app/model/view.dart' as view;
 import 'package:appointment/src/app/view/widget/entity_home.dart';
-import 'package:appointment/src/app/view/widget/filter.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -167,7 +167,7 @@ class Entity {
   final String label;
   final String description;
   final List<EntityField> fields;
-  final List<View> views;
+  final List<view.View> views;
   final Backend backend;
 
   Entity({
@@ -199,7 +199,7 @@ class Entity {
           .toList(),
       views: json.containsKey('views')
           ? (json['views'] as List<dynamic>)
-              .map((e) => View.fromJson(e))
+              .map((e) => view.View.fromJson(e))
               .toList()
           : [],
       backend: Backend.fromJson(json['backend']),
@@ -367,69 +367,5 @@ class MenuSub {
       'label': label,
       'entity': entity,
     };
-  }
-}
-
-class View {
-  final String label;
-  final String entity;
-  final Map<String, String> filter;
-
-  View({required this.label, required this.entity, required this.filter});
-
-  factory View.fromJson(Map<String, dynamic> json) {
-    return View(
-      label: json['label'],
-      entity: json['entity'],
-      filter: Map<String, String>.from(json['filter']),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'label': label,
-      'entity': entity,
-      'filter': filter,
-    };
-  }
-
-  List<Filter> _filters(Entity entity, Map<String, dynamic> data) {
-    final filters = <Filter>[];
-    for (final key in filter.keys) {
-      final value = data[filter[key]];
-      if (value != null) {
-        final label = entity.fields.firstWhere((e) => e.reference == key).label;
-        filters
-            .add(Filter(reference: key, value: value.toString(), label: label));
-      }
-    }
-    return filters;
-  }
-
-  Widget button(BuildContext context, Map<String, dynamic> data) {
-    return FutureBuilder<Entity?>(
-        future: Entity.getEntity(entity),
-        builder: (context, snapshot) {
-          final entity = snapshot.data;
-
-          return core.LightButton(
-            action: core.DataAction.view,
-            title: label,
-            permission: null,
-            onPressed: entity == null
-                ? null
-                : () async {
-                    core.MenuBloc.instance.add(
-                      core.Menu3Selected(
-                        home: MenuCustom(
-                          entityId: entity.id,
-                          initialFilters: _filters(entity, data),
-                        ),
-                        label: entity.label,
-                      ),
-                    );
-                  },
-          );
-        });
   }
 }

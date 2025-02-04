@@ -181,6 +181,18 @@
             "auto_generated": true
         }
     ],
+    "views": [
+        {
+            "label": "Incentive Detail",
+            "entity": "incentive_detail",
+            "filter": {
+                "period": "period",
+                "code": "code",
+                "category": "category",
+                "category_sub": "category_sub"
+            }
+        }
+    ],
     "backend": {
         "read_all": {
             "method": "GET",

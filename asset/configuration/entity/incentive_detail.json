@@ -100,6 +100,40 @@
             "auto_generated": true
         }
     ],
+    "views": [
+        {
+            "label": "Incentive Base Target Product",
+            "entity": "incentive_base_target_product",
+            "filter": {
+                "period": "period",
+                "code": "code"
+            }
+        },
+        {
+            "label": "Incentive Base Target Category Product",
+            "entity": "incentive_base_target_category_product",
+            "filter": {
+                "period": "period",
+                "code": "code"
+            }
+        },
+        {
+            "label": "Incentive Base Subordinate Structure",
+            "entity": "incentive_base_subordinate_structure",
+            "filter": {
+                "period": "period",
+                "code": "code"
+            }
+        },
+        {
+            "label": "Incentive Base Sales Product",
+            "entity": "incentive_sales_product",
+            "filter": {
+                "period": "period",
+                "mr_code|spv_code|asm_code|fsm_code|gm_code": "code"
+            }
+        }
+    ],
     "backend": {
         "read_all": {
             "method": "GET",

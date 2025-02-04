@@ -201,16 +201,6 @@
             "auto_generated": true
         }
     ],
-    "views": [
-        {
-            "label": "Incentive Header",
-            "entity": "incentive_header",
-            "filter": {
-                "period": "period",
-                "code": "mr_code"
-            }
-        }
-    ],
     "backend": {
         "read_all": {
             "method": "GET",
