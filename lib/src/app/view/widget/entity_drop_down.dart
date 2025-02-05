@@ -46,10 +46,11 @@ class FDropDownSearchEntity extends StatefulWidget
 
 class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
   EntityCustomQueryBloc? bloc;
-  late configuration.Entity entity;
+  configuration.Entity? entity;
   late String keyId;
   late String value;
   late String entityId;
+  String? errorMessage;
 
   @override
   void initState() {
@@ -59,17 +60,24 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
     keyId = backendSource.$2;
     value = backendSource.$3;
     () async {
-      entity = (await configuration.Entity.getEntity(entityId))!;
-      setState(() {
-        bloc = EntityCustomQueryBloc(entity)
+      entity = (await configuration.Entity.getEntity(entityId));
+      if (entity != null) {
+        bloc = EntityCustomQueryBloc(entity!)
           ..add(EntityCustomQueryEvent.fetch());
-      });
+      } else {
+        errorMessage = 'Entity ${entityId} not found!';
+      }
+      setState(() {});
     }();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (bloc == null) return const Center(child: CircularProgressIndicator());
+    if (errorMessage != null) {
+      return Center(child: Text(errorMessage!));
+    } else if (bloc == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     String? Function(Map<String, dynamic>?)? validator;
     if (widget.isRequired) {
@@ -81,7 +89,7 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
       builder: (context, state) {
         return FDropDownSearch<Map<String, dynamic>>(
           enabled: widget.enabled,
-          labelText: entity.coreEntity.title,
+          labelText: entity!.coreEntity.title,
           onChanged: widget.onChanged,
           initialValue: widget.initialValue == null
               ? null

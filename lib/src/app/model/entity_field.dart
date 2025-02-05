@@ -81,21 +81,40 @@ class EntityField {
   }
 
   Widget buildForm(core.DataAction action, TextEditingController? controller) {
+    final isEnabled = _enabled(action);
     if (source != null) {
       return FDropDownSearchEntity(
         itemAsString: (id, label) => '$id - $label',
         entityField: this,
         initialValue: action.isEdit ? {'id': controller!.text} : null,
-        enabled: _enabled(action),
+        enabled: isEnabled,
         onChanged: (value) {
           controller!.text = value!['id'].toString();
         },
+      );
+    } else if (isBool) {
+      final value = controller!.text == '1' ? true : false;
+      return AbsorbPointer(
+        absorbing: !isEnabled,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: isEnabled ? null : Colors.blueGrey.shade100,
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: core.CheckboxWithText(
+            onChanged: (value) => controller.text = value ? '1' : '0',
+            initialValue: value,
+            text: '$label' + (isEnabled ? '' : ' (Read Only)'),
+          ),
+        ),
       );
     }
 
     return core.FTextFormField(
       labelText: label,
-      enabled: _enabled(action),
+      enabled: isEnabled,
       controller: controller,
       validator: MultiValidator([
         if (required ?? false) core.requiredValidator,
@@ -109,11 +128,17 @@ class EntityField {
 
   static Widget buildDisplay(Entity entity, String label, dynamic value,
       [void Function()? onTap]) {
+    if (value == null) {
+      return Text('-');
+    }
+
     final field = entity.fields.firstWhere((e) => e.reference == label);
     late Widget widget;
     if (field.isDateTime) {
       final date = DateTime.parse(value);
       widget = Text(DateFormat(field.dateTimeFormat).format(date));
+    } else if (field.isBool) {
+      widget = core.BoolIcon(value == 1);
     } else {
       widget = Text(value.toString());
     }
@@ -135,6 +160,7 @@ class EntityField {
   }
 
   bool get isDateTime => type.contains('datetime');
+  bool get isBool => type == 'bool';
 
   String get dateTimeFormat {
     final regex = RegExp(r'datetime\((.*?)\)');

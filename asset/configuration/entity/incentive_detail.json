@@ -100,6 +100,20 @@
             "auto_generated": true
         }
     ],
+    "layout": {
+        "create": [
+            ["id", "period"],
+            ["code", "category"],
+            ["category_sub", "category_sub_detail"],
+            ["value", "unit_value"]
+        ],
+        "update": [
+            ["id", "period"],
+            ["code", "category"],
+            ["category_sub", "category_sub_detail"],
+            ["value", "unit_value"]
+        ]
+    },
     "views": [
         {
             "label": "Incentive Base Target Product",
@@ -123,14 +137,6 @@
             "filter": {
                 "period": "period",
                 "code": "code"
-            }
-        },
-        {
-            "label": "Incentive Base Sales Product",
-            "entity": "incentive_sales_product",
-            "filter": {
-                "period": "period",
-                "mr_code|spv_code|asm_code|fsm_code|gm_code": "code"
             }
         }
     ],

@@ -143,14 +143,11 @@
         {
             "label": "Active Status",
             "reference": "active_status",
-            "type": "text",
+            "type": "bool",
             "column_width": 6,
             "required": true,
-            "pattern": "^[a-zA-Z0-9 ]{1,}$",
-            "min_length": 3,
-            "max_length": 255,
             "allow_create": true,
-            "allow_update": true
+            "allow_update": false
         },
         {
             "label": "Validated At",
