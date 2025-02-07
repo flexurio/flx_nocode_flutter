@@ -23,9 +23,7 @@ class DataHeader extends StatelessWidget {
             child: Text(label),
           ),
           Expanded(
-            child: Text(
-              ':   $value',
-            ),
+            child: Text(':   $value'),
           ),
         ],
       ),

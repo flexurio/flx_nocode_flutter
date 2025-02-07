@@ -1,0 +1,83 @@
+import 'dart:convert';
+
+import 'package:appointment/src/app/model/configuration.dart';
+import 'package:appointment/src/app/model/entity_field.dart';
+import 'package:appointment/src/app/model/view.dart' as view;
+import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+class EntityCustom {
+  final String id;
+  final String label;
+  final String description;
+  final List<EntityField> fields;
+  final List<view.View> views;
+  final Backend backend;
+  final Map<String, dynamic> layout;
+
+  EntityCustom({
+    required this.id,
+    required this.label,
+    required this.description,
+    required this.fields,
+    required this.views,
+    required this.backend,
+    required this.layout,
+  });
+
+  static Future<EntityCustom?> getEntity(String id) async {
+    try {
+      final path = 'asset/configuration/entity/$id.json';
+      final data = await rootBundle.loadString(path);
+      return EntityCustom.fromJson(json.decode(data));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  EntityField getField(String reference) =>
+      fields.firstWhere((e) => e.reference == reference);
+
+  factory EntityCustom.fromJson(Map<String, dynamic> json) {
+    return EntityCustom(
+      id: json['id'],
+      label: json['label'],
+      description: json['description'],
+      fields: (json['fields'] as List<dynamic>)
+          .map((e) => EntityField.fromJson(e))
+          .toList(),
+      views: json.containsKey('views')
+          ? (json['views'] as List<dynamic>)
+              .map((e) => view.View.fromJson(e))
+              .toList()
+          : [],
+      layout: json.containsKey('layout') ? json['layout'] : {},
+      backend: Backend.fromJson(json['backend']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'label': label,
+      'fields': fields.map((e) => e.toJson()).toList(),
+      'backend': backend.toJson(),
+      'description': description,
+    };
+  }
+
+  core.Entity get coreEntity => core.Entity(
+        titleX: label,
+        iconPath: 'bill',
+        subtitleX: description,
+      );
+
+  bool get allowCreate => backend.create != null;
+  bool get allowUpdate => backend.update != null;
+  bool get allowDelete => backend.delete != null;
+
+  List<Widget> buttonActions(BuildContext context, Map<String, dynamic> data) {
+    return views.map((e) => e.button(context, data)).toList();
+  }
+}

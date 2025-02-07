@@ -101,18 +101,15 @@
         }
     ],
     "layout": {
-        "create": [
-            ["id", "period"],
-            ["code", "category"],
-            ["category_sub", "category_sub_detail"],
-            ["value", "unit_value"]
-        ],
-        "update": [
-            ["id", "period"],
-            ["code", "category"],
-            ["category_sub", "category_sub_detail"],
-            ["value", "unit_value"]
-        ]
+        "update": {
+            "Group A" : {
+                "id": 1,
+                "period,code,value,unit_value": 2
+            },
+            "Category": {
+                "category,category_sub,category_sub_detail": 2
+            }
+        }
     },
     "views": [
         {

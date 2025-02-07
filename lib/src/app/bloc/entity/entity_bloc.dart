@@ -2,7 +2,7 @@ import 'package:appointment/src/app/resource/entity_custom.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:appointment/src/app/model/configuration.dart' as configuration;
+import 'package:appointment/src/app/model/entity.dart' as configuration;
 
 part 'entity_bloc.freezed.dart';
 
@@ -26,7 +26,7 @@ class EntityEvent with _$EntityEvent {
 }
 
 class EntityBloc extends Bloc<EntityEvent, EntityState> {
-  EntityBloc(configuration.Entity entity) : super(const _Initial()) {
+  EntityBloc(configuration.EntityCustom entity) : super(const _Initial()) {
     on<EntityEvent>((event, emit) async {
       await event.when(
         create: (data) async {

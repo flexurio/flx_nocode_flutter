@@ -1,6 +1,6 @@
 import 'package:appointment/src/app/bloc/entity/entity_bloc.dart';
 import 'package:appointment/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart';
-import 'package:appointment/src/app/model/configuration.dart' as configuration;
+import 'package:appointment/src/app/model/entity.dart' as configuration;
 import 'package:appointment/src/app/model/entity_field.dart';
 import 'package:appointment/src/app/view/page/entity_create/entity_create_page.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
@@ -10,11 +10,11 @@ import 'package:gap/gap.dart';
 
 class EntityViewPage extends StatelessWidget {
   const EntityViewPage._({required this.entity, required this.data});
-  final configuration.Entity entity;
+  final configuration.EntityCustom entity;
   final Map<String, dynamic> data;
 
   static Route<void> route({
-    required configuration.Entity entity,
+    required configuration.EntityCustom entity,
     required Map<String, dynamic> data,
   }) {
     return MaterialPageRoute(
@@ -30,7 +30,7 @@ class EntityViewPage extends StatelessWidget {
   static List<Widget> actions(
     BuildContext context,
     Map<String, dynamic> data,
-    configuration.Entity entity,
+    configuration.EntityCustom entity,
     void Function(BuildContext) onRefresh,
   ) {
     final modifyActions =
@@ -39,7 +39,7 @@ class EntityViewPage extends StatelessWidget {
   }
 
   static List<Widget> _buildEntityCustomActions(
-    configuration.Entity entity,
+    configuration.EntityCustom entity,
     BuildContext context,
     Map<String, dynamic> data,
     void Function(BuildContext context) onRefresh,
@@ -157,7 +157,7 @@ class EntityDeleteButton extends StatelessWidget {
   final Map<String, dynamic> data;
 
   static Widget prepare({
-    required configuration.Entity entity,
+    required configuration.EntityCustom entity,
     required Map<String, dynamic> data,
   }) {
     return BlocProvider(
@@ -166,7 +166,7 @@ class EntityDeleteButton extends StatelessWidget {
     );
   }
 
-  final configuration.Entity entity;
+  final configuration.EntityCustom entity;
 
   @override
   Widget build(BuildContext context) {

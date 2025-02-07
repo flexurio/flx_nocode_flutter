@@ -1,6 +1,5 @@
-import 'package:appointment/src/app/model/configuration.dart' as configuration;
+import 'package:appointment/src/app/model/entity.dart' as configuration;
 import 'package:appointment/src/app/model/filter.dart';
-import 'package:appointment/src/app/model/view.dart';
 import 'package:appointment/src/app/view/widget/entity_data_table.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +17,8 @@ class MenuCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<configuration.Entity?>(
-      future: configuration.Entity.getEntity(entityId),
+    return FutureBuilder<configuration.EntityCustom?>(
+      future: configuration.EntityCustom.getEntity(entityId),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final entity = snapshot.data;
@@ -34,7 +33,7 @@ class MenuCustom extends StatelessWidget {
     );
   }
 
-  Widget _home(BuildContext context, configuration.Entity entity) {
+  Widget _home(BuildContext context, configuration.EntityCustom entity) {
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
       children: [

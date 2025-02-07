@@ -1,4 +1,4 @@
-import 'package:appointment/src/app/model/configuration.dart' as configuration;
+import 'package:appointment/src/app/model/entity.dart' as configuration;
 import 'package:appointment/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:appointment/src/app/model/entity_field.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
@@ -46,7 +46,7 @@ class FDropDownSearchEntity extends StatefulWidget
 
 class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
   EntityCustomQueryBloc? bloc;
-  configuration.Entity? entity;
+  configuration.EntityCustom? entity;
   late String keyId;
   late String value;
   late String entityId;
@@ -60,7 +60,7 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
     keyId = backendSource.$2;
     value = backendSource.$3;
     () async {
-      entity = (await configuration.Entity.getEntity(entityId));
+      entity = (await configuration.EntityCustom.getEntity(entityId));
       if (entity != null) {
         bloc = EntityCustomQueryBloc(entity!)
           ..add(EntityCustomQueryEvent.fetch());

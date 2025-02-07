@@ -1,5 +1,6 @@
 import 'package:appointment/src/app/bloc/entity/entity_bloc.dart';
-import 'package:appointment/src/app/model/configuration.dart' as configuration;
+import 'package:appointment/src/app/model/entity.dart' as configuration;
+import 'package:appointment/src/app/model/layout.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,11 +15,11 @@ class EntityCreatePage extends StatefulWidget {
   );
 
   final Map<String, dynamic>? data;
-  final configuration.Entity entity;
+  final configuration.EntityCustom entity;
   final VoidCallback onSuccess;
 
   static Route<bool?> route({
-    required configuration.Entity entity,
+    required configuration.EntityCustom entity,
     Map<String, dynamic>? data,
     required VoidCallback onSuccess,
   }) {
@@ -26,9 +27,7 @@ class EntityCreatePage extends StatefulWidget {
       opaque: true,
       type: PageTransitionType.rightToLeft,
       child: MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (context) => EntityBloc(entity)),
-        ],
+        providers: [BlocProvider(create: (context) => EntityBloc(entity))],
         child: EntityCreatePage._(data, entity, onSuccess),
       ),
     );
@@ -127,20 +126,21 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
 
   Widget _buildForm() {
     final children = <Widget>[];
-    var first = true;
-    for (final field in widget.entity.fields) {
-      final fieldWidget =
-          field.buildForm(_action, _controllers[field.reference]);
-
-      children.addAll([
-        if (!first) Gap(12),
-        fieldWidget,
-      ]);
-
-      if (first) {
-        first = false;
+    final layouts = widget.entity.layout;
+    final layoutEdit = layouts.containsKey("update");
+    if (layoutEdit) {
+      final layout = (layouts["update"] as Map<String, dynamic>).entries;
+      for (final entry in layout) {
+        final layoutGroup = LayoutGroup.fromMapEntry(entry);
+        final layout = layoutGroup.buildForm(
+          widget.entity,
+          _action,
+          _controllers,
+        );
+        children.addAll([layout, Gap(24)]);
       }
     }
+    children.removeLast();
     return Column(children: children);
   }
 }

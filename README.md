@@ -1,19 +1,53 @@
-# appointment
+# Flexurio No Code
 
-A new Flutter project.
+## Field Type
+```json
+{
+    "label": "ID",
+    "reference": "id",
+    "type": "number",
+    "column_width": 5,
+    "required": true,
+    "auto_generated": true
+}
+```
 
-## Getting Started
+### text
+### number
+### bool
+### datetime
 
-This project is a starting point for a Flutter application.
+# Order Layout Configuration
+The layout object defines the structure for different events (e.g., `create`, `update`, `view`) in an order management system. It organizes fields into logical groups and determines how many columns each row should 
 
-A few resources to get you started if this is your first Flutter project:
+## Structure
+```json
+"layout": {
+    "{event}": {
+        "{grouping_name}" : {
+            "{field1},{field2}": {column_per_row},
+        },
+    }
+}
+```
+### Explanation:
 
-* [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-* [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+- `event`: Specifies the type of operation (create, update, view).
+- `grouping_name`: Defines logical sections in the layout (e.g., "General Information", "Category").
+- Fields (`field1`, `field2`): A comma-separated list of field names to be displayed in the same row.
+`column_per_row`: Indicates how many columns each row should have.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
-
-// bloc product masih dalam bentuk edit form date 
+## Example
+```json
+"layout": {
+    "update": {
+        "Group A" : {
+            "id": 1,
+            "period,code,value,unit_value": 2
+        },
+        "Category": {
+            "category,category_sub,category_sub_detail": 2
+        }
+    }
+}
+```

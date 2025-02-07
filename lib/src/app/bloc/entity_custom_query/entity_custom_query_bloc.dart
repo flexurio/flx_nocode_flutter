@@ -1,4 +1,4 @@
-import 'package:appointment/src/app/model/configuration.dart' as configuration;
+import 'package:appointment/src/app/model/entity.dart' as configuration;
 import 'package:appointment/src/app/model/filter.dart';
 import 'package:appointment/src/app/model/view.dart';
 import 'package:appointment/src/app/resource/entity_custom.dart';
@@ -32,7 +32,7 @@ class EntityCustomQueryEvent with _$EntityCustomQueryEvent {
 
 class EntityCustomQueryBloc
     extends Bloc<EntityCustomQueryEvent, EntityCustomQueryState> {
-  final configuration.Entity entity;
+  final configuration.EntityCustom entity;
   EntityCustomQueryBloc(this.entity) : super(const _Initial()) {
     on<EntityCustomQueryEvent>(
       (event, emit) async {

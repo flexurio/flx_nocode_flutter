@@ -1,4 +1,5 @@
 import 'package:appointment/src/app/model/configuration.dart';
+import 'package:appointment/src/app/model/entity.dart';
 
 class Filter {
   final String reference;
@@ -16,7 +17,7 @@ class Filter {
     );
   }
 
-  String getLabel(Entity entity) {
+  String getLabel(EntityCustom entity) {
     final keys = reference.split('|');
     final labels = <String>[];
     for (final key in keys) {

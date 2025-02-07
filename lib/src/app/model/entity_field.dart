@@ -1,4 +1,4 @@
-import 'package:appointment/src/app/model/configuration.dart';
+import 'package:appointment/src/app/model/entity.dart';
 import 'package:appointment/src/app/view/widget/entity_drop_down.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
@@ -112,6 +112,8 @@ class EntityField {
       );
     }
 
+    print('object: $label');
+
     return core.FTextFormField(
       labelText: label,
       enabled: isEnabled,
@@ -126,7 +128,7 @@ class EntityField {
     );
   }
 
-  static Widget buildDisplay(Entity entity, String label, dynamic value,
+  static Widget buildDisplay(EntityCustom entity, String label, dynamic value,
       [void Function()? onTap]) {
     if (value == null) {
       return Text('-');
