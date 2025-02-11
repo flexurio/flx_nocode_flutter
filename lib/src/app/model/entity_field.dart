@@ -1,7 +1,7 @@
 import 'package:appointment/src/app/model/entity.dart';
 import 'package:appointment/src/app/view/widget/entity_drop_down.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
+import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 
@@ -80,20 +80,31 @@ class EntityField {
     return (entity, key, value);
   }
 
-  Widget buildForm(core.DataAction action, TextEditingController? controller) {
+  Widget buildForm(DataAction action, TextEditingController controller) {
     final isEnabled = _enabled(action);
     if (source != null) {
       return FDropDownSearchEntity(
         itemAsString: (id, label) => '$id - $label',
         entityField: this,
-        initialValue: action.isEdit ? {'id': controller!.text} : null,
+        initialValue: action.isEdit ? {'id': controller.text} : null,
         enabled: isEnabled,
         onChanged: (value) {
-          controller!.text = value!['id'].toString();
+          controller.text = value!['id'].toString();
         },
       );
+    } else if (isDateTime) {
+      final initialDate = action.isEdit
+          ? (DateTime.tryParse(controller.text) ??
+              DateFormat.yMMMMd().parse(controller.text))
+          : null;
+      return FieldDatePicker(
+        labelText: label,
+        initialSelectedDate: initialDate,
+        controller: controller,
+        validator: requiredObjectValidator.call,
+      );
     } else if (isBool) {
-      final value = controller!.text == '1' ? true : false;
+      final value = controller.text == '1' ? true : false;
       return AbsorbPointer(
         absorbing: !isEnabled,
         child: Container(
@@ -103,7 +114,7 @@ class EntityField {
             color: isEnabled ? null : Colors.blueGrey.shade100,
             border: Border.all(color: Colors.grey.shade300),
           ),
-          child: core.CheckboxWithText(
+          child: CheckboxWithText(
             onChanged: (value) => controller.text = value ? '1' : '0',
             initialValue: value,
             text: '$label' + (isEnabled ? '' : ' (Read Only)'),
@@ -112,15 +123,13 @@ class EntityField {
       );
     }
 
-    print('object: $label');
-
-    return core.FTextFormField(
+    return FTextFormField(
       labelText: label,
       enabled: isEnabled,
       controller: controller,
       validator: MultiValidator([
-        if (required ?? false) core.requiredValidator,
-        core.LengthValidator(
+        if (required ?? false) requiredValidator,
+        LengthValidator(
           minLength: minLength,
           maxLength: maxLength,
         ),
@@ -140,7 +149,7 @@ class EntityField {
       final date = DateTime.parse(value);
       widget = Text(DateFormat(field.dateTimeFormat).format(date));
     } else if (field.isBool) {
-      widget = core.BoolIcon(value == 1);
+      widget = BoolIcon(value == 1);
     } else {
       widget = Text(value.toString());
     }
@@ -151,10 +160,10 @@ class EntityField {
     return widget;
   }
 
-  bool _enabled(core.DataAction action) {
-    if (action == core.DataAction.create) {
+  bool _enabled(DataAction action) {
+    if (action == DataAction.create) {
       return allowCreate ?? false;
-    } else if (action == core.DataAction.edit) {
+    } else if (action == DataAction.edit) {
       return allowUpdate ?? false;
     } else {
       return false;

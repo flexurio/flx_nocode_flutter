@@ -1,6 +1,7 @@
 import 'package:appointment/src/app/bloc/entity/entity_bloc.dart';
 import 'package:appointment/src/app/model/entity.dart' as configuration;
 import 'package:appointment/src/app/model/layout.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -62,7 +63,11 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
   Map<String, dynamic> get _data {
     final data = <String, dynamic>{};
     for (final field in widget.entity.fields) {
-      data[field.reference] = _controllers[field.reference]!.text;
+      var value = _controllers[field.reference]!.text;
+      if (field.isDateTime) {
+        value = DateFormat('yMMMMd').parse(value).toUtcIso();
+      }
+      data[field.reference] = value;
     }
     return data;
   }
@@ -101,26 +106,26 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
           formKey: _formKey,
           action: _action,
           entity: coreEntity,
-          actions: [
-            BlocBuilder<EntityBloc, EntityState>(
-              builder: (context, state) {
-                return Button(
-                  permission: null,
-                  isInProgress: state.maybeWhen(
-                    loading: () => true,
-                    orElse: () => false,
-                  ),
-                  onPressed: _submit,
-                  action: _action,
-                );
-              },
-            ),
-          ],
-          children: [
-            _buildForm(),
-          ],
+          actions: [_buildButtonSubmit()],
+          children: [_buildForm()],
         ),
       ),
+    );
+  }
+
+  Widget _buildButtonSubmit() {
+    return BlocBuilder<EntityBloc, EntityState>(
+      builder: (context, state) {
+        return Button(
+          permission: null,
+          isInProgress: state.maybeWhen(
+            loading: () => true,
+            orElse: () => false,
+          ),
+          onPressed: _submit,
+          action: _action,
+        );
+      },
     );
   }
 
@@ -139,8 +144,10 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
         );
         children.addAll([layout, Gap(24)]);
       }
+      children.removeLast();
+    } else {
+      children.add(Text("Error: Layout \"update\" not found"));
     }
-    children.removeLast();
     return Column(children: children);
   }
 }

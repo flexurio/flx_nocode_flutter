@@ -95,16 +95,17 @@
         {
             "label": "Created At",
             "reference": "created_at",
-            "type": "text",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
             "column_width": 9,
-            "auto_generated": true
+            "allow_create": true,
+            "allow_update": true
         }
     ],
     "layout": {
         "update": {
             "Group A" : {
                 "id": 1,
-                "period,code,value,unit_value": 2
+                "period,code,value,unit_value,created_at": 2
             },
             "Category": {
                 "category,category_sub,category_sub_detail": 2

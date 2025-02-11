@@ -36,8 +36,11 @@ class EntityCustom {
     }
   }
 
-  EntityField getField(String reference) =>
-      fields.firstWhere((e) => e.reference == reference);
+  EntityField? getField(String reference) {
+    final field = fields.where((e) => e.reference == reference);
+    if (field.isEmpty) return null;
+    return field.first;
+  }
 
   factory EntityCustom.fromJson(Map<String, dynamic> json) {
     return EntityCustom(
@@ -77,7 +80,7 @@ class EntityCustom {
   bool get allowUpdate => backend.update != null;
   bool get allowDelete => backend.delete != null;
 
-  List<Widget> buttonActions(BuildContext context, Map<String, dynamic> data) {
+  List<Widget> buttonViews(BuildContext context, Map<String, dynamic> data) {
     return views.map((e) => e.button(context, data)).toList();
   }
 }

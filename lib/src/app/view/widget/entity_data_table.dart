@@ -8,7 +8,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:appointment/src/app/model/entity.dart' as configuration;
+import 'package:appointment/src/app/model/entity.dart';
 
 class MenuDataTableCustom extends StatefulWidget {
   const MenuDataTableCustom._({
@@ -17,7 +17,7 @@ class MenuDataTableCustom extends StatefulWidget {
   });
 
   static Widget prepare({
-    required configuration.EntityCustom entity,
+    required EntityCustom entity,
     required List<Filter> initialFilters,
   }) {
     return BlocProvider(
@@ -29,7 +29,7 @@ class MenuDataTableCustom extends StatefulWidget {
     );
   }
 
-  final configuration.EntityCustom entity;
+  final EntityCustom entity;
   final List<Filter> initialFilters;
 
   @override

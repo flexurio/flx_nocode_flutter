@@ -22,8 +22,12 @@ class Layout {
 
     for (final key in fields) {
       final field = entity.getField(key);
-      final child = field.buildForm(action, controller[key]);
-      row.add(child);
+      final child = field?.buildForm(action, controller[key]!);
+      if (child != null) {
+        row.add(child);
+      } else {
+        row.add(Text('Error: "$key" not found'));
+      }
       if (row.length == columns) {
         children.add(RowFields(children: List.from(row)));
         row.clear();

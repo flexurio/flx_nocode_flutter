@@ -35,7 +35,7 @@ class EntityViewPage extends StatelessWidget {
   ) {
     final modifyActions =
         _buildEntityCustomActions(entity, context, data, onRefresh);
-    return entity.buttonActions(context, data)..addAll(modifyActions);
+    return entity.buttonViews(context, data)..addAll(modifyActions);
   }
 
   static List<Widget> _buildEntityCustomActions(
@@ -45,24 +45,26 @@ class EntityViewPage extends StatelessWidget {
     void Function(BuildContext context) onRefresh,
   ) {
     return [
-      LightButton(
-        permission: null,
-        action: DataAction.edit,
-        onPressed: () async {
-          Navigator.push(
-            context,
-            EntityCreatePage.route(
-              entity: entity,
-              data: data,
-              onSuccess: () => onRefresh(context),
-            ),
-          );
-        },
-      ),
-      EntityDeleteButton.prepare(
-        entity: entity,
-        data: data,
-      ),
+      if (entity.allowDelete)
+        LightButton(
+          permission: null,
+          action: DataAction.edit,
+          onPressed: () async {
+            Navigator.push(
+              context,
+              EntityCreatePage.route(
+                entity: entity,
+                data: data,
+                onSuccess: () => onRefresh(context),
+              ),
+            );
+          },
+        ),
+      if (entity.allowDelete)
+        EntityDeleteButton.prepare(
+          entity: entity,
+          data: data,
+        ),
     ];
   }
 

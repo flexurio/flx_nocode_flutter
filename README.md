@@ -1,5 +1,7 @@
 # Flexurio No Code
 
+# Entity
+
 ## Field Type
 ```json
 {
@@ -15,13 +17,22 @@
 ### text
 ### number
 ### bool
+
 ### datetime
+```json
+{
+    ...
+    "type": "datetime(yyyy-MM-dd HH:mm:ss)",
+    ...
+}
+```
+
 
 # Order Layout Configuration
 The layout object defines the structure for different events (e.g., `create`, `update`, `view`) in an order management system. It organizes fields into logical groups and determines how many columns each row should 
 
 ## Structure
-```json
+```txt
 "layout": {
     "{event}": {
         "{grouping_name}" : {
