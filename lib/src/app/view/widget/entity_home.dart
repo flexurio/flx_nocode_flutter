@@ -20,7 +20,9 @@ class MenuCustom extends StatelessWidget {
     return FutureBuilder<configuration.EntityCustom?>(
       future: configuration.EntityCustom.getEntity(entityId),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (snapshot.hasData) {
           final entity = snapshot.data;
           if (entity == null) {
             return const Center(child: Text('Entity not found!'));
