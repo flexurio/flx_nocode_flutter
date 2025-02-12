@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:appointment/src/app/model/entity_field.dart';
-import 'package:appointment/src/app/model/view.dart' as view;
-import 'package:appointment/src/app/view/widget/entity_home.dart';
+import 'package:flexurio_no_code/src/app/model/entity_field.dart';
+import 'package:flexurio_no_code/src/app/model/view.dart' as view;
+import 'package:flexurio_no_code/src/app/view/widget/entity_home.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

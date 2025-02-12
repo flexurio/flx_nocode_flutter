@@ -1,6 +1,6 @@
-import 'package:appointment/src/app/model/entity.dart';
-import 'package:appointment/src/app/model/filter.dart';
-import 'package:appointment/src/app/view/widget/entity_home.dart';
+import 'package:flexurio_no_code/src/app/model/entity.dart';
+import 'package:flexurio_no_code/src/app/model/filter.dart';
+import 'package:flexurio_no_code/src/app/view/widget/entity_home.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
 import 'package:flutter/material.dart';
 

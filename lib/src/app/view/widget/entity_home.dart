@@ -1,6 +1,6 @@
-import 'package:appointment/src/app/model/entity.dart' as configuration;
-import 'package:appointment/src/app/model/filter.dart';
-import 'package:appointment/src/app/view/widget/entity_data_table.dart';
+import 'package:flexurio_no_code/src/app/model/entity.dart' as configuration;
+import 'package:flexurio_no_code/src/app/model/filter.dart';
+import 'package:flexurio_no_code/src/app/view/widget/entity_data_table.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';

@@ -1,4 +1,4 @@
-import 'package:appointment/src/app/model/entity.dart';
+import 'package:flexurio_no_code/src/app/model/entity.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';

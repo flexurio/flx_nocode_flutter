@@ -1,6 +1,6 @@
-import 'package:appointment/src/app/model/entity.dart' as configuration;
-import 'package:appointment/src/app/model/filter.dart';
-import 'package:appointment/src/app/resource/entity_custom.dart';
+import 'package:flexurio_no_code/src/app/model/entity.dart' as configuration;
+import 'package:flexurio_no_code/src/app/model/filter.dart';
+import 'package:flexurio_no_code/src/app/resource/entity_custom.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
