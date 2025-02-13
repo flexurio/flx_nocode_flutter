@@ -27,6 +27,18 @@
 }
 ```
 
+# Export
+
+```json
+"exports": [
+    {
+        "name": "Incentive Base Target Product",
+        "type": "xlsx",
+        "backend": "{backend_host}/incentive_details?sort=id&ascending=true",
+        "fields": ["value","category_sub_detail"]
+    }
+]
+```
 
 # Order Layout Configuration
 The layout object defines the structure for different events (e.g., `create`, `update`, `view`) in an order management system. It organizes fields into logical groups and determines how many columns each row should 

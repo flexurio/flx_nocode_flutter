@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flexurio_no_code/src/app/model/configuration.dart';
 import 'package:flexurio_no_code/src/app/model/entity_field.dart';
+import 'package:flexurio_no_code/src/app/model/export.dart';
 import 'package:flexurio_no_code/src/app/model/view.dart' as view;
 import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ class EntityCustom {
   final String description;
   final List<EntityField> fields;
   final List<view.View> views;
+  final List<Export> exports;
   final Backend backend;
   final Map<String, dynamic> layout;
 
@@ -24,6 +26,7 @@ class EntityCustom {
     required this.views,
     required this.backend,
     required this.layout,
+    required this.exports,
   });
 
   static Future<EntityCustom?> getEntity(String id) async {
@@ -57,6 +60,11 @@ class EntityCustom {
           : [],
       layout: json.containsKey('layout') ? json['layout'] : {},
       backend: Backend.fromJson(json['backend']),
+      exports: json.containsKey('exports')
+          ? (json['exports'] as List<dynamic>)
+              .map((e) => Export.fromJson(e))
+              .toList()
+          : [],
     );
   }
 

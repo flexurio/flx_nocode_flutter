@@ -679,28 +679,30 @@ abstract class _Error implements EntityCustomQueryState {
 
 /// @nodoc
 mixin _$EntityCustomQueryEvent {
+  String get method => throw _privateConstructorUsedError;
+  String get url => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters)
+            List<Filter>? filters, String method, String url)
         fetch,
-    required TResult Function(String id) fetchById,
+    required TResult Function(String id, String method, String url) fetchById,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters)?
+            List<Filter>? filters, String method, String url)?
         fetch,
-    TResult? Function(String id)? fetchById,
+    TResult? Function(String id, String method, String url)? fetchById,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters)?
+            List<Filter>? filters, String method, String url)?
         fetch,
-    TResult Function(String id)? fetchById,
+    TResult Function(String id, String method, String url)? fetchById,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -723,6 +725,12 @@ mixin _$EntityCustomQueryEvent {
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
+
+  /// Create a copy of EntityCustomQueryEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $EntityCustomQueryEventCopyWith<EntityCustomQueryEvent> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -730,6 +738,8 @@ abstract class $EntityCustomQueryEventCopyWith<$Res> {
   factory $EntityCustomQueryEventCopyWith(EntityCustomQueryEvent value,
           $Res Function(EntityCustomQueryEvent) then) =
       _$EntityCustomQueryEventCopyWithImpl<$Res, EntityCustomQueryEvent>;
+  @useResult
+  $Res call({String method, String url});
 }
 
 /// @nodoc
@@ -745,16 +755,38 @@ class _$EntityCustomQueryEventCopyWithImpl<$Res,
 
   /// Create a copy of EntityCustomQueryEvent
   /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? method = null,
+    Object? url = null,
+  }) {
+    return _then(_value.copyWith(
+      method: null == method
+          ? _value.method
+          : method // ignore: cast_nullable_to_non_nullable
+              as String,
+      url: null == url
+          ? _value.url
+          : url // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
 }
 
 /// @nodoc
-abstract class _$$FetchImplCopyWith<$Res> {
+abstract class _$$FetchImplCopyWith<$Res>
+    implements $EntityCustomQueryEventCopyWith<$Res> {
   factory _$$FetchImplCopyWith(
           _$FetchImpl value, $Res Function(_$FetchImpl) then) =
       __$$FetchImplCopyWithImpl<$Res>;
+  @override
   @useResult
   $Res call(
-      {PageOptions<Map<String, dynamic>>? pageOptions, List<Filter>? filters});
+      {PageOptions<Map<String, dynamic>>? pageOptions,
+      List<Filter>? filters,
+      String method,
+      String url});
 }
 
 /// @nodoc
@@ -772,6 +804,8 @@ class __$$FetchImplCopyWithImpl<$Res>
   $Res call({
     Object? pageOptions = freezed,
     Object? filters = freezed,
+    Object? method = null,
+    Object? url = null,
   }) {
     return _then(_$FetchImpl(
       pageOptions: freezed == pageOptions
@@ -782,6 +816,14 @@ class __$$FetchImplCopyWithImpl<$Res>
           ? _value._filters
           : filters // ignore: cast_nullable_to_non_nullable
               as List<Filter>?,
+      method: null == method
+          ? _value.method
+          : method // ignore: cast_nullable_to_non_nullable
+              as String,
+      url: null == url
+          ? _value.url
+          : url // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -789,7 +831,11 @@ class __$$FetchImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$FetchImpl implements _Fetch {
-  const _$FetchImpl({this.pageOptions, final List<Filter>? filters})
+  const _$FetchImpl(
+      {this.pageOptions,
+      final List<Filter>? filters,
+      required this.method,
+      required this.url})
       : _filters = filters;
 
   @override
@@ -805,8 +851,13 @@ class _$FetchImpl implements _Fetch {
   }
 
   @override
+  final String method;
+  @override
+  final String url;
+
+  @override
   String toString() {
-    return 'EntityCustomQueryEvent.fetch(pageOptions: $pageOptions, filters: $filters)';
+    return 'EntityCustomQueryEvent.fetch(pageOptions: $pageOptions, filters: $filters, method: $method, url: $url)';
   }
 
   @override
@@ -816,12 +867,14 @@ class _$FetchImpl implements _Fetch {
             other is _$FetchImpl &&
             (identical(other.pageOptions, pageOptions) ||
                 other.pageOptions == pageOptions) &&
-            const DeepCollectionEquality().equals(other._filters, _filters));
+            const DeepCollectionEquality().equals(other._filters, _filters) &&
+            (identical(other.method, method) || other.method == method) &&
+            (identical(other.url, url) || other.url == url));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, pageOptions, const DeepCollectionEquality().hash(_filters));
+  int get hashCode => Object.hash(runtimeType, pageOptions,
+      const DeepCollectionEquality().hash(_filters), method, url);
 
   /// Create a copy of EntityCustomQueryEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -835,35 +888,35 @@ class _$FetchImpl implements _Fetch {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters)
+            List<Filter>? filters, String method, String url)
         fetch,
-    required TResult Function(String id) fetchById,
+    required TResult Function(String id, String method, String url) fetchById,
   }) {
-    return fetch(pageOptions, filters);
+    return fetch(pageOptions, filters, method, url);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters)?
+            List<Filter>? filters, String method, String url)?
         fetch,
-    TResult? Function(String id)? fetchById,
+    TResult? Function(String id, String method, String url)? fetchById,
   }) {
-    return fetch?.call(pageOptions, filters);
+    return fetch?.call(pageOptions, filters, method, url);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters)?
+            List<Filter>? filters, String method, String url)?
         fetch,
-    TResult Function(String id)? fetchById,
+    TResult Function(String id, String method, String url)? fetchById,
     required TResult orElse(),
   }) {
     if (fetch != null) {
-      return fetch(pageOptions, filters);
+      return fetch(pageOptions, filters, method, url);
     }
     return orElse();
   }
@@ -903,25 +956,34 @@ class _$FetchImpl implements _Fetch {
 abstract class _Fetch implements EntityCustomQueryEvent {
   const factory _Fetch(
       {final PageOptions<Map<String, dynamic>>? pageOptions,
-      final List<Filter>? filters}) = _$FetchImpl;
+      final List<Filter>? filters,
+      required final String method,
+      required final String url}) = _$FetchImpl;
 
   PageOptions<Map<String, dynamic>>? get pageOptions;
   List<Filter>? get filters;
+  @override
+  String get method;
+  @override
+  String get url;
 
   /// Create a copy of EntityCustomQueryEvent
   /// with the given fields replaced by the non-null parameter values.
+  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$FetchImplCopyWith<_$FetchImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$FetchByIdImplCopyWith<$Res> {
+abstract class _$$FetchByIdImplCopyWith<$Res>
+    implements $EntityCustomQueryEventCopyWith<$Res> {
   factory _$$FetchByIdImplCopyWith(
           _$FetchByIdImpl value, $Res Function(_$FetchByIdImpl) then) =
       __$$FetchByIdImplCopyWithImpl<$Res>;
+  @override
   @useResult
-  $Res call({String id});
+  $Res call({String id, String method, String url});
 }
 
 /// @nodoc
@@ -938,11 +1000,21 @@ class __$$FetchByIdImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
+    Object? method = null,
+    Object? url = null,
   }) {
     return _then(_$FetchByIdImpl(
-      null == id
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      method: null == method
+          ? _value.method
+          : method // ignore: cast_nullable_to_non_nullable
+              as String,
+      url: null == url
+          ? _value.url
+          : url // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -951,14 +1023,19 @@ class __$$FetchByIdImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$FetchByIdImpl implements _FetchById {
-  const _$FetchByIdImpl(this.id);
+  const _$FetchByIdImpl(
+      {required this.id, required this.method, required this.url});
 
   @override
   final String id;
+  @override
+  final String method;
+  @override
+  final String url;
 
   @override
   String toString() {
-    return 'EntityCustomQueryEvent.fetchById(id: $id)';
+    return 'EntityCustomQueryEvent.fetchById(id: $id, method: $method, url: $url)';
   }
 
   @override
@@ -966,11 +1043,13 @@ class _$FetchByIdImpl implements _FetchById {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$FetchByIdImpl &&
-            (identical(other.id, id) || other.id == id));
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.method, method) || other.method == method) &&
+            (identical(other.url, url) || other.url == url));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id);
+  int get hashCode => Object.hash(runtimeType, id, method, url);
 
   /// Create a copy of EntityCustomQueryEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -984,35 +1063,35 @@ class _$FetchByIdImpl implements _FetchById {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters)
+            List<Filter>? filters, String method, String url)
         fetch,
-    required TResult Function(String id) fetchById,
+    required TResult Function(String id, String method, String url) fetchById,
   }) {
-    return fetchById(id);
+    return fetchById(id, method, url);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters)?
+            List<Filter>? filters, String method, String url)?
         fetch,
-    TResult? Function(String id)? fetchById,
+    TResult? Function(String id, String method, String url)? fetchById,
   }) {
-    return fetchById?.call(id);
+    return fetchById?.call(id, method, url);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters)?
+            List<Filter>? filters, String method, String url)?
         fetch,
-    TResult Function(String id)? fetchById,
+    TResult Function(String id, String method, String url)? fetchById,
     required TResult orElse(),
   }) {
     if (fetchById != null) {
-      return fetchById(id);
+      return fetchById(id, method, url);
     }
     return orElse();
   }
@@ -1050,12 +1129,20 @@ class _$FetchByIdImpl implements _FetchById {
 }
 
 abstract class _FetchById implements EntityCustomQueryEvent {
-  const factory _FetchById(final String id) = _$FetchByIdImpl;
+  const factory _FetchById(
+      {required final String id,
+      required final String method,
+      required final String url}) = _$FetchByIdImpl;
 
   String get id;
+  @override
+  String get method;
+  @override
+  String get url;
 
   /// Create a copy of EntityCustomQueryEvent
   /// with the given fields replaced by the non-null parameter values.
+  @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$FetchByIdImplCopyWith<_$FetchByIdImpl> get copyWith =>
       throw _privateConstructorUsedError;

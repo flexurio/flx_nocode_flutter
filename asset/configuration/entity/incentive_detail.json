@@ -112,6 +112,14 @@
             }
         }
     },
+    "exports": [
+        {
+            "name": "Incentive Base Target Product",
+            "type": "pdf",
+            "backend": "{backend_host}/incentive_details?sort=id&ascending=true",
+            "fields": ["value","category_sub_detail"]
+        }
+    ],
     "views": [
         {
             "label": "Incentive Base Target Product",

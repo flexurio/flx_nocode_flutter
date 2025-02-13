@@ -20,7 +20,7 @@ class EntityViewPage extends StatelessWidget {
     return MaterialPageRoute(
       builder: (context) => MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => EntityCustomQueryBloc(entity)),
+          BlocProvider(create: (context) => EntityCustomQueryBloc()),
         ],
         child: EntityViewPage._(entity: entity, data: data),
       ),
@@ -70,7 +70,11 @@ class EntityViewPage extends StatelessWidget {
 
   void _fetch(BuildContext context) {
     context.read<EntityCustomQueryBloc>().add(
-          EntityCustomQueryEvent.fetchById(data['id'].toString()),
+          EntityCustomQueryEvent.fetchById(
+            id: data['id'].toString(),
+            method: entity.backend.readAll!.method,
+            url: entity.backend.readAll!.url,
+          ),
         );
   }
 

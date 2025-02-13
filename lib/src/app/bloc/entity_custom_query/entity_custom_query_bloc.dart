@@ -1,4 +1,4 @@
-import 'package:flexurio_no_code/src/app/model/entity.dart' as configuration;
+import 'package:flexurio_no_code/src/app/model/entity.dart';
 import 'package:flexurio_no_code/src/app/model/filter.dart';
 import 'package:flexurio_no_code/src/app/resource/entity_custom.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
@@ -24,32 +24,37 @@ class EntityCustomQueryEvent with _$EntityCustomQueryEvent {
   const factory EntityCustomQueryEvent.fetch({
     PageOptions<Map<String, dynamic>>? pageOptions,
     List<Filter>? filters,
+    required String method,
+    required String url,
   }) = _Fetch;
-  const factory EntityCustomQueryEvent.fetchById(String id) = _FetchById;
+  const factory EntityCustomQueryEvent.fetchById({
+    required String id,
+    required String method,
+    required String url,
+  }) = _FetchById;
 }
 
 class EntityCustomQueryBloc
     extends Bloc<EntityCustomQueryEvent, EntityCustomQueryState> {
-  final configuration.EntityCustom entity;
-  EntityCustomQueryBloc(this.entity) : super(const _Initial()) {
+  EntityCustomQueryBloc() : super(const _Initial()) {
     on<EntityCustomQueryEvent>(
       (event, emit) async {
         await event.when(
-          fetchById: (id) async {
+          fetchById: (id, method, url) async {
             emit(_Loading(_pageOptions));
             try {
               final data = await EntityCustomRepository.instance.fetchById(
                 accessToken: '',
                 id: id,
-                method: entity.backend.read!.method,
-                path: entity.backend.read!.url,
+                method: method,
+                path: url,
               );
               emit(_Loaded(_pageOptions.copyWith(data: [data])));
             } catch (error) {
               emit(_Error(errorMessage(error)));
             }
           },
-          fetch: (pageOptions, filter) async {
+          fetch: (pageOptions, filter, method, url) async {
             emit(_Loading(_pageOptions));
             try {
               if (pageOptions != null) {
@@ -64,8 +69,8 @@ class EntityCustomQueryBloc
               _pageOptions = await EntityCustomRepository.instance.fetch(
                 accessToken: 'text',
                 pageOptions: _pageOptions,
-                method: entity.backend.readAll!.method,
-                path: entity.backend.readAll!.url,
+                method: method,
+                path: url,
                 filterMap: filterMap,
               );
               emit(_Loaded(_pageOptions));

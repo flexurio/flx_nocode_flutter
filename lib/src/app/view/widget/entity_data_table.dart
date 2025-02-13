@@ -21,7 +21,7 @@ class MenuDataTableCustom extends StatefulWidget {
     required List<Filter> initialFilters,
   }) {
     return BlocProvider(
-      create: (_) => EntityCustomQueryBloc(entity),
+      create: (_) => EntityCustomQueryBloc(),
       child: MenuDataTableCustom._(
         entity: entity,
         initialFilters: initialFilters,
@@ -51,6 +51,8 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           EntityCustomQueryEvent.fetch(
             pageOptions: pageOptions,
             filters: _filters,
+            method: widget.entity.backend.readAll!.method,
+            url: widget.entity.backend.readAll!.url,
           ),
         );
   }
@@ -83,6 +85,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
               _buildFilterInformation(Theme.of(context).colorScheme.primary),
             ],
             actionRight: (refreshButton) => [
+              _buildButtonExports(),
               FilterButton(
                 fields: widget.entity.fields,
                 currentFilters: _filters,
@@ -155,6 +158,17 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildButtonExports() {
+    final exportButtons = widget.entity.exports
+        .map((e) => e.buildButton(filters: _filters))
+        .toList();
+    if (exportButtons.isEmpty) return const SizedBox();
+    return LightButtonSmallGroup(
+      action: DataAction.exportPdf,
+      childrenList: exportButtons,
     );
   }
 

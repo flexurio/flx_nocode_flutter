@@ -62,8 +62,11 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
     () async {
       entity = (await configuration.EntityCustom.getEntity(entityId));
       if (entity != null) {
-        bloc = EntityCustomQueryBloc(entity!)
-          ..add(EntityCustomQueryEvent.fetch());
+        bloc = EntityCustomQueryBloc()
+          ..add(EntityCustomQueryEvent.fetch(
+            method: entity!.backend.readAll!.method,
+            url: entity!.backend.readAll!.url,
+          ));
       } else {
         errorMessage = 'Entity ${entityId} not found!';
       }
