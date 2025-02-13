@@ -1,6 +1,7 @@
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flexurio_no_code/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:flexurio_no_code/src/app/model/filter.dart';
+import 'package:flexurio_no_code/src/app/util/picker_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -64,19 +65,24 @@ class ButtonExport extends StatelessWidget {
       listener: (context, state) {
         state.maybeWhen(
           loaded: (data) async {
-            final pdf = pw.Document()
-              ..addPage(
-                await pdfGeneral(
-                  data: data.data,
-                  title: export.name,
-                  fields: export.fields,
-                  printedBy: 'Anonymous',
-                ),
+            if (export.isPdf) {
+              final pdf = pw.Document()
+                ..addPage(
+                  await pdfGeneral(
+                    data: data.data,
+                    title: export.name,
+                    fields: export.fields,
+                    printedBy: 'Anonymous',
+                  ),
+                );
+              await Printing.sharePdf(
+                bytes: await pdf.save(),
+                filename: '${export.name}.pdf',
               );
-            await Printing.sharePdf(
-              bytes: await pdf.save(),
-              filename: '${export.name}.${export.type}',
-            );
+            } else {
+              final bytes = generalXlsx(context, data.data, export.fields);
+              saveFile(bytes, '${export.name}.xlsx');
+            }
           },
           error: (error) => Toast(context).fail(error),
           orElse: () {},
@@ -95,7 +101,7 @@ class ButtonExport extends StatelessWidget {
                       method: 'GET',
                       url: export.backend,
                       filters: filters,
-                      pageOptions: null,
+                      pageOptions: PageOptions.emptyNoLimit(sortBy: ''),
                     ),
                   );
             },

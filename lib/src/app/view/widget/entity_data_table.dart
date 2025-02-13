@@ -167,7 +167,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
         .toList();
     if (exportButtons.isEmpty) return const SizedBox();
     return LightButtonSmallGroup(
-      action: DataAction.exportPdf,
+      action: DataAction.export,
       childrenList: exportButtons,
     );
   }
