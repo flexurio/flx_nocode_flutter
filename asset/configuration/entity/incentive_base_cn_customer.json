@@ -153,15 +153,29 @@
         {
             "label": "CO1 Date",
             "reference": "co1_date",
-            "type": "text",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
             "max_length": 8
         },
         {
             "label": "Created At",
             "reference": "created_at",
-            "type": "text",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
             "column_width": 9,
             "auto_generated": true
+        }
+    ],
+    "exports": [
+        {
+            "name": "Incentive Cn Customer",
+            "type": "pdf",
+            "backend": "{backend_host}/incentive_base_cn_customers?sort=id&ascending=true&limit=999999",
+            "fields": ["period","customer_id","customer_name","mr_code","mr_nip","mr_name","spv_code","spv_nip","spv_name","asm_code","asm_nip","asm_name","fsm_code","fsm_nip","fsm_name","gm_code","gm_nip","gm_name","co1","co2","co1_date"]
+        },
+        {
+            "name": "Incentive Cn Customer",
+            "type": "xlsx",
+            "backend": "{backend_host}/incentive_base_cn_customers?sort=id&ascending=true&limit=999999",
+            "fields": ["period","customer_id","customer_name","mr_code","mr_nip","mr_name","spv_code","spv_nip","spv_name","asm_code","asm_nip","asm_name","fsm_code","fsm_nip","fsm_name","gm_code","gm_nip","gm_name","co1","co2","co1_date"]
         }
     ],
     "backend": {

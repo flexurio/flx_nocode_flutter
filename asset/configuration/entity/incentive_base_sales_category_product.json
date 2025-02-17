@@ -204,9 +204,23 @@
         {
             "label": "Created At",
             "reference": "created_at",
-            "type": "text",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
             "column_width": 9,
             "auto_generated": true
+        }
+    ],
+    "exports": [
+        {
+            "name": "Incentive Sales Category Product",
+            "type": "pdf",
+            "backend": "{backend_host}/incentive_base_sales_category_products?sort=id&ascending=true&limit=999999",
+            "fields": ["period","mr_code","mr_nip","mr_name","spv_code","spv_nip","spv_name","asm_code","asm_nip","asm_name","fsm_code","fsm_nip","fsm_name","gm_code","gm_nip","gm_name","product_category","co1_qty_product_rutin","co1_qty_product_non_rutin","co1_qty_product_total","co2_qty_product_rutin","co2_qty_product_non_rutin","co2_qty_product_total","co1_date"]
+        },
+        {
+            "name": "Incentive Sales Category Product",
+            "type": "xlsx",
+            "backend": "{backend_host}/incentive_base_sales_category_products?sort=id&ascending=true&limit=999999",
+            "fields": ["period","mr_code","mr_nip","mr_name","spv_code","spv_nip","spv_name","asm_code","asm_nip","asm_name","fsm_code","fsm_nip","fsm_name","gm_code","gm_nip","gm_name","product_category","co1_qty_product_rutin","co1_qty_product_non_rutin","co1_qty_product_total","co2_qty_product_rutin","co2_qty_product_non_rutin","co2_qty_product_total","co1_date"]
         }
     ],
     "backend": {

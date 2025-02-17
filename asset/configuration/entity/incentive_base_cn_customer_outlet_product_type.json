@@ -189,16 +189,30 @@
         {
             "label": "CO1 Date",
             "reference": "co1_date",
-            "type": "text",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
             "column_width": 6,
             "required": false
         },
         {
             "label": "Created At",
             "reference": "created_at",
-            "type": "text",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
             "column_width": 9,
             "auto_generated": true
+        }
+    ],
+    "exports": [
+        {
+            "name": "Incentive Cn Customer Outlet Product Type",
+            "type": "pdf",
+            "backend": "{backend_host}/incentive_base_cn_customer_outlet_product_types?sort=id&ascending=true&limit=999999",
+            "fields": ["period","customer_id","customer_name","product_id","product_name","product_program_id","outlet_id","outlet_name","mr_code","mr_nip","mr_name","spv_code","spv_nip","spv_name","asm_code","asm_nip","asm_name","fsm_code","fsm_nip","fsm_name","gm_code","gm_nip","gm_name","co1","co2","co1_date"]
+        },
+        {
+            "name": "Incentive Cn Customer Outlet Product Type",
+            "type": "xlsx",
+            "backend": "{backend_host}/incentive_base_cn_customer_outlet_product_types?sort=id&ascending=true&limit=999999",
+            "fields": ["period","customer_id","customer_name","product_id","product_name","product_program_id","outlet_id","outlet_name","mr_code","mr_nip","mr_name","spv_code","spv_nip","spv_name","asm_code","asm_nip","asm_name","fsm_code","fsm_nip","fsm_name","gm_code","gm_nip","gm_name","co1","co2","co1_date"]
         }
     ],
     "backend": {

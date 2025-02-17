@@ -94,9 +94,23 @@
         {
             "label": "Created At",
             "reference": "created_at",
-            "type": "text",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
             "column_width": 9,
             "auto_generated": true
+        }
+    ],
+    "exports": [
+        {
+            "name": "Incentive Subordinate Structure",
+            "type": "pdf",
+            "backend": "{backend_host}/incentive_base_subordinate_structures?sort=id&ascending=true&limit=999999",
+            "fields": ["period","code","nip","name","position","subordinate_filled","subordinate_vacant","subordinate_vacant_freeze","subordinate_vacant_total","subordinate_total"]
+        },
+        {
+            "name": "Incentive Subordinate Structure",
+            "type": "xlsx",
+            "backend": "{backend_host}/incentive_base_subordinate_structures?sort=id&ascending=true&limit=999999",
+            "fields": ["period","code","nip","name","position","subordinate_filled","subordinate_vacant","subordinate_vacant_freeze","subordinate_vacant_total","subordinate_total"]
         }
     ],
     "backend": {

@@ -97,36 +97,7 @@
             "reference": "created_at",
             "type": "datetime(yyyy-MM-dd HH:mm:ss)",
             "column_width": 9,
-            "allow_create": true,
-            "allow_update": true
-        }
-    ],
-    "layout": {
-        "update": {
-            "Group A" : {
-                "id": 1,
-                "period,code,value,unit_value,created_at": 2
-            },
-            "Category": {
-                "category,category_sub,category_sub_detail": 2
-            }
-        }
-    },
-    "exports": [
-        {
-            "name": "Incentive Base Target Product",
-            "type": "pdf",
-            "backend": "{backend_host}/incentive_details?sort=id&ascending=true",
-            "fields": ["value","category_sub_detail"]
-        },
-        {
-            "name": "Incentive Base Target Product",
-            "type": "xlsx",
-            "backend": "{backend_host}/incentive_details?sort=id&ascending=true",
-            "fields": [
-                "value",
-                "category_sub_detail"
-            ]
+            "auto_generated": true
         }
     ],
     "views": [
@@ -153,6 +124,20 @@
                 "period": "period",
                 "code": "code"
             }
+        }
+    ],
+    "exports": [
+        {
+            "name": "Incentive Detail",
+            "type": "pdf",
+            "backend": "{backend_host}/incentive_details?sort=id&ascending=true",
+            "fields": ["period","code","category","category_sub","category_sub_detail","value","unit_value"]
+        },
+        {
+            "name": "Incentive Detail",
+            "type": "xlsx",
+            "backend": "{backend_host}/incentive_details?sort=id&ascending=true",
+            "fields": ["period","code","category","category_sub","category_sub_detail","value","unit_value"]
         }
     ],
     "backend": {

@@ -152,28 +152,28 @@
         {
             "label": "Validated At",
             "reference": "validation_at",
-            "type": "text",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
             "column_width": 9,
             "auto_generated": true
         },
         {
             "label": "Resign Date",
             "reference": "resign_date",
-            "type": "text",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
             "column_width": 9,
             "auto_generated": true
         },
         {
             "label": "Validated At",
             "reference": "validation_at",
-            "type": "text",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
             "column_width": 9,
             "auto_generated": true
         },
         {
             "label": "Created At",
             "reference": "created_at",
-            "type": "text",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
             "column_width": 9,
             "auto_generated": true
         }
@@ -188,6 +188,20 @@
                 "category": "category",
                 "category_sub": "category_sub"
             }
+        }
+    ],
+    "exports": [
+        {
+            "name": "Incentive Header",
+            "type": "pdf",
+            "backend": "{backend_host}/incentive_headers?sort=id&ascending=true&limit=999999",
+            "fields": ["period","nip","code","name","position","join_date","category","category_sub","value","validation_status","transfered_status","active_status","validation_at","resign_date","validation_at"]
+        },
+        {
+            "name": "Incentive Header",
+            "type": "xlsx",
+            "backend": "{backend_host}/incentive_headers?sort=id&ascending=true&limit=999999",
+            "fields": ["period","nip","code","name","position","join_date","category","category_sub","value","validation_status","transfered_status","active_status","validation_at","resign_date","validation_at"]
         }
     ],
     "backend": {

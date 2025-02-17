@@ -106,9 +106,23 @@
         {
             "label": "Created At",
             "reference": "created_at",
-            "type": "text",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
             "column_width": 9,
             "auto_generated": true
+        }
+    ],
+    "exports": [
+        {
+            "name": "Incentive Target Product",
+            "type": "pdf",
+            "backend": "{backend_host}/incentive_base_target_products?sort=id&ascending=true&limit=999999",
+            "fields": ["period","code","position","product_category","qty_rutin","qty_non_rutin","qty_total","value_rutin","value_non_rutin","value_total"]
+        },
+        {
+            "name": "Incentive Target Product",
+            "type": "xlsx",
+            "backend": "{backend_host}/incentive_base_target_products?sort=id&ascending=true&limit=999999",
+            "fields": ["period","code","position","product_category","qty_rutin","qty_non_rutin","qty_total","value_rutin","value_non_rutin","value_total"]
         }
     ],
     "backend": {
