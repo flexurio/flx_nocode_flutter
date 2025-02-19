@@ -130,11 +130,16 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
   }
 
   Widget _buildForm() {
+    String action = 'create';
+    if (_action.isEdit) {
+      action = 'update';
+    }
+
     final children = <Widget>[];
     final layouts = widget.entity.layout;
-    final layoutEdit = layouts.containsKey("update");
+    final layoutEdit = layouts.containsKey(action);
     if (layoutEdit) {
-      final layout = (layouts["update"] as Map<String, dynamic>).entries;
+      final layout = (layouts[action] as Map<String, dynamic>).entries;
       for (final entry in layout) {
         final layoutGroup = LayoutGroup.fromMapEntry(entry);
         final layout = layoutGroup.buildForm(
@@ -146,7 +151,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
       }
       children.removeLast();
     } else {
-      children.add(Text("Error: Layout \"update\" not found"));
+      children.add(Text("Error: Layout \"$action\" not found"));
     }
     return Column(children: children);
   }

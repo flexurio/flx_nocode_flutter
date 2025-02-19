@@ -1,5 +1,5 @@
 {
-    "app_name": "Flexurio",
+    "app_name": "LBB",
     "company": {
         "id": "03",
         "name": "VNEU Teknologi Indonesia",
@@ -9,54 +9,42 @@
     },
     "logo_url": "https://is1-ssl.mzstatic.com/image/thumb/Purple115/v4/52/0d/3d/520d3d72-de02-38c3-133e-86b0076b281a/AppIcon-1x_U007emarketing-0-10-0-0-85-220.png/230x0w.webp",
     "logo_named_url": "https://ski-compliance-metiska-farma.flexurio.com/src/assets/image/farmasys-resize.png",
-    "backend_host": "https://mf-marketing-api.flexurio.com",
+    "backend_host": "http://localhost:9090",
     "theme": {
         "color": "#03A9F4",
         "color_soft": "#B3E5FC"
     },
     "menu_group": [
         {
-            "label": "Insentive",
+            "label": "LBB",
             "menu": [
                 {
                     "label": "Master",
-                    "icon": "fa fa-money",
+                    "icon": "db database",
                     "menu_sub": [
                         {
-                            "label": "Sales Product",
-                            "entity": "incentive_sales_product"
+                            "label": "Category LBB",
+                            "entity": "category_lbb"
                         },
                         {
-                            "label": "Sales Category Product",
-                            "entity": "incentive_base_sales_category_product"
+                            "label": "Category Cost",
+                            "entity": "category_cost"
                         },
                         {
-                            "label": "Sales Structure",
-                            "entity": "incentive_base_sales_structure"
+                            "label": "Submission Detail",
+                            "entity": "submission_detail"
                         },
                         {
-                            "label": "Subordinate Structure",
-                            "entity": "incentive_base_subordinate_structure"
+                            "label": "Account Bank",
+                            "entity": "account_bank"
                         },
                         {
-                            "label": "Target Category Product",
-                            "entity": "incentive_base_target_category_product"
+                            "label": "Home Base",
+                            "entity": "home_base"
                         },
                         {
-                            "label": "Target Product",
-                            "entity": "incentive_base_target_product"
-                        },
-                        {
-                            "label": "Cn Customer",
-                            "entity": "incentive_base_cn_customer"
-                        },
-                        {
-                            "label": "Cn Discount Product",
-                            "entity": "incentive_base_cn_discount_product"
-                        },
-                        {
-                            "label": "Cn Customer Outlet Product Type",
-                            "entity": "incentive_base_cn_customer_outlet_product_type"
+                            "label": "Transportation Type",
+                            "entity": "transportation_type"
                         }
                     ]
                 },
@@ -65,27 +53,8 @@
                     "icon": "fa fa-money",
                     "menu_sub": [
                         {
-                            "label": "Incentive Header",
-                            "entity": "incentive_header"
-                        },
-                        {
-                            "label": "Incentive Detail",
-                            "entity": "incentive_detail"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "label": "Monitoring",
-            "menu": [
-                {
-                    "label": "Incentive",
-                    "icon": "fa fa-money",
-                    "menu_sub": [
-                        {
-                            "label": "Incentive",
-                            "entity": "incentive_monitoring"
+                            "label": "Expense Transaction Header",
+                            "entity": "expense_transaction_header"
                         }
                     ]
                 }

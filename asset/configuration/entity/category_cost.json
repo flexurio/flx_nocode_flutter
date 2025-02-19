@@ -1,0 +1,80 @@
+{
+    "id": "category_cost",
+    "label": "Category Cost",
+    "description": "Master all costs that marketing may submit to lbb",
+    "fields": [
+        {
+            "label": "ID",
+            "reference": "id",
+            "type": "number",
+            "column_width": 3
+        },
+        {
+            "label": "Code",
+            "reference": "code",
+            "type": "text",
+            "column_width": 6,
+            "required": true,
+            "max_length": 20,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Name",
+            "reference": "name",
+            "type": "text",
+            "column_width": 4,
+            "required": true,
+            "max_length": 8,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Chart Of Account Id",
+            "reference": "chart_of_account_id",
+            "type": "text",
+            "column_width": 4,
+            "required": true,
+            "max_length": 8,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "LBB Submission Detail Remark",
+            "reference": "lbb_submission_detail_remark",
+            "type": "text",
+            "column_width": 4,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Created At",
+            "reference": "created_at",
+            "type": "text",
+            "column_width": 9,
+            "auto_generated": true
+        }
+    ],
+    "backend": {
+        "read_all": {
+            "method": "GET",
+            "url": "{backend_host}/lbb_category_costs?sort=id&ascending=false"
+        },
+        "read": {
+            "method": "GET",
+            "url": "{backend_host}/lbb_category_costs/{id}"
+        },
+        "create": {
+            "method": "POST",
+            "url": "{backend_host}/lbb_category_costs"
+        },
+        "update": {
+            "method": "PUT",
+            "url": "{backend_host}/lbb_category_costs/{id}"
+        },
+        "delete": {
+            "method": "DELETE",
+            "url": "{backend_host}/lbb_category_costs/{id}"
+        }
+    }
+}

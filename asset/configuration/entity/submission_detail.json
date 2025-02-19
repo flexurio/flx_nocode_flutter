@@ -1,0 +1,111 @@
+{
+    "id": "submission_detail",
+    "label": "Submission Detail",
+    "description": "Master lbb marketing submission fee",
+    "fields": [
+        {
+            "label": "ID",
+            "reference": "id",
+            "type": "number",
+            "column_width": 3
+        },
+        {
+            "label": "Type",
+            "reference": "type",
+            "type": "text",
+            "column_width": 6,
+            "required": true,
+            "max_length": 50,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Chart Of Account Id",
+            "reference": "chart_of_account_id",
+            "type": "text",
+            "column_width": 4,
+            "required": true,
+            "max_length": 20,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Chart Of Account Statement",
+            "reference": "chart_of_account_statement",
+            "type": "text",
+            "column_width": 4,
+            "required": true,
+            "max_length": 150,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "LBB Category Id",
+            "reference": "lbb_category_id",
+            "type": "number",
+            "column_width": 4,
+            "required": true,
+            "source": "backend.category_lbb({id}-{name})",
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Status",
+            "reference": "status",
+            "type": "text",
+            "column_width": 4,
+            "required": true,
+            "max_length": 50,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Submission Status",
+            "reference": "submission_status",
+            "type": "text",
+            "column_width": 4,
+            "required": true,
+            "max_length": 50,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Sort",
+            "reference": "sort",
+            "type": "number",
+            "column_width": 4,
+            "required": true,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Created At",
+            "reference": "created_at",
+            "type": "text",
+            "column_width": 9,
+            "auto_generated": true
+        }
+    ],
+    "backend": {
+        "read_all": {
+            "method": "GET",
+            "url": "{backend_host}/lbb_submission_details?sort=id&ascending=false"
+        },
+        "read": {
+            "method": "GET",
+            "url": "{backend_host}/lbb_submission_details/{id}"
+        },
+        "create": {
+            "method": "POST",
+            "url": "{backend_host}/lbb_submission_details"
+        },
+        "update": {
+            "method": "PUT",
+            "url": "{backend_host}/lbb_submission_details/{id}"
+        },
+        "delete": {
+            "method": "DELETE",
+            "url": "{backend_host}/lbb_submission_details/{id}"
+        }
+    }
+}

@@ -1,0 +1,94 @@
+{
+    "id": "account_bank",
+    "label": "Account Bank",
+    "description": "master marketing account number",
+    "fields": [
+        {
+            "label": "ID",
+            "reference": "id",
+            "type": "number",
+            "column_width": 3
+        },
+        {
+            "label": "Account No",
+            "reference": "account_no",
+            "type": "text",
+            "column_width": 4,
+            "required": true,
+            "max_length": 100,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Account Name",
+            "reference": "account_name",
+            "type": "text",
+            "column_width": 4,
+            "required": true,
+            "max_length": 500,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Structure Code",
+            "reference": "structure_code",
+            "type": "text",
+            "column_width": 6,
+            "required": true,
+            "max_length": 500,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Nip",
+            "reference": "nip",
+            "type": "text",
+            "column_width": 6,
+            "required": true,
+            "max_length": 100,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Area",
+            "reference": "area",
+            "type": "text",
+            "column_width": 6,
+            "required": true,
+            "max_length": 500,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Position",
+            "reference": "position",
+            "type": "text",
+            "column_width": 50,
+            "auto_generated": true,
+            "allow_create": true,
+            "allow_update": true
+        }
+    ],
+    "backend": {
+        "read_all": {
+            "method": "GET",
+            "url": "{backend_host}/lbb_account_banks?sort=id&ascending=false"
+        },
+        "read": {
+            "method": "GET",
+            "url": "{backend_host}/lbb_account_banks/{id}"
+        },
+        "create": {
+            "method": "POST",
+            "url": "{backend_host}/lbb_account_banks"
+        },
+        "update": {
+            "method": "PUT",
+            "url": "{backend_host}/lbb_account_banks/{id}"
+        },
+        "delete": {
+            "method": "DELETE",
+            "url": "{backend_host}/lbb_account_banks/{id}"
+        }
+    }
+}

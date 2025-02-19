@@ -180,8 +180,7 @@ class EntityDeleteButton extends StatelessWidget {
       permission: null,
       action: DataAction.delete,
       onPressed: () async {
-        final bloc = context.read<EntityBloc>();
-        final success = await _showConfirmationDialog(context, bloc);
+        final success = await _showConfirmationDialog(context);
         if (success ?? false) {
           Navigator.pop(context);
         }
@@ -191,8 +190,8 @@ class EntityDeleteButton extends StatelessWidget {
 
   Future<bool?> _showConfirmationDialog(
     BuildContext context,
-    EntityBloc bloc,
   ) {
+    final bloc = EntityBloc(entity);
     return showDialog<bool?>(
       barrierDismissible: false,
       context: context,

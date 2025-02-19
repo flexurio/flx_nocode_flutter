@@ -1,0 +1,155 @@
+{
+    "id": "settlements",
+    "label": "Settlements",
+    "description": "LBB marketing settlement",
+    "fields": [
+        {
+            "label": "ID",
+            "reference": "id",
+            "type": "number",
+            "column_width": 3
+        },
+        {
+            "label": "Period",
+            "reference": "period",
+            "type": "text",
+            "column_width": 4,
+            "required": true,
+            "max_length": 6,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "LBB Expense Transaction Header Id",
+            "reference": "lbb_expense_transaction_header_id",
+            "type": "number",
+            "column_width": 6,
+            "required": true
+        },
+        {
+            "label": "LBB Expense Transaction Header Code",
+            "reference": "lbb_expense_transaction_header_code",
+            "type": "text",
+            "column_width": 6,
+            "max_length": 50,
+            "required": true
+        },
+        {
+            "label": "Nip",
+            "reference": "nip",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 20,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Subordinate Name",
+            "reference": "subordinate_name",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 150,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Subordinate Nip",
+            "reference": "subordinate_nip",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 20,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Subordinate Area Code",
+            "reference": "subordinate_area_code",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 40,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Value",
+            "reference": "value",
+            "type": "number",
+            "column_width": 4,
+            "required": true,
+            "allow_create": true
+        },
+        {
+            "label": "Settlement Date",
+            "reference": "settlement_date",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
+            "column_width": 4,
+            "allow_update": true,
+            "auto_generated": true
+        },
+        {
+            "label": "Settlement Id",
+            "reference": "settlement_id",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 50,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Settlement Chart Of Account Id",
+            "reference": "settlement_chart_of_account_id",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 60,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Settlement Description",
+            "reference": "settlement_description",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 500,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Status",
+            "reference": "status",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 50,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Created At",
+            "reference": "created_at",
+            "type": "text",
+            "column_width": 9,
+            "auto_generated": true
+        }
+    ],
+    "backend": {
+        "read_all": {
+            "method": "GET",
+            "url": "{backend_host}/lbb_settlements?sort=id&ascending=false"
+        },
+        "read": {
+            "method": "GET",
+            "url": "{backend_host}/lbb_settlements/{id}"
+        },
+        "create": {
+            "method": "POST",
+            "url": "{backend_host}/lbb_settlements"
+        },
+        "update": {
+            "method": "PUT",
+            "url": "{backend_host}/lbb_settlements/{id}"
+        },
+        "delete": {
+            "method": "DELETE",
+            "url": "{backend_host}/lbb_settlements/{id}"
+        }
+    }
+}

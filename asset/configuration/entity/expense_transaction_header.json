@@ -1,0 +1,418 @@
+{
+    "id": "expense_transaction_header",
+    "label": "Expense Transaction Header",
+    "description": "LBB marketing submission",
+    "fields": [
+        {
+            "label": "ID",
+            "reference": "id",
+            "type": "number",
+            "column_width": 3
+        },
+        {
+            "label": "LBB Id",
+            "reference": "lbb_id",
+            "type": "text",
+            "column_width": 6,
+            "max_length": 50,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Period",
+            "reference": "period",
+            "type": "text",
+            "column_width": 4,
+            "required": true,
+            "max_length": 6,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "LBB Category Id",
+            "reference": "lbb_category_id",
+            "type": "number",
+            "column_width": 4,
+            "required": true,
+            "max_length": 8,
+            "source": "backend.category_lbb({id}-{name})",
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Area Code",
+            "reference": "area_code",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 50,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Area Name",
+            "reference": "area_name",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 100,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Nip",
+            "reference": "nip",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 50,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Name",
+            "reference": "name",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 200,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Position",
+            "reference": "position",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 100,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Area Total",
+            "reference": "area_total",
+            "type": "number",
+            "column_width": 4,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Head Office Total",
+            "reference": "head_office_total",
+            "type": "number",
+            "column_width": 4,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Status",
+            "reference": "status",
+            "type": "test",
+            "column_width": 4,
+            "max_length": 20,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Account Bank No",
+            "reference": "account_bank_no",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 20,
+            "source": "backend.account_bank({account_no}-{account_name})",
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Account Bank Id",
+            "reference": "account_bank_id",
+            "type": "number",
+            "column_width": 4,
+            "source": "backend.account_bank({id}-{account_name})",
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Is Transfer",
+            "reference": "is_transfer",
+            "type": "bool",
+            "column_width": 4,
+            "max_length": 20,
+            "allow_update": true
+        },
+        {
+            "label": "Is Confirm KU",
+            "reference": "is_confirm_ku",
+            "type": "bool",
+            "column_width": 4,
+            "max_length": 20,
+            "allow_update": true
+        },
+        {
+            "label": "Confirm KU Date",
+            "reference": "confirm_ku_date",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
+            "column_width": 4,
+            "allow_update": true,
+            "auto_generated": true
+        },
+        {
+            "label": "KU Date",
+            "reference": "ku_date",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
+            "column_width": 4,
+            "allow_update": true,
+            "auto_generated": true
+        },
+        {
+            "label": "Actual Total",
+            "reference": "actual_total",
+            "type": "number",
+            "column_width": 4,
+            "allow_update": true
+        },
+        {
+            "label": "LBB Total",
+            "reference": "lbb_total",
+            "type": "number",
+            "column_width": 4,
+            "allow_update": true
+        },
+        {
+            "label": "Return Status",
+            "reference": "return_status",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 15,
+            "allow_update": true
+        },
+        {
+            "label": "Expenditure Total",
+            "reference": "expenditure_total",
+            "type": "number",
+            "column_width": 4,
+            "allow_update": true
+        },
+        {
+            "label": "Submission Total",
+            "reference": "submission_total",
+            "type": "number",
+            "column_width": 4,
+            "allow_update": true
+        },
+        {
+            "label": "Transaction Date",
+            "reference": "transaction_date",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
+            "column_width": 4,
+            "allow_update": true,
+            "auto_generated": true
+        },
+        {
+            "label": "Transaction Id",
+            "reference": "transaction_id",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 30,
+            "allow_update": true
+        },
+        {
+            "label": "LBB Status",
+            "reference": "lbb_status",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 60,
+            "allow_update": true
+        },
+        {
+            "label": "Remark",
+            "reference": "remark",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 700,
+            "allow_update": true
+        },
+        {
+            "label": "Submission Status",
+            "reference": "submission_status",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 15,
+            "allow_update": true
+        },
+        {
+            "label": "Submission Date",
+            "reference": "submission_date",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
+            "column_width": 4,
+            "allow_update": true,
+            "auto_generated": true
+        },
+        {
+            "label": "LBB Type",
+            "reference": "lbb_type",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 10,
+            "allow_create": true
+        },
+        {
+            "label": "FSM Name",
+            "reference": "fsm_name",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 100,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "FSM Nip",
+            "reference": "fsm_nip",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 25,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "FSM Area Code",
+            "reference": "fsm_area_code",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 100,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Realization No",
+            "reference": "realization_no",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 100,
+            "allow_update": true
+        },
+        {
+            "label": "Realization Date",
+            "reference": "realization_date",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
+            "column_width": 4,
+            "allow_update": true,
+            "auto_generated": true
+        },
+        {
+            "label": "Total Realization Submission",
+            "reference": "total_realization_submission",
+            "type": "number",
+            "column_width": 4,
+            "allow_update": true
+        },
+        {
+            "label": "Transaction Type",
+            "reference": "transaction_type",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 100,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Confirm Status",
+            "reference": "confirm_status",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 100,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Confirm By",
+            "reference": "confirm_by",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 100,
+            "allow_update": true
+        },
+        {
+            "label": "Confirm Date",
+            "reference": "confirm_date",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
+            "column_width": 4,
+            "allow_create": true,
+            "allow_update": true,
+            "auto_generated": true
+        },
+        {
+            "label": "Reason",
+            "reference": "confirm_by",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 600,
+            "allow_update": true
+        },
+        {
+            "label": "Final Confirmed Status",
+            "reference": "final_confirmed_status",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 100,
+            "allow_update": true
+        },
+        {
+            "label": "Is Realization",
+            "reference": "is_realization",
+            "type": "bool",
+            "column_width": 4,
+            "max_length": 100,
+            "allow_update": true
+        },
+        {
+            "label": "Realization Reason",
+            "reference": "realization_reason",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 250,
+            "allow_update": true
+        },
+        {
+            "label": "Is Reject",
+            "reference": "is_reject",
+            "type": "bool",
+            "column_width": 4,
+            "max_length": 100,
+            "allow_update": true
+        },
+        {
+            "label": "Old Confirmation No",
+            "reference": "old_confirmation_no",
+            "type": "text",
+            "column_width": 4,
+            "max_length": 100,
+            "allow_update": true
+        },
+        {
+            "label": "Created At",
+            "reference": "created_at",
+            "type": "text",
+            "column_width": 9,
+            "auto_generated": true
+        }
+    ],
+    "backend": {
+        "read_all": {
+            "method": "GET",
+            "url": "{backend_host}/lbb_expense_transaction_headers?sort=lbb_expense_transaction_headers.id&ascending=false"
+        },
+        "read": {
+            "method": "GET",
+            "url": "{backend_host}/lbb_expense_transaction_headers/{id}"
+        },
+        "create": {
+            "method": "POST",
+            "url": "{backend_host}/lbb_expense_transaction_headers"
+        },
+        "update": {
+            "method": "PUT",
+            "url": "{backend_host}/lbb_expense_transaction_headers/{id}"
+        },
+        "delete": {
+            "method": "DELETE",
+            "url": "{backend_host}/lbb_expense_transaction_headers/{id}"
+        }
+    }
+}

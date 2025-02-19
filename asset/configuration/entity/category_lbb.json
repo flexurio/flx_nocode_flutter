@@ -1,14 +1,13 @@
 {
-    "id": "bank_type",
-    "label": "Bank Type",
-    "description": "Specifies the type of bank associated with the transaction or account, such as 'Commercial', 'Central', or 'Development'.",
+    "id": "category_lbb",
+    "label": "Category LBB",
+    "description": "Commonly used LBB submission master categories",
     "fields": [
         {
             "label": "ID",
             "reference": "id",
             "type": "number",
-            "column_width": 3,
-            "auto_generated": true
+            "column_width": 3
         },
         {
             "label": "Name",
@@ -16,40 +15,48 @@
             "type": "text",
             "column_width": 3,
             "required": true,
-            "pattern": "^[a-zA-Z0-9 ]{3,}$",
-            "min_length": 3,
-            "max_length": 255,
+            "max_length": 200,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Type",
+            "reference": "type",
+            "type": "text",
+            "column_width": 6,
+            "required": true,
+            "max_length": 200,
             "allow_create": true,
             "allow_update": true
         },
         {
             "label": "Created At",
             "reference": "created_at",
-            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
-            "column_width": 3,
+            "type": "text",
+            "column_width": 9,
             "auto_generated": true
         }
     ],
     "backend": {
         "read_all": {
             "method": "GET",
-            "url": "{backend_host}/bank_types"
+            "url": "{backend_host}/lbb_categories?sort=id&ascending=false"
         },
         "read": {
             "method": "GET",
-            "url": "{backend_host}/bank_types/{id}"
+            "url": "{backend_host}/lbb_categories/{id}"
         },
         "create": {
             "method": "POST",
-            "url": "{backend_host}/bank_types"
+            "url": "{backend_host}/lbb_categories"
         },
         "update": {
             "method": "PUT",
-            "url": "{backend_host}/bank_types/{id}"
+            "url": "{backend_host}/lbb_categories/{id}"
         },
         "delete": {
             "method": "DELETE",
-            "url": "{backend_host}/bank_types/{id}"
+            "url": "{backend_host}/lbb_categories/{id}"
         }
     }
 }
