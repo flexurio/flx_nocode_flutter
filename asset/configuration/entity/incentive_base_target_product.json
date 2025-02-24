@@ -1,0 +1,138 @@
+{
+    "id": "incentive_base_target_product",
+    "label": "Incentive Target Product",
+    "description": "Incentive Target Product entity configuration",
+    "fields": [
+        {
+            "label": "ID",
+            "reference": "id",
+            "type": "number",
+            "column_width": 5,
+            "required": true,
+            "auto_generated": true
+        },
+        {
+            "label": "Period",
+            "reference": "period",
+            "type": "varchar",
+            "column_width": 4,
+            "required": true,
+            "max_length": 8
+        },
+        {
+            "label": "Code",
+            "reference": "code",
+            "type": "varchar",
+            "column_width": 6,
+            "required": true,
+            "max_length": 20
+        },
+        {
+            "label": "Position",
+            "reference": "position",
+            "type": "varchar",
+            "column_width": 6,
+            "required": true,
+            "max_length": 5
+        },
+        {
+            "label": "Product Category",
+            "reference": "product_category",
+            "type": "varchar",
+            "column_width": 6,
+            "required": true,
+            "max_length": 20
+        },
+        {
+            "label": "Qty Rutin",
+            "reference": "qty_rutin",
+            "type": "decimal",
+            "column_width": 6,
+            "required": true,
+            "precision": 18,
+            "scale": 2,
+            "default": 0.00
+        },
+        {
+            "label": "Qty Non Rutin",
+            "reference": "qty_non_rutin",
+            "type": "decimal",
+            "column_width": 6,
+            "required": true,
+            "precision": 18,
+            "scale": 2,
+            "default": 0.00
+        },
+        {
+            "label": "Qty Total",
+            "reference": "qty_total",
+            "type": "decimal",
+            "column_width": 6,
+            "required": true,
+            "precision": 18,
+            "scale": 2,
+            "default": 0.00
+        },
+        {
+            "label": "Value Rutin",
+            "reference": "value_rutin",
+            "type": "decimal",
+            "column_width": 6,
+            "required": true,
+            "precision": 18,
+            "scale": 0,
+            "default": 0
+        },
+        {
+            "label": "Value Non Rutin",
+            "reference": "value_non_rutin",
+            "type": "decimal",
+            "column_width": 6,
+            "required": true,
+            "precision": 18,
+            "scale": 0,
+            "default": 0
+        },
+        {
+            "label": "Value Total",
+            "reference": "value_total",
+            "type": "decimal",
+            "column_width": 6,
+            "required": true,
+            "precision": 18,
+            "scale": 0,
+            "default": 0
+        },
+        {
+            "label": "Created At",
+            "reference": "created_at",
+            "type": "datetime(yyyy-MM-dd HH:mm:ss)",
+            "column_width": 9,
+            "auto_generated": true
+        }
+    ],
+    "exports": [
+        {
+            "name": "Incentive Target Product",
+            "type": "pdf",
+            "backend": "{backend_host}/incentive_base_target_products?sort=id&ascending=true",
+            "fields": ["period","code","position","product_category","qty_rutin","qty_non_rutin","qty_total","value_rutin","value_non_rutin","value_total"]
+        },
+        {
+            "name": "Incentive Target Product",
+            "type": "xlsx",
+            "backend": "{backend_host}/incentive_base_target_products?sort=id&ascending=true",
+            "fields": ["period","code","position","product_category","qty_rutin","qty_non_rutin","qty_total","value_rutin","value_non_rutin","value_total"]
+        }
+    ],
+    "backend": {
+        "read_all": {
+            "method": "GET",
+            "url": "{backend_host}/incentive_base_target_products?sort=id&ascending=false"
+        },
+        "read": {
+            "method": "GET",
+            "url": "{backend_host}/incentive_base_target_products/{id}"
+        }
+    }
+}

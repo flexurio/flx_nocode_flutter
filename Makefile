@@ -3,6 +3,12 @@ TIME := $(shell date +"%Y.%m.%d.%H.%M-GMT7")
 find:
 	find lib/ -type f -name "*.dart" ! -name "*.g.dart" ! -name "*.freezed.dart" | sed "s|^|export '|; s|$|';|"
 
+dsk:
+	cp lib/src/app/util/picker_file_desktop lib/src/app/util/picker_file.dart
+
+wb:
+	cp lib/src/app/util/picker_file_web lib/src/app/util/picker_file.dart
+
 cp:
 	sh copy_asset.sh
 

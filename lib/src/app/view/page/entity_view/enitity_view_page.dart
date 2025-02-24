@@ -4,6 +4,7 @@ import 'package:flexurio_no_code/src/app/model/entity.dart' as configuration;
 import 'package:flexurio_no_code/src/app/model/entity_field.dart';
 import 'package:flexurio_no_code/src/app/view/page/entity_create/entity_create_page.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:flexurio_no_code/src/app/view/page/entity_view/widget/delete_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -64,6 +65,7 @@ class EntityViewPage extends StatelessWidget {
         EntityDeleteButton.prepare(
           entity: entity,
           data: data,
+          onSuccess: () => onRefresh(context),
         ),
     ];
   }
@@ -150,85 +152,6 @@ class EntityViewPage extends StatelessWidget {
         Column(children: leftColumnChildren),
         Column(children: rightColumnChildren),
       ],
-    );
-  }
-}
-
-class EntityDeleteButton extends StatelessWidget {
-  const EntityDeleteButton._({
-    required this.entity,
-    required this.data,
-  });
-
-  final Map<String, dynamic> data;
-
-  static Widget prepare({
-    required configuration.EntityCustom entity,
-    required Map<String, dynamic> data,
-  }) {
-    return BlocProvider(
-      create: (context) => EntityBloc(entity),
-      child: EntityDeleteButton._(entity: entity, data: data),
-    );
-  }
-
-  final configuration.EntityCustom entity;
-
-  @override
-  Widget build(BuildContext context) {
-    return LightButton(
-      permission: null,
-      action: DataAction.delete,
-      onPressed: () async {
-        final success = await _showConfirmationDialog(context);
-        if (success ?? false) {
-          Navigator.pop(context);
-        }
-      },
-    );
-  }
-
-  Future<bool?> _showConfirmationDialog(
-    BuildContext context,
-  ) {
-    final bloc = EntityBloc(entity);
-    return showDialog<bool?>(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        const action = DataAction.delete;
-        return BlocListener<EntityBloc, EntityState>(
-          bloc: bloc,
-          listener: (context, state) {
-            state.maybeWhen(
-              success: (_) {
-                Toast(context).dataChanged(action, entity.coreEntity);
-                Navigator.pop(context, true);
-              },
-              error: (error) => Toast(context).fail(error),
-              orElse: () {},
-            );
-          },
-          child: BlocBuilder<EntityBloc, EntityState>(
-            bloc: bloc,
-            builder: (context, state) {
-              final isInProgress = state.maybeWhen(
-                loading: () => true,
-                orElse: () => false,
-              );
-              return CardConfirmation(
-                isProgress: isInProgress,
-                action: action,
-                data: entity.coreEntity,
-                label: data['id'].toString(),
-                onConfirm: () {
-                  bloc.add(EntityEvent.delete(id: data['id'].toString()));
-                },
-              );
-            },
-          ),
-        );
-      },
     );
   }
 }

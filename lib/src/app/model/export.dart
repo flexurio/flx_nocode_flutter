@@ -44,7 +44,7 @@ class Export {
 }
 
 class ButtonExport extends StatelessWidget {
-  const ButtonExport({super.key, required this.export, this.filters});
+  const ButtonExport._({required this.export, required this.filters});
 
   final Export export;
   final List<Filter>? filters;
@@ -55,7 +55,7 @@ class ButtonExport extends StatelessWidget {
   }) {
     return MultiBlocProvider(
       providers: [BlocProvider(create: (_) => EntityCustomQueryBloc())],
-      child: ButtonExport(export: export),
+      child: ButtonExport._(export: export, filters: filters),
     );
   }
 
