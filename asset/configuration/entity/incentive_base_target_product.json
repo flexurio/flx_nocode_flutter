@@ -133,6 +133,10 @@
         "read": {
             "method": "GET",
             "url": "{backend_host}/incentive_base_target_products/{id}"
+        },
+        "delete": {
+            "method": "DELETE",
+            "url": "{backend_host}/incentive_base_target_products/{id}"
         }
     }
 }

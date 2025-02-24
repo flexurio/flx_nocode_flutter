@@ -34,10 +34,7 @@ class EntityDeleteButton extends StatelessWidget {
       permission: null,
       action: DataAction.delete,
       onPressed: () async {
-        final success = await _showConfirmationDialog(context);
-        if (success ?? false) {
-          Navigator.pop(context);
-        }
+        await _showConfirmationDialog(context);
       },
     );
   }
