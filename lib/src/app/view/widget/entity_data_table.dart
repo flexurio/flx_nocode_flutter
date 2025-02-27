@@ -2,6 +2,7 @@ import 'package:flexurio_no_code/src/app/bloc/entity_custom_query/entity_custom_
 import 'package:flexurio_no_code/src/app/model/entity_field.dart';
 import 'package:flexurio_no_code/src/app/model/filter.dart';
 import 'package:flexurio_no_code/src/app/view/page/entity_view/enitity_view_page.dart';
+import 'package:flexurio_no_code/src/app/view/widget/data_list_view.dart';
 import 'package:flexurio_no_code/src/app/view/widget/entity_create_button.dart';
 import 'package:flexurio_no_code/src/app/view/widget/filter.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -61,103 +62,149 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   Widget build(BuildContext context) {
     return BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
       builder: (context, state) {
-        return SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: DataTableBackend<Map<String, dynamic>>(
-            freezeFirstColumn: true,
-            freezeLastColumn: true,
-            onRefresh: () => _fetch(),
-            key: ValueKey(state.hashCode),
-            status: state.maybeWhen(
-              loading: (_) => Status.progress,
-              orElse: () => Status.error,
-              loaded: (materials) => Status.loaded,
-            ),
-            pageOptions: state.maybeWhen(
-              loaded: (data) => data,
-              loading: (data) => data,
-              orElse: PageOptions.empty,
-            ),
-            onChanged: (pageOptions) {
-              _fetch(pageOptions: pageOptions);
-            },
-            actionLeft: [
-              _buildFilterInformation(Theme.of(context).colorScheme.primary),
-            ],
-            actionRight: (refreshButton) => [
-              _buildButtonExports(),
-              FilterButton(
-                fields: widget.entity.fields,
-                currentFilters: _filters,
-                onFilterChanged: (filters) {
-                  _filters = filters;
-                  _fetch();
-                },
-              ),
-              refreshButton,
-              if (widget.entity.allowCreate)
-                EntityCreateButton(
-                  entity: widget.entity,
-                  onSuccess: () {
-                    _fetch();
-                  },
-                ),
-            ],
-            columns: [
-              ...List.generate(
-                widget.entity.fields.length,
-                (index) {
-                  final e = widget.entity.fields.elementAt(index);
-                  return DTColumn(
-                    widthFlex: e.columnWidth ?? 5,
-                    head: DTHead(backendColumn: e.reference, label: e.label),
-                    body: (entity) => DataCell(
-                      EntityField.buildDisplay(
-                        widget.entity,
-                        e.reference,
-                        entity[e.reference],
-                        index != 0
-                            ? null
-                            : () async {
-                                await Navigator.push(
-                                  context,
-                                  EntityViewPage.route(
-                                    entity: widget.entity,
-                                    data: entity,
-                                  ),
-                                );
-                                _fetch();
-                              },
-                      ),
-                    ),
-                  );
-                },
-              ),
-              DTColumn(
-                widthFlex: 4,
-                head: DTHead(
-                  label: 'actions'.tr(),
-                  backendColumn: null,
-                ),
-                body: (data) => DataCell(
-                  Row(
-                    children: [
-                      ActionsButton(
-                        children: EntityViewPage.actions(
-                          context,
-                          data,
-                          widget.entity,
-                          (context) => _fetch(),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ],
+        // return _buildTableView(
+        //   status: state.maybeWhen(
+        //     loading: (_) => Status.progress,
+        //     orElse: () => Status.error,
+        //     loaded: (materials) => Status.loaded,
+        //   ),
+        //   pageOptions: state.maybeWhen(
+        //     loaded: (data) => data,
+        //     loading: (data) => data,
+        //     orElse: PageOptions.empty,
+        //   ),
+        // );
+        return _buildListView(
+          status: state.maybeWhen(
+            loading: (_) => Status.progress,
+            orElse: () => Status.error,
+            loaded: (materials) => Status.loaded,
+          ),
+          pageOptions: state.maybeWhen(
+            loaded: (data) => data,
+            loading: (data) => data,
+            orElse: PageOptions.empty,
           ),
         );
       },
+    );
+  }
+
+  Widget _buildListView({
+    required Status status,
+    required PageOptions<Map<String, dynamic>> pageOptions,
+  }) {
+    return DataListView(
+        status: status,
+        pageOptions: pageOptions,
+        builder: (data) {
+          final keys = data.keys.toList();
+          final keysLength = data.keys.length;
+          String? key1 = keysLength > 1 ? keys[0] : null;
+          String? key2 = keysLength > 2 ? keys[1] : null;
+          String? key3 = keysLength > 3 ? keys[2] : null;
+          return ListTileItem(
+            title: key1 == null
+                ? null
+                : Text(
+                    data[key1],
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+            subtitle: key2 == null ? null : Text(data[key2]),
+            trailing: key3 == null ? null : Text(data[key3]),
+          );
+        });
+  }
+
+  Widget _buildTableView({
+    required Status status,
+    required PageOptions<Map<String, dynamic>> pageOptions,
+  }) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      child: DataTableBackend<Map<String, dynamic>>(
+        freezeFirstColumn: true,
+        freezeLastColumn: true,
+        onRefresh: () => _fetch(),
+        key: ValueKey(pageOptions.hashCode),
+        status: status,
+        pageOptions: pageOptions,
+        onChanged: (pageOptions) => _fetch(pageOptions: pageOptions),
+        actionLeft: [
+          _buildFilterInformation(Theme.of(context).colorScheme.primary),
+        ],
+        actionRight: (refreshButton) => [
+          _buildButtonExports(),
+          FilterButton(
+            fields: widget.entity.fields,
+            currentFilters: _filters,
+            onFilterChanged: (filters) {
+              _filters = filters;
+              _fetch();
+            },
+          ),
+          refreshButton,
+          if (widget.entity.allowCreate)
+            EntityCreateButton(
+              entity: widget.entity,
+              onSuccess: () {
+                _fetch();
+              },
+            ),
+        ],
+        columns: [
+          ...List.generate(
+            widget.entity.fields.length,
+            (index) {
+              final e = widget.entity.fields.elementAt(index);
+              return DTColumn(
+                widthFlex: e.columnWidth ?? 5,
+                head: DTHead(backendColumn: e.reference, label: e.label),
+                body: (entity) => DataCell(
+                  EntityField.buildDisplay(
+                    widget.entity,
+                    e.reference,
+                    entity[e.reference],
+                    index != 0
+                        ? null
+                        : () async {
+                            await Navigator.push(
+                              context,
+                              EntityViewPage.route(
+                                entity: widget.entity,
+                                data: entity,
+                              ),
+                            );
+                            _fetch();
+                          },
+                  ),
+                ),
+              );
+            },
+          ),
+          DTColumn(
+            widthFlex: 4,
+            head: DTHead(
+              label: 'actions'.tr(),
+              backendColumn: null,
+            ),
+            body: (data) => DataCell(
+              Row(
+                children: [
+                  ActionsButton(
+                    children: EntityViewPage.actions(
+                      context,
+                      data,
+                      widget.entity,
+                      (context) => _fetch(),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
