@@ -105,30 +105,28 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     if (widget.entity.layoutListTile == null) {
       return NoCodeError('layout_list_tile is null');
     }
-
-    final key = widget.entity.layoutListTile!;
-
     return DataListView(
-        actionLeft: [
-          _buildFilterInformation(Theme.of(context).colorScheme.primary),
-        ],
-        actionRight: _buildActionRight,
-        onChanged: _fetch,
-        onRefresh: _fetch,
-        status: status,
-        pageOptions: pageOptions,
-        builder: (data) {
-          return ListTileItem(
-            title: key.title == null
-                ? null
-                : Text(
-                    data[key.title],
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-            subtitle: key.subtitle == null ? null : Text(data[key.subtitle]),
-            trailing: key.trailing == null ? null : Text(data[key.trailing]),
-          );
-        });
+      actionLeft: _buildActionLeft(),
+      actionRight: _buildActionRight,
+      onChanged: _fetch,
+      onRefresh: _fetch,
+      status: status,
+      pageOptions: pageOptions,
+      builder: (data) {
+        return widget.entity.layoutListTile!.build(
+          data: data,
+          onTap: () {
+            Navigator.push(
+              context,
+              EntityViewPage.route(
+                entity: widget.entity,
+                data: data,
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Widget _buildTableView({
@@ -145,9 +143,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
         pageOptions: pageOptions,
         onChanged: _fetch,
         onRefresh: _fetch,
-        actionLeft: [
-          _buildFilterInformation(Theme.of(context).colorScheme.primary),
-        ],
+        actionLeft: _buildActionLeft(),
         actionRight: _buildActionRight,
         columns: [
           ...List.generate(
@@ -203,6 +199,13 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
         ],
       ),
     );
+  }
+
+  List<Widget> _buildActionLeft() {
+    if (_filters.isEmpty) return const <Widget>[];
+    return [
+      _buildFilterInformation(Theme.of(context).colorScheme.primary),
+    ];
   }
 
   List<Widget> _buildActionRight(Widget refreshButton) {

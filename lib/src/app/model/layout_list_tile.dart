@@ -1,3 +1,6 @@
+import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:flutter/material.dart';
+
 class LayoutListTile {
   String? title;
   String? subtitle;
@@ -8,6 +11,23 @@ class LayoutListTile {
     required this.subtitle,
     required this.trailing,
   });
+
+  Widget build({
+    required VoidCallback onTap,
+    required Map<String, dynamic> data,
+  }) {
+    return ListTileItem(
+      onTap: onTap,
+      title: title == null
+          ? null
+          : Text(
+              data[title],
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+      subtitle: subtitle == null ? null : Text(data[subtitle]),
+      trailing: trailing == null ? null : Text(data[trailing]),
+    );
+  }
 
   factory LayoutListTile.fromJson(Map<String, dynamic> json) {
     return LayoutListTile(

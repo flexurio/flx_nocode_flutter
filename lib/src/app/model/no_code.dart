@@ -34,7 +34,10 @@ class NoCode {
                 ThemeMode.light,
               ),
               home: Scaffold(
-                body: MenuCustom(entityId: entityId),
+                body: MenuCustom(
+                  entityId: entityId,
+                  embedded: true,
+                ),
               ),
             );
           }),
