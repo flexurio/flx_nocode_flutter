@@ -2,7 +2,7 @@ import 'package:flexurio_no_code/src/app/bloc/entity_custom_query/entity_custom_
 import 'package:flexurio_no_code/src/app/model/entity_field.dart';
 import 'package:flexurio_no_code/src/app/model/filter.dart';
 import 'package:flexurio_no_code/src/app/view/page/entity_view/enitity_view_page.dart';
-import 'package:flexurio_no_code/src/app/view/widget/data_list_view.dart';
+import 'package:flexurio_erp_core/src/app/view/widget/data_list_view.dart';
 import 'package:flexurio_no_code/src/app/view/widget/entity_create_button.dart';
 import 'package:flexurio_no_code/src/app/view/widget/filter.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -49,7 +49,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     _fetch();
   }
 
-  void _fetch({PageOptions<Map<String, dynamic>>? pageOptions}) {
+  void _fetch([PageOptions<Map<String, dynamic>>? pageOptions]) {
     context.read<EntityCustomQueryBloc>().add(
           EntityCustomQueryEvent.fetch(
             pageOptions: pageOptions,
@@ -109,6 +109,12 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     final key = widget.entity.layoutListTile!;
 
     return DataListView(
+        actionLeft: [
+          _buildFilterInformation(Theme.of(context).colorScheme.primary),
+        ],
+        actionRight: _buildActionRight,
+        onChanged: _fetch,
+        onRefresh: _fetch,
         status: status,
         pageOptions: pageOptions,
         builder: (data) {
@@ -134,33 +140,15 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       child: DataTableBackend<Map<String, dynamic>>(
         freezeFirstColumn: true,
         freezeLastColumn: true,
-        onRefresh: () => _fetch(),
         key: ValueKey(pageOptions.hashCode),
         status: status,
         pageOptions: pageOptions,
-        onChanged: (pageOptions) => _fetch(pageOptions: pageOptions),
+        onChanged: _fetch,
+        onRefresh: _fetch,
         actionLeft: [
           _buildFilterInformation(Theme.of(context).colorScheme.primary),
         ],
-        actionRight: (refreshButton) => [
-          _buildButtonExports(),
-          FilterButton(
-            fields: widget.entity.fields,
-            currentFilters: _filters,
-            onFilterChanged: (filters) {
-              _filters = filters;
-              _fetch();
-            },
-          ),
-          refreshButton,
-          if (widget.entity.allowCreate)
-            EntityCreateButton(
-              entity: widget.entity,
-              onSuccess: () {
-                _fetch();
-              },
-            ),
-        ],
+        actionRight: _buildActionRight,
         columns: [
           ...List.generate(
             widget.entity.fields.length,
@@ -215,6 +203,28 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
         ],
       ),
     );
+  }
+
+  List<Widget> _buildActionRight(Widget refreshButton) {
+    return [
+      _buildButtonExports(),
+      FilterButton(
+        fields: widget.entity.fields,
+        currentFilters: _filters,
+        onFilterChanged: (filters) {
+          _filters = filters;
+          _fetch();
+        },
+      ),
+      refreshButton,
+      if (widget.entity.allowCreate)
+        EntityCreateButton(
+          entity: widget.entity,
+          onSuccess: () {
+            _fetch();
+          },
+        ),
+    ];
   }
 
   Widget _buildButtonExports() {
