@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flexurio_no_code/src/app/model/configuration.dart';
 import 'package:flexurio_no_code/src/app/model/entity_field.dart';
 import 'package:flexurio_no_code/src/app/model/export.dart';
+import 'package:flexurio_no_code/src/app/model/layout_list_tile.dart';
 import 'package:flexurio_no_code/src/app/model/view.dart' as view;
 import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class EntityCustom {
   final List<Export> exports;
   final Backend backend;
   final Map<String, dynamic> layout;
+  final LayoutListTile? layoutListTile;
 
   EntityCustom({
     required this.id,
@@ -26,6 +28,7 @@ class EntityCustom {
     required this.views,
     required this.backend,
     required this.layout,
+    required this.layoutListTile,
     required this.exports,
   });
 
@@ -65,6 +68,9 @@ class EntityCustom {
               .map((e) => Export.fromJson(e))
               .toList()
           : [],
+      layoutListTile: json.containsKey('layout_list_tile')
+          ? LayoutListTile.fromJson(json['layout_list_tile'])
+          : null,
     );
   }
 

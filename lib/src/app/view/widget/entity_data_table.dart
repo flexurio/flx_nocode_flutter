@@ -10,6 +10,8 @@ import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flexurio_no_code/src/app/model/entity.dart';
+import 'package:gap/gap.dart';
+import 'package:screen_identifier/screen_identifier.dart';
 
 class MenuDataTableCustom extends StatefulWidget {
   const MenuDataTableCustom._({
@@ -62,29 +64,35 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   Widget build(BuildContext context) {
     return BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
       builder: (context, state) {
-        // return _buildTableView(
-        //   status: state.maybeWhen(
-        //     loading: (_) => Status.progress,
-        //     orElse: () => Status.error,
-        //     loaded: (materials) => Status.loaded,
-        //   ),
-        //   pageOptions: state.maybeWhen(
-        //     loaded: (data) => data,
-        //     loading: (data) => data,
-        //     orElse: PageOptions.empty,
-        //   ),
-        // );
-        return _buildListView(
-          status: state.maybeWhen(
-            loading: (_) => Status.progress,
-            orElse: () => Status.error,
-            loaded: (materials) => Status.loaded,
-          ),
-          pageOptions: state.maybeWhen(
-            loaded: (data) => data,
-            loading: (data) => data,
-            orElse: PageOptions.empty,
-          ),
+        return ScreenIdentifierBuilder(
+          builder: (context, screenIdentifier) {
+            return screenIdentifier.conditions(
+              md: _buildTableView(
+                status: state.maybeWhen(
+                  loading: (_) => Status.progress,
+                  orElse: () => Status.error,
+                  loaded: (materials) => Status.loaded,
+                ),
+                pageOptions: state.maybeWhen(
+                  loaded: (data) => data,
+                  loading: (data) => data,
+                  orElse: PageOptions.empty,
+                ),
+              ),
+              sm: _buildListView(
+                status: state.maybeWhen(
+                  loading: (_) => Status.progress,
+                  orElse: () => Status.error,
+                  loaded: (materials) => Status.loaded,
+                ),
+                pageOptions: state.maybeWhen(
+                  loaded: (data) => data,
+                  loading: (data) => data,
+                  orElse: PageOptions.empty,
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -94,24 +102,25 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     required Status status,
     required PageOptions<Map<String, dynamic>> pageOptions,
   }) {
+    if (widget.entity.layoutListTile == null) {
+      return NoCodeError('layout_list_tile is null');
+    }
+
+    final key = widget.entity.layoutListTile!;
+
     return DataListView(
         status: status,
         pageOptions: pageOptions,
         builder: (data) {
-          final keys = data.keys.toList();
-          final keysLength = data.keys.length;
-          String? key1 = keysLength > 1 ? keys[0] : null;
-          String? key2 = keysLength > 2 ? keys[1] : null;
-          String? key3 = keysLength > 3 ? keys[2] : null;
           return ListTileItem(
-            title: key1 == null
+            title: key.title == null
                 ? null
                 : Text(
-                    data[key1],
+                    data[key.title],
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-            subtitle: key2 == null ? null : Text(data[key2]),
-            trailing: key3 == null ? null : Text(data[key3]),
+            subtitle: key.subtitle == null ? null : Text(data[key.subtitle]),
+            trailing: key.trailing == null ? null : Text(data[key.trailing]),
           );
         });
   }
@@ -240,6 +249,30 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             ),
           )
           .toList(),
+    );
+  }
+}
+
+class NoCodeError extends StatelessWidget {
+  const NoCodeError(this.message, {super.key});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        color: Colors.black,
+        border: Border.all(color: Colors.red, width: 6),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.error, color: Colors.red),
+          Gap(6),
+          Text(message, style: TextStyle(color: Colors.white)),
+        ],
+      ),
     );
   }
 }
