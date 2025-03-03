@@ -83,16 +83,11 @@ class EntityViewPage extends StatelessWidget {
             onPressed: () async {
               _showConfirmationDialog(
                 context: context,
-                onSuccess: () => onRefresh(context),
+                onSuccess: () => Navigator.pop(context),
                 entity: entity,
                 data: data,
               );
             })
-      // EntityDeleteButton.prepare(
-      //   entity: entity,
-      //   data: data,
-      //   onSuccess: () => onRefresh(context),
-      // ),
     ];
   }
 

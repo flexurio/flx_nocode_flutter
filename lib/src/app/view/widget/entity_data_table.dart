@@ -118,7 +118,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
         }
         return widget.entity.layoutListTile!.build(
           data: data,
-          onTap: () {
+          onTap: () async {
             Navigator.push(
               context,
               EntityViewPage.route(
@@ -126,7 +126,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 entity: widget.entity,
                 data: data,
               ),
-            );
+            ).then((value) => _fetch());
           },
         );
       },
