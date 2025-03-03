@@ -8,10 +8,12 @@ class MenuCustom extends StatelessWidget {
   const MenuCustom({
     super.key,
     required this.entityId,
+    this.firstPage = false,
     this.embedded = false,
     this.initialFilters = const [],
   });
 
+  final bool firstPage;
   final bool embedded;
   final String entityId;
   final List<Filter> initialFilters;
@@ -43,7 +45,15 @@ class MenuCustom extends StatelessWidget {
         appBar: embedded
             ? AppBar(
                 backgroundColor: theme.scaffoldBackgroundColor,
-                leading: BackButton(),
+                leading: BackButton(
+                  onPressed: () {
+                    if (firstPage) {
+                      Navigator.of(context, rootNavigator: true).pop(true);
+                    } else {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
                 title: Text(entity.label),
               )
             : null,

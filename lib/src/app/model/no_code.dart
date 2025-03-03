@@ -37,6 +37,7 @@ class NoCode {
                 body: MenuCustom(
                   entityId: entityId,
                   embedded: true,
+                  firstPage: true,
                 ),
               ),
             );
