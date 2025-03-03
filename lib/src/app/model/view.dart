@@ -44,21 +44,38 @@ class View {
   }
 
   ActionButtonItem button(
-      BuildContext context, Map<String, dynamic> data, EntityCustom entity) {
+    BuildContext context,
+    Map<String, dynamic> data,
+    EntityCustom entity,
+    bool embedded,
+  ) {
     return ActionButtonItem(
       color: DataAction.view.color,
       icon: DataAction.view.icon,
       label: '${DataAction.view.title} $label',
       onPressed: () async {
-        MenuBloc.instance.add(
-          Menu3Selected(
-            home: MenuCustom(
-              entityId: entity.id,
-              initialFilters: _filters(entity, data),
+        if (embedded) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MenuCustom(
+                embedded: true,
+                entityId: entity.id,
+                initialFilters: _filters(entity, data),
+              ),
             ),
-            label: entity.label,
-          ),
-        );
+          );
+        } else {
+          MenuBloc.instance.add(
+            Menu3Selected(
+              home: MenuCustom(
+                entityId: entity.id,
+                initialFilters: _filters(entity, data),
+              ),
+              label: entity.label,
+            ),
+          );
+        }
       },
     );
   }

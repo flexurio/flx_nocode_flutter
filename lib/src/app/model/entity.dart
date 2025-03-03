@@ -99,7 +99,17 @@ class EntityCustom {
     BuildContext context,
     Map<String, dynamic> data,
     EntityCustom entity,
+    bool embedded,
   ) {
-    return views.map((e) => e.button(context, data, entity)).toList();
+    return views
+        .map(
+          (e) => e.button(
+            context,
+            data,
+            entity,
+            embedded,
+          ),
+        )
+        .toList();
   }
 }
