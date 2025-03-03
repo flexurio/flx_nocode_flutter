@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flexurio_no_code/src/app/model/configuration.dart';
 import 'package:flexurio_no_code/src/app/model/entity_field.dart';
 import 'package:flexurio_no_code/src/app/model/export.dart';
@@ -94,7 +95,11 @@ class EntityCustom {
   bool get allowUpdate => backend.update != null;
   bool get allowDelete => backend.delete != null;
 
-  List<Widget> buttonViews(BuildContext context, Map<String, dynamic> data) {
-    return views.map((e) => e.button(context, data)).toList();
+  List<ActionButtonItem> buttonViews(
+    BuildContext context,
+    Map<String, dynamic> data,
+    EntityCustom entity,
+  ) {
+    return views.map((e) => e.button(context, data, entity)).toList();
   }
 }

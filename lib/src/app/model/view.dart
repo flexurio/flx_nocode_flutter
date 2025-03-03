@@ -1,7 +1,7 @@
+import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flexurio_no_code/src/app/model/entity.dart';
 import 'package:flexurio_no_code/src/app/model/filter.dart';
 import 'package:flexurio_no_code/src/app/view/widget/entity_home.dart';
-import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
 import 'package:flutter/material.dart';
 
 class View {
@@ -43,30 +43,23 @@ class View {
     return filters;
   }
 
-  Widget button(BuildContext context, Map<String, dynamic> data) {
-    return FutureBuilder<EntityCustom?>(
-        future: EntityCustom.getEntity(entity),
-        builder: (context, snapshot) {
-          final entity = snapshot.data;
-
-          return core.LightButton(
-            action: core.DataAction.view,
-            title: label,
-            permission: null,
-            onPressed: entity == null
-                ? null
-                : () async {
-                    core.MenuBloc.instance.add(
-                      core.Menu3Selected(
-                        home: MenuCustom(
-                          entityId: entity.id,
-                          initialFilters: _filters(entity, data),
-                        ),
-                        label: entity.label,
-                      ),
-                    );
-                  },
-          );
-        });
+  ActionButtonItem button(
+      BuildContext context, Map<String, dynamic> data, EntityCustom entity) {
+    return ActionButtonItem(
+      color: DataAction.view.color,
+      icon: DataAction.view.icon,
+      label: '${DataAction.view.title} $label',
+      onPressed: () async {
+        MenuBloc.instance.add(
+          Menu3Selected(
+            home: MenuCustom(
+              entityId: entity.id,
+              initialFilters: _filters(entity, data),
+            ),
+            label: entity.label,
+          ),
+        );
+      },
+    );
   }
 }

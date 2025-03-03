@@ -2,7 +2,6 @@ import 'package:flexurio_no_code/src/app/bloc/entity_custom_query/entity_custom_
 import 'package:flexurio_no_code/src/app/model/entity_field.dart';
 import 'package:flexurio_no_code/src/app/model/filter.dart';
 import 'package:flexurio_no_code/src/app/view/page/entity_view/enitity_view_page.dart';
-import 'package:flexurio_erp_core/src/app/view/widget/data_list_view.dart';
 import 'package:flexurio_no_code/src/app/view/widget/entity_create_button.dart';
 import 'package:flexurio_no_code/src/app/view/widget/filter.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -16,10 +15,12 @@ import 'package:screen_identifier/screen_identifier.dart';
 class MenuDataTableCustom extends StatefulWidget {
   const MenuDataTableCustom._({
     required this.entity,
+    required this.embedded,
     required this.initialFilters,
   });
 
   static Widget prepare({
+    required bool embedded,
     required EntityCustom entity,
     required List<Filter> initialFilters,
   }) {
@@ -27,12 +28,14 @@ class MenuDataTableCustom extends StatefulWidget {
       create: (_) => EntityCustomQueryBloc(),
       child: MenuDataTableCustom._(
         entity: entity,
+        embedded: embedded,
         initialFilters: initialFilters,
       ),
     );
   }
 
   final EntityCustom entity;
+  final bool embedded;
   final List<Filter> initialFilters;
 
   @override
@@ -102,9 +105,6 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     required Status status,
     required PageOptions<Map<String, dynamic>> pageOptions,
   }) {
-    if (widget.entity.layoutListTile == null) {
-      return NoCodeError('layout_list_tile is null');
-    }
     return DataListView(
       actionLeft: _buildActionLeft(),
       actionRight: _buildActionRight,
@@ -113,12 +113,16 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       status: status,
       pageOptions: pageOptions,
       builder: (data) {
+        if (widget.entity.layoutListTile == null) {
+          return NoCodeError('layout_list_tile is null');
+        }
         return widget.entity.layoutListTile!.build(
           data: data,
           onTap: () {
             Navigator.push(
               context,
               EntityViewPage.route(
+                embedded: true,
                 entity: widget.entity,
                 data: data,
               ),
@@ -164,6 +168,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                             await Navigator.push(
                               context,
                               EntityViewPage.route(
+                                embedded: widget.embedded,
                                 entity: widget.entity,
                                 data: entity,
                               ),
@@ -184,14 +189,14 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             body: (data) => DataCell(
               Row(
                 children: [
-                  ActionsButton(
-                    children: EntityViewPage.actions(
-                      context,
-                      data,
-                      widget.entity,
-                      (context) => _fetch(),
-                    ),
-                  )
+                  // ActionsButton(
+                  //   children: EntityViewPage.actions(
+                  //     context,
+                  //     data,
+                  //     widget.entity,
+                  //     (context) => _fetch(),
+                  //   ),
+                  // )
                 ],
               ),
             ),
@@ -222,6 +227,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       refreshButton,
       if (widget.entity.allowCreate)
         EntityCreateButton(
+          embedded: widget.embedded,
           entity: widget.entity,
           onSuccess: () {
             _fetch();

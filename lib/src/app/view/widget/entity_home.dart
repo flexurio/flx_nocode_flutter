@@ -60,6 +60,7 @@ class MenuCustom extends StatelessWidget {
               child: MenuDataTableCustom.prepare(
                 entity: entity,
                 initialFilters: initialFilters,
+                embedded: embedded,
               ),
             ),
           ],
