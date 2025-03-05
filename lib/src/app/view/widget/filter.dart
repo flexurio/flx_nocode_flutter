@@ -1,9 +1,10 @@
 import 'package:flexurio_no_code/src/app/model/entity_field.dart';
 import 'package:flexurio_no_code/src/app/model/filter.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:flexurio_no_code/src/app/view/widget/filter_field.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:screen_identifier/screen_identifier.dart';
 
 class FilterButton extends StatelessWidget {
   const FilterButton({
@@ -19,32 +20,54 @@ class FilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final count = currentFilters.length;
     return Badge.count(
       isLabelVisible: count > 0,
       count: count,
-      child: LightButtonSmall(
-        action: DataAction.filter,
-        permission: null,
-        onPressed: () async {
-          final filters = await showDialog<List<Filter>?>(
-            context: context,
-            builder: (context) => Dialog(
-              backgroundColor: theme.cardColor,
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                width: 600,
-                child: FormFilter(
-                  fields: fields,
-                  filters: currentFilters,
+      child: ScreenIdentifierBuilder(
+        builder: (context, screenIdentifier) {
+          return LightButtonSmall(
+            action: DataAction.filter,
+            permission: null,
+            onPressed: () async {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (context) => FractionallySizedBox(
+                  heightFactor: 0.9,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 24,
+                    ),
+                    child: FormFilter(
+                      isSmallScreen: true,
+                      fields: fields,
+                      filters: currentFilters,
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+
+              // final filters = await showDialog<List<Filter>?>(
+              //   context: context,
+              //   builder: (context) => Dialog(
+              //     backgroundColor: theme.cardColor,
+              //     child: Container(
+              //       padding: const EdgeInsets.all(24),
+              //       width: 600,
+              //       child: FormFilter(
+              //         fields: fields,
+              //         filters: currentFilters,
+              //       ),
+              //     ),
+              //   ),
+              // );
+              // if (filters != null) {
+              //   onFilterChanged(filters);
+              // }
+            },
           );
-          if (filters != null) {
-            onFilterChanged(filters);
-          }
         },
       ),
     );
@@ -52,10 +75,17 @@ class FilterButton extends StatelessWidget {
 }
 
 class FormFilter extends StatefulWidget {
-  const FormFilter({super.key, required this.fields, required this.filters});
+  const FormFilter({
+    super.key,
+    required this.fields,
+    required this.filters,
+    required,
+    required this.isSmallScreen,
+  });
 
   final List<EntityField> fields;
   final List<Filter> filters;
+  final bool isSmallScreen;
 
   @override
   State<FormFilter> createState() => _FormFilterState();
@@ -80,52 +110,53 @@ class _FormFilterState extends State<FormFilter> {
             _filters.length,
             (index) => Padding(
               padding: const EdgeInsets.only(bottom: 6),
-              child: Row(
-                children: [
-                  Expanded(child: _buildFieldName(index)),
-                  Gap(12),
-                  Expanded(
-                    child: FTextFieldSmall(
-                      hintText: 'value'.tr(),
-                      controller:
-                          TextEditingController(text: _filters[index].value),
-                      onChanged: (p0) {
-                        _setValue(index, p0);
-                      },
-                    ),
-                  ),
-                  Gap(12),
-                  IconButton(
-                    icon: Icon(
-                      Icons.delete_outline_rounded,
-                      color: Colors.red,
-                    ),
-                    onPressed: () => _removeFilter(index),
-                  ),
-                ],
+              child: FilterField(
+                addFilter: _addFilter,
+                fields: widget.fields,
+                index: index,
+                isSmallScreen: widget.isSmallScreen,
+                setValue: _setValue,
+                removeFilter: _removeFilter,
+                filter: _filters[index],
               ),
             ),
           ),
         if (_filters.isEmpty) Gap(6),
-        Row(
-          children: [
-            Expanded(child: _buildFieldName(-1)),
-            Gap(12),
-            Spacer(),
-            Gap(12),
-            SizedBox(
-              width: 39,
-            ),
-          ],
-        ),
+        _buildFilterFirstLarge(),
         Gap(12),
         Button(
           action: DataAction.applyFilter,
           permission: null,
-          onPressed: () {
-            Navigator.pop(context, _filters);
-          },
+          onPressed: () => Navigator.pop(context, _filters),
         ).pullRight(),
+      ],
+    );
+  }
+
+  void _setValue(int index, String value) {
+    _filters[index] = _filters[index].copyWith(value: value);
+  }
+
+  void _removeFilter(int index) {
+    _filters.removeAt(index);
+    setState(() {});
+  }
+
+  Widget _buildFilterFirstLarge() {
+    return Row(
+      children: [
+        Expanded(
+          child: FilterFieldName(
+            index: -1,
+            fields: widget.fields,
+            addFilter: _addFilter,
+            filter: null,
+          ),
+        ),
+        Gap(12),
+        Spacer(),
+        Gap(12),
+        SizedBox(width: 39),
       ],
     );
   }
@@ -141,49 +172,6 @@ class _FormFilterState extends State<FormFilter> {
     }
 
     setState(() {});
-  }
-
-  void _setValue(int index, String value) {
-    _filters[index] = _filters[index].copyWith(value: value);
-  }
-
-  void _removeFilter(int index) {
-    _filters.removeAt(index);
-    setState(() {});
-  }
-
-  // Widget _buildFieldName(int index) {
-  //   return FDropDownSearchSmall<EntityField>(
-  //     labelText: 'field'.tr(),
-  //     initialValue: index == -1
-  //         ? null
-  //         : widget.fields
-  //             .firstWhere((e) => e.reference == _filters[index].reference),
-  //     itemAsString: (data) => data.label,
-  //     items: widget.fields,
-  //     onChanged: (entityField) {
-  //       _addFilter(index, entityField!);
-  //     },
-  //     iconField: Icons.business_rounded,
-  //   );
-  // }
-
-  Widget _buildFieldName(int index) {
-    return FDropDownSearchSmallMultiple<EntityField>(
-      labelText: 'field'.tr(),
-      initialValue: index == -1
-          ? []
-          : widget.fields
-              .where((e) =>
-                  _filters[index].reference.split('|').contains(e.reference))
-              .toList(),
-      itemAsString: (data) => data.label,
-      items: widget.fields,
-      onChanged: (entityField) {
-        _addFilter(index, entityField);
-      },
-      iconField: Icons.business_rounded,
-    );
   }
 }
 
@@ -212,9 +200,11 @@ class FTextFieldSmall extends StatelessWidget {
         borderRadius: BorderRadius.circular(6));
 
     return SizedBox(
-      height: 32,
+      height: isPlatformMobile() ? 36 : 32,
       child: TextField(
         decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
           hintText: hintText,
           contentPadding: EdgeInsets.symmetric(vertical: 1, horizontal: 12),
           enabledBorder: border,
