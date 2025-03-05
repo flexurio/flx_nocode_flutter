@@ -44,19 +44,22 @@ class FilterField extends StatelessWidget {
   }
 
   Widget _buildButtonRemove(int index) {
-    return LightButtonSmall(
-      action: DataAction.delete,
-      title: 'Filter',
-      permission: null,
-      onPressed: () => removeFilter(index),
-    );
-    // return IconButton(
-    //   icon: Icon(
-    //     Icons.delete_outline_rounded,
-    //     color: Colors.red,
-    //   ),
-    //   onPressed: () => _removeFilter(index),
-    // );
+    if (isSmallScreen) {
+      return LightButtonSmall(
+        action: DataAction.delete,
+        title: 'Filter',
+        permission: null,
+        onPressed: () => removeFilter(index),
+      );
+    } else {
+      return IconButton(
+        icon: Icon(
+          Icons.delete_outline_rounded,
+          color: Colors.red,
+        ),
+        onPressed: () => removeFilter(index),
+      );
+    }
   }
 
   Widget _buildFilterItemSmall(int index) {
@@ -71,6 +74,7 @@ class FilterField extends StatelessWidget {
           _buildFieldName(index),
           Gap(12),
           _buildFieldValue(index),
+          Gap(12),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [

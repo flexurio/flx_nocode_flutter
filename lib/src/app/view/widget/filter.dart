@@ -1,9 +1,8 @@
 import 'package:flexurio_no_code/src/app/model/entity_field.dart';
 import 'package:flexurio_no_code/src/app/model/filter.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
-import 'package:flexurio_no_code/src/app/view/widget/filter_field.dart';
+import 'package:flexurio_no_code/src/app/view/widget/form_filter.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:screen_identifier/screen_identifier.dart';
 
 class FilterButton extends StatelessWidget {
@@ -26,152 +25,55 @@ class FilterButton extends StatelessWidget {
       count: count,
       child: ScreenIdentifierBuilder(
         builder: (context, screenIdentifier) {
+          final isSmall = screenIdentifier.conditions(sm: true, md: false);
+
           return LightButtonSmall(
             action: DataAction.filter,
             permission: null,
             onPressed: () async {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                builder: (context) => FractionallySizedBox(
-                  heightFactor: 0.9,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
-                      vertical: 24,
-                    ),
-                    child: FormFilter(
-                      isSmallScreen: true,
-                      fields: fields,
-                      filters: currentFilters,
-                    ),
-                  ),
-                ),
+              final formFilter = FormFilter(
+                isSmallScreen: isSmall,
+                fields: fields,
+                filters: currentFilters,
               );
 
-              // final filters = await showDialog<List<Filter>?>(
-              //   context: context,
-              //   builder: (context) => Dialog(
-              //     backgroundColor: theme.cardColor,
-              //     child: Container(
-              //       padding: const EdgeInsets.all(24),
-              //       width: 600,
-              //       child: FormFilter(
-              //         fields: fields,
-              //         filters: currentFilters,
-              //       ),
-              //     ),
-              //   ),
-              // );
-              // if (filters != null) {
-              //   onFilterChanged(filters);
-              // }
+              List<Filter>? filters;
+              if (isSmall) {
+                filters = await showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (context) => FractionallySizedBox(
+                    heightFactor: 0.9,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 24,
+                      ),
+                      child: formFilter,
+                    ),
+                  ),
+                );
+              } else {
+                filters = await showDialog<List<Filter>?>(
+                  context: context,
+                  builder: (context) => Dialog(
+                    child: Container(
+                      padding: const EdgeInsets.all(24),
+                      width: 600,
+                      child: formFilter,
+                    ),
+                  ),
+                );
+              }
+
+              if (filters != null) {
+                onFilterChanged(filters);
+              }
             },
           );
         },
       ),
     );
-  }
-}
-
-class FormFilter extends StatefulWidget {
-  const FormFilter({
-    super.key,
-    required this.fields,
-    required this.filters,
-    required,
-    required this.isSmallScreen,
-  });
-
-  final List<EntityField> fields;
-  final List<Filter> filters;
-  final bool isSmallScreen;
-
-  @override
-  State<FormFilter> createState() => _FormFilterState();
-}
-
-class _FormFilterState extends State<FormFilter> {
-  final _filters = <Filter>[];
-
-  @override
-  void initState() {
-    super.initState();
-    _filters.addAll(widget.filters);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (_filters.isNotEmpty)
-          ...List.generate(
-            _filters.length,
-            (index) => Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: FilterField(
-                addFilter: _addFilter,
-                fields: widget.fields,
-                index: index,
-                isSmallScreen: widget.isSmallScreen,
-                setValue: _setValue,
-                removeFilter: _removeFilter,
-                filter: _filters[index],
-              ),
-            ),
-          ),
-        if (_filters.isEmpty) Gap(6),
-        _buildFilterFirstLarge(),
-        Gap(12),
-        Button(
-          action: DataAction.applyFilter,
-          permission: null,
-          onPressed: () => Navigator.pop(context, _filters),
-        ).pullRight(),
-      ],
-    );
-  }
-
-  void _setValue(int index, String value) {
-    _filters[index] = _filters[index].copyWith(value: value);
-  }
-
-  void _removeFilter(int index) {
-    _filters.removeAt(index);
-    setState(() {});
-  }
-
-  Widget _buildFilterFirstLarge() {
-    return Row(
-      children: [
-        Expanded(
-          child: FilterFieldName(
-            index: -1,
-            fields: widget.fields,
-            addFilter: _addFilter,
-            filter: null,
-          ),
-        ),
-        Gap(12),
-        Spacer(),
-        Gap(12),
-        SizedBox(width: 39),
-      ],
-    );
-  }
-
-  void _addFilter(int index, List<EntityField> field) {
-    final reference = field.map((e) => e.reference).join('|');
-    if (index == -1) {
-      _filters.add(
-        Filter(reference: reference, value: ''),
-      );
-    } else {
-      _filters[index] = _filters[index].copyWith(reference: reference);
-    }
-
-    setState(() {});
   }
 }
 
@@ -196,8 +98,9 @@ class FTextFieldSmall extends StatelessWidget {
     );
 
     final border = OutlineInputBorder(
-        borderSide: BorderSide(color: borderColor),
-        borderRadius: BorderRadius.circular(6));
+      borderSide: BorderSide(color: borderColor),
+      borderRadius: BorderRadius.circular(6),
+    );
 
     return SizedBox(
       height: isPlatformMobile() ? 36 : 32,
