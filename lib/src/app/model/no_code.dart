@@ -16,8 +16,10 @@ class NoCode {
     );
   }
 
-  static navigatePushCreate(
-      {required BuildContext context, required String entityId}) async {
+  static navigatePushCreate({
+    required BuildContext context,
+    required String entityId,
+  }) async {
     final entity = await EntityCustom.getEntity(entityId);
     if (entity == null) {
       throw Exception('entity $entityId not found');
