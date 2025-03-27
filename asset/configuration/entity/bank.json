@@ -74,6 +74,11 @@
             "Information" : {
                 "name,bank_type_id": 1
             }
+        },
+        "update": {
+            "Information" : {
+                "id,name,bank_type_id": 1
+            }
         }
     }
 }

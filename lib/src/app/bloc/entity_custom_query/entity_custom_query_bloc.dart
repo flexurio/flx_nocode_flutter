@@ -46,7 +46,7 @@ class EntityCustomQueryBloc
             emit(_Loading(_pageOptions));
             try {
               final data = await EntityCustomRepository.instance.fetchById(
-                accessToken: '',
+                accessToken: UserRepositoryApp.instance.token!,
                 id: id,
                 method: method,
                 path: url,

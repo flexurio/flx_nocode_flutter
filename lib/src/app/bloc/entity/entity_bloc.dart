@@ -1,5 +1,6 @@
 import 'package:flexurio_no_code/src/app/resource/entity_custom.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:flexurio_no_code/src/app/resource/user_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flexurio_no_code/src/app/model/entity.dart' as configuration;
@@ -9,8 +10,11 @@ part 'entity_bloc.freezed.dart';
 @freezed
 class EntityState with _$EntityState {
   const factory EntityState.initial() = _Initial;
+
   const factory EntityState.loading() = _Loading;
+
   const factory EntityState.success(Map<String, dynamic>? data) = _Success;
+
   const factory EntityState.error(String error) = _Error;
 }
 
@@ -19,9 +23,11 @@ class EntityEvent with _$EntityEvent {
   const factory EntityEvent.create({
     required Map<String, dynamic> data,
   }) = _Create;
+
   const factory EntityEvent.edit({
     required Map<String, dynamic> data,
   }) = _Edit;
+
   const factory EntityEvent.delete({required String id}) = _Delete;
 }
 
@@ -33,7 +39,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
           emit(const _Loading());
           try {
             final response = await EntityCustomRepository.instance.modify(
-              accessToken: '',
+              accessToken: UserRepositoryApp.instance.token!,
               path: entity.backend.create!.url,
               method: entity.backend.create!.method,
               data: data,
@@ -47,8 +53,11 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
           emit(const _Loading());
           try {
             final response = await EntityCustomRepository.instance.modify(
-              accessToken: '',
-              path: entity.backend.update!.url.replaceFirst('{id}', data['id']),
+              accessToken: UserRepositoryApp.instance.token!,
+              path: entity.backend.update!.url.replaceFirst(
+                '{id}',
+                Uri.encodeComponent(data['id']),
+              ),
               method: entity.backend.update!.method,
               data: data,
             );
@@ -61,8 +70,11 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
           emit(const _Loading());
           try {
             await EntityCustomRepository.instance.modify(
-              accessToken: '',
-              path: entity.backend.delete!.url.replaceFirst('{id}', id),
+              accessToken: UserRepositoryApp.instance.token!,
+              path: entity.backend.delete!.url.replaceFirst(
+                '{id}',
+                Uri.encodeComponent(id),
+              ),
               method: entity.backend.delete!.method,
             );
             emit(const _Success(null));

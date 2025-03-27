@@ -39,13 +39,13 @@ class EntityCustomRepository extends Repository {
       case 'POST':
         return dio.post<T>(
           url,
-          data: body != null ? jsonEncode(body) : null,
+          data: body != null ? FormData.fromMap(body) : null,
           options: Options(headers: headers),
         );
       case 'PUT':
         return dio.put<T>(
           url,
-          data: body != null ? jsonEncode(body) : null,
+          data: body != null ? FormData.fromMap(body) : null,
           options: Options(headers: headers),
         );
       case 'DELETE':

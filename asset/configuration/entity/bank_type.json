@@ -7,7 +7,7 @@
             "label": "ID",
             "reference": "id",
             "type": "number",
-            "column_width": 3,
+            "column_width": 8,
             "auto_generated": true
         },
         {
@@ -50,6 +50,18 @@
         "delete": {
             "method": "DELETE",
             "url": "{backend_host}/bank_types/{id}"
+        }
+    },
+    "layout": {
+        "create": {
+            "Information" : {
+                "name": 1
+            }
+        },
+        "update": {
+            "Information" : {
+                "id,name": 1
+            }
         }
     }
 }

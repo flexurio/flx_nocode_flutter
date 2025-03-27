@@ -25,6 +25,10 @@
                         {
                             "label": "Bank",
                             "entity": "bank"
+                        },
+                        {
+                            "label": "Bank Type",
+                            "entity": "bank_type"
                         }
                     ]
                 }
