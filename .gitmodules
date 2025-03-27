@@ -7,3 +7,6 @@
 [submodule "packages/flexurio_chiron_finance"]
 	path = packages/flexurio_chiron_finance
 	url = https://gitlab.com/VNEU/flexurio-chiron-finance.git
+[submodule "packages/flexurio_erp_authentication"]
+	path = packages/flexurio_erp_authentication
+	url = https://gitlab.com/VNEU/flexurio-chiron-authentication.git

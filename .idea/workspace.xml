@@ -5,13 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="805882a8-216a-407b-bb87-7e41cd69ed72" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/lib/src/app/model/entity_field.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/model/entity_field.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/resource/entity_custom.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/resource/entity_custom.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/entity_view/enitity_view_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/page/entity_view/enitity_view_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/widget/entity_drop_down.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/widget/entity_drop_down.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/widget/entity_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/widget/entity_home.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/flexurio_erp_core" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_erp_core" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/flexurio_erp_core/lib/src/app/view/widget/title_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_erp_core/lib/src/app/view/widget/title_page.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/packages/flexurio_erp_authentication" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitmodules" beforeDir="false" afterPath="$PROJECT_DIR$/.gitmodules" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flexurio_no_code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/flexurio_no_code.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/util/picker_file.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/util/picker_file.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,33 +46,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Flutter.MF Development.executor": "Debug",
-    "Flutter.Main.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "com.codeium.enabled": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "io.flutter.reload.alreadyRun": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/muali/Documents/Development/project/vneu/voltunes/erp-web-app",
-    "settings.editor.selected.configurable": "preferences.keymap",
-    "show.migrate.to.gradle.popup": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Flutter.MF Development.executor&quot;: &quot;Debug&quot;,
+    &quot;Flutter.Main.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;create-doc&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/muali/Documents/Development/project/vneu/flexurio_no_code&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\lib\src\app\view\page\widget\editor" />
       <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\packages\flexurio_chiron_material_stock\lib\src\app\model" />
     </key>
   </component>
+  <component name="RunManager" selected="Flutter.Main" />
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

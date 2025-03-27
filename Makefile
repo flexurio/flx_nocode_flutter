@@ -42,5 +42,8 @@ fetch:
 	git config --global url."https://$(ACCESS_TOKEN)@gitlab.com".insteadOf "https://gitlab.com"
 	git submodule update --remote
 
+bldauth:
+	cd packages/flexurio_erp_authentication && flutter pub run build_runner build --delete-conflicting-outputs && cd ../..
+
 ts:
 	flutter test test/code/line_count_test.dart
