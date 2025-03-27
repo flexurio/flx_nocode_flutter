@@ -29,6 +29,8 @@ Future<void> main() async {
       );
     },
     unAuthenticated: LoginPage.prepare(
+      logoNamedUrl: configuration.logoNamedUrl,
+      logoUrl: configuration.logoUrl,
       withTwoFactor: false,
       onLoginSuccess: (accessToken, userPayload) async {
         return userPayload;
