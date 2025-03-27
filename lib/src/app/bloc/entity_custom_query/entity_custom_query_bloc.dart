@@ -1,7 +1,9 @@
+import 'package:flexurio_erp_authentication/flexurio_erp_authentication.dart';
 import 'package:flexurio_no_code/src/app/model/entity.dart';
 import 'package:flexurio_no_code/src/app/model/filter.dart';
 import 'package:flexurio_no_code/src/app/resource/entity_custom.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:flexurio_no_code/src/app/resource/user_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
@@ -67,7 +69,7 @@ class EntityCustomQueryBloc
               }
 
               _pageOptions = await EntityCustomRepository.instance.fetch(
-                accessToken: 'text',
+                accessToken: UserRepositoryApp.instance.token!,
                 pageOptions: _pageOptions,
                 method: method,
                 path: url,

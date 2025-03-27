@@ -11,7 +11,7 @@
             "auto_generated": true
         },
         {
-            "label": "Name Mur",
+            "label": "Name",
             "reference": "name",
             "type": "text",
             "column_width": 3,
@@ -67,6 +67,13 @@
         "delete": {
             "method": "DELETE",
             "url": "{backend_host}/banks/{id}"
+        }
+    },
+    "layout": {
+        "create": {
+            "Information" : {
+                "name,bank_type_id": 1
+            }
         }
     }
 }

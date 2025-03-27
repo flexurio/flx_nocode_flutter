@@ -16,76 +16,15 @@
     },
     "menu_group": [
         {
-            "label": "Insentive",
+            "label": "Finance",
             "menu": [
                 {
                     "label": "Master",
                     "icon": "fa fa-money",
                     "menu_sub": [
                         {
-                            "label": "Sales Product",
-                            "entity": "incentive_sales_product"
-                        },
-                        {
-                            "label": "Sales Category Product",
-                            "entity": "incentive_base_sales_category_product"
-                        },
-                        {
-                            "label": "Sales Structure",
-                            "entity": "incentive_base_sales_structure"
-                        },
-                        {
-                            "label": "Subordinate Structure",
-                            "entity": "incentive_base_subordinate_structure"
-                        },
-                        {
-                            "label": "Target Category Product",
-                            "entity": "incentive_base_target_category_product"
-                        },
-                        {
-                            "label": "Target Product",
-                            "entity": "incentive_base_target_product"
-                        },
-                        {
-                            "label": "Cn Customer",
-                            "entity": "incentive_base_cn_customer"
-                        },
-                        {
-                            "label": "Cn Discount Product",
-                            "entity": "incentive_base_cn_discount_product"
-                        },
-                        {
-                            "label": "Cn Customer Outlet Product Type",
-                            "entity": "incentive_base_cn_customer_outlet_product_type"
-                        }
-                    ]
-                },
-                {
-                    "label": "Transaction",
-                    "icon": "fa fa-money",
-                    "menu_sub": [
-                        {
-                            "label": "Incentive Header",
-                            "entity": "incentive_header"
-                        },
-                        {
-                            "label": "Incentive Detail",
-                            "entity": "incentive_detail"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "label": "Monitoring",
-            "menu": [
-                {
-                    "label": "Incentive",
-                    "icon": "fa fa-money",
-                    "menu_sub": [
-                        {
-                            "label": "Incentive",
-                            "entity": "incentive_monitoring"
+                            "label": "Bank",
+                            "entity": "bank"
                         }
                     ]
                 }
