@@ -28,7 +28,7 @@
             "type": "number",
             "column_width": 3,
             "required": true,
-            "source": "backend.bank_type({id}-{name})",
+            "source": "backend.bank_types({id}-{name})",
             "allow_create": true,
             "allow_update": true
         },
