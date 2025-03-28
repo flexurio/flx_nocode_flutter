@@ -108,7 +108,7 @@ class EntityField {
       return AbsorbPointer(
         absorbing: !isEnabled,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+          padding: const EdgeInsets.symmetric(vertical: 7.5, horizontal: 6),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             color: isEnabled ? null : Colors.blueGrey.shade100,
