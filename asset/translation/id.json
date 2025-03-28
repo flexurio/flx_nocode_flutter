@@ -1,4 +1,7 @@
 {
+    "write": "Menulis",
+    "read": "Memuat",
+    "execute": "Mengeksekusi",
     "field": "Bidang",
     "down_payment": "Uang Muka",
     "settlement": "Penyelesaian",

@@ -5,6 +5,7 @@ import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:gap/gap.dart';
 
 class EntityField {
   final String label;
@@ -81,49 +82,74 @@ class EntityField {
     return (entity, key, value);
   }
 
-  Widget buildForm(DataAction action, TextEditingController controller) {
-    final isEnabled = _enabled(action);
-    if (source != null) {
-      return FDropDownSearchEntity(
-        itemAsString: (id, label) => '$id - $label',
-        entityField: this,
-        initialValue: action.isEdit ? {'id': controller.text} : null,
-        enabled: isEnabled,
-        onChanged: (value) {
-          controller.text = value!['id'].toString();
-        },
-      );
-    } else if (isDateTime) {
-      final initialDate = action.isEdit
-          ? (DateTime.tryParse(controller.text) ??
-              DateFormat.yMMMMd().parse(controller.text))
-          : null;
-      return FieldDatePicker(
-        labelText: label,
-        initialSelectedDate: initialDate,
-        controller: controller,
-        validator: requiredObjectValidator.call,
-      );
-    } else if (isBool) {
-      final value = controller.text == '1' ? true : false;
-      return AbsorbPointer(
-        absorbing: !isEnabled,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 7.5, horizontal: 6),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: isEnabled ? null : Colors.blueGrey.shade100,
-            border: Border.all(color: Colors.grey.shade300),
-          ),
-          child: CheckboxWithText(
-            onChanged: (value) => controller.text = value ? '1' : '0',
-            initialValue: value,
-            text: '$label' + (isEnabled ? '' : ' (Read Only)'),
-          ),
-        ),
-      );
-    }
+  Widget buildFieldDropDown(
+    DataAction action,
+    TextEditingController controller,
+    bool isEnabled,
+  ) {
+    return FDropDownSearchEntity(
+      itemAsString: (id, label) => '$id - $label',
+      entityField: this,
+      initialValue: action.isEdit ? {'id': controller.text} : null,
+      enabled: isEnabled,
+      onChanged: (value) {
+        controller.text = value!['id'].toString();
+      },
+    );
+  }
 
+  Widget buildFieldBool(
+    DataAction action,
+    TextEditingController controller,
+    bool isEnabled,
+  ) {
+    final value = controller.text == '1' ? true : false;
+    return AbsorbPointer(
+      absorbing: !isEnabled,
+      child: FieldCheckBox(
+        label: label,
+        initialValue: value,
+        onChanged: (value) => controller.text = value ? '1' : '0',
+      ),
+    );
+  }
+
+  Widget buildFieldPermission(
+    DataAction action,
+    TextEditingController controller,
+    bool isEnabled,
+  ) {
+    return AbsorbPointer(
+      absorbing: !isEnabled,
+      child: FieldCheckboxPermission(
+        initialValue: Access.fromValue(int.tryParse(controller.text) ?? 0),
+        onChanged: (value) => controller.text = value.getValue().toString(),
+      ),
+    );
+  }
+
+  Widget buildFieldDateTime(
+    DataAction action,
+    TextEditingController controller,
+    bool isEnabled,
+  ) {
+    final initialDate = action.isEdit
+        ? (DateTime.tryParse(controller.text) ??
+            DateFormat.yMMMMd().parse(controller.text))
+        : null;
+    return FieldDatePicker(
+      labelText: label,
+      initialSelectedDate: initialDate,
+      controller: controller,
+      validator: requiredObjectValidator.call,
+    );
+  }
+
+  Widget buildFieldText(
+    DataAction action,
+    TextEditingController controller,
+    bool isEnabled,
+  ) {
     return FTextFormField(
       labelText: label,
       enabled: isEnabled,
@@ -138,6 +164,21 @@ class EntityField {
         ),
       ]),
     );
+  }
+
+  Widget buildForm(DataAction action, TextEditingController controller) {
+    final isEnabled = _enabled(action);
+    if (source != null) {
+      return buildFieldDropDown(action, controller, isEnabled);
+    } else if (isDateTime) {
+      return buildFieldDateTime(action, controller, isEnabled);
+    } else if (isBool) {
+      return buildFieldBool(action, controller, isEnabled);
+    } else if (isPermission) {
+      return buildFieldPermission(action, controller, isEnabled);
+    }
+
+    return buildFieldText(action, controller, isEnabled);
   }
 
   static Widget buildDisplay(EntityCustom entity, String label, dynamic value,
@@ -175,6 +216,7 @@ class EntityField {
 
   bool get isDateTime => type.contains('datetime');
   bool get isBool => type == 'bool';
+  bool get isPermission => type == 'permission';
 
   String get dateTimeFormat {
     final regex = RegExp(r'datetime\((.*?)\)');
@@ -230,5 +272,102 @@ class FieldOptions {
       'label_field': labelField,
       'value_field': valueField,
     };
+  }
+}
+
+class Access {
+  final bool delete;
+  final bool write;
+  final bool read;
+  final bool execute;
+
+  Access({
+    required this.delete,
+    required this.write,
+    required this.read,
+    required this.execute,
+  });
+
+  int getValue() {
+    return (delete ? 1 : 0) +
+        (write ? 2 : 0) +
+        (read ? 4 : 0) +
+        (execute ? 8 : 0);
+  }
+
+  static Access fromValue(int value) {
+    return Access(
+      delete: (value & 1) == 1,
+      write: (value & 2) == 2,
+      read: (value & 4) == 4,
+      execute: (value & 8) == 8,
+    );
+  }
+
+  Access copyWith({
+    bool? delete,
+    bool? write,
+    bool? read,
+    bool? execute,
+  }) {
+    return Access(
+      delete: delete ?? this.delete,
+      write: write ?? this.write,
+      read: read ?? this.read,
+      execute: execute ?? this.execute,
+    );
+  }
+}
+
+class FieldCheckboxPermission extends StatelessWidget {
+  const FieldCheckboxPermission({
+    required this.initialValue,
+    required this.onChanged,
+    super.key,
+  });
+  final Access initialValue;
+  final void Function(Access) onChanged;
+
+  void _onChanged(String event, bool value) {
+    if (event == 'delete') {
+      onChanged(initialValue.copyWith(delete: value));
+    } else if (event == 'write') {
+      onChanged(initialValue.copyWith(write: value));
+    } else if (event == 'read') {
+      onChanged(initialValue.copyWith(read: value));
+    } else if (event == 'execute') {
+      onChanged(initialValue.copyWith(execute: value));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        FieldCheckBox(
+          label: 'delete'.tr(),
+          initialValue: initialValue.delete,
+          onChanged: (value) => _onChanged('delete', value),
+        ),
+        Gap(12),
+        FieldCheckBox(
+          label: 'write'.tr(),
+          initialValue: initialValue.write,
+          onChanged: (value) => _onChanged('write', value),
+        ),
+        Gap(12),
+        FieldCheckBox(
+          label: 'read'.tr(),
+          initialValue: initialValue.read,
+          onChanged: (value) => _onChanged('read', value),
+        ),
+        Gap(12),
+        FieldCheckBox(
+          label: 'execute'.tr(),
+          initialValue: initialValue.execute,
+          onChanged: (value) => _onChanged('execute', value),
+        ),
+      ],
+    );
   }
 }

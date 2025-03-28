@@ -1,4 +1,7 @@
 {
+    "write": "Write",
+    "read": "Read",
+    "execute": "Execute",
     "field": "Field",
     "down_payment": "Down Payment",
     "settlement": "Settlement",

@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="805882a8-216a-407b-bb87-7e41cd69ed72" name="Changes" comment="update bank">
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="805882a8-216a-407b-bb87-7e41cd69ed72" name="Changes" comment="change background">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/asset/configuration/entity/flx_roles.json" beforeDir="false" afterPath="$PROJECT_DIR$/asset/configuration/entity/flx_roles.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/flexurio_no_code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/flexurio_no_code.iml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +19,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitToolBoxStore">
     <option name="recentBranches">
@@ -70,7 +70,7 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;Flutter.MF Development.executor&quot;: &quot;Debug&quot;,
-    &quot;Flutter.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Flutter.Main.executor&quot;: &quot;Debug&quot;,
     &quot;Makefile Target.bldauth.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
@@ -85,13 +85,15 @@
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/muali/Documents/Development/project/vneu/flexurio_no_code/lib/src/app/model&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/muali/Documents/Development/project/vneu/flexurio_no_code/asset/image&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
     &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\asset\image" />
+      <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\asset\configuration\entity" />
       <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\lib\src\app\model" />
       <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\lib\src\app\resource" />
     </key>
@@ -146,7 +148,71 @@
       <option name="project" value="LOCAL" />
       <updated>1743054998826</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="add user">
+      <option name="closed" value="true" />
+      <created>1743121416801</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1743121416801</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fix height checkbox">
+      <option name="closed" value="true" />
+      <created>1743121780470</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1743121780470</updated>
+    </task>
+    <task id="LOCAL-00006" summary="add role">
+      <option name="closed" value="true" />
+      <created>1743123713080</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1743123713080</updated>
+    </task>
+    <task id="LOCAL-00007" summary="update git ignore">
+      <option name="closed" value="true" />
+      <created>1743125787877</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1743125787877</updated>
+    </task>
+    <task id="LOCAL-00008" summary="update git ignore">
+      <option name="closed" value="true" />
+      <created>1743125844207</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1743125844207</updated>
+    </task>
+    <task id="LOCAL-00009" summary="update git ignore">
+      <option name="closed" value="true" />
+      <created>1743125971256</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1743125971256</updated>
+    </task>
+    <task id="LOCAL-00010" summary="update git ignore">
+      <option name="closed" value="true" />
+      <created>1743125978143</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1743125978143</updated>
+    </task>
+    <task id="LOCAL-00011" summary="change background">
+      <option name="closed" value="true" />
+      <created>1743130197874</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1743130197874</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -155,31 +221,33 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
     </layout>
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="add login page" />
     <MESSAGE value="add logo" />
     <MESSAGE value="update bank" />
-    <option name="LAST_COMMIT_MESSAGE" value="update bank" />
+    <MESSAGE value="add user" />
+    <MESSAGE value="fix height checkbox" />
+    <MESSAGE value="add role" />
+    <MESSAGE value="update git ignore" />
+    <MESSAGE value="change background" />
+    <option name="LAST_COMMIT_MESSAGE" value="change background" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/packages/flexurio_chiron_product_stock/lib/src/app/resource/product_distribution.dart</url>
-          <line>41</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/packages/flexurio_chiron_product_stock/lib/src/app/resource/product_distribution.dart</url>
-          <line>46</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/packages/flexurio_chiron_product_stock/lib/src/app/resource/product_distribution.dart</url>
-          <line>27</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="dart-exception" />
+      </default-breakpoints>
     </breakpoint-manager>
   </component>
 </project>
