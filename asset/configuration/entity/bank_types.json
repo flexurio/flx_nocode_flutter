@@ -1,5 +1,5 @@
 {
-    "id": "bank_type",
+    "id": "bank_types",
     "label": "Bank Type",
     "description": "Specifies the type of bank associated with the transaction or account, such as 'Commercial', 'Central', or 'Development'.",
     "fields": [

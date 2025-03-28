@@ -23,10 +23,10 @@ Future<void> main() async {
         logoUrl: configuration.logoUrl,
         appName: configuration.appName,
         menu: configuration.menu,
-        accountSubtitle: '${user.id}',
+        accountSubtitle: '${user.id} - ${user.role}',
         onChangePassword: (context) {},
         searchData: (context, query) => [],
-        accountPermissions: UserRepositoryApp.instance.permissions,
+        accountPermissions: permissions,
         accountName: name,
         onLogout: () =>
             AuthenticationBloc.instance.add(const AuthenticationEvent.logout()),

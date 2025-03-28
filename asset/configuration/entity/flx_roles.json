@@ -1,5 +1,5 @@
 {
-    "id": "flx_user",
+    "id": "flx_users",
     "label": "Role",
     "description": "Contains user information, such as username and password, for authentication and authorization.",
     "fields": [
@@ -7,7 +7,7 @@
             "label": "ID",
             "reference": "id",
             "type": "number",
-            "column_width": 8,
+            "column_width": 3,
             "auto_generated": true
         },
         {
@@ -33,7 +33,7 @@
             "label": "Role",
             "reference": "role",
             "type": "permission",
-            "column_width": 3,
+            "column_width": 30,
             "required": true,
             "allow_create": true,
             "allow_update": true

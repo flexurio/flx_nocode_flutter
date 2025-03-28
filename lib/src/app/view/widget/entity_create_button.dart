@@ -16,7 +16,7 @@ class EntityCreateButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Button.small(
-      permission: null,
+      permission: '${entity.id}_write',
       action: DataAction.create,
       onPressed: () async {
         final success = await Navigator.push(

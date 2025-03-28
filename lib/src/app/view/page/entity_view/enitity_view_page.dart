@@ -48,7 +48,7 @@ class EntityViewPage extends StatelessWidget {
     return [
       if (entity.allowDelete)
         LightButton(
-          permission: null,
+          permission: '${entity.id}_write',
           action: DataAction.edit,
           onPressed: () async {
             Navigator.push(

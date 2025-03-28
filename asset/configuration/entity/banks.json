@@ -1,5 +1,5 @@
 {
-    "id": "bank",
+    "id": "banks",
     "label": "Bank",
     "description": "The name of the bank where the account is held, used for identifying the financial institution associated with the transaction or account.",
     "fields": [

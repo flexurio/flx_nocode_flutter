@@ -1,5 +1,5 @@
 {
-    "id": "flx_user",
+    "id": "flx_users",
     "label": "User",
     "description": "Contains user information, such as username and password, for authentication and authorization.",
     "fields": [

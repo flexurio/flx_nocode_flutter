@@ -1,4 +1,7 @@
 {
+    "export": "Ekspor",
+    "open_close": "Buka / Tutup",
+    "approve_reject": "Setujui / Tolak",
     "write": "Menulis",
     "read": "Memuat",
     "execute": "Mengeksekusi",

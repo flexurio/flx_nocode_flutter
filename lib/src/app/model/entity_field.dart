@@ -1,3 +1,4 @@
+import 'package:flexurio_erp_core/src/app/model/access.dart';
 import 'package:flexurio_no_code/src/app/model/entity.dart';
 import 'package:flexurio_no_code/src/app/view/widget/entity_drop_down.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -123,7 +124,10 @@ class EntityField {
       absorbing: !isEnabled,
       child: FieldCheckboxPermission(
         initialValue: Access.fromValue(int.tryParse(controller.text) ?? 0),
-        onChanged: (value) => controller.text = value.getValue().toString(),
+        onChanged: (value) {
+          print("value :" + value.getValue().toString());
+          controller.text = value.getValue().toString();
+        },
       ),
     );
   }
@@ -194,6 +198,24 @@ class EntityField {
       widget = Text(DateFormat(field.dateTimeFormat).format(date));
     } else if (field.isBool) {
       widget = BoolIcon(value == 1);
+    } else if (field.isPermission) {
+      final access = Access.fromValue(int.parse(value.toString()));
+      widget = Wrap(
+        spacing: 3,
+        runSpacing: 3,
+        children: access.permissions.entries.map((entry) {
+          return Chip(
+            label: Text(entry.key.tr(), style: TextStyle(color: Colors.white)),
+            backgroundColor: entry.value
+                ? Access.permissionColors[entry.key] ?? Colors.grey
+                : Colors.grey.shade400,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+              side: BorderSide(color: Colors.transparent),
+            ),
+          );
+        }).toList(),
+      );
     } else {
       widget = Text(value.toString());
     }
@@ -272,102 +294,5 @@ class FieldOptions {
       'label_field': labelField,
       'value_field': valueField,
     };
-  }
-}
-
-class Access {
-  final bool delete;
-  final bool write;
-  final bool read;
-  final bool execute;
-
-  Access({
-    required this.delete,
-    required this.write,
-    required this.read,
-    required this.execute,
-  });
-
-  int getValue() {
-    return (delete ? 1 : 0) +
-        (write ? 2 : 0) +
-        (read ? 4 : 0) +
-        (execute ? 8 : 0);
-  }
-
-  static Access fromValue(int value) {
-    return Access(
-      delete: (value & 1) == 1,
-      write: (value & 2) == 2,
-      read: (value & 4) == 4,
-      execute: (value & 8) == 8,
-    );
-  }
-
-  Access copyWith({
-    bool? delete,
-    bool? write,
-    bool? read,
-    bool? execute,
-  }) {
-    return Access(
-      delete: delete ?? this.delete,
-      write: write ?? this.write,
-      read: read ?? this.read,
-      execute: execute ?? this.execute,
-    );
-  }
-}
-
-class FieldCheckboxPermission extends StatelessWidget {
-  const FieldCheckboxPermission({
-    required this.initialValue,
-    required this.onChanged,
-    super.key,
-  });
-  final Access initialValue;
-  final void Function(Access) onChanged;
-
-  void _onChanged(String event, bool value) {
-    if (event == 'delete') {
-      onChanged(initialValue.copyWith(delete: value));
-    } else if (event == 'write') {
-      onChanged(initialValue.copyWith(write: value));
-    } else if (event == 'read') {
-      onChanged(initialValue.copyWith(read: value));
-    } else if (event == 'execute') {
-      onChanged(initialValue.copyWith(execute: value));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        FieldCheckBox(
-          label: 'delete'.tr(),
-          initialValue: initialValue.delete,
-          onChanged: (value) => _onChanged('delete', value),
-        ),
-        Gap(12),
-        FieldCheckBox(
-          label: 'write'.tr(),
-          initialValue: initialValue.write,
-          onChanged: (value) => _onChanged('write', value),
-        ),
-        Gap(12),
-        FieldCheckBox(
-          label: 'read'.tr(),
-          initialValue: initialValue.read,
-          onChanged: (value) => _onChanged('read', value),
-        ),
-        Gap(12),
-        FieldCheckBox(
-          label: 'execute'.tr(),
-          initialValue: initialValue.execute,
-          onChanged: (value) => _onChanged('execute', value),
-        ),
-      ],
-    );
   }
 }

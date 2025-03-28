@@ -1,5 +1,5 @@
 {
-    "id": "flx_user",
+    "id": "flx_users",
     "label": "Role",
     "description": "Contains user information, such as username and password, for authentication and authorization.",
     "fields": [
@@ -7,7 +7,7 @@
             "label": "ID",
             "reference": "id",
             "type": "number",
-            "column_width": 8,
+            "column_width": 3,
             "auto_generated": true
         },
         {
@@ -25,15 +25,15 @@
             "type": "number",
             "column_width": 3,
             "required": true,
-            "source": "backend.flx_user({id}-{name})",
+            "source": "backend.flx_users({id}-{name})",
             "allow_create": true,
             "allow_update": true
         },
         {
             "label": "Role",
             "reference": "role",
-            "type": "number",
-            "column_width": 3,
+            "type": "permission",
+            "column_width": 30,
             "required": true,
             "allow_create": true,
             "allow_update": true
@@ -64,13 +64,15 @@
     "layout": {
         "create": {
             "Information" : {
-                "endpoint,id_users,role": 2
+                "endpoint,id_users": 2,
+                "role": 1
             }
         },
         "update": {
             "Information" : {
                 "id": 1,
-                "endpoint,id_users,role": 2
+                "endpoint,id_users": 2,
+                "role": 1
             }
         }
     }

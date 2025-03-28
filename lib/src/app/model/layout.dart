@@ -79,9 +79,7 @@ class LayoutGroup {
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
               title!,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
         ],
