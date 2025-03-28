@@ -3,6 +3,7 @@ import 'package:flexurio_no_code/src/app/view/widget/entity_drop_down.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 
 class EntityField {
@@ -127,6 +128,8 @@ class EntityField {
       labelText: label,
       enabled: isEnabled,
       controller: controller,
+      inputFormatters:
+          type == 'number' ? [FilteringTextInputFormatter.digitsOnly] : null,
       validator: MultiValidator([
         if (required ?? false) requiredValidator,
         LengthValidator(

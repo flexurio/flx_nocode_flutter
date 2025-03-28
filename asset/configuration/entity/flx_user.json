@@ -7,7 +7,7 @@
             "label": "ID",
             "reference": "id",
             "type": "number",
-            "column_width": 8,
+            "column_width": 3,
             "auto_generated": true
         },
         {
@@ -27,7 +27,7 @@
             "reference": "email",
             "type": "email",
             "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$",
-            "column_width": 3,
+            "column_width": 4,
             "required": true,
             "allow_create": true,
             "allow_update": true
@@ -36,7 +36,7 @@
             "label": "Email Verified",
             "reference": "email_verified",
             "type": "bool",
-            "column_width": 3,
+            "column_width": 2,
             "required": true,
             "allow_create": true,
             "allow_update": true
@@ -56,7 +56,7 @@
             "label": "Enabled",
             "reference": "enabled",
             "type": "bool",
-            "column_width": 3,
+            "column_width": 2,
             "required": true,
             "allow_create": true,
             "allow_update": true

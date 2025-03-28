@@ -44,6 +44,10 @@
                         {
                             "label": "User",
                             "entity": "flx_user"
+                        },
+                        {
+                            "label": "Role",
+                            "entity": "flx_role"
                         }
                     ]
                 }

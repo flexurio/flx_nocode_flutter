@@ -38,7 +38,7 @@ class FDropDownSearchEntity extends StatefulWidget
 
   final EntityField entityField;
 
-  final String Function(String id, dynamic label) itemAsString;
+  final String Function(dynamic id, dynamic label) itemAsString;
 
   @override
   State<FDropDownSearchEntity> createState() => _FDropDownSearchEntityState();
