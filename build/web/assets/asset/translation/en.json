@@ -1,4 +1,10 @@
 {
+    "export": "Export",
+    "open_close": "Open / Close",
+    "approve_reject": "Approve / Reject",
+    "write": "Write",
+    "read": "Read",
+    "execute": "Execute",
     "field": "Field",
     "down_payment": "Down Payment",
     "settlement": "Settlement",
