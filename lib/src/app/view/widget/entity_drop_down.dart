@@ -90,17 +90,24 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
     return BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
       bloc: bloc,
       builder: (context, state) {
+        final initialValue = widget.initialValue == null
+            ? null
+            : state.maybeWhen(
+                orElse: () => null,
+                loaded: (data) {
+                  final filtered = data.data.where(
+                      (e) => e['id'].toString() == widget.initialValue?['id']);
+                  if (filtered.isNotEmpty) {
+                    return filtered.first;
+                  }
+                  return null;
+                },
+              );
         return FDropDownSearch<Map<String, dynamic>>(
           enabled: widget.enabled,
           labelText: entity!.coreEntity.title,
           onChanged: widget.onChanged,
-          initialValue: widget.initialValue == null
-              ? null
-              : state.maybeWhen(
-                  orElse: () => null,
-                  loaded: (data) => data.data.firstWhere(
-                      (e) => e['id'].toString() == widget.initialValue?['id']),
-                ),
+          initialValue: initialValue,
           validator: validator,
           itemAsString: (data) => widget.itemAsString(data[keyId], data[value]),
           items: widget.items ??
