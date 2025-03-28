@@ -87,7 +87,7 @@ class Configuration {
                             label: e.label,
                             home: MenuCustom(entityId: e.entity),
                             permissions: [],
-                            permission: null,
+                            permission: e.entity,
                           ),
                         )
                         .toList(),

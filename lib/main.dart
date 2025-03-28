@@ -9,21 +9,25 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Configuration.load();
   final configuration = Configuration.instance;
-
+  MenuBloc.instance = MenuBloc(
+    logoNamedUrl: configuration.logoNamedUrl,
+    logoUrl: configuration.logoUrl,
+  );
   final home = AuthenticationBuilder(
     authenticated: () {
-      final user = UserRepositoryApp.instance.userApp;
-      final name = user?.name;
+      final user = UserRepositoryApp.instance.userApp!;
+      final name = user.name;
+      final permissions = UserRepositoryApp.instance.permissions;
       return MenuPage.prepare(
         logoNamed: configuration.logoNamedUrl,
         logoUrl: configuration.logoUrl,
         appName: configuration.appName,
         menu: configuration.menu,
-        accountSubtitle: '${user?.id}',
+        accountSubtitle: '${user.id}',
         onChangePassword: (context) {},
         searchData: (context, query) => [],
         accountPermissions: UserRepositoryApp.instance.permissions,
-        accountName: name ?? '-',
+        accountName: name,
         onLogout: () =>
             AuthenticationBloc.instance.add(const AuthenticationEvent.logout()),
       );

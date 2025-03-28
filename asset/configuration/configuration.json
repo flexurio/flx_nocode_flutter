@@ -24,11 +24,11 @@
                     "menu_sub": [
                         {
                             "label": "Bank",
-                            "entity": "bank"
+                            "entity": "banks"
                         },
                         {
                             "label": "Bank Type",
-                            "entity": "bank_type"
+                            "entity": "bank_types"
                         }
                     ]
                 }
@@ -43,11 +43,11 @@
                     "menu_sub": [
                         {
                             "label": "User",
-                            "entity": "flx_user"
+                            "entity": "flx_users"
                         },
                         {
                             "label": "Role",
-                            "entity": "flx_role"
+                            "entity": "flx_roles"
                         }
                     ]
                 }
