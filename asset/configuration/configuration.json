@@ -33,6 +33,21 @@
                     ]
                 }
             ]
+        },
+        {
+            "label": "Administrator",
+            "menu": [
+                {
+                    "label": "Account",
+                    "icon": "fa fa-user",
+                    "menu_sub": [
+                        {
+                            "label": "User",
+                            "entity": "flx_user"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
