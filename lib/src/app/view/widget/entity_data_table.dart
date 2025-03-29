@@ -11,7 +11,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flexurio_no_code/src/app/model/entity.dart';
 import 'package:gap/gap.dart';
 import 'package:screen_identifier/screen_identifier.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
 class MenuDataTableCustom extends StatefulWidget {
   const MenuDataTableCustom._({

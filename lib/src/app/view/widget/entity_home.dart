@@ -39,24 +39,9 @@ class MenuCustom extends StatelessWidget {
   }
 
   Widget _home(BuildContext context, EntityCustom entity) {
-    final theme = Theme.of(context);
     return Builder(builder: (context) {
       return Scaffold(
-        appBar: embedded
-            ? AppBar(
-                backgroundColor: theme.scaffoldBackgroundColor,
-                leading: BackButton(
-                  onPressed: () {
-                    if (firstPage) {
-                      Navigator.of(context, rootNavigator: true).pop(true);
-                    } else {
-                      Navigator.of(context).pop();
-                    }
-                  },
-                ),
-                title: Text(entity.label),
-              )
-            : null,
+        appBar: embedded ? _buildAppBar(context, entity) : null,
         body: ListView(
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
           children: [
@@ -77,5 +62,22 @@ class MenuCustom extends StatelessWidget {
         ),
       );
     });
+  }
+
+  AppBar _buildAppBar(BuildContext context, EntityCustom entity) {
+    final theme = Theme.of(context);
+    return AppBar(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      leading: BackButton(
+        onPressed: () {
+          if (firstPage) {
+            Navigator.of(context, rootNavigator: true).pop(true);
+          } else {
+            Navigator.of(context).pop();
+          }
+        },
+      ),
+      title: Text(entity.label),
+    );
   }
 }

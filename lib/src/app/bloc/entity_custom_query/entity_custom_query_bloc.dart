@@ -1,4 +1,3 @@
-import 'package:flexurio_no_code/src/app/model/entity.dart';
 import 'package:flexurio_no_code/src/app/model/filter.dart';
 import 'package:flexurio_no_code/src/app/resource/entity_custom.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';

@@ -74,9 +74,7 @@ class _FormFilterState extends State<FormFilter> {
     ];
     if (widget.isSmallScreen) {
       return Expanded(
-        child: SingleChildScrollView(
-          child: Column(children: children),
-        ),
+        child: SingleChildScrollView(child: Column(children: children)),
       );
     } else {
       return Column(children: children);
