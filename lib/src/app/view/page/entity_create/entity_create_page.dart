@@ -13,23 +13,26 @@ class EntityCreatePage extends StatefulWidget {
     this.data,
     this.entity,
     this.onSuccess,
+    this.embedded,
   );
 
   final Map<String, dynamic>? data;
   final configuration.EntityCustom entity;
   final VoidCallback onSuccess;
+  final bool embedded;
 
   static Route<bool?> route({
     required configuration.EntityCustom entity,
     Map<String, dynamic>? data,
     required VoidCallback onSuccess,
+    required bool embedded,
   }) {
     return PageTransition(
       opaque: true,
       type: PageTransitionType.rightToLeft,
       child: MultiBlocProvider(
         providers: [BlocProvider(create: (context) => EntityBloc(entity))],
-        child: EntityCreatePage._(data, entity, onSuccess),
+        child: EntityCreatePage._(data, entity, onSuccess, embedded),
       ),
     );
   }
@@ -60,6 +63,45 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     }
   }
 
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final coreEntity = widget.entity.coreEntity;
+    return BlocListener<EntityBloc, EntityState>(
+      listener: (context, state) {
+        state.maybeWhen(
+          success: (_) {
+            widget.onSuccess();
+            Toast(context).dataChanged(_action, coreEntity);
+            Navigator.pop(context, true);
+          },
+          error: (error) => Toast(context).fail(error),
+          orElse: () {},
+        );
+      },
+      child: Scaffold(
+        appBar: widget.embedded ? _buildAppBar(context) : null,
+        backgroundColor: widget.embedded ? theme.cardColor : Colors.transparent,
+        body: SingleFormPanel(
+          hideHeader: widget.embedded ? true : false,
+          formKey: _formKey,
+          action: _action,
+          entity: coreEntity,
+          actions: [_buildButtonSubmit()],
+          children: [_buildForm()],
+        ),
+      ),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    final theme = Theme.of(context);
+    return AppBar(
+      title: Text('${_action.title} ${widget.entity.coreEntity.title}'),
+      backgroundColor: theme.scaffoldBackgroundColor,
+    );
+  }
+
   Map<String, dynamic> get _data {
     final data = <String, dynamic>{};
     for (final field in widget.entity.fields) {
@@ -87,34 +129,6 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
 
       context.read<EntityBloc>().add(event);
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final coreEntity = widget.entity.coreEntity;
-    return BlocListener<EntityBloc, EntityState>(
-      listener: (context, state) {
-        state.maybeWhen(
-          success: (_) {
-            widget.onSuccess();
-            Toast(context).dataChanged(_action, coreEntity);
-            Navigator.pop(context, true);
-          },
-          error: (error) => Toast(context).fail(error),
-          orElse: () {},
-        );
-      },
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SingleFormPanel(
-          formKey: _formKey,
-          action: _action,
-          entity: coreEntity,
-          actions: [_buildButtonSubmit()],
-          children: [_buildForm()],
-        ),
-      ),
-    );
   }
 
   Widget _buildButtonSubmit() {

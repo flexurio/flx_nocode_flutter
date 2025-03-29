@@ -61,6 +61,11 @@
             "url": "{backend_host}/flx_roles/{id}"
         }
     },
+    "layout_list_tile": {
+        "title": "id_users",
+        "subtitle": "role",
+        "trailing": "endpoint"
+    },
     "layout": {
         "create": {
             "Information" : {

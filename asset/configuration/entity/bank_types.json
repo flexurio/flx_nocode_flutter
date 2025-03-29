@@ -52,6 +52,11 @@
             "url": "{backend_host}/bank_types/{id}"
         }
     },
+    "layout_list_tile": {
+        "title": "name",
+        "subtitle": "created_at",
+        "trailing": "id"
+    },
     "layout": {
         "create": {
             "Information" : {

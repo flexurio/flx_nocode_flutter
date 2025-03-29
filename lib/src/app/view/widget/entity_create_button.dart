@@ -8,10 +8,12 @@ class EntityCreateButton extends StatelessWidget {
     super.key,
     required this.entity,
     required this.onSuccess,
+    required this.embedded,
   });
 
   final configuration.EntityCustom entity;
   final void Function() onSuccess;
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,11 @@ class EntityCreateButton extends StatelessWidget {
       onPressed: () async {
         final success = await Navigator.push(
           context,
-          EntityCreatePage.route(entity: entity, onSuccess: onSuccess),
+          EntityCreatePage.route(
+            entity: entity,
+            onSuccess: onSuccess,
+            embedded: embedded,
+          ),
         );
         if (success ?? false) {
           onSuccess();

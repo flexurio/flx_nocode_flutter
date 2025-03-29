@@ -89,6 +89,15 @@ The app configuration file is located at `configuration/configuration.json`. Thi
 # Order Layout Configuration
 The layout object defines the structure for different events (e.g., `create`, `update`, `view`) in an order management system. It organizes fields into logical groups and determines how many columns each row should 
 
+```json
+    "layout_list_tile": {
+        "title": "code",
+        "subtitle": "period",
+        "trailing": "value"
+    },
+```
+
+
 ## Structure
 ```txt
 "layout": {

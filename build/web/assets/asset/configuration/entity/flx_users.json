@@ -98,6 +98,11 @@
             "url": "{backend_host}/flx_users/{id}"
         }
     },
+    "layout_list_tile": {
+        "title": "name",
+        "subtitle": "id",
+        "trailing": "email"
+    },
     "layout": {
         "create": {
             "Information" : {

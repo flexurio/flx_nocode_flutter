@@ -1,4 +1,3 @@
-import 'package:flexurio_no_code/src/app/model/configuration.dart';
 import 'package:flexurio_no_code/src/app/model/entity.dart';
 
 class Filter {

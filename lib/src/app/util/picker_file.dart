@@ -6,10 +6,12 @@
 // Future<FilePickerResult?> pickFile({
 //   List<String>? file,
 //   FileType type = FileType.any,
+//   bool allowedMultiple = false,
 // }) async {
 //   final result = await FilePicker.platform.pickFiles(
 //     allowedExtensions: file,
 //     type: type,
+//     allowMultiple: allowedMultiple,
 //   );
 //   return result;
 // }
