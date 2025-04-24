@@ -25,21 +25,11 @@ class LayoutListTile {
       title: title == null
           ? null
           : Text(
-              data[title].toString(),
+              _getValue(data[title]),
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-      subtitle: subtitle == null
-          ? null
-          : _buildDisplay(entity, subtitle!, data[subtitle]),
-      trailing: trailing == null ? null : Text(data[trailing].toString()),
-    );
-  }
-
-  Widget _buildDisplay(EntityCustom entity, String reference, dynamic value) {
-    return EntityField.buildDisplay(
-      entity,
-      reference,
-      value,
+      subtitle: subtitle == null ? null : Text(_getValue(data[subtitle])),
+      trailing: trailing == null ? null : Text(_getValue(data[trailing])),
     );
   }
 
@@ -51,5 +41,14 @@ class LayoutListTile {
       trailing:
           json.containsKey('trailing') ? json['trailing'] as String : null,
     );
+  }
+
+  static String _getValue(dynamic value) {
+    if (value == null) {
+      return '-';
+    } else if (value is num) {
+      return value.format(2);
+    }
+    return value.toString();
   }
 }
