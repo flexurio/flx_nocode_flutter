@@ -156,7 +156,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
               final e = widget.entity.fields.elementAt(index);
               return DTColumn(
                 widthFlex: e.columnWidth ?? 5,
-                head: DTHead(backendColumn: e.reference, label: e.label),
+                head: DTHead(backendKeySort: e.reference, label: e.label),
                 body: (entity) => DataCell(
                   EntityField.buildDisplay(
                     widget.entity,
@@ -184,7 +184,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             widthFlex: 4,
             head: DTHead(
               label: 'actions'.tr(),
-              backendColumn: null,
+              backendKeySort: null,
             ),
             body: (data) => DataCell(
               Row(

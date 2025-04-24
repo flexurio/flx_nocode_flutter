@@ -21,11 +21,11 @@ class LayoutListTile {
       title: title == null
           ? null
           : Text(
-              data[title],
+              _getValue(data[title]),
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-      subtitle: subtitle == null ? null : Text(data[subtitle]),
-      trailing: trailing == null ? null : Text(data[trailing]),
+      subtitle: subtitle == null ? null : Text(_getValue(data[subtitle])),
+      trailing: trailing == null ? null : Text(_getValue(data[trailing])),
     );
   }
 
@@ -37,5 +37,14 @@ class LayoutListTile {
       trailing:
           json.containsKey('trailing') ? json['trailing'] as String : null,
     );
+  }
+
+  static String _getValue(dynamic value) {
+    if (value == null) {
+      return '-';
+    } else if (value is num) {
+      return value.format(2);
+    }
+    return value.toString();
   }
 }
