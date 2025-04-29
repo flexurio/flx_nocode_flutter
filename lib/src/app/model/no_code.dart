@@ -13,10 +13,14 @@ class NoCode {
     flavorConfig = configuration.flavorConfig;
   }
 
+  static Map<String, dynamic> pageData = {};
+
   static navigatePushMenu({
     required BuildContext context,
     required String entityId,
+    required Map<String, dynamic> pageData,
   }) async {
+    NoCode.pageData = pageData;
     await Navigator.push(
       context,
       MaterialPageRoute(

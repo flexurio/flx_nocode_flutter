@@ -1,5 +1,6 @@
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart';
+import 'package:flx_nocode_flutter/src/app/model/backend_other.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_create/entity_create_page.dart';
@@ -25,9 +26,9 @@ class EntityViewPage extends StatelessWidget {
     required bool embedded,
   }) {
     return MaterialPageRoute(
-      builder: (context) => MultiBlocProvider(
+      builder: (_) => MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => EntityCustomQueryBloc()),
+          BlocProvider(create: (_) => EntityCustomQueryBloc()),
         ],
         child: EntityViewPage._(entity: entity, data: data, embedded: embedded),
       ),
@@ -102,7 +103,7 @@ class EntityViewPage extends StatelessWidget {
     void Function(BuildContext context) onRefresh,
     bool embedded,
   ) {
-    return [
+    final actions = [
       if (entity.allowUpdate)
         ActionButtonItem(
           color: DataAction.edit.color,
@@ -126,62 +127,24 @@ class EntityViewPage extends StatelessWidget {
             icon: DataAction.delete.icon,
             label: DataAction.delete.title,
             onPressed: () async {
-              _showConfirmationDialog(
+              BackendOther.showConfirmationDialog(
+                event: EntityEvent.delete(id: data['id'].toString()),
+                title: DataAction.delete.title,
                 context: context,
                 onSuccess: () => Navigator.pop(context),
                 entity: entity,
                 data: data,
               );
-            })
+            }),
+      ...BackendOther.buildButton(
+        events: entity.backend.others,
+        context: context,
+        entity: entity,
+        data: data,
+      ),
     ];
-  }
 
-  static Future<bool?> _showConfirmationDialog({
-    required BuildContext context,
-    required VoidCallback onSuccess,
-    required EntityCustom entity,
-    required Map<String, dynamic> data,
-  }) {
-    final bloc = EntityBloc(entity);
-    return showDialog<bool?>(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        const action = DataAction.delete;
-        return BlocListener<EntityBloc, EntityState>(
-          bloc: bloc,
-          listener: (context, state) {
-            state.maybeWhen(
-              success: (_) {
-                Toast(context).dataChanged(action, entity.coreEntity);
-                onSuccess();
-                Navigator.pop(context, true);
-              },
-              error: (error) => Toast(context).fail(error),
-              orElse: () {},
-            );
-          },
-          child: BlocBuilder<EntityBloc, EntityState>(
-            bloc: bloc,
-            builder: (context, state) {
-              final isInProgress = state.maybeWhen(
-                loading: () => true,
-                orElse: () => false,
-              );
-              return CardConfirmation(
-                isProgress: isInProgress,
-                action: action,
-                data: entity.coreEntity,
-                label: data['id'].toString(),
-                onConfirm: () {
-                  bloc.add(EntityEvent.delete(id: data['id'].toString()));
-                },
-              );
-            },
-          ),
-        );
-      },
-    );
+    return actions;
   }
 
   void _fetch(BuildContext context) {

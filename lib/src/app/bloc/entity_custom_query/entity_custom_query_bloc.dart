@@ -1,5 +1,4 @@
-import 'package:flexurio_erp_authentication/flexurio_erp_authentication.dart';
-import 'package:flx_nocode_flutter/src/app/model/entity.dart';
+import 'package:flx_nocode_flutter/flexurio_no_code.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
@@ -49,7 +48,7 @@ class EntityCustomQueryBloc
                 accessToken: UserRepositoryApp.instance.token!,
                 id: id,
                 method: method,
-                path: url,
+                path: urlWithValues(url),
               );
               emit(_Loaded(_pageOptions.copyWith(data: [data])));
             } catch (error) {
@@ -72,7 +71,7 @@ class EntityCustomQueryBloc
                 accessToken: UserRepositoryApp.instance.token!,
                 pageOptions: _pageOptions,
                 method: method,
-                path: url,
+                path: urlWithValues(url),
                 filterMap: filterMap,
               );
               emit(_Loaded(_pageOptions));
@@ -84,5 +83,14 @@ class EntityCustomQueryBloc
       },
     );
   }
+
+  String urlWithValues(String url) {
+    final pageData = NoCode.pageData;
+    for (var key in pageData.keys) {
+      url = url.replaceAll('{page.$key}', pageData[key].toString());
+    }
+    return url;
+  }
+
   PageOptions<Map<String, dynamic>> _pageOptions = PageOptions.empty();
 }

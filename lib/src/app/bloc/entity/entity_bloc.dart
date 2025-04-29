@@ -1,3 +1,4 @@
+import 'package:flx_nocode_flutter/src/app/model/backend_other.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
@@ -29,12 +30,29 @@ class EntityEvent with _$EntityEvent {
   }) = _Edit;
 
   const factory EntityEvent.delete({required String id}) = _Delete;
+  const factory EntityEvent.otherEvent({
+    required Map<String, dynamic> data,
+    required BackendOther event,
+  }) = _OtherEvent;
 }
 
 class EntityBloc extends Bloc<EntityEvent, EntityState> {
   EntityBloc(configuration.EntityCustom entity) : super(const _Initial()) {
     on<EntityEvent>((event, emit) async {
       await event.when(
+        otherEvent: (data, event) async {
+          emit(const _Loading());
+          try {
+            final response = await EntityCustomRepository.instance.modify(
+              accessToken: '',
+              path: event.urlWithValues(data),
+              method: event.method,
+            );
+            emit(_Success(response));
+          } catch (error) {
+            emit(_Error(errorMessage(error)));
+          }
+        },
         create: (data) async {
           emit(const _Loading());
           try {

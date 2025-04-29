@@ -104,7 +104,7 @@ class ButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final widget = Button(
+    final widget = Button.action(
       action: DataAction.submit,
       onPressed: () {},
       permission: null,
