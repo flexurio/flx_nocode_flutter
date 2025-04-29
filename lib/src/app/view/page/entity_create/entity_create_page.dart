@@ -130,7 +130,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
   Widget _buildButtonSubmit() {
     return BlocBuilder<EntityBloc, EntityState>(
       builder: (context, state) {
-        return Button(
+        return Button.action(
           permission: null,
           isInProgress: state.maybeWhen(
             loading: () => true,

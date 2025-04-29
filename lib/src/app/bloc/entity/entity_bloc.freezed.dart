@@ -642,6 +642,8 @@ mixin _$EntityEvent {
     required TResult Function(Map<String, dynamic> data) create,
     required TResult Function(Map<String, dynamic> data) edit,
     required TResult Function(String id) delete,
+    required TResult Function(Map<String, dynamic> data, BackendOther event)
+        otherEvent,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -649,6 +651,8 @@ mixin _$EntityEvent {
     TResult? Function(Map<String, dynamic> data)? create,
     TResult? Function(Map<String, dynamic> data)? edit,
     TResult? Function(String id)? delete,
+    TResult? Function(Map<String, dynamic> data, BackendOther event)?
+        otherEvent,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -656,6 +660,7 @@ mixin _$EntityEvent {
     TResult Function(Map<String, dynamic> data)? create,
     TResult Function(Map<String, dynamic> data)? edit,
     TResult Function(String id)? delete,
+    TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -664,6 +669,7 @@ mixin _$EntityEvent {
     required TResult Function(_Create value) create,
     required TResult Function(_Edit value) edit,
     required TResult Function(_Delete value) delete,
+    required TResult Function(_OtherEvent value) otherEvent,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -671,6 +677,7 @@ mixin _$EntityEvent {
     TResult? Function(_Create value)? create,
     TResult? Function(_Edit value)? edit,
     TResult? Function(_Delete value)? delete,
+    TResult? Function(_OtherEvent value)? otherEvent,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -678,6 +685,7 @@ mixin _$EntityEvent {
     TResult Function(_Create value)? create,
     TResult Function(_Edit value)? edit,
     TResult Function(_Delete value)? delete,
+    TResult Function(_OtherEvent value)? otherEvent,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -781,6 +789,8 @@ class _$CreateImpl implements _Create {
     required TResult Function(Map<String, dynamic> data) create,
     required TResult Function(Map<String, dynamic> data) edit,
     required TResult Function(String id) delete,
+    required TResult Function(Map<String, dynamic> data, BackendOther event)
+        otherEvent,
   }) {
     return create(data);
   }
@@ -791,6 +801,8 @@ class _$CreateImpl implements _Create {
     TResult? Function(Map<String, dynamic> data)? create,
     TResult? Function(Map<String, dynamic> data)? edit,
     TResult? Function(String id)? delete,
+    TResult? Function(Map<String, dynamic> data, BackendOther event)?
+        otherEvent,
   }) {
     return create?.call(data);
   }
@@ -801,6 +813,7 @@ class _$CreateImpl implements _Create {
     TResult Function(Map<String, dynamic> data)? create,
     TResult Function(Map<String, dynamic> data)? edit,
     TResult Function(String id)? delete,
+    TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
     required TResult orElse(),
   }) {
     if (create != null) {
@@ -815,6 +828,7 @@ class _$CreateImpl implements _Create {
     required TResult Function(_Create value) create,
     required TResult Function(_Edit value) edit,
     required TResult Function(_Delete value) delete,
+    required TResult Function(_OtherEvent value) otherEvent,
   }) {
     return create(this);
   }
@@ -825,6 +839,7 @@ class _$CreateImpl implements _Create {
     TResult? Function(_Create value)? create,
     TResult? Function(_Edit value)? edit,
     TResult? Function(_Delete value)? delete,
+    TResult? Function(_OtherEvent value)? otherEvent,
   }) {
     return create?.call(this);
   }
@@ -835,6 +850,7 @@ class _$CreateImpl implements _Create {
     TResult Function(_Create value)? create,
     TResult Function(_Edit value)? edit,
     TResult Function(_Delete value)? delete,
+    TResult Function(_OtherEvent value)? otherEvent,
     required TResult orElse(),
   }) {
     if (create != null) {
@@ -933,6 +949,8 @@ class _$EditImpl implements _Edit {
     required TResult Function(Map<String, dynamic> data) create,
     required TResult Function(Map<String, dynamic> data) edit,
     required TResult Function(String id) delete,
+    required TResult Function(Map<String, dynamic> data, BackendOther event)
+        otherEvent,
   }) {
     return edit(data);
   }
@@ -943,6 +961,8 @@ class _$EditImpl implements _Edit {
     TResult? Function(Map<String, dynamic> data)? create,
     TResult? Function(Map<String, dynamic> data)? edit,
     TResult? Function(String id)? delete,
+    TResult? Function(Map<String, dynamic> data, BackendOther event)?
+        otherEvent,
   }) {
     return edit?.call(data);
   }
@@ -953,6 +973,7 @@ class _$EditImpl implements _Edit {
     TResult Function(Map<String, dynamic> data)? create,
     TResult Function(Map<String, dynamic> data)? edit,
     TResult Function(String id)? delete,
+    TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
     required TResult orElse(),
   }) {
     if (edit != null) {
@@ -967,6 +988,7 @@ class _$EditImpl implements _Edit {
     required TResult Function(_Create value) create,
     required TResult Function(_Edit value) edit,
     required TResult Function(_Delete value) delete,
+    required TResult Function(_OtherEvent value) otherEvent,
   }) {
     return edit(this);
   }
@@ -977,6 +999,7 @@ class _$EditImpl implements _Edit {
     TResult? Function(_Create value)? create,
     TResult? Function(_Edit value)? edit,
     TResult? Function(_Delete value)? delete,
+    TResult? Function(_OtherEvent value)? otherEvent,
   }) {
     return edit?.call(this);
   }
@@ -987,6 +1010,7 @@ class _$EditImpl implements _Edit {
     TResult Function(_Create value)? create,
     TResult Function(_Edit value)? edit,
     TResult Function(_Delete value)? delete,
+    TResult Function(_OtherEvent value)? otherEvent,
     required TResult orElse(),
   }) {
     if (edit != null) {
@@ -1079,6 +1103,8 @@ class _$DeleteImpl implements _Delete {
     required TResult Function(Map<String, dynamic> data) create,
     required TResult Function(Map<String, dynamic> data) edit,
     required TResult Function(String id) delete,
+    required TResult Function(Map<String, dynamic> data, BackendOther event)
+        otherEvent,
   }) {
     return delete(id);
   }
@@ -1089,6 +1115,8 @@ class _$DeleteImpl implements _Delete {
     TResult? Function(Map<String, dynamic> data)? create,
     TResult? Function(Map<String, dynamic> data)? edit,
     TResult? Function(String id)? delete,
+    TResult? Function(Map<String, dynamic> data, BackendOther event)?
+        otherEvent,
   }) {
     return delete?.call(id);
   }
@@ -1099,6 +1127,7 @@ class _$DeleteImpl implements _Delete {
     TResult Function(Map<String, dynamic> data)? create,
     TResult Function(Map<String, dynamic> data)? edit,
     TResult Function(String id)? delete,
+    TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
     required TResult orElse(),
   }) {
     if (delete != null) {
@@ -1113,6 +1142,7 @@ class _$DeleteImpl implements _Delete {
     required TResult Function(_Create value) create,
     required TResult Function(_Edit value) edit,
     required TResult Function(_Delete value) delete,
+    required TResult Function(_OtherEvent value) otherEvent,
   }) {
     return delete(this);
   }
@@ -1123,6 +1153,7 @@ class _$DeleteImpl implements _Delete {
     TResult? Function(_Create value)? create,
     TResult? Function(_Edit value)? edit,
     TResult? Function(_Delete value)? delete,
+    TResult? Function(_OtherEvent value)? otherEvent,
   }) {
     return delete?.call(this);
   }
@@ -1133,6 +1164,7 @@ class _$DeleteImpl implements _Delete {
     TResult Function(_Create value)? create,
     TResult Function(_Edit value)? edit,
     TResult Function(_Delete value)? delete,
+    TResult Function(_OtherEvent value)? otherEvent,
     required TResult orElse(),
   }) {
     if (delete != null) {
@@ -1151,5 +1183,179 @@ abstract class _Delete implements EntityEvent {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$DeleteImplCopyWith<_$DeleteImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$OtherEventImplCopyWith<$Res> {
+  factory _$$OtherEventImplCopyWith(
+          _$OtherEventImpl value, $Res Function(_$OtherEventImpl) then) =
+      __$$OtherEventImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({Map<String, dynamic> data, BackendOther event});
+}
+
+/// @nodoc
+class __$$OtherEventImplCopyWithImpl<$Res>
+    extends _$EntityEventCopyWithImpl<$Res, _$OtherEventImpl>
+    implements _$$OtherEventImplCopyWith<$Res> {
+  __$$OtherEventImplCopyWithImpl(
+      _$OtherEventImpl _value, $Res Function(_$OtherEventImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of EntityEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? data = null,
+    Object? event = null,
+  }) {
+    return _then(_$OtherEventImpl(
+      data: null == data
+          ? _value._data
+          : data // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
+      event: null == event
+          ? _value.event
+          : event // ignore: cast_nullable_to_non_nullable
+              as BackendOther,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$OtherEventImpl implements _OtherEvent {
+  const _$OtherEventImpl(
+      {required final Map<String, dynamic> data, required this.event})
+      : _data = data;
+
+  final Map<String, dynamic> _data;
+  @override
+  Map<String, dynamic> get data {
+    if (_data is EqualUnmodifiableMapView) return _data;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_data);
+  }
+
+  @override
+  final BackendOther event;
+
+  @override
+  String toString() {
+    return 'EntityEvent.otherEvent(data: $data, event: $event)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$OtherEventImpl &&
+            const DeepCollectionEquality().equals(other._data, _data) &&
+            (identical(other.event, event) || other.event == event));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(_data), event);
+
+  /// Create a copy of EntityEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$OtherEventImplCopyWith<_$OtherEventImpl> get copyWith =>
+      __$$OtherEventImplCopyWithImpl<_$OtherEventImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(Map<String, dynamic> data) create,
+    required TResult Function(Map<String, dynamic> data) edit,
+    required TResult Function(String id) delete,
+    required TResult Function(Map<String, dynamic> data, BackendOther event)
+        otherEvent,
+  }) {
+    return otherEvent(data, event);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(Map<String, dynamic> data)? create,
+    TResult? Function(Map<String, dynamic> data)? edit,
+    TResult? Function(String id)? delete,
+    TResult? Function(Map<String, dynamic> data, BackendOther event)?
+        otherEvent,
+  }) {
+    return otherEvent?.call(data, event);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(Map<String, dynamic> data)? create,
+    TResult Function(Map<String, dynamic> data)? edit,
+    TResult Function(String id)? delete,
+    TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
+    required TResult orElse(),
+  }) {
+    if (otherEvent != null) {
+      return otherEvent(data, event);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Create value) create,
+    required TResult Function(_Edit value) edit,
+    required TResult Function(_Delete value) delete,
+    required TResult Function(_OtherEvent value) otherEvent,
+  }) {
+    return otherEvent(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Create value)? create,
+    TResult? Function(_Edit value)? edit,
+    TResult? Function(_Delete value)? delete,
+    TResult? Function(_OtherEvent value)? otherEvent,
+  }) {
+    return otherEvent?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Create value)? create,
+    TResult Function(_Edit value)? edit,
+    TResult Function(_Delete value)? delete,
+    TResult Function(_OtherEvent value)? otherEvent,
+    required TResult orElse(),
+  }) {
+    if (otherEvent != null) {
+      return otherEvent(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _OtherEvent implements EntityEvent {
+  const factory _OtherEvent(
+      {required final Map<String, dynamic> data,
+      required final BackendOther event}) = _$OtherEventImpl;
+
+  Map<String, dynamic> get data;
+  BackendOther get event;
+
+  /// Create a copy of EntityEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$OtherEventImplCopyWith<_$OtherEventImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

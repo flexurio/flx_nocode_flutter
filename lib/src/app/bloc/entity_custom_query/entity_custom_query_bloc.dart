@@ -1,3 +1,4 @@
+import 'package:flexurio_no_code/flexurio_no_code.dart';
 import 'package:flexurio_no_code/src/app/model/filter.dart';
 import 'package:flexurio_no_code/src/app/resource/entity_custom.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
@@ -46,7 +47,7 @@ class EntityCustomQueryBloc
                 accessToken: '',
                 id: id,
                 method: method,
-                path: url,
+                path: urlWithValues(url),
               );
               emit(_Loaded(_pageOptions.copyWith(data: [data])));
             } catch (error) {
@@ -69,7 +70,7 @@ class EntityCustomQueryBloc
                 accessToken: 'text',
                 pageOptions: _pageOptions,
                 method: method,
-                path: url,
+                path: urlWithValues(url),
                 filterMap: filterMap,
               );
               emit(_Loaded(_pageOptions));
@@ -81,5 +82,14 @@ class EntityCustomQueryBloc
       },
     );
   }
+
+  String urlWithValues(String url) {
+    final pageData = NoCode.pageData;
+    for (var key in pageData.keys) {
+      url = url.replaceAll('{page.$key}', pageData[key].toString());
+    }
+    return url;
+  }
+
   PageOptions<Map<String, dynamic>> _pageOptions = PageOptions.empty();
 }

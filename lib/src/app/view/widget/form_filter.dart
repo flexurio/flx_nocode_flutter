@@ -82,7 +82,7 @@ class _FormFilterState extends State<FormFilter> {
   }
 
   Widget _buildButtonApplyFilter() {
-    return Button(
+    return Button.action(
       action: DataAction.applyFilter,
       permission: null,
       onPressed: () => Navigator.pop(context, _filters),

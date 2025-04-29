@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flexurio_no_code/src/app/model/backend_other.dart';
 import 'package:flexurio_no_code/src/app/view/widget/entity_home.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
 import 'package:flutter/material.dart';
@@ -166,6 +167,7 @@ class Backend {
   final BackendEndpoint? create;
   final BackendEndpoint? update;
   final BackendEndpoint? delete;
+  final List<BackendOther> others;
 
   Backend({
     this.readAll,
@@ -173,10 +175,14 @@ class Backend {
     this.create,
     this.update,
     this.delete,
+    required this.others,
   });
 
   factory Backend.fromJson(Map<String, dynamic> json) {
     return Backend(
+      others: json['read_all'] != null
+          ? BackendOther.fromJsonList(json['others'])
+          : [],
       readAll: json['read_all'] != null
           ? BackendEndpoint.fromJson(json['read_all'])
           : null,
