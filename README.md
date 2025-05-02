@@ -1,6 +1,6 @@
-# flx_no_code
+# flx_nocode_flutter
 
-`flx_no_code` is a Flutter package that allows you to build UI dynamically using only JSON — no manual Flutter widget coding needed.
+`flx_nocode_flutter` is a Flutter package that allows you to build UI dynamically using only JSON — no manual Flutter widget coding needed.
 
 Ideal for no-code/low-code platforms or apps that need configurable interfaces at runtime.
 

@@ -1,14 +1,14 @@
-import 'package:flexurio_no_code/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart';
-import 'package:flexurio_no_code/src/app/model/entity_field.dart';
-import 'package:flexurio_no_code/src/app/model/filter.dart';
-import 'package:flexurio_no_code/src/app/view/page/entity_view/enitity_view_page.dart';
-import 'package:flexurio_no_code/src/app/view/widget/entity_create_button.dart';
-import 'package:flexurio_no_code/src/app/view/widget/filter.dart';
+import 'package:flx_nocode_flutter/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
+import 'package:flx_nocode_flutter/src/app/model/filter.dart';
+import 'package:flx_nocode_flutter/src/app/view/page/entity_view/enitity_view_page.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/entity_create_button.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/filter.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flexurio_no_code/src/app/model/entity.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:gap/gap.dart';
 import 'package:screen_identifier/screen_identifier.dart';
 

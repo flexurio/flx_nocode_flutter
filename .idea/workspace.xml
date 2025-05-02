@@ -1,116 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="NONE" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="805882a8-216a-407b-bb87-7e41cd69ed72" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/lib/src/app/model/entity_field.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/model/entity_field.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/resource/entity_custom.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/resource/entity_custom.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/entity_view/enitity_view_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/page/entity_view/enitity_view_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/widget/entity_drop_down.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/widget/entity_drop_down.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/src/app/view/widget/entity_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/widget/entity_home.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/flexurio_erp_core" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_erp_core" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/flexurio_erp_core/lib/src/app/view/widget/title_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/packages/flexurio_erp_core/lib/src/app/view/widget/title_page.dart" afterDir="false" />
+    <list default="true" id="6ceb7012-ae48-4f9d-a2d4-9fc5949fbb80" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../../pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../../pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ClangdSettings">
-    <option name="formatViaClangd" value="false" />
-  </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
-  <component name="MarkdownSettingsMigration">
-    <option name="stateVersion" value="1" />
-  </component>
-  <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 6
-}</component>
-  <component name="ProjectId" id="2GnQLpSCTGNtoYP1w8mEWG37YmQ" />
-  <component name="ProjectReloadState">
-    <option name="STATE" value="1" />
-  </component>
-  <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1" />
-    <panes>
-      <pane id="ProjectPane">
-        <option name="show-excluded-files" value="false" />
-      </pane>
-    </panes>
-  </component>
+  <component name="GitLabMergeRequestFiltersHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPENED",
+    "assignee": {
+      "type": "org.jetbrains.plugins.gitlab.mergerequest.ui.filters.GitLabMergeRequestsFiltersValue.MergeRequestsMemberFilterValue.MergeRequestsAssigneeFilterValue",
+      "username": "mualipsuhal",
+      "fullname": "Mualip Suhal"
+    }
+  }
+}]]></component>
+  <component name="GitLabMergeRequestsSettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "first": "https://gitlab.com/VNEU/flexurio_no_code_mobile.git",
+    "second": "019e8ceb-df37-4134-9808-2bbd54780134"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 6
+}]]></component>
+  <component name="ProjectId" id="2wWbDEXw3bVOFMvWjorpLLj0b2L" />
   <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Flutter.MF Development.executor": "Debug",
-    "Flutter.Main.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
     "com.codeium.enabled": "true",
     "dart.analysis.tool.window.visible": "false",
     "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/muali/Documents/Development/project/vneu/visit-flow/flexurio_no_code_mobile/packages/flexurio_no_code",
-    "settings.editor.selected.configurable": "preferences.keymap",
     "show.migrate.to.gradle.popup": "false"
   }
 }]]></component>
-  <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\lib\src\app\view\page\widget\editor" />
-      <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\packages\flexurio_chiron_material_stock\lib\src\app\model" />
-    </key>
-  </component>
   <component name="RunManager" selected="Flutter.Main" />
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="805882a8-216a-407b-bb87-7e41cd69ed72" name="Changes" comment="" />
-      <created>1667021817948</created>
+      <changelist id="6ceb7012-ae48-4f9d-a2d4-9fc5949fbb80" name="Changes" comment="" />
+      <created>1746160155407</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1667021817948</updated>
+      <updated>1746160155407</updated>
     </task>
     <servers />
-  </component>
-  <component name="ToolWindowManager">
-    <editor active="true" />
-    <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-    </layout>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/packages/flexurio_chiron_product_stock/lib/src/app/resource/product_distribution.dart</url>
-          <line>41</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/packages/flexurio_chiron_product_stock/lib/src/app/resource/product_distribution.dart</url>
-          <line>46</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="Dart">
-          <url>file://$PROJECT_DIR$/packages/flexurio_chiron_product_stock/lib/src/app/resource/product_distribution.dart</url>
-          <line>27</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

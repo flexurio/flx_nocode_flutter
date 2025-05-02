@@ -12,7 +12,7 @@ create_asset() {
     cp lib/main_{chiron_demo,anton_paar_development,mf_{development,production},tl_{development,production}}.dart packages/$PACKAGE/lib/
    
     # replace the import statement in the main dart files to point to the package constant menu instead of the library constant menu
-    sed -i "s/import 'package:flexurio_no_code\/constant\/menu\/menu.dart' as flexurio_no_code;/import 'package:$PACKAGE\/constant\/menu.dart' as $PACKAGE;/" packages/$PACKAGE/lib/main_{chiron_demo,anton_paar_development,mf_{development,production},tl_{development,production}}.dart
+    sed -i "s/import 'package:flx_nocode_flutter\/constant\/menu\/menu.dart' as flexurio_no_code;/import 'package:$PACKAGE\/constant\/menu.dart' as $PACKAGE;/" packages/$PACKAGE/lib/main_{chiron_demo,anton_paar_development,mf_{development,production},tl_{development,production}}.dart
 
     # Replace all instances of 'flexurio_no_code.menu' with '$PACKAGE.menu' in the main dart files
     # This is needed to ensure that the correct menu is used for the application.

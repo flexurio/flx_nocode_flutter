@@ -1,7 +1,7 @@
-import 'package:flexurio_no_code/src/app/model/entity.dart';
-import 'package:flexurio_no_code/src/app/view/widget/entity_drop_down.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/entity_drop_down.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 

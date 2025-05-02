@@ -1,7 +1,7 @@
-import 'package:flexurio_no_code/flexurio_no_code.dart';
-import 'package:flexurio_no_code/src/app/model/filter.dart';
-import 'package:flexurio_no_code/src/app/resource/entity_custom.dart';
-import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:flx_nocode_flutter/src/app/model/filter.dart';
+import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 

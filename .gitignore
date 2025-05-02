@@ -27,6 +27,5 @@ doc/api/
 *.js.deps
 *.js.map
 
-.flutter-plugins
-.flutter-plugins-dependencies
-
+packages/flexurio_erp_core/.flutter-plugins
+packages/flexurio_erp_core/.flutter-plugins-dependencies

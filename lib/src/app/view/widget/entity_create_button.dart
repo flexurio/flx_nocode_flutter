@@ -1,6 +1,6 @@
-import 'package:flexurio_no_code/src/app/model/entity.dart' as configuration;
-import 'package:flexurio_no_code/src/app/view/page/entity_create/entity_create_page.dart';
-import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity.dart' as configuration;
+import 'package:flx_nocode_flutter/src/app/view/page/entity_create/entity_create_page.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';
 
 class EntityCreateButton extends StatelessWidget {

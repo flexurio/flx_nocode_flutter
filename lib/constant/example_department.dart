@@ -1,5 +1,5 @@
 // import 'package:flexurio_chiron_company/flexurio_chiron_company.dart';
-// import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+// import 'package:flx_core_flutter/flx_core_flutter.dart';
 
 // List<Department> exampleDepartments = [
 //   Department(
