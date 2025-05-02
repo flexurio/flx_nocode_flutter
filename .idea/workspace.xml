@@ -31,6 +31,9 @@
   &quot;associatedIndex&quot;: 6
 }</component>
   <component name="ProjectId" id="2GnQLpSCTGNtoYP1w8mEWG37YmQ" />
+  <component name="ProjectReloadState">
+    <option name="STATE" value="1" />
+  </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1" />
     <panes>
@@ -48,6 +51,7 @@
     "Flutter.MF Development.executor": "Debug",
     "Flutter.Main.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
@@ -59,7 +63,7 @@
     "ignore.virus.scanning.warn.message": "true",
     "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/muali/Documents/Development/project/vneu/voltunes/erp-web-app",
+    "last_opened_file_path": "C:/Users/muali/Documents/Development/project/vneu/visit-flow/flexurio_no_code_mobile/packages/flexurio_no_code",
     "settings.editor.selected.configurable": "preferences.keymap",
     "show.migrate.to.gradle.popup": "false"
   }
@@ -70,6 +74,7 @@
       <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\packages\flexurio_chiron_material_stock\lib\src\app\model" />
     </key>
   </component>
+  <component name="RunManager" selected="Flutter.Main" />
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
