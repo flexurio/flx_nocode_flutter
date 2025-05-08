@@ -1,9 +1,7 @@
 name: flx_nocode_flutter
 description: A new Flutter project.
 
-publish_to: "none"
-
-version: 0.15.14-release-2024.06.27.05.01-GMT7
+version: 0.0.3
 
 environment:
   sdk: '>=3.4.0 <4.0.0'

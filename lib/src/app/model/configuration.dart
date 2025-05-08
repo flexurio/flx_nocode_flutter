@@ -180,7 +180,7 @@ class Backend {
 
   factory Backend.fromJson(Map<String, dynamic> json) {
     return Backend(
-      others: json['read_all'] != null
+      others: json['others'] != null
           ? BackendOther.fromJsonList(json['others'])
           : [],
       readAll: json['read_all'] != null

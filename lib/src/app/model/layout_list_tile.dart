@@ -25,11 +25,16 @@ class LayoutListTile {
       title: title == null
           ? null
           : Text(
-              _getValue(data[title]),
+              getValue(data[title]),
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-      subtitle: subtitle == null ? null : Text(_getValue(data[subtitle])),
-      trailing: trailing == null ? null : Text(_getValue(data[trailing])),
+      subtitle: subtitle == null ? null : Text(getValue(data[subtitle])),
+      trailing: trailing == null
+          ? null
+          : Text(
+              getValue(data[trailing]),
+              style: TextStyle(fontSize: 14),
+            ),
     );
   }
 
@@ -43,7 +48,7 @@ class LayoutListTile {
     );
   }
 
-  static String _getValue(dynamic value) {
+  static String getValue(dynamic value) {
     if (value == null) {
       return '-';
     } else if (value is num) {
