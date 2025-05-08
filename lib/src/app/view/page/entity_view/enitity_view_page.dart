@@ -141,14 +141,6 @@ class EntityViewPage extends StatelessWidget {
                 action: DataAction.view,
                 entity: entity.coreEntity,
                 size: SingleFormPanelSize.large,
-                // actions: embedded
-                //     ? []
-                //     : EntityViewPage.actions(
-                //         context,
-                //         data,
-                //         entity,
-                //         (context) => _fetch(context),
-                //       ),
                 children: [_buildData(data)],
               );
             },

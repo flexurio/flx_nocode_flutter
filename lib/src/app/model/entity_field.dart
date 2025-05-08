@@ -1,4 +1,5 @@
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
+import 'package:flx_nocode_flutter/src/app/model/layout_list_tile.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_drop_down.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
@@ -151,7 +152,7 @@ class EntityField {
     } else if (field.isBool) {
       widget = BoolIcon(value == 1);
     } else {
-      widget = Text(value.toString());
+      widget = Text(LayoutListTile.getValue(value));
     }
 
     if (widget is Text && onTap != null) {

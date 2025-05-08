@@ -260,11 +260,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 style: const TextStyle(color: Colors.white),
               ),
               iconTheme: const IconThemeData(color: Colors.white),
-              onDeleted: () {
-                setState(() {
-                  _filters.remove(e);
-                });
-              },
+              onDeleted: () => setState(() => _filters.remove(e)),
             ),
           )
           .toList(),
