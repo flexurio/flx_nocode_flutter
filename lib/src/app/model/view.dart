@@ -1,18 +1,19 @@
+import 'package:hive_ce/hive.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
 import 'package:flutter/material.dart';
 
-class View {
+class DView extends HiveObject {
   final String label;
   final String entity;
   final Map<String, String> filter;
 
-  View({required this.label, required this.entity, required this.filter});
+  DView({required this.label, required this.entity, required this.filter});
 
-  factory View.fromJson(Map<String, dynamic> json) {
-    return View(
+  factory DView.fromJson(Map<String, dynamic> json) {
+    return DView(
       label: json['label'],
       entity: json['entity'],
       filter: Map<String, String>.from(json['filter']),
@@ -58,7 +59,7 @@ class View {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => MenuCustom(
+              builder: (context) => MenuCustom.fromId(
                 embedded: true,
                 entityId: entity.id,
                 initialFilters: _filters(entity, data),
@@ -68,7 +69,7 @@ class View {
         } else {
           MenuBloc.instance.add(
             Menu3Selected(
-              home: MenuCustom(
+              home: MenuCustom.fromId(
                 entityId: entity.id,
                 initialFilters: _filters(entity, data),
               ),

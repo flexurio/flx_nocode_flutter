@@ -53,6 +53,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   }
 
   void _fetch([PageOptions<Map<String, dynamic>>? pageOptions]) {
+    if (widget.entity.backend.readAll == null) return;
     context.read<EntityCustomQueryBloc>().add(
           EntityCustomQueryEvent.fetch(
             pageOptions: pageOptions,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:hive_ce/hive.dart';
 import 'package:flx_nocode_flutter/src/app/model/backend_other.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
@@ -86,7 +87,7 @@ class Configuration {
                         .map(
                           (e) => core.Menu3(
                             label: e.label,
-                            home: MenuCustom(entityId: e.entity),
+                            home: MenuCustom.fromId(entityId: e.entity),
                             permissions: [],
                             permission: null,
                           ),
@@ -161,12 +162,12 @@ class Company {
   }
 }
 
-class Backend {
+class Backend extends HiveObject {
   final BackendEndpoint? readAll;
   final BackendEndpoint? read;
   final BackendEndpoint? create;
   final BackendEndpoint? update;
-  final BackendEndpoint? delete;
+  final BackendEndpoint? deleteX;
   final List<BackendOther> others;
 
   Backend({
@@ -174,7 +175,7 @@ class Backend {
     this.read,
     this.create,
     this.update,
-    this.delete,
+    this.deleteX,
     required this.others,
   });
 
@@ -194,7 +195,7 @@ class Backend {
       update: json['update'] != null
           ? BackendEndpoint.fromJson(json['update'])
           : null,
-      delete: json['delete'] != null
+      deleteX: json['delete'] != null
           ? BackendEndpoint.fromJson(json['delete'])
           : null,
     );
@@ -206,12 +207,12 @@ class Backend {
       'read': read?.toJson(),
       'create': create?.toJson(),
       'update': update?.toJson(),
-      'delete': delete?.toJson(),
+      'delete': deleteX?.toJson(),
     };
   }
 }
 
-class BackendEndpoint {
+class BackendEndpoint extends HiveObject {
   final String method;
   final String url;
 

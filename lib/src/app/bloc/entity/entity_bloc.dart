@@ -80,8 +80,8 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
           try {
             await EntityCustomRepository.instance.modify(
               accessToken: '',
-              path: entity.backend.delete!.url.replaceFirst('{id}', id),
-              method: entity.backend.delete!.method,
+              path: entity.backend.deleteX!.url.replaceFirst('{id}', id),
+              method: entity.backend.deleteX!.method,
             );
             emit(const _Success(null));
           } catch (error) {
