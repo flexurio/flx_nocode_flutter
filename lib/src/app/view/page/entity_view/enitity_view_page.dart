@@ -14,10 +14,29 @@ class EntityViewPage extends StatelessWidget {
     required this.entity,
     required this.data,
     required this.embedded,
+    required this.dummy,
   });
   final EntityCustom entity;
   final Map<String, dynamic> data;
+  final bool dummy;
   final bool embedded;
+
+  static prepare({
+    required EntityCustom entity,
+    required Map<String, dynamic> data,
+    required bool embedded,
+    required bool dummy,
+  }) {
+    return MultiBlocProvider(
+      providers: [BlocProvider(create: (_) => EntityCustomQueryBloc())],
+      child: EntityViewPage._(
+        entity: entity,
+        data: data,
+        embedded: embedded,
+        dummy: dummy,
+      ),
+    );
+  }
 
   static Route<void> route({
     required EntityCustom entity,
@@ -25,11 +44,11 @@ class EntityViewPage extends StatelessWidget {
     required bool embedded,
   }) {
     return MaterialPageRoute(
-      builder: (_) => MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (_) => EntityCustomQueryBloc()),
-        ],
-        child: EntityViewPage._(entity: entity, data: data, embedded: embedded),
+      builder: (_) => EntityViewPage.prepare(
+        entity: entity,
+        data: data,
+        embedded: embedded,
+        dummy: false,
       ),
     );
   }
@@ -104,6 +123,7 @@ class EntityViewPage extends StatelessWidget {
   }
 
   void _fetch(BuildContext context) {
+    if (entity.backend.readAll == null) return;
     context.read<EntityCustomQueryBloc>().add(
           EntityCustomQueryEvent.fetchById(
             id: data['id'].toString(),
@@ -129,23 +149,27 @@ class EntityViewPage extends StatelessWidget {
           embedded,
         ),
       ),
-      body: BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
-        builder: (context, state) {
-          return state.maybeWhen(
-            orElse: SomethingWrong.new,
-            loading: (_) => const ProgressingIndicator(),
-            loaded: (pageOptions) {
-              final data = pageOptions.data.first;
-              return SingleFormPanel(
-                hideHeader: embedded ? true : false,
-                action: DataAction.view,
-                entity: entity.coreEntity,
-                size: SingleFormPanelSize.large,
-                children: [_buildData(data)],
-              );
-            },
-          );
-        },
+      body: SingleFormPanel(
+        hideHeader: embedded ? true : false,
+        action: DataAction.view,
+        entity: entity.coreEntity,
+        size: SingleFormPanelSize.large,
+        children: [
+          dummy
+              ? _buildData(data)
+              : BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
+                  builder: (context, state) {
+                    return state.maybeWhen(
+                      orElse: SomethingWrong.new,
+                      loading: (_) => const ProgressingIndicator(),
+                      loaded: (pageOptions) {
+                        final data = pageOptions.data.first;
+                        return _buildData(data);
+                      },
+                    );
+                  },
+                ),
+        ],
       ),
     );
   }

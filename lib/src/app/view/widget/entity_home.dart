@@ -18,11 +18,12 @@ class MenuCustom extends StatelessWidget {
   final EntityCustom entity;
   final List<Filter> initialFilters;
 
-  static Widget fromId(
-      {required String entityId,
-      bool firstPage = false,
-      bool embedded = false,
-      List<Filter> initialFilters = const []}) {
+  static Widget fromId({
+    required String entityId,
+    bool firstPage = false,
+    bool embedded = false,
+    List<Filter> initialFilters = const [],
+  }) {
     return FutureBuilder<EntityCustom?>(
       future: EntityCustom.getEntity(entityId),
       builder: (context, snapshot) {

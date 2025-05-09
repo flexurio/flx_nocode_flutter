@@ -8,3 +8,4 @@ export 'src/app/model/export.dart';
 export 'src/app/model/view.dart';
 export 'src/app/model/backend_other.dart';
 export 'src/app/view/page/entity_create/entity_create_page.dart';
+export 'src/app/view/page/entity_view/enitity_view_page.dart';
