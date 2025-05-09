@@ -36,6 +36,14 @@ class EntityCustom extends HiveObject {
     CanvasPosition? position,
   }) : _position = position ?? CanvasPosition.zero();
 
+  Map<String, dynamic> dummy() {
+    final data = <String, dynamic>{};
+    for (var field in fields) {
+      data[field.reference] = field.dummyValue();
+    }
+    return data;
+  }
+
   static Future<EntityCustom?> getEntity(String id) async {
     try {
       final path = 'asset/configuration/entity/$id.json';

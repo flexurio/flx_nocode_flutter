@@ -73,6 +73,13 @@ class EntityField extends HiveObject {
     );
   }
 
+  dynamic dummyValue() {
+    if (isNumber) {
+      return 1;
+    }
+    return 'Sample text here';
+  }
+
   EntityField copyWith({
     String? label,
     String? reference,
@@ -221,6 +228,7 @@ class EntityField extends HiveObject {
 
   bool get isDateTime => type.contains('datetime');
   bool get isBool => type == 'bool';
+  bool get isNumber => type == 'number';
 
   String get dateTimeFormat {
     final regex = RegExp(r'datetime\((.*?)\)');

@@ -9,17 +9,37 @@ import 'package:gap/gap.dart';
 import 'package:page_transition/page_transition.dart';
 
 class EntityCreatePage extends StatefulWidget {
-  const EntityCreatePage._(
-    this.data,
-    this.entity,
-    this.onSuccess,
-    this.embedded,
-  );
+  const EntityCreatePage._({
+    super.key,
+    required this.data,
+    required this.entity,
+    required this.onSuccess,
+    required this.embedded,
+  });
 
   final Map<String, dynamic>? data;
   final configuration.EntityCustom entity;
   final VoidCallback onSuccess;
   final bool embedded;
+
+  static Widget prepare({
+    Key? key,
+    required configuration.EntityCustom entity,
+    Map<String, dynamic>? data,
+    required VoidCallback onSuccess,
+    required bool embedded,
+  }) {
+    return MultiBlocProvider(
+      providers: [BlocProvider(create: (context) => EntityBloc(entity))],
+      child: EntityCreatePage._(
+        data: data,
+        entity: entity,
+        onSuccess: onSuccess,
+        embedded: embedded,
+        key: key,
+      ),
+    );
+  }
 
   static Route<bool?> route({
     required configuration.EntityCustom entity,
@@ -30,9 +50,11 @@ class EntityCreatePage extends StatefulWidget {
     return PageTransition(
       opaque: true,
       type: PageTransitionType.rightToLeft,
-      child: MultiBlocProvider(
-        providers: [BlocProvider(create: (context) => EntityBloc(entity))],
-        child: EntityCreatePage._(data, entity, onSuccess, embedded),
+      child: EntityCreatePage.prepare(
+        entity: entity,
+        data: data,
+        onSuccess: onSuccess,
+        embedded: embedded,
       ),
     );
   }
@@ -165,7 +187,11 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
       }
       children.removeLast();
     } else {
-      children.add(Text("Error: Layout \"$action\" not found"));
+      for (final field in widget.entity.fields) {
+        children.addAll(
+          [field.buildForm(_action, _controllers[field.reference]!), Gap(12)],
+        );
+      }
     }
     return Column(children: children);
   }
