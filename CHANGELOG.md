@@ -1,5 +1,9 @@
 # Changelog flx_nocode_flutter
 
+## [0.0.4] - 2025-05-14
+### Fixed
+- Fixed an issue where fetching data by ID did not return the correct result
+
 ## [0.0.3] - 2025-05-08
 ### Fixed
 - Corrected JSON file loading logic to ensure proper data parsing

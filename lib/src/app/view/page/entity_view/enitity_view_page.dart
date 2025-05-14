@@ -27,11 +27,54 @@ class EntityViewPage extends StatelessWidget {
   }) {
     return MaterialPageRoute(
       builder: (_) => MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (_) => EntityCustomQueryBloc()),
-        ],
+        providers: [BlocProvider(create: (_) => EntityCustomQueryBloc())],
         child: EntityViewPage._(entity: entity, data: data, embedded: embedded),
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    _fetch(context);
+    return Scaffold(
+      appBar: embedded ? _buildAppBar(context) : null,
+      backgroundColor: embedded ? theme.cardColor : Colors.transparent,
+      floatingActionButton: ActionButtonX(
+        items: EntityViewPage.actions(
+          context,
+          data,
+          entity,
+          (context) => {},
+          embedded,
+        ),
+      ),
+      body: BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
+        builder: (context, state) {
+          return state.maybeWhen(
+            orElse: SomethingWrong.new,
+            loading: (_) => const ProgressingIndicator(),
+            loaded: (pageOptions) {
+              final data = pageOptions.data.first;
+              return SingleFormPanel(
+                hideHeader: embedded ? true : false,
+                action: DataAction.view,
+                entity: entity.coreEntity,
+                size: SingleFormPanelSize.large,
+                children: [_buildData(data)],
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    final theme = Theme.of(context);
+    return AppBar(
+      title: Text(entity.label),
+      backgroundColor: theme.scaffoldBackgroundColor,
     );
   }
 
@@ -151,55 +194,10 @@ class EntityViewPage extends StatelessWidget {
     context.read<EntityCustomQueryBloc>().add(
           EntityCustomQueryEvent.fetchById(
             id: data['id'].toString(),
-            method: entity.backend.readAll!.method,
-            url: entity.backend.readAll!.url,
+            method: entity.backend.read!.method,
+            url: entity.backend.read!.url,
           ),
         );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    _fetch(context);
-    return Scaffold(
-      appBar: embedded ? _buildAppBar(context) : null,
-      backgroundColor: embedded ? theme.cardColor : Colors.transparent,
-      floatingActionButton: ActionButtonX(
-        items: EntityViewPage.actions(
-          context,
-          data,
-          entity,
-          (context) => {},
-          embedded,
-        ),
-      ),
-      body: BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
-        builder: (context, state) {
-          return state.maybeWhen(
-            orElse: SomethingWrong.new,
-            loading: (_) => const ProgressingIndicator(),
-            loaded: (pageOptions) {
-              final data = pageOptions.data.first;
-              return SingleFormPanel(
-                hideHeader: embedded ? true : false,
-                action: DataAction.view,
-                entity: entity.coreEntity,
-                size: SingleFormPanelSize.large,
-                children: [_buildData(data)],
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-
-  AppBar _buildAppBar(BuildContext context) {
-    final theme = Theme.of(context);
-    return AppBar(
-      title: Text(entity.label),
-      backgroundColor: theme.scaffoldBackgroundColor,
-    );
   }
 
   Widget _buildData(Map<String, dynamic> data) {
