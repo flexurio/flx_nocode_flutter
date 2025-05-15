@@ -52,17 +52,6 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     _fetch();
   }
 
-  void _fetch([PageOptions<Map<String, dynamic>>? pageOptions]) {
-    context.read<EntityCustomQueryBloc>().add(
-          EntityCustomQueryEvent.fetch(
-            pageOptions: pageOptions,
-            filters: _filters,
-            method: widget.entity.backend.readAll!.method,
-            url: widget.entity.backend.readAll!.url,
-          ),
-        );
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
@@ -99,6 +88,17 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
         );
       },
     );
+  }
+
+  void _fetch([PageOptions<Map<String, dynamic>>? pageOptions]) {
+    context.read<EntityCustomQueryBloc>().add(
+          EntityCustomQueryEvent.fetch(
+            pageOptions: pageOptions,
+            filters: _filters,
+            method: widget.entity.backend.readAll!.method,
+            url: widget.entity.backend.readAll!.url,
+          ),
+        );
   }
 
   Widget _buildListView({
@@ -195,6 +195,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                   //     data,
                   //     widget.entity,
                   //     (context) => _fetch(),
+                  //     false,
                   //   ),
                   // )
                 ],

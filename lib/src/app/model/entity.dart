@@ -35,6 +35,7 @@ class EntityCustom {
 
   static Future<EntityCustom?> getEntity(String id) async {
     try {
+      print('[EntityCustom] getEntity $id');
       final path = 'asset/configuration/entity/$id.json';
       final data = await rootBundle.loadString(path);
       return EntityCustom.fromJson(json.decode(data));
