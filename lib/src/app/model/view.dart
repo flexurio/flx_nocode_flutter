@@ -40,6 +40,7 @@ class View {
         );
       }
     }
+    print('[View] filters $filters');
     return filters;
   }
 
@@ -55,16 +56,18 @@ class View {
       label: '${DataAction.view.title} $label',
       onPressed: () async {
         if (embedded) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MenuCustom(
-                embedded: true,
-                entityId: entity.id,
-                initialFilters: _filters(entity, data),
+          Future.delayed(const Duration(milliseconds: 200), () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MenuCustom(
+                  embedded: true,
+                  entityId: this.entity,
+                  initialFilters: _filters(entity, data),
+                ),
               ),
-            ),
-          );
+            );
+          });
         } else {
           MenuBloc.instance.add(
             Menu3Selected(

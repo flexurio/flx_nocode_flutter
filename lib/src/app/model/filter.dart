@@ -20,8 +20,13 @@ class Filter {
     final keys = reference.split('|');
     final labels = <String>[];
     for (final key in keys) {
-      final label = entity.fields.firstWhere((e) => e.reference == key).label;
-      labels.add(label);
+      final index = entity.fields.indexWhere((e) => e.reference == key);
+      if (index != -1) {
+        final label = entity.fields[index].label;
+        labels.add(label);
+      } else {
+        labels.add(key);
+      }
     }
     return labels.join(' | ');
   }

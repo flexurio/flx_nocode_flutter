@@ -5,7 +5,6 @@ import 'package:flx_nocode_flutter/src/app/view/page/entity_view/enitity_view_pa
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_create_button.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/filter.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
@@ -52,17 +51,6 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     _fetch();
   }
 
-  void _fetch([PageOptions<Map<String, dynamic>>? pageOptions]) {
-    context.read<EntityCustomQueryBloc>().add(
-          EntityCustomQueryEvent.fetch(
-            pageOptions: pageOptions,
-            filters: _filters,
-            method: widget.entity.backend.readAll!.method,
-            url: widget.entity.backend.readAll!.url,
-          ),
-        );
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
@@ -99,6 +87,17 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
         );
       },
     );
+  }
+
+  void _fetch([PageOptions<Map<String, dynamic>>? pageOptions]) {
+    context.read<EntityCustomQueryBloc>().add(
+          EntityCustomQueryEvent.fetch(
+            pageOptions: pageOptions,
+            filters: _filters,
+            method: widget.entity.backend.readAll!.method,
+            url: widget.entity.backend.readAll!.url,
+          ),
+        );
   }
 
   Widget _buildListView({
@@ -190,14 +189,15 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             body: (data) => DataCell(
               Row(
                 children: [
-                  ActionsButton(
-                    children: EntityViewPage.actionsLarge(
-                      context,
-                      data,
-                      widget.entity,
-                      (context) => _fetch(),
-                    ),
-                  )
+                  // ActionsButton(
+                  //   children: EntityViewPage.actions(
+                  //     context,
+                  //     data,
+                  //     widget.entity,
+                  //     (context) => _fetch(),
+                  //     false,
+                  //   ),
+                  // )
                 ],
               ),
             ),

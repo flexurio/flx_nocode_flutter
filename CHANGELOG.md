@@ -1,5 +1,9 @@
 # Changelog flx_nocode_flutter
 
+## [0.0.5] - 2025-05-15
+### Fixed
+- Resolved a navigation issue where the app failed to redirect to the detail view when expected
+
 ## [0.0.4] - 2025-05-14
 ### Fixed
 - Fixed an issue where fetching data by ID did not return the correct result
