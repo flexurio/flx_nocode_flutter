@@ -18,7 +18,7 @@ class EntityField {
   final bool? required;
   final String? pattern;
   final String? patternError;
-  final String? source;
+  final String? optionsSource;
   final int? minLength;
   final int? maxLength;
   final bool? allowCreate;
@@ -34,7 +34,7 @@ class EntityField {
     this.required,
     this.pattern,
     this.patternError,
-    this.source,
+    this.optionsSource,
     this.minLength,
     this.maxLength,
     this.allowCreate,
@@ -44,7 +44,7 @@ class EntityField {
 
   factory EntityField.fromJson(Map<String, dynamic> json) {
     return EntityField(
-      source: json['source'],
+      optionsSource: json['options_source'],
       columnWidth: (json['column_width'] as num?)?.toDouble(),
       label: json['label'],
       reference: json['reference'],
@@ -57,46 +57,20 @@ class EntityField {
       maxLength: json['max_length'],
       allowCreate: json['allow_create'],
       allowUpdate: json['allow_update'],
-      options: json['options'] != null
-          ? FieldOptions.fromJson(json['options'])
-          : null,
     );
-  }
-
-  (String entity, String key, String value) get backendSource {
-    if (source == null) {
-      throw Exception('Source is null');
-    }
-
-    final pattern =
-        r'(?<type>\w+)\.(?<entity>\w+)\(\{(?<key>\w+)\}-{(?<value>\w+)}\)';
-
-    final regExp = RegExp(pattern);
-    final match = regExp.firstMatch(source!);
-
-    String entity = '';
-    String key = '';
-    String value = '';
-
-    if (match != null) {
-      entity = match.namedGroup('entity')!;
-      key = match.namedGroup('key')!;
-      value = match.namedGroup('value')!;
-    }
-
-    return (entity, key, value);
   }
 
   Widget buildInputField(DataAction action, TextEditingController controller) {
     final isEnabled = _enabled(action);
-    if (source != null) {
+    if (optionsSource != null) {
       return FDropDownSearchEntity(
+        label: label,
         itemAsString: (id, label) => '$id - $label',
         entityField: this,
-        initialValue: action.isEdit ? {'id': controller.text} : null,
+        initialValue: action.isEdit ? MapEntry(controller.text, '') : null,
         enabled: isEnabled,
         onChanged: (value) {
-          controller.text = value!['id'].toString();
+          controller.text = value!.key.toString();
         },
       );
     } else if (isDateTime) {
@@ -288,7 +262,7 @@ class EntityField {
 
   Map<String, dynamic> toJson() {
     return {
-      'source': source,
+      'source': optionsSource,
       'column_width': columnWidth,
       'label': label,
       'reference': reference,
@@ -300,35 +274,6 @@ class EntityField {
       'max_length': maxLength,
       'allow_create': allowCreate,
       'allow_update': allowUpdate,
-      'options': options?.toJson(),
-    };
-  }
-}
-
-class FieldOptions {
-  final String source;
-  final String labelField;
-  final String valueField;
-
-  FieldOptions({
-    required this.source,
-    required this.labelField,
-    required this.valueField,
-  });
-
-  factory FieldOptions.fromJson(Map<String, dynamic> json) {
-    return FieldOptions(
-      source: json['source'],
-      labelField: json['label_field'],
-      valueField: json['value_field'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'source': source,
-      'label_field': labelField,
-      'value_field': valueField,
     };
   }
 }
