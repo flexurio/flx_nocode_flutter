@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flx_nocode_flutter/src/app/view/page/entity_create/widget/form.dart';
 import 'package:gap/gap.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -31,7 +32,7 @@ class EntityCreatePage extends StatefulWidget {
       opaque: true,
       type: PageTransitionType.rightToLeft,
       child: MultiBlocProvider(
-        providers: [BlocProvider(create: (context) => EntityBloc(entity))],
+        providers: [BlocProvider(create: (_) => EntityBloc(entity))],
         child: EntityCreatePage._(data, entity, onSuccess, embedded),
       ),
     );
@@ -88,7 +89,13 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
           action: _action,
           entity: coreEntity,
           actions: [_buildButtonSubmit()],
-          children: [_buildForm()],
+          children: [
+            EntityCreateForm(
+              entity: widget.entity,
+              dataAction: _action,
+              controllers: _controllers,
+            )
+          ],
         ),
       ),
     );
@@ -145,32 +152,5 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
         );
       },
     );
-  }
-
-  Widget _buildForm() {
-    String action = 'create';
-    if (_action.isEdit) {
-      action = 'update';
-    }
-
-    final children = <Widget>[];
-    final layouts = widget.entity.layout;
-    final layoutEdit = layouts.containsKey(action);
-    if (layoutEdit) {
-      final layout = (layouts[action] as Map<String, dynamic>).entries;
-      for (final entry in layout) {
-        final layoutGroup = LayoutGroup.fromMapEntry(entry);
-        final layout = layoutGroup.buildForm(
-          widget.entity,
-          _action,
-          _controllers,
-        );
-        children.addAll([layout, Gap(24)]);
-      }
-      children.removeLast();
-    } else {
-      children.add(Text("Error: Layout \"$action\" not found"));
-    }
-    return Column(children: children);
   }
 }
