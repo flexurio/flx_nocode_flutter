@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:flexurio_no_code/src/app/model/config.dart';
+import 'package:flx_nocode_flutter/src/app/model/config.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 
 final configFlavorAntonPaarDevelopment = FlavorConfig<AppConfig>(

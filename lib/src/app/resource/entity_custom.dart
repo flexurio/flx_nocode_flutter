@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flexurio_no_code/src/app/model/configuration.dart';
+import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:dio/dio.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 

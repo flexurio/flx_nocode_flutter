@@ -1,6 +1,6 @@
 import 'package:flexurio_erp_authentication/flexurio_erp_authentication.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
-import 'package:flexurio_no_code/src/app/model/user.dart';
+import 'package:flx_nocode_flutter/src/app/model/user.dart';
 import 'package:hive/hive.dart';
 
 class UserRepositoryApp extends UserRepository {

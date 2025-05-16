@@ -1,6 +1,6 @@
-import 'package:flexurio_no_code/src/app/model/entity.dart' as configuration;
-import 'package:flexurio_no_code/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart';
-import 'package:flexurio_no_code/src/app/model/entity_field.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity.dart' as configuration;
+import 'package:flx_nocode_flutter/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
-import 'package:flexurio_no_code/src/app/model/entity_field.dart';
-import 'package:flexurio_no_code/src/app/model/filter.dart';
-import 'package:flexurio_no_code/src/app/view/widget/filter.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
+import 'package:flx_nocode_flutter/src/app/model/filter.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/filter.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 

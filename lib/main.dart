@@ -1,6 +1,6 @@
-import 'package:flexurio_no_code/src/app/model/configuration.dart';
+import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
-import 'package:flexurio_no_code/src/app/resource/user_repository.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flexurio_erp_authentication/flexurio_erp_authentication.dart';

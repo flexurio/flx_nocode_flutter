@@ -1,5 +1,5 @@
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
-import 'package:flexurio_no_code/src/app/model/entity.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flutter/material.dart';
 
 import 'entity_field.dart';

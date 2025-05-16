@@ -1,4 +1,4 @@
-import 'package:flexurio_no_code/src/app/model/entity.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 
 class Filter {
   final String reference;

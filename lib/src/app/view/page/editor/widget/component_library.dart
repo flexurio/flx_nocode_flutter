@@ -1,4 +1,4 @@
-import 'package:flexurio_no_code/src/app/view/page/editor/widget/card_component.dart';
+import 'package:flx_nocode_flutter/src/app/view/page/editor/widget/card_component.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';

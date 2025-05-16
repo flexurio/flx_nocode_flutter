@@ -1,4 +1,4 @@
-// import 'package:flexurio_no_code/src/app/model/city.dart';
+// import 'package:flx_nocode_flutter/src/app/model/city.dart';
 // import 'package:flexurio_erp_core/flexurio_erp_core.dart';
 
 // List<City> exampleCities = [

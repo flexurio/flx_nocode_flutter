@@ -5,9 +5,107 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="805882a8-216a-407b-bb87-7e41cd69ed72" name="Changes" comment="change background">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/Main.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/main_dart.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/asset/configuration/entity/flx_roles.json" beforeDir="false" afterPath="$PROJECT_DIR$/asset/configuration/entity/flx_roles.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flexurio_no_code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/flexurio_no_code.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/web/version.json" beforeDir="false" afterPath="$PROJECT_DIR$/build/web/version.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/copy_asset.sh" beforeDir="false" afterPath="$PROJECT_DIR$/copy_asset.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/constant/example_city.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constant/example_city.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/constant/example_country.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constant/example_country.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/constant/flavor.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/constant/flavor.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/bloc/entity/entity_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/bloc/entity/entity_bloc.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/model/configuration.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/model/configuration.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/model/entity.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/model/entity.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/model/entity_field.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/model/entity_field.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/model/export.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/model/export.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/model/filter.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/model/filter.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/model/layout.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/model/layout.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/model/layout_list_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/model/layout_list_tile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/model/no_code.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/model/no_code.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/model/view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/model/view.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/resource/entity_custom.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/resource/entity_custom.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/resource/user_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/resource/user_repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/editor/widget/component_library.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/page/editor/widget/component_library.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/entity_create/entity_create_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/page/entity_create/entity_create_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/entity_view/enitity_view_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/page/entity_view/enitity_view_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/page/entity_view/widget/delete_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/page/entity_view/widget/delete_button.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/widget/entity_create_button.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/widget/entity_create_button.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/widget/entity_data_table.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/widget/entity_data_table.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/widget/entity_drop_down.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/widget/entity_drop_down.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/widget/entity_home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/widget/entity_home.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/widget/filter.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/widget/filter.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/widget/filter_field.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/widget/filter_field.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/app/view/widget/form_filter.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/app/view/widget/form_filter.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/linux/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/linux/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/linux/flutter/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/linux/flutter/generated_plugin_registrant.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/linux/flutter/generated_plugins.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/linux/runner/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/linux/runner/main.cc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/linux/runner/my_application.cc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/linux/runner/my_application.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Flutter/Flutter-Debug.xcconfig" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Flutter/Flutter-Release.xcconfig" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner.xcodeproj/project.pbxproj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner.xcworkspace/contents.xcworkspacedata" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/AppDelegate.swift" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_128.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_512.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_64.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Base.lproj/MainMenu.xib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Configs/AppInfo.xcconfig" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Configs/Debug.xcconfig" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Configs/Release.xcconfig" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Configs/Warnings.xcconfig" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/DebugProfile.entitlements" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Info.plist" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/MainFlutterWindow.swift" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/Runner/Release.entitlements" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/macos/RunnerTests/RunnerTests.swift" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/widget_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/widget_test.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/favicon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/icons/Icon-192.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/icons/Icon-512.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/icons/Icon-maskable-192.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/icons/Icon-maskable-512.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/manifest.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/flutter/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/flutter/generated_plugin_registrant.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/flutter/generated_plugins.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/runner/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/runner/Runner.rc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/runner/flutter_window.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/runner/flutter_window.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/runner/main.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/runner/resource.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/runner/resources/app_icon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/runner/runner.exe.manifest" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/runner/utils.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/runner/utils.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/runner/win32_window.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/windows/runner/win32_window.h" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,6 +119,12 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "msuhal"
+  }
+}]]></component>
   <component name="GitToolBoxStore">
     <option name="recentBranches">
       <RecentBranches>
@@ -42,6 +146,12 @@
       </RecentBranches>
     </option>
   </component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/flexurio/flx_nocode_flutter",
+    "accountId": "13a55c07-4cae-4a99-94c9-48b52cc62137"
+  }
+}]]></component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -67,42 +177,42 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Flutter.MF Development.executor&quot;: &quot;Debug&quot;,
-    &quot;Flutter.Main.executor&quot;: &quot;Debug&quot;,
-    &quot;Makefile Target.bldauth.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;com.codeium.enabled&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;create-doc&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/muali/Documents/Development/project/vneu/flexurio_no_code/asset/image&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter.MF Development.executor": "Debug",
+    "Flutter.Main.executor": "Debug",
+    "Makefile Target.bldauth.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "com.codeium.enabled": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "backend-rust-with-auth",
+    "ignore.virus.scanning.warn.message": "true",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/muali/Documents/Development/project/vneu/flx_nocode_flutter/asset/image",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "show.migrate.to.gradle.popup": "false"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\asset\image" />
-      <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\asset\configuration\entity" />
-      <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\lib\src\app\model" />
-      <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\lib\src\app\resource" />
+      <recent name="C:\Users\muali\Documents\Development\project\vneu\flx_nocode_flutter\asset\image" />
+      <recent name="C:\Users\muali\Documents\Development\project\vneu\flx_nocode_flutter\asset\configuration\entity" />
+      <recent name="C:\Users\muali\Documents\Development\project\vneu\flx_nocode_flutter\lib\src\app\model" />
+      <recent name="C:\Users\muali\Documents\Development\project\vneu\flx_nocode_flutter\lib\src\app\resource" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\lib\src\app\view\page\widget\editor" />
-      <recent name="C:\Users\muali\Documents\Development\project\vneu\flexurio_no_code\packages\flexurio_chiron_material_stock\lib\src\app\model" />
+      <recent name="C:\Users\muali\Documents\Development\project\vneu\flx_nocode_flutter\lib\src\app\view\page\widget\editor" />
+      <recent name="C:\Users\muali\Documents\Development\project\vneu\flx_nocode_flutter\packages\flexurio_chiron_material_stock\lib\src\app\model" />
     </key>
   </component>
-  <component name="RunManager" selected="Flutter.Main">
+  <component name="RunManager" selected="Makefile Target.bldauth">
     <configuration name="bldauth" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
       <makefile filename="$PROJECT_DIR$/Makefile" target="bldauth" workingDirectory="" arguments="">
         <envs />

@@ -1,9 +1,9 @@
 import 'package:flexurio_erp_authentication/flexurio_erp_authentication.dart';
-import 'package:flexurio_no_code/src/app/model/entity.dart';
-import 'package:flexurio_no_code/src/app/model/filter.dart';
-import 'package:flexurio_no_code/src/app/resource/entity_custom.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity.dart';
+import 'package:flx_nocode_flutter/src/app/model/filter.dart';
+import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
 import 'package:flexurio_erp_core/flexurio_erp_core.dart';
-import 'package:flexurio_no_code/src/app/resource/user_repository.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
