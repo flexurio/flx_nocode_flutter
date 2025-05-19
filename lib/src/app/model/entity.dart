@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
 import 'package:flx_nocode_flutter/src/app/model/export.dart';
 import 'package:flx_nocode_flutter/src/app/model/layout_list_tile.dart';
 import 'package:flx_nocode_flutter/src/app/model/view.dart' as view;
-import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
+import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

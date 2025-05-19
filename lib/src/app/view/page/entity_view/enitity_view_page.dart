@@ -4,7 +4,7 @@ import 'package:flx_nocode_flutter/src/app/model/backend_other.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_create/entity_create_page.dart';
-import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_view/widget/delete_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -7,15 +7,15 @@ environment:
   sdk: '>=3.4.0 <4.0.0'
 
 dependencies:
-  dio: ^4.0.0
+  dio: ^5.8.0+1
   easy_localization: ^3.0.7
   flexurio_erp_authentication:
     path: packages/flexurio_erp_authentication/
-  flexurio_erp_core:
-    path: packages/flexurio_erp_core/
+  flx_core_flutter:
+    path: packages/flx_core_flutter/
   flutter:
     sdk: flutter
-  flutter_bloc: ^8.1.6
+  flutter_bloc: ^9.1.1
   flutter_localization: ^0.1.10
   form_field_validator: ^1.1.0
   freezed_annotation: ^2.2.0
@@ -25,15 +25,12 @@ dependencies:
   json_annotation: ^4.7.0
   page_transition: ^2.0.9
   path_provider: ^2.0.9
-  pattern_formatter:
-    git:
-      url: https://github.com/augustineonu/flutter_pattern_formatter.git
-      ref: e310fc81043468b9b2b063bac6122f7dde51b03f
+  pattern_formatter: ^4.0.0
   screen_identifier: ^0.0.2
   go_router: ^14.3.0
 
 dev_dependencies:
-  bloc_test: ^9.0.0
+  bloc_test: ^10.0.0
   build_runner: ^2.4.6
   build_runner_core: ^7.2.9
   flutter_launcher_icons: ^0.13.1
@@ -42,7 +39,7 @@ dev_dependencies:
   freezed: ^2.2.0
   icons_launcher: ^2.0.0
   json_serializable: ^6.5.4
-  mocktail: ^0.3.0
+  mocktail: ^1.0.4
   very_good_analysis: ^5.1.0
 
 flutter:

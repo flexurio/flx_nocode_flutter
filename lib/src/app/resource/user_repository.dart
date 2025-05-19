@@ -1,5 +1,5 @@
 import 'package:flexurio_erp_authentication/flexurio_erp_authentication.dart';
-import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/user.dart';
 import 'package:hive/hive.dart';
 

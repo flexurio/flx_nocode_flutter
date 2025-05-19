@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flx_nocode_flutter/src/app/model/backend_other.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
-import 'package:flexurio_erp_core/flexurio_erp_core.dart' as core;
+import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

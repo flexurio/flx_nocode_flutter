@@ -1,4 +1,4 @@
-import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +68,7 @@ class EntityDeleteButton extends StatelessWidget {
                 loading: () => true,
                 orElse: () => false,
               );
-              return CardConfirmation(
+              return CardConfirmation.action(
                 isProgress: isInProgress,
                 action: action,
                 data: entity.coreEntity,

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:dio/dio.dart';
-import 'package:flexurio_erp_core/flexurio_erp_core.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 
 class EntityCustomRepository extends Repository {
   EntityCustomRepository({
