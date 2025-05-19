@@ -1,5 +1,9 @@
 # Changelog flx_nocode_flutter
 
+## [1.0.1] - 2025-05-19
+### Fixed
+- Fixed form creation issue for `auto_generate` field.
+
 ## [1.0.0] - 2025-05-19
 ### Added
 - Dropdown widget with hardcoded values support

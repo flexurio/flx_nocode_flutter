@@ -118,6 +118,9 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
 
       var value = _controllers[field.reference]!.text;
       if (field.isDateTime) {
+        print(
+          '[EntityCreatePage] reference: ${field.reference}, value: $value',
+        );
         value = DateFormat('yMMMMd').parse(value).toUtcIso();
       }
       data[field.reference] = value;
