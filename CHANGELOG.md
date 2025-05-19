@@ -1,5 +1,12 @@
 # Changelog flx_nocode_flutter
 
+## [1.0.0] - 2025-05-19
+### Added
+- Dropdown widget with hardcoded values support
+### Changed (Breaking)
+- **Renamed:** Dropdown's `source` parameter renamed to `options_source`
+- **Format Updated:** For dropdowns using backend sources, changed value-label format from `backend.entity_name({value}-{label})` to `backend.entity_name({value}:{label})`
+
 ## [0.0.5] - 2025-05-15
 ### Fixed
 - Resolved a navigation issue where the app failed to redirect to the detail view when expected
