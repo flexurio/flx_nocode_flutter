@@ -58,7 +58,7 @@ class OptionsSource {
         accessToken: 'text',
         pageOptions: PageOptions.empty(),
         method: entity.backend.readAll!.method,
-        path: entity.backend.readAll!.url,
+        path: entity.backend.readAll!.urlWithValues,
         filterMap: {},
       );
 

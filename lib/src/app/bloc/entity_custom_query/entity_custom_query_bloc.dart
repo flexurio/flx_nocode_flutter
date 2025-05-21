@@ -48,7 +48,7 @@ class EntityCustomQueryBloc
                 accessToken: '',
                 id: id,
                 method: method,
-                path: urlWithValues(url, {}),
+                path: urlWithValuesReplace(url, {}),
               );
               emit(_Loaded(_pageOptions.copyWith(data: [data])));
             } catch (error) {
@@ -71,7 +71,7 @@ class EntityCustomQueryBloc
                 accessToken: 'text',
                 pageOptions: _pageOptions,
                 method: method,
-                path: urlWithValues(url, {}),
+                path: urlWithValuesReplace(url, {}),
                 filterMap: filterMap,
               );
               emit(_Loaded(_pageOptions));

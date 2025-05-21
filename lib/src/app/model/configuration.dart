@@ -225,6 +225,10 @@ class BackendEndpoint {
   BackendEndpoint(
       {required this.method, required this.url, required this.data});
 
+  String get urlWithValues {
+    return urlWithValuesReplace(url, data ?? {});
+  }
+
   factory BackendEndpoint.fromJson(Map<String, dynamic> json) {
     try {
       return BackendEndpoint(

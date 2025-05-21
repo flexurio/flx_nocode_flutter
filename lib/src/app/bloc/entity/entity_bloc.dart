@@ -36,7 +36,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
           try {
             final response = await EntityCustomRepository.instance.modify(
               accessToken: '',
-              path: urlWithValues(event.url, data),
+              path: urlWithValuesReplace(event.url, data),
               method: event.method,
             );
             emit(_Success(response));
