@@ -22,14 +22,15 @@ Future<void> main() async {
         logoNamed: configuration.logoNamedUrl,
         logoUrl: configuration.logoUrl,
         appName: configuration.appName,
-        menu: configuration.menu,
+        menu: configuration.menu(disablePermissions: true),
         accountSubtitle: '${user.id} - ${user.role}',
         onChangePassword: (context) {},
         searchData: (context, query) => [],
         accountPermissions: permissions,
         accountName: name,
-        onLogout: () =>
-            AuthenticationBloc.instance.add(const AuthenticationEvent.logout()),
+        onLogout: () => AuthenticationBloc.instance.add(
+          const AuthenticationEvent.logout(),
+        ),
       );
     },
     unAuthenticated: LoginPage.prepare(

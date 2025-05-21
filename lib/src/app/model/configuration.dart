@@ -72,7 +72,7 @@ class Configuration {
         applicationConfig: null,
       );
 
-  List<core.Menu1> get menu {
+  List<core.Menu1> menu({bool disablePermissions = false}) {
     return menuGroups
         .map(
           (e) => core.Menu1(
@@ -88,7 +88,8 @@ class Configuration {
                             label: e.label,
                             home: MenuCustom(entityId: e.entity),
                             permissions: [],
-                            permission: e.entity + '_read',
+                            permission:
+                                disablePermissions ? null : e.entity + '_read',
                           ),
                         )
                         .toList(),
