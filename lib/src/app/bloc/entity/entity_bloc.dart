@@ -63,7 +63,13 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
         },
         edit: (data) async {
           emit(const _Loading());
+          print('[EntityBloc] Edit - data $data');
           try {
+            if (!data.containsKey('id')) {
+              emit(_Error('ID not found'));
+              return;
+            }
+
             final response = await EntityCustomRepository.instance.modify(
               accessToken: '',
               path: entity.backend.update!.url.replaceFirst('{id}', data['id']),
@@ -71,7 +77,8 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               data: data,
             );
             emit(_Success(response));
-          } catch (error) {
+          } catch (error, stack) {
+            print('[EntityBloc] Edit - error $error');
             emit(_Error(errorMessage(error)));
           }
         },

@@ -44,7 +44,7 @@ class EntityViewPage extends StatelessWidget {
           context,
           data,
           entity,
-          (context) => {},
+          _fetch,
           embedded,
         ),
       ),
