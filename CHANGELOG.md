@@ -1,5 +1,11 @@
 # Changelog flx_nocode_flutter
 
+[//]: # (## [1.0.2] - TBA)
+
+[//]: # (### Fixed)
+
+[//]: # (- Resolved an issue where the dropdown widget did not correctly reflect the initial value.)
+
 ## [1.0.1] - 2025-05-19
 ### Fixed
 - Fixed form creation issue for `auto_generate` field.
