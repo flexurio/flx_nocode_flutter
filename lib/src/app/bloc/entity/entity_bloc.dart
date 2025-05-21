@@ -21,14 +21,9 @@ class EntityState with _$EntityState {
 
 @freezed
 class EntityEvent with _$EntityEvent {
-  const factory EntityEvent.create({
-    required Map<String, dynamic> data,
-  }) = _Create;
-
-  const factory EntityEvent.edit({
-    required Map<String, dynamic> data,
-  }) = _Edit;
-
+  const factory EntityEvent.create({required Map<String, dynamic> data}) =
+      _Create;
+  const factory EntityEvent.edit({required Map<String, dynamic> data}) = _Edit;
   const factory EntityEvent.delete({required String id}) = _Delete;
   const factory EntityEvent.otherEvent({
     required Map<String, dynamic> data,
@@ -45,7 +40,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
           try {
             final response = await EntityCustomRepository.instance.modify(
               accessToken: '',
-              path: event.urlWithValues(data),
+              path: urlWithValues(event.url, data),
               method: event.method,
             );
             emit(_Success(response));
@@ -60,7 +55,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               accessToken: UserRepositoryApp.instance.token!,
               path: entity.backend.create!.url,
               method: entity.backend.create!.method,
-              data: data,
+              data: data..addAll(entity.backend.create!.body),
             );
             emit(_Success(response));
           } catch (error) {
@@ -83,7 +78,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
                 Uri.encodeComponent(data['id']),
               ),
               method: entity.backend.update!.method,
-              data: data,
+              data: Map.from(data)..addAll(entity.backend.update!.body),
             );
             emit(_Success(response));
           } catch (error, stack) {

@@ -51,29 +51,34 @@ class EntityCustom {
   }
 
   factory EntityCustom.fromJson(Map<String, dynamic> json) {
-    return EntityCustom(
-      id: json['id'],
-      label: json['label'],
-      description: json['description'],
-      fields: (json['fields'] as List<dynamic>)
-          .map((e) => EntityField.fromJson(e))
-          .toList(),
-      views: json.containsKey('views')
-          ? (json['views'] as List<dynamic>)
-              .map((e) => view.View.fromJson(e))
-              .toList()
-          : [],
-      layout: json.containsKey('layout') ? json['layout'] : {},
-      backend: Backend.fromJson(json['backend']),
-      exports: json.containsKey('exports')
-          ? (json['exports'] as List<dynamic>)
-              .map((e) => Export.fromJson(e))
-              .toList()
-          : [],
-      layoutListTile: json.containsKey('layout_list_tile')
-          ? LayoutListTile.fromJson(json['layout_list_tile'])
-          : null,
-    );
+    try {
+      return EntityCustom(
+        id: json['id'],
+        label: json['label'],
+        description: json['description'],
+        fields: (json['fields'] as List<dynamic>)
+            .map((e) => EntityField.fromJson(e))
+            .toList(),
+        views: json.containsKey('views')
+            ? (json['views'] as List<dynamic>)
+                .map((e) => view.View.fromJson(e))
+                .toList()
+            : [],
+        layout: json.containsKey('layout') ? json['layout'] : {},
+        backend: Backend.fromJson(json['backend']),
+        exports: json.containsKey('exports')
+            ? (json['exports'] as List<dynamic>)
+                .map((e) => Export.fromJson(e))
+                .toList()
+            : [],
+        layoutListTile: json.containsKey('layout_list_tile')
+            ? LayoutListTile.fromJson(json['layout_list_tile'])
+            : null,
+      );
+    } catch (e) {
+      print('[EntityCustom] fromJson: $e');
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {
