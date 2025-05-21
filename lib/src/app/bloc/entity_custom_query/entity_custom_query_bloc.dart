@@ -49,7 +49,7 @@ class EntityCustomQueryBloc
                 accessToken: UserRepositoryApp.instance.token!,
                 id: id,
                 method: method,
-                path: urlWithValues(url, {}),
+                path: urlWithValuesReplace(url, {}),
               );
               emit(_Loaded(_pageOptions.copyWith(data: [data])));
             } catch (error) {
@@ -72,7 +72,7 @@ class EntityCustomQueryBloc
                 accessToken: UserRepositoryApp.instance.token!,
                 pageOptions: _pageOptions,
                 method: method,
-                path: urlWithValues(url, {}),
+                path: urlWithValuesReplace(url, {}),
                 filterMap: filterMap,
               );
               emit(_Loaded(_pageOptions));

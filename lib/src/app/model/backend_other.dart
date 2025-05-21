@@ -152,7 +152,7 @@ Map<String, dynamic> mapAddPageData(Map<String, dynamic> data) {
   return newData;
 }
 
-String urlWithValues(String urlX, Map<String, dynamic> data) {
+String urlWithValuesReplace(String urlX, Map<String, dynamic> data) {
   final keys = data.keys;
   var url = urlX;
   for (var key in keys) {
