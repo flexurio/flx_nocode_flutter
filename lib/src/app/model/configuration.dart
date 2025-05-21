@@ -179,25 +179,31 @@ class Backend {
   });
 
   factory Backend.fromJson(Map<String, dynamic> json) {
-    return Backend(
-      others: json['others'] != null
-          ? BackendOther.fromJsonList(json['others'])
-          : [],
-      readAll: json['read_all'] != null
-          ? BackendEndpoint.fromJson(json['read_all'])
-          : null,
-      read:
-          json['read'] != null ? BackendEndpoint.fromJson(json['read']) : null,
-      create: json['create'] != null
-          ? BackendEndpoint.fromJson(json['create'])
-          : null,
-      update: json['update'] != null
-          ? BackendEndpoint.fromJson(json['update'])
-          : null,
-      delete: json['delete'] != null
-          ? BackendEndpoint.fromJson(json['delete'])
-          : null,
-    );
+    try {
+      return Backend(
+        others: json['others'] != null
+            ? BackendOther.fromJsonList(json['others'])
+            : [],
+        readAll: json['read_all'] != null
+            ? BackendEndpoint.fromJson(json['read_all'])
+            : null,
+        read: json['read'] != null
+            ? BackendEndpoint.fromJson(json['read'])
+            : null,
+        create: json['create'] != null
+            ? BackendEndpoint.fromJson(json['create'])
+            : null,
+        update: json['update'] != null
+            ? BackendEndpoint.fromJson(json['update'])
+            : null,
+        delete: json['delete'] != null
+            ? BackendEndpoint.fromJson(json['delete'])
+            : null,
+      );
+    } catch (e) {
+      print('[Backend] fromJson: $e');
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -214,20 +220,33 @@ class Backend {
 class BackendEndpoint {
   final String method;
   final String url;
+  final Map<String, dynamic>? data;
 
-  BackendEndpoint({required this.method, required this.url});
+  BackendEndpoint(
+      {required this.method, required this.url, required this.data});
 
   factory BackendEndpoint.fromJson(Map<String, dynamic> json) {
-    return BackendEndpoint(
-      method: json['method'],
-      url: json['url'],
-    );
+    try {
+      return BackendEndpoint(
+        method: json['method'],
+        url: json['url'],
+        data: json['data'],
+      );
+    } catch (e) {
+      print('[BackendEndpoint] fromJson: $e');
+      rethrow;
+    }
+  }
+
+  Map<String, dynamic> get body {
+    return mapAddPageData(data ?? {});
   }
 
   Map<String, dynamic> toJson() {
     return {
       'method': method,
       'url': url,
+      'data': data,
     };
   }
 }

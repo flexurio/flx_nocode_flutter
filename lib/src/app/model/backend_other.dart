@@ -53,19 +53,6 @@ class BackendOther {
     return false;
   }
 
-  String urlWithValues(Map<String, dynamic> data) {
-    final keys = data.keys;
-    var url = this.url;
-    for (var key in keys) {
-      url = url.replaceAll('{$key}', data[key].toString());
-    }
-    final pageData = NoCode.pageData;
-    for (var key in pageData.keys) {
-      url = url.replaceAll('{page.$key}', pageData[key].toString());
-    }
-    return url;
-  }
-
   static List<BackendOther> fromJsonList(List<dynamic> json) =>
       json.map((e) => BackendOther.fromJson(e)).toList();
 
@@ -151,4 +138,29 @@ class BackendOther {
       },
     );
   }
+}
+
+Map<String, dynamic> mapAddPageData(Map<String, dynamic> data) {
+  final newData = <String, dynamic>{};
+  for (var key in data.keys) {
+    var value = data[key];
+    for (var pageKey in NoCode.pageData.keys) {
+      value = value.replaceAll('{page.$pageKey}', NoCode.pageData[pageKey]);
+    }
+    newData[key] = value;
+  }
+  return newData;
+}
+
+String urlWithValues(String urlX, Map<String, dynamic> data) {
+  final keys = data.keys;
+  var url = urlX;
+  for (var key in keys) {
+    url = url.replaceAll('{$key}', data[key].toString());
+  }
+  final pageData = NoCode.pageData;
+  for (var key in pageData.keys) {
+    url = url.replaceAll('{page.$key}', pageData[key].toString());
+  }
+  return url;
 }

@@ -1,9 +1,10 @@
-import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+
+import '../../model/backend_other.dart';
 
 part 'entity_custom_query_bloc.freezed.dart';
 
@@ -47,7 +48,7 @@ class EntityCustomQueryBloc
                 accessToken: '',
                 id: id,
                 method: method,
-                path: urlWithValues(url),
+                path: urlWithValues(url, {}),
               );
               emit(_Loaded(_pageOptions.copyWith(data: [data])));
             } catch (error) {
@@ -70,7 +71,7 @@ class EntityCustomQueryBloc
                 accessToken: 'text',
                 pageOptions: _pageOptions,
                 method: method,
-                path: urlWithValues(url),
+                path: urlWithValues(url, {}),
                 filterMap: filterMap,
               );
               emit(_Loaded(_pageOptions));
@@ -81,14 +82,6 @@ class EntityCustomQueryBloc
         );
       },
     );
-  }
-
-  String urlWithValues(String url) {
-    final pageData = NoCode.pageData;
-    for (var key in pageData.keys) {
-      url = url.replaceAll('{page.$key}', pageData[key].toString());
-    }
-    return url;
   }
 
   PageOptions<Map<String, dynamic>> _pageOptions = PageOptions.empty();
