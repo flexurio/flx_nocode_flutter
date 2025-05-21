@@ -55,10 +55,11 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               accessToken: UserRepositoryApp.instance.token!,
               path: entity.backend.create!.url,
               method: entity.backend.create!.method,
-              data: data..addAll(entity.backend.create!.body),
+              data: Map.from(data)..addAll(entity.backend.create!.body),
             );
             emit(_Success(response));
-          } catch (error) {
+          } catch (error, stack) {
+            print('[EntityBloc] Create - error $error');
             emit(_Error(errorMessage(error)));
           }
         },
