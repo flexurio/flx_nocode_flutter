@@ -81,6 +81,7 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
       validator = requiredObjectValidator.call;
     }
 
+    print('[FDropDownSearchEntity] initialValue ${widget.initialValue}');
     return FDropDownSearch<MapEntry>(
       enabled: widget.enabled,
       labelText: widget.label ?? '(none)',
@@ -88,7 +89,8 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
       initialValue: widget.initialValue == null
           ? null
           : (_options.containsKey(widget.initialValue!.key)
-              ? _options[widget.initialValue!.key]
+              ? MapEntry(
+                  widget.initialValue!.key, _options[widget.initialValue!.key])
               : null),
       validator: validator,
       itemAsString: (data) => widget.itemAsString(data.key, data.value),
