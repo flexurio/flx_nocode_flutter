@@ -82,4 +82,32 @@ class View {
       },
     );
   }
+
+  Widget buttonLarge(BuildContext context, Map<String, dynamic> data) {
+    return FutureBuilder<EntityCustom?>(
+      future: EntityCustom.getEntity(entity),
+      builder: (context, snapshot) {
+        final entity = snapshot.data;
+
+        return LightButton(
+          action: DataAction.view,
+          title: label,
+          permission: null,
+          onPressed: entity == null
+              ? null
+              : () async {
+                  MenuBloc.instance.add(
+                    Menu3Selected(
+                      home: MenuCustom(
+                        entityId: entity.id,
+                        initialFilters: _filters(entity, data),
+                      ),
+                      label: entity.label,
+                    ),
+                  );
+                },
+        );
+      },
+    );
+  }
 }

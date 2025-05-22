@@ -1,3 +1,4 @@
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
@@ -5,7 +6,6 @@ import 'package:flx_nocode_flutter/src/app/view/page/entity_view/enitity_view_pa
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_create_button.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/filter.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
@@ -117,6 +117,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           return NoCodeError('layout_list_tile is null');
         }
         return widget.entity.layoutListTile!.build(
+          entity: widget.entity,
           data: data,
           onTap: () async {
             Navigator.push(
@@ -189,15 +190,14 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             body: (data) => DataCell(
               Row(
                 children: [
-                  // ActionsButton(
-                  //   children: EntityViewPage.actions(
-                  //     context,
-                  //     data,
-                  //     widget.entity,
-                  //     (context) => _fetch(),
-                  //     false,
-                  //   ),
-                  // )
+                  ActionsButton(
+                    children: EntityViewPage.actionsLarge(
+                      context,
+                      data,
+                      widget.entity,
+                      (context) => _fetch(),
+                    ),
+                  )
                 ],
               ),
             ),

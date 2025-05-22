@@ -118,4 +118,9 @@ class EntityCustom {
         )
         .toList();
   }
+
+  List<Widget> buttonViewsLarge(
+      BuildContext context, Map<String, dynamic> data) {
+    return views.map((e) => e.buttonLarge(context, data)).toList();
+  }
 }

@@ -22,7 +22,7 @@ class Layout {
 
     for (final key in fields) {
       final field = entity.getField(key);
-      final child = field?.buildInputField(action, controller[key]!);
+      final child = field?.buildForm(action, controller[key]!);
       if (child != null) {
         row.add(child);
       } else {

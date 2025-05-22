@@ -1,6 +1,7 @@
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
@@ -45,7 +46,7 @@ class EntityCustomQueryBloc
             emit(_Loading(_pageOptions));
             try {
               final data = await EntityCustomRepository.instance.fetchById(
-                accessToken: '',
+                accessToken: UserRepositoryApp.instance.token!,
                 id: id,
                 method: method,
                 path: urlWithValuesReplace(url, {}),
@@ -68,7 +69,7 @@ class EntityCustomQueryBloc
               }
 
               _pageOptions = await EntityCustomRepository.instance.fetch(
-                accessToken: 'text',
+                accessToken: UserRepositoryApp.instance.token!,
                 pageOptions: _pageOptions,
                 method: method,
                 path: urlWithValuesReplace(url, {}),

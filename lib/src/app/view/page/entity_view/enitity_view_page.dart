@@ -5,6 +5,7 @@ import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_create/entity_create_page.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/src/app/view/page/entity_view/widget/delete_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -93,6 +94,49 @@ class EntityViewPage extends StatelessWidget {
     );
     return entity.buttonViews(context, data, entity, embedded)
       ..addAll(modifyActions);
+  }
+
+  static List<Widget> actionsLarge(
+    BuildContext context,
+    Map<String, dynamic> data,
+    EntityCustom entity,
+    void Function(BuildContext) onRefresh,
+  ) {
+    final modifyActions =
+        _buildEntityCustomActionsLarge(entity, context, data, onRefresh);
+    return entity.buttonViewsLarge(context, data)..addAll(modifyActions);
+  }
+
+  static List<Widget> _buildEntityCustomActionsLarge(
+    EntityCustom entity,
+    BuildContext context,
+    Map<String, dynamic> data,
+    void Function(BuildContext context) onRefresh,
+  ) {
+    return [
+      if (entity.allowDelete)
+        LightButton(
+          permission: '${entity.id}_write',
+          action: DataAction.edit,
+          onPressed: () async {
+            Navigator.push(
+              context,
+              EntityCreatePage.route(
+                embedded: false,
+                entity: entity,
+                data: data,
+                onSuccess: () => onRefresh(context),
+              ),
+            );
+          },
+        ),
+      if (entity.allowDelete)
+        EntityDeleteButton.prepare(
+          entity: entity,
+          data: data,
+          onSuccess: () => onRefresh(context),
+        ),
+    ];
   }
 
   static List<ActionButtonItem> _buildEntityCustomActions(

@@ -7,85 +7,47 @@
         "website": "https://vneu.co.id",
         "address": "Jl. Kebayoran Lama No. 1, Jakarta Selatan, Indonesia"
     },
-    "logo_url": "https://is1-ssl.mzstatic.com/image/thumb/Purple115/v4/52/0d/3d/520d3d72-de02-38c3-133e-86b0076b281a/AppIcon-1x_U007emarketing-0-10-0-0-85-220.png/230x0w.webp",
-    "logo_named_url": "https://ski-compliance-metiska-farma.flexurio.com/src/assets/image/farmasys-resize.png",
-    "backend_host": "https://mf-marketing-api.flexurio.com",
+    "logo_url": "https://files.catbox.moe/7fl9x7.png",
+    "logo_named_url": "https://files.catbox.moe/0njlru.png",
+    "backend_host": "https://dev-nocode-api.flexurio.com",
     "theme": {
-        "color": "#03A9F4",
-        "color_soft": "#B3E5FC"
+        "color": "#6C6EEB",
+        "color_soft": "#CACBFF"
     },
     "menu_group": [
         {
-            "label": "Insentive",
+            "label": "Finance",
             "menu": [
                 {
                     "label": "Master",
                     "icon": "fa fa-money",
                     "menu_sub": [
                         {
-                            "label": "Sales Product",
-                            "entity": "incentive_sales_product"
+                            "label": "Bank",
+                            "entity": "banks"
                         },
                         {
-                            "label": "Sales Category Product",
-                            "entity": "incentive_base_sales_category_product"
-                        },
-                        {
-                            "label": "Sales Structure",
-                            "entity": "incentive_base_sales_structure"
-                        },
-                        {
-                            "label": "Subordinate Structure",
-                            "entity": "incentive_base_subordinate_structure"
-                        },
-                        {
-                            "label": "Target Category Product",
-                            "entity": "incentive_base_target_category_product"
-                        },
-                        {
-                            "label": "Target Product",
-                            "entity": "incentive_base_target_product"
-                        },
-                        {
-                            "label": "Cn Customer",
-                            "entity": "incentive_base_cn_customer"
-                        },
-                        {
-                            "label": "Cn Discount Product",
-                            "entity": "incentive_base_cn_discount_product"
-                        },
-                        {
-                            "label": "Cn Customer Outlet Product Type",
-                            "entity": "incentive_base_cn_customer_outlet_product_type"
-                        }
-                    ]
-                },
-                {
-                    "label": "Transaction",
-                    "icon": "fa fa-money",
-                    "menu_sub": [
-                        {
-                            "label": "Incentive Header",
-                            "entity": "incentive_header"
-                        },
-                        {
-                            "label": "Incentive Detail",
-                            "entity": "incentive_detail"
+                            "label": "Bank Type",
+                            "entity": "bank_types"
                         }
                     ]
                 }
             ]
         },
         {
-            "label": "Monitoring",
+            "label": "Administrator",
             "menu": [
                 {
-                    "label": "Incentive",
-                    "icon": "fa fa-money",
+                    "label": "Account",
+                    "icon": "fa fa-user",
                     "menu_sub": [
                         {
-                            "label": "Incentive",
-                            "entity": "incentive_monitoring"
+                            "label": "User",
+                            "entity": "flx_users"
+                        },
+                        {
+                            "label": "Role",
+                            "entity": "flx_roles"
                         }
                     ]
                 }

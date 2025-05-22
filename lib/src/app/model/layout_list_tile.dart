@@ -1,5 +1,8 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flutter/material.dart';
+
+import 'entity_field.dart';
 
 class LayoutListTile {
   String? title;
@@ -13,6 +16,7 @@ class LayoutListTile {
   });
 
   Widget build({
+    required EntityCustom entity,
     required VoidCallback onTap,
     required Map<String, dynamic> data,
   }) {

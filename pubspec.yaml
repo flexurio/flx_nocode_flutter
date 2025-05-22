@@ -12,10 +12,11 @@ environment:
 dependencies:
   dio: ^5.8.0+1
   easy_localization: ^3.0.7
+  flx_authentication_flutter: ^0.0.1
   flx_core_flutter: ^0.0.2
   flutter:
     sdk: flutter
-  flutter_bloc: ^9.1.0
+  flutter_bloc: ^9.1.1
   flutter_localization: ^0.1.10
   form_field_validator: ^1.1.0
   freezed_annotation: ^2.2.0

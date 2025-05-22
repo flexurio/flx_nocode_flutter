@@ -1,9 +1,10 @@
+import 'package:flutter/services.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flx_nocode_flutter/src/app/model/layout_list_tile.dart';
-import 'package:flx_nocode_flutter/src/app/view/widget/entity_drop_down.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/entity_drop_down.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 
 class EntityField {
@@ -57,68 +58,68 @@ class EntityField {
     );
   }
 
-  Widget buildInputField(DataAction action, TextEditingController controller) {
-    final isEnabled = _enabled(action);
-    if (optionsSource != null) {
-      return FDropDownSearchEntity(
-        label: label,
-        itemAsString: (id, label) => '$id - $label',
-        entityField: this,
-        initialValue: action.isEdit ? MapEntry(controller.text, '') : null,
-        enabled: isEnabled,
-        onChanged: (value) {
-          controller.text = value!.key.toString();
-        },
-      );
-    } else if (isDateTime) {
-      final initialDate = action.isEdit
-          ? (DateTime.tryParse(controller.text) ??
-              DateFormat.yMMMMd().parse(controller.text))
-          : null;
-      return FieldDatePicker(
-        labelText: label,
-        initialSelectedDate: initialDate,
-        controller: controller,
-        validator: requiredObjectValidator.call,
-      );
-    } else if (isBool) {
-      final value = controller.text == '1' ? true : false;
-      return AbsorbPointer(
-        absorbing: !isEnabled,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: isEnabled ? null : Colors.blueGrey.shade100,
-            border: Border.all(color: Colors.grey.shade300),
-          ),
-          child: CheckboxWithText(
-            onChanged: (value) => controller.text = value ? '1' : '0',
-            initialValue: value,
-            text: '$label' + (isEnabled ? '' : ' (Read Only)'),
-          ),
-        ),
-      );
-    }
-
-    return FTextFormField(
-      labelText: label,
-      enabled: isEnabled,
-      controller: controller,
-      validator: MultiValidator([
-        if (required ?? false) requiredValidator,
-        LengthValidator(
-          minLength: minLength,
-          maxLength: maxLength,
-        ),
-        if (pattern != null)
-          PatternValidator(
-            pattern!,
-            errorText: patternError ?? 'Invalid format',
-          ),
-      ]),
-    );
-  }
+  // Widget buildInputField(DataAction action, TextEditingController controller) {
+  //   final isEnabled = _enabled(action);
+  //   if (optionsSource != null) {
+  //     return FDropDownSearchEntity(
+  //       label: label,
+  //       itemAsString: (id, label) => '$id - $label',
+  //       entityField: this,
+  //       initialValue: action.isEdit ? MapEntry(controller.text, '') : null,
+  //       enabled: isEnabled,
+  //       onChanged: (value) {
+  //         controller.text = value!.key.toString();
+  //       },
+  //     );
+  //   } else if (isDateTime) {
+  //     final initialDate = action.isEdit
+  //         ? (DateTime.tryParse(controller.text) ??
+  //             DateFormat.yMMMMd().parse(controller.text))
+  //         : null;
+  //     return FieldDatePicker(
+  //       labelText: label,
+  //       initialSelectedDate: initialDate,
+  //       controller: controller,
+  //       validator: requiredObjectValidator.call,
+  //     );
+  //   } else if (isBool) {
+  //     final value = controller.text == '1' ? true : false;
+  //     return AbsorbPointer(
+  //       absorbing: !isEnabled,
+  //       child: Container(
+  //         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+  //         decoration: BoxDecoration(
+  //           borderRadius: BorderRadius.circular(12),
+  //           color: isEnabled ? null : Colors.blueGrey.shade100,
+  //           border: Border.all(color: Colors.grey.shade300),
+  //         ),
+  //         child: CheckboxWithText(
+  //           onChanged: (value) => controller.text = value ? '1' : '0',
+  //           initialValue: value,
+  //           text: '$label' + (isEnabled ? '' : ' (Read Only)'),
+  //         ),
+  //       ),
+  //     );
+  //   }
+  //
+  //   return FTextFormField(
+  //     labelText: label,
+  //     enabled: isEnabled,
+  //     controller: controller,
+  //     validator: MultiValidator([
+  //       if (required ?? false) requiredValidator,
+  //       LengthValidator(
+  //         minLength: minLength,
+  //         maxLength: maxLength,
+  //       ),
+  //       if (pattern != null)
+  //         PatternValidator(
+  //           pattern!,
+  //           errorText: patternError ?? 'Invalid format',
+  //         ),
+  //     ]),
+  //   );
+  // }
 
   static Widget buildDisplay(EntityCustom entity, String label, dynamic value,
       [void Function()? onTap]) {
@@ -133,6 +134,24 @@ class EntityField {
       widget = Text(DateFormat(field.dateTimeFormat).format(date));
     } else if (field.isBool) {
       widget = BoolIcon(value == 1);
+    } else if (field.isPermission) {
+      final access = Access.fromValue(int.parse(value.toString()));
+      widget = Wrap(
+        spacing: 3,
+        runSpacing: 3,
+        children: access.permissions.entries.map((entry) {
+          return Chip(
+            label: Text(entry.key.tr(), style: TextStyle(color: Colors.white)),
+            backgroundColor: entry.value
+                ? Access.permissionColors[entry.key] ?? Colors.grey
+                : Colors.grey.shade400,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+              side: BorderSide(color: Colors.transparent),
+            ),
+          );
+        }).toList(),
+      );
     } else {
       widget = Text(LayoutListTile.getValue(value));
     }
@@ -153,8 +172,117 @@ class EntityField {
     }
   }
 
+  Widget buildFieldBool(
+    DataAction action,
+    TextEditingController controller,
+    bool isEnabled,
+  ) {
+    final value = controller.text == '1' ? true : false;
+    return AbsorbPointer(
+      absorbing: !isEnabled,
+      child: FieldCheckBox(
+        label: label,
+        initialValue: value,
+        onChanged: (value) => controller.text = value ? '1' : '0',
+      ),
+    );
+  }
+
+  Widget buildFieldPermission(
+    DataAction action,
+    TextEditingController controller,
+    bool isEnabled,
+  ) {
+    return AbsorbPointer(
+      absorbing: !isEnabled,
+      child: FieldCheckboxPermission(
+        initialValue: Access.fromValue(int.tryParse(controller.text) ?? 0),
+        onChanged: (value) {
+          print("value :" + value.getValue().toString());
+          controller.text = value.getValue().toString();
+        },
+      ),
+    );
+  }
+
+  Widget buildFieldDateTime(
+    DataAction action,
+    TextEditingController controller,
+    bool isEnabled,
+  ) {
+    final initialDate = action.isEdit
+        ? (DateTime.tryParse(controller.text) ??
+            DateFormat.yMMMMd().parse(controller.text))
+        : null;
+    return FieldDatePicker(
+      labelText: label,
+      initialSelectedDate: initialDate,
+      controller: controller,
+      validator: requiredObjectValidator.call,
+    );
+  }
+
+  Widget buildFieldDropDown(
+    DataAction action,
+    TextEditingController controller,
+    bool isEnabled,
+  ) {
+    return FDropDownSearchEntity(
+      label: label,
+      itemAsString: (id, label) => '$id - $label',
+      entityField: this,
+      initialValue: action.isEdit ? MapEntry(controller.text, '') : null,
+      enabled: isEnabled,
+      onChanged: (value) {
+        controller.text = value!.key.toString();
+      },
+    );
+  }
+
+  Widget buildForm(DataAction action, TextEditingController controller) {
+    final isEnabled = _enabled(action);
+    if (optionsSource != null) {
+      return buildFieldDropDown(action, controller, isEnabled);
+    } else if (isDateTime) {
+      return buildFieldDateTime(action, controller, isEnabled);
+    } else if (isBool) {
+      return buildFieldBool(action, controller, isEnabled);
+    } else if (isPermission) {
+      return buildFieldPermission(action, controller, isEnabled);
+    }
+
+    return buildFieldText(action, controller, isEnabled);
+  }
+
+  Widget buildFieldText(
+    DataAction action,
+    TextEditingController controller,
+    bool isEnabled,
+  ) {
+    return FTextFormField(
+      labelText: label,
+      enabled: isEnabled,
+      controller: controller,
+      inputFormatters:
+          type == 'number' ? [FilteringTextInputFormatter.digitsOnly] : null,
+      validator: MultiValidator([
+        if (required ?? false) requiredValidator,
+        LengthValidator(
+          minLength: minLength,
+          maxLength: maxLength,
+        ),
+        if (pattern != null)
+          PatternValidator(
+            pattern!,
+            errorText: patternError ?? 'Invalid format',
+          ),
+      ]),
+    );
+  }
+
   bool get isDateTime => type.contains('datetime');
   bool get isBool => type == 'bool';
+  bool get isPermission => type == 'permission';
 
   String get dateTimeFormat {
     final regex = RegExp(r'datetime\((.*?)\)');
