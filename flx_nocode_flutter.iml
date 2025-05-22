@@ -66,6 +66,9 @@
       <excludeFolder url="file://$MODULE_DIR$/windows/flutter/ephemeral/.plugin_symlinks/smart_auth/example/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/windows/flutter/ephemeral/.plugin_symlinks/smart_auth/example/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/windows/flutter/ephemeral/.plugin_symlinks/smart_auth/example/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/flx_authentication_flutter/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/flx_authentication_flutter/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/flx_authentication_flutter/build" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Flutter Plugins" level="project" />

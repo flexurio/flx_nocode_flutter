@@ -190,15 +190,14 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             body: (data) => DataCell(
               Row(
                 children: [
-                  // ActionsButton(
-                  //   children: EntityViewPage.actions(
-                  //     context,
-                  //     data,
-                  //     widget.entity,
-                  //     (context) => _fetch(),
-                  //     false,
-                  //   ),
-                  // )
+                  ActionsButton(
+                    children: EntityViewPage.actionsLarge(
+                      context,
+                      data,
+                      widget.entity,
+                      (context) => _fetch(),
+                    ),
+                  )
                 ],
               ),
             ),

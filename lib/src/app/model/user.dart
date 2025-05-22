@@ -1,4 +1,4 @@
-import 'package:flexurio_erp_authentication/flexurio_erp_authentication.dart';
+import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
 
 class UserApp extends User {
   UserApp({
