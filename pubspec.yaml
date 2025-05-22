@@ -4,7 +4,7 @@ homepage: https://github.com/flexurio/flx_nocode_flutter
 repository: https://github.com/flexurio/flx_nocode_flutter
 issue_tracker: https://github.com/flexurio/flx_nocode_flutter/issues
 
-version: 1.1.0-dev.2
+version: 1.1.0-dev.3
 
 environment:
   sdk: '>=3.4.0 <4.0.0'
@@ -32,6 +32,10 @@ dependencies:
   printing: ^5.10.4
   pdf: ^3.10.0
   hydrated_bloc: ^10.0.0
+  hive: ^2.2.3
+
+dependency_overrides:
+  intl: ^0.20.2
 
 dev_dependencies:
   bloc_test: ^10.0.0
