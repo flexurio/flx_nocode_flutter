@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 class NoCode {
   static Future<void> init() async {
+    storageInit('no-code');
     await EasyLocalization.ensureInitialized();
     await Configuration.load();
     final configuration = Configuration.instance;

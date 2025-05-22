@@ -91,6 +91,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   }
 
   void _fetch([PageOptions<Map<String, dynamic>>? pageOptions]) {
+    print('[MenuDataTableCustom] _fetch');
     context.read<EntityCustomQueryBloc>().add(
           EntityCustomQueryEvent.fetch(
             pageOptions: pageOptions,

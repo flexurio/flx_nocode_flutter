@@ -46,7 +46,7 @@ class EntityCustomQueryBloc
             emit(_Loading(_pageOptions));
             try {
               final data = await EntityCustomRepository.instance.fetchById(
-                accessToken: UserRepositoryApp.instance.token!,
+                accessToken: UserRepositoryApp.instance.token,
                 id: id,
                 method: method,
                 path: urlWithValuesReplace(url, {}),
@@ -69,7 +69,7 @@ class EntityCustomQueryBloc
               }
 
               _pageOptions = await EntityCustomRepository.instance.fetch(
-                accessToken: UserRepositoryApp.instance.token!,
+                accessToken: UserRepositoryApp.instance.token,
                 pageOptions: _pageOptions,
                 method: method,
                 path: urlWithValuesReplace(url, {}),

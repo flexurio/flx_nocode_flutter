@@ -16,7 +16,7 @@ class EntityCustomRepository extends Repository {
   );
 
   Future<Response<T>> _request<T>({
-    required String accessToken,
+    required String? accessToken,
     required String path,
     required String method,
     Map<String, dynamic>? queryParameters,
@@ -59,7 +59,7 @@ class EntityCustomRepository extends Repository {
   }
 
   Future<PageOptions<Map<String, dynamic>>> fetch({
-    required String accessToken,
+    required String? accessToken,
     required PageOptions<Map<String, dynamic>> pageOptions,
     required String path,
     required String method,
@@ -88,7 +88,7 @@ class EntityCustomRepository extends Repository {
   }
 
   Future<Map<String, dynamic>> fetchById({
-    required String accessToken,
+    required String? accessToken,
     required String path,
     required String method,
     required String id,
@@ -107,7 +107,7 @@ class EntityCustomRepository extends Repository {
   }
 
   Future<Map<String, dynamic>> modify({
-    required String accessToken,
+    required String? accessToken,
     required String path,
     required String method,
     Map<String, dynamic>? data,

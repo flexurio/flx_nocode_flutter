@@ -59,7 +59,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
             }
 
             final response = await EntityCustomRepository.instance.modify(
-              accessToken: UserRepositoryApp.instance.token!,
+              accessToken: UserRepositoryApp.instance.token,
               path: entity.backend.create!.url,
               method: entity.backend.create!.method,
               data: Map.from(data)..addAll(entity.backend.create!.body),
@@ -80,7 +80,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
             }
 
             final response = await EntityCustomRepository.instance.modify(
-              accessToken: UserRepositoryApp.instance.token!,
+              accessToken: UserRepositoryApp.instance.token,
               path: entity.backend.update!.url.replaceFirst(
                 '{id}',
                 Uri.encodeComponent(data['id']),
@@ -98,7 +98,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
           emit(const _Loading());
           try {
             await EntityCustomRepository.instance.modify(
-              accessToken: UserRepositoryApp.instance.token!,
+              accessToken: UserRepositoryApp.instance.token,
               path: entity.backend.delete!.url.replaceFirst(
                 '{id}',
                 Uri.encodeComponent(id),
