@@ -1,0 +1,75 @@
+{
+    "id": "sales",
+    "label": "Sales",
+    "description": "Contains sales transaction information including customer and total amount.",
+    "fields": [
+        {
+            "label": "ID",
+            "reference": "id",
+            "type": "number",
+            "column_width": 4,
+            "auto_generated": true
+        },
+        {
+            "label": "Customer",
+            "reference": "customer_id",
+            "type": "number",
+            "column_width": 4,
+            "required": true,
+            "options_source": "backend.customers({id}:{name})",
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Total Amount",
+            "reference": "total_amount",
+            "type": "number",
+            "column_width": 4,
+            "required": true,
+            "pattern": "^[0-9]+$",
+            "pattern_error": "Only numeric values are allowed.",
+            "allow_create": true,
+            "allow_update": true
+        }
+    ],
+    "backend": {
+        "read_all": {
+            "method": "GET",
+            "url": "{backend_host}/sales"
+        },
+        "read": {
+            "method": "GET",
+            "url": "{backend_host}/sales/{id}"
+        },
+        "create": {
+            "method": "POST",
+            "url": "{backend_host}/sales"
+        },
+        "update": {
+            "method": "PUT",
+            "url": "{backend_host}/sales/{id}"
+        },
+        "delete": {
+            "method": "DELETE",
+            "url": "{backend_host}/sales/{id}"
+        }
+    },
+    "layout_list_tile": {
+        "title": "customer_id",
+        "subtitle": "total_amount",
+        "trailing": "id"
+    },
+    "layout": {
+        "create": {
+            "Sales Info": {
+                "customer_id,total_amount": 1
+            }
+        },
+        "update": {
+            "Sales Info": {
+                "id": 1,
+                "customer_id,total_amount": 1
+            }
+        }
+    }
+}

@@ -25,7 +25,7 @@
             "type": "number",
             "column_width": 3,
             "required": true,
-            "source": "backend.flx_users({id}-{name})",
+            "options_source": "backend.flx_users({id}:{name})",
             "allow_create": true,
             "allow_update": true
         },

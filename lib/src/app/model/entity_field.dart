@@ -58,68 +58,18 @@ class EntityField {
     );
   }
 
-  // Widget buildInputField(DataAction action, TextEditingController controller) {
-  //   final isEnabled = _enabled(action);
-  //   if (optionsSource != null) {
-  //     return FDropDownSearchEntity(
-  //       label: label,
-  //       itemAsString: (id, label) => '$id - $label',
-  //       entityField: this,
-  //       initialValue: action.isEdit ? MapEntry(controller.text, '') : null,
-  //       enabled: isEnabled,
-  //       onChanged: (value) {
-  //         controller.text = value!.key.toString();
-  //       },
-  //     );
-  //   } else if (isDateTime) {
-  //     final initialDate = action.isEdit
-  //         ? (DateTime.tryParse(controller.text) ??
-  //             DateFormat.yMMMMd().parse(controller.text))
-  //         : null;
-  //     return FieldDatePicker(
-  //       labelText: label,
-  //       initialSelectedDate: initialDate,
-  //       controller: controller,
-  //       validator: requiredObjectValidator.call,
-  //     );
-  //   } else if (isBool) {
-  //     final value = controller.text == '1' ? true : false;
-  //     return AbsorbPointer(
-  //       absorbing: !isEnabled,
-  //       child: Container(
-  //         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
-  //         decoration: BoxDecoration(
-  //           borderRadius: BorderRadius.circular(12),
-  //           color: isEnabled ? null : Colors.blueGrey.shade100,
-  //           border: Border.all(color: Colors.grey.shade300),
-  //         ),
-  //         child: CheckboxWithText(
-  //           onChanged: (value) => controller.text = value ? '1' : '0',
-  //           initialValue: value,
-  //           text: '$label' + (isEnabled ? '' : ' (Read Only)'),
-  //         ),
-  //       ),
-  //     );
-  //   }
-  //
-  //   return FTextFormField(
-  //     labelText: label,
-  //     enabled: isEnabled,
-  //     controller: controller,
-  //     validator: MultiValidator([
-  //       if (required ?? false) requiredValidator,
-  //       LengthValidator(
-  //         minLength: minLength,
-  //         maxLength: maxLength,
-  //       ),
-  //       if (pattern != null)
-  //         PatternValidator(
-  //           pattern!,
-  //           errorText: patternError ?? 'Invalid format',
-  //         ),
-  //     ]),
-  //   );
-  // }
+  int get decimal {
+    if (isNumber) {
+      final regExp = RegExp(r'number\((\d+)\)');
+      final match = regExp.firstMatch(type);
+
+      if (match != null) {
+        String number = match.group(1)!;
+        return int.tryParse(number) ?? 0;
+      }
+    }
+    return 0;
+  }
 
   static Widget buildDisplay(EntityCustom entity, String label, dynamic value,
       [void Function()? onTap]) {
@@ -152,6 +102,12 @@ class EntityField {
           );
         }).toList(),
       );
+    } else if (field.isNumber) {
+      if (value is num) {
+        widget = Text(value.format(field.decimal));
+      } else {
+        widget = Text('type is not number');
+      }
     } else {
       widget = Text(LayoutListTile.getValue(value));
     }
@@ -283,6 +239,7 @@ class EntityField {
   bool get isDateTime => type.contains('datetime');
   bool get isBool => type == 'bool';
   bool get isPermission => type == 'permission';
+  bool get isNumber => type.contains('number');
 
   String get dateTimeFormat {
     final regex = RegExp(r'datetime\((.*?)\)');

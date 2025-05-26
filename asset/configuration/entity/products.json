@@ -1,0 +1,85 @@
+{
+  "id": "products",
+  "label": "Product",
+  "description": "Contains product information such as name, price, and stock quantity.",
+  "fields": [
+    {
+      "label": "ID",
+      "reference": "id",
+      "type": "number",
+      "column_width": 5,
+      "auto_generated": true
+    },
+    {
+      "label": "Name",
+      "reference": "name",
+      "type": "text",
+      "column_width": 4,
+      "required": true,
+      "allow_create": true,
+      "allow_update": true,
+      "pattern": "^[a-zA-Z0-9 ]{1,}$",
+      "pattern_error": "Only letters, numbers, and spaces are allowed."
+    },
+    {
+      "label": "Price",
+      "reference": "price",
+      "type": "number(2)",
+      "column_width": 4,
+      "required": true,
+      "allow_create": true,
+      "allow_update": true,
+      "pattern": "^[0-9]+$",
+      "pattern_error": "Only numeric values are allowed."
+    },
+    {
+      "label": "Stock",
+      "reference": "stock",
+      "type": "number",
+      "column_width": 4,
+      "auto_generated": true,
+      "pattern": "^[0-9]+$",
+      "pattern_error": "Only numeric values are allowed."
+    }
+  ],
+  "backend": {
+    "read_all": {
+      "method": "GET",
+      "url": "{backend_host}/products"
+    },
+    "read": {
+      "method": "GET",
+      "url": "{backend_host}/products/{id}"
+    },
+    "create": {
+      "method": "POST",
+      "url": "{backend_host}/products"
+    },
+    "update": {
+      "method": "PUT",
+      "url": "{backend_host}/products/{id}"
+    },
+    "delete": {
+      "method": "DELETE",
+      "url": "{backend_host}/products/{id}"
+    }
+  },
+  "layout_list_tile": {
+    "title": "name",
+    "subtitle": "price",
+    "trailing": "stock"
+  },
+  "layout": {
+    "create": {
+      "Product Info": {
+        "name,price": 1
+      }
+    },
+    "update": {
+      "Product Info": {
+        "id": 1,
+        "name,price": 1
+      }
+    }
+  }
+}
