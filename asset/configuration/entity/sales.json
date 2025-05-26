@@ -11,12 +11,21 @@
             "auto_generated": true
         },
         {
-            "label": "Customer",
+            "label": "Customer ID",
             "reference": "customer_id",
             "type": "number",
             "column_width": 4,
             "required": true,
             "options_source": "backend.customers({id}:{name})",
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Customer Name",
+            "reference": "customer_name",
+            "type": "text",
+            "column_width": 4,
+            "required": true,
             "allow_create": true,
             "allow_update": true
         },

@@ -160,7 +160,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 head: DTHead(
                   backendKeySort: e.reference,
                   label: e.label,
-                  numeric: e.isNumber,
+                  numeric: e.isNumber && index != 0,
                 ),
                 body: (entity) => DataCell(
                   EntityField.buildDisplay(

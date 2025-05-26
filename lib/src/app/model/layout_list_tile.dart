@@ -51,8 +51,6 @@ class LayoutListTile {
   static String getValue(dynamic value) {
     if (value == null) {
       return '-';
-    } else if (value is num) {
-      return value.format(2);
     }
     return value.toString();
   }
