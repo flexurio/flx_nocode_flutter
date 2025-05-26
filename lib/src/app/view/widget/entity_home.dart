@@ -25,10 +25,12 @@ class MenuCustom extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (snapshot.hasData) {
+        } else if (snapshot.connectionState == ConnectionState.done ||
+            snapshot.hasData) {
           final entity = snapshot.data;
           if (entity == null) {
-            return const Center(child: Text('Entity not found!'));
+            return Center(
+                child: NoCodeError('Entity not found! Id: $entityId'));
           }
           return _home(context, entity);
         } else {
