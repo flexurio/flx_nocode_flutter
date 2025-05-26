@@ -23,7 +23,7 @@ class EntityCreateForm extends StatelessWidget {
     }
 
     final children = <Widget>[];
-    final layouts = entity.layout;
+    final layouts = entity.layoutForm;
     final layoutAction = layouts.containsKey(action);
     if (layoutAction) {
       final layout = (layouts[action] as Map<String, dynamic>).entries;

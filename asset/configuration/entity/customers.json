@@ -7,14 +7,12 @@
             "label": "ID",
             "reference": "id",
             "type": "number",
-            "column_width": 5,
             "auto_generated": true
         },
         {
             "label": "Name",
             "reference": "name",
             "type": "text",
-            "column_width": 4,
             "required": true,
             "allow_create": true,
             "allow_update": true,
@@ -25,24 +23,12 @@
             "label": "Phone",
             "reference": "phone",
             "type": "text",
-            "column_width": 4,
             "required": true,
             "allow_create": true,
             "allow_update": true,
             "pattern": "^(62|0)[2-9][0-9]{7,12}$",
             "pattern_error": "Must be a valid Indonesian phone number starting with 62 or 0, followed by 8 to 13 digits.",
             "description": "Example: +6281234567890 or 081234567890"
-        },
-        {
-            "label": "Email",
-            "reference": "email",
-            "type": "text",
-            "required": true,
-            "column_width": 4,
-            "allow_create": true,
-            "allow_update": true,
-            "pattern": "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$",
-            "pattern_error": "Must be a valid email address (e.g. name@example.com)."
         }
     ],
     "backend": {
@@ -72,7 +58,7 @@
         "subtitle": "email",
         "trailing": "phone"
     },
-    "layout": {
+    "layout_form": {
         "create": {
             "Customer Info": {
                 "name,phone,email": 1
@@ -84,5 +70,10 @@
                 "name,phone,email": 1
             }
         }
+    },
+    "layout_table": {
+        "id": 3,
+        "name": 5,
+        "phone": 4
     }
 }

@@ -7,14 +7,12 @@
             "label": "ID",
             "reference": "id",
             "type": "number",
-            "column_width": 4,
             "auto_generated": true
         },
         {
             "label": "Customer ID",
             "reference": "customer_id",
             "type": "number",
-            "column_width": 4,
             "required": true,
             "options_source": "backend.customers({id}:{name})",
             "allow_create": true,
@@ -24,7 +22,6 @@
             "label": "Customer Name",
             "reference": "customer_name",
             "type": "text",
-            "column_width": 4,
             "required": true,
             "allow_create": true,
             "allow_update": true
@@ -33,12 +30,16 @@
             "label": "Total Amount",
             "reference": "total_amount",
             "type": "number",
-            "column_width": 4,
-            "required": true,
-            "pattern": "^[0-9]+$",
-            "pattern_error": "Only numeric values are allowed.",
-            "allow_create": true,
-            "allow_update": true
+            "auto_generated": true
+        }
+    ],
+    "views": [
+        {
+            "label": "Sales Item",
+            "entity": "sales_items",
+            "filter": {
+                "sales_id": "id"
+            }
         }
     ],
     "backend": {
@@ -68,17 +69,23 @@
         "subtitle": "total_amount",
         "trailing": "id"
     },
-    "layout": {
+    "layout_form": {
         "create": {
             "Sales Info": {
-                "customer_id,total_amount": 1
+                "customer_id": 1
             }
         },
         "update": {
             "Sales Info": {
                 "id": 1,
-                "customer_id,total_amount": 1
+                "customer_id": 1
             }
         }
+    },
+    "layout_table": {
+        "id": 4,
+        "customer_id": 4,
+        "customer_name": 4,
+        "total_amount": 4
     }
 }

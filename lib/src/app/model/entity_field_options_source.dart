@@ -1,6 +1,7 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 
 class OptionsSource {
   final String? optionsSource;
@@ -55,7 +56,7 @@ class OptionsSource {
     final options = <dynamic, dynamic>{};
     if (entity != null) {
       final data = await EntityCustomRepository.instance.fetch(
-        accessToken: 'text',
+        accessToken: UserRepositoryApp.instance.token!,
         pageOptions: PageOptions.empty(),
         method: entity.backend.readAll!.method,
         path: entity.backend.readAll!.urlWithValues,

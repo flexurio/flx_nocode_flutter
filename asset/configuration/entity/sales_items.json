@@ -7,14 +7,12 @@
             "label": "ID",
             "reference": "id",
             "type": "number",
-            "column_width": 3,
             "auto_generated": true
         },
         {
             "label": "Sales ID",
             "reference": "sales_id",
             "type": "number",
-            "column_width": 3,
             "required": true,
             "options_source": "backend.sales({id}:{id})",
             "allow_create": true,
@@ -24,17 +22,20 @@
             "label": "Product",
             "reference": "product_id",
             "type": "number",
-            "column_width": 4,
             "required": true,
             "options_source": "backend.products({id}:{name})",
             "allow_create": true,
             "allow_update": true
         },
         {
+            "label": "Product Name",
+            "reference": "product_name",
+            "type": "text"
+        },
+        {
             "label": "Quantity",
             "reference": "qty",
             "type": "number",
-            "column_width": 3,
             "required": true,
             "pattern": "^[0-9]+$",
             "pattern_error": "Only numeric values are allowed.",
@@ -45,7 +46,6 @@
             "label": "Price",
             "reference": "price",
             "type": "number",
-            "column_width": 3,
             "required": true,
             "pattern": "^[0-9]+$",
             "pattern_error": "Only numeric values are allowed.",
@@ -56,7 +56,6 @@
             "label": "Subtotal",
             "reference": "sub_total_amount",
             "type": "number",
-            "column_width": 4,
             "auto_generated": true,
             "description": "Calculated as qty × price"
         }
@@ -83,12 +82,20 @@
             "url": "{backend_host}/sales_items/{id}"
         }
     },
+    "layout_table": {
+        "id": 3,
+        "sales_id": 3,
+        "product_name": 4,
+        "qty": 3,
+        "price": 3,
+        "sub_total_amount": 4
+    },
     "layout_list_tile": {
         "title": "product_id",
         "subtitle": "qty",
         "trailing": "sub_total_amount"
     },
-    "layout": {
+    "layout_form": {
         "create": {
             "Item Info": {
                 "sales_id,product_id,qty,price": 2

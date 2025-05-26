@@ -7,14 +7,12 @@
             "label": "ID",
             "reference": "id",
             "type": "number",
-            "column_width": 9,
             "auto_generated": true
         },
         {
             "label": "Name",
             "reference": "name",
             "type": "text",
-            "column_width": 3,
             "required": true,
             "pattern": "^[a-zA-Z0-9 ]{3,}$",
             "min_length": 3,
@@ -27,7 +25,6 @@
             "reference": "email",
             "type": "email",
             "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$",
-            "column_width": 4,
             "required": true,
             "allow_create": true,
             "allow_update": true
@@ -36,7 +33,6 @@
             "label": "Email Verified",
             "reference": "email_verified",
             "type": "bool",
-            "column_width": 2,
             "required": true,
             "allow_create": true,
             "allow_update": true
@@ -45,7 +41,6 @@
             "label": "Phone",
             "reference": "phone",
             "type": "text",
-            "column_width": 3,
             "required": true,
             "min_length": 9,
             "max_length": 20,
@@ -56,7 +51,6 @@
             "label": "Enabled",
             "reference": "enabled",
             "type": "bool",
-            "column_width": 2,
             "required": true,
             "allow_create": true,
             "allow_update": true
@@ -65,14 +59,12 @@
             "label": "Created At",
             "reference": "created_at",
             "type": "datetime(yyyy-MM-dd HH:mm:ss)",
-            "column_width": 3,
             "auto_generated": true
         },
         {
             "label": "Updated At",
             "reference": "updated_at",
             "type": "datetime(yyyy-MM-dd HH:mm:ss)",
-            "column_width": 3,
             "auto_generated": true
         }
     ],
@@ -103,7 +95,7 @@
         "subtitle": "id",
         "trailing": "email"
     },
-    "layout": {
+    "layout_form": {
         "create": {
             "Information" : {
                 "name": 1
@@ -126,5 +118,15 @@
                 "enabled": 1
             }
         }
+    },
+    "layout_table": {
+        "id": 9,
+        "name": 3,
+        "email": 4,
+        "email_verified": 2,
+        "phone": 3,
+        "enabled": 2,
+        "created_at": 3,
+        "updated_at": 3
     }
 }

@@ -18,8 +18,9 @@ class EntityCustom {
   final List<view.View> views;
   final List<Export> exports;
   final Backend backend;
-  final Map<String, dynamic> layout;
+  final Map<String, dynamic> layoutForm;
   final LayoutListTile? layoutListTile;
+  final Map<String, double>? layoutTable;
 
   EntityCustom({
     required this.id,
@@ -28,8 +29,9 @@ class EntityCustom {
     required this.fields,
     required this.views,
     required this.backend,
-    required this.layout,
+    required this.layoutForm,
     required this.layoutListTile,
+    required this.layoutTable,
     required this.exports,
   });
 
@@ -64,7 +66,7 @@ class EntityCustom {
                 .map((e) => view.View.fromJson(e))
                 .toList()
             : [],
-        layout: json.containsKey('layout') ? json['layout'] : {},
+        layoutForm: json.containsKey('layout_form') ? json['layout_form'] : {},
         backend: Backend.fromJson(json['backend']),
         exports: json.containsKey('exports')
             ? (json['exports'] as List<dynamic>)
@@ -73,6 +75,10 @@ class EntityCustom {
             : [],
         layoutListTile: json.containsKey('layout_list_tile')
             ? LayoutListTile.fromJson(json['layout_list_tile'])
+            : null,
+        layoutTable: json.containsKey('layout_table')
+            ? (json['layout_table'] as Map<String, dynamic>)
+                .map((key, value) => MapEntry(key, value.toDouble()))
             : null,
       );
     } catch (e) {

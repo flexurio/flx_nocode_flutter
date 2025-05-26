@@ -138,6 +138,12 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     required Status status,
     required PageOptions<Map<String, dynamic>> pageOptions,
   }) {
+    if (widget.entity.layoutTable == null) {
+      return NoCodeError('layout_table is null');
+    }
+
+    final fields = widget.entity.layoutTable!.keys.toList();
+    final fieldsValue = widget.entity.layoutTable!.values.toList();
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: DataTableBackend<Map<String, dynamic>>(
@@ -152,21 +158,30 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
         actionRight: _buildActionRight,
         columns: [
           ...List.generate(
-            widget.entity.fields.length,
+            fields.length,
             (index) {
-              final e = widget.entity.fields.elementAt(index);
+              final field = widget.entity.getField(fields[index]);
+              if (field == null) {
+                return DTColumn(
+                  widthFlex: 1,
+                  head: DTHead(label: '<Unknown>', backendKeySort: ''),
+                  body: (data) => DataCell(Text('<Unknown>')),
+                );
+              }
+
+              final width = fieldsValue[index] as double?;
               return DTColumn(
-                widthFlex: e.columnWidth ?? 5,
+                widthFlex: width ?? 1,
                 head: DTHead(
-                  backendKeySort: e.reference,
-                  label: e.label,
-                  numeric: e.isNumber && index != 0,
+                  backendKeySort: field.reference,
+                  label: field.label,
+                  numeric: (field.isNumber) && index != 0,
                 ),
                 body: (entity) => DataCell(
                   EntityField.buildDisplay(
                     widget.entity,
-                    e.reference,
-                    entity[e.reference],
+                    field.reference,
+                    entity[field.reference],
                     index != 0
                         ? null
                         : () async {
@@ -187,10 +202,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           ),
           DTColumn(
             widthFlex: 4,
-            head: DTHead(
-              label: 'actions'.tr(),
-              backendKeySort: null,
-            ),
+            head: DTHead(label: 'actions'.tr(), backendKeySort: null),
             body: (data) => DataCell(
               Row(
                 children: [
