@@ -5,7 +5,7 @@ import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-import '../../model/backend_other.dart';
+import '../backend_other.dart';
 
 part 'entity_custom_query_bloc.freezed.dart';
 

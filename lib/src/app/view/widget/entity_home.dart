@@ -24,7 +24,7 @@ class MenuCustom extends StatelessWidget {
       future: EntityCustom.getEntity(entityId),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(child: NoCodeError('${snapshot.error}'));
         } else if (snapshot.connectionState == ConnectionState.done ||
             snapshot.hasData) {
           final entity = snapshot.data;

@@ -1,6 +1,7 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/src/app/bloc/entity_custom_query/entity_custom_query_bloc.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/src/app/util/picker_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +25,8 @@ class Export {
 
   factory Export.fromJson(Map<String, dynamic> json) {
     final type = json['type'];
-    if (!allowedTypes.contains(type)) throw Exception('Invalid export type');
+    if (!allowedTypes.contains(type))
+      throw Exception('Invalid export type: $type');
     return Export(
       name: json['name'],
       backend: json['backend'],
@@ -72,7 +74,7 @@ class ButtonExport extends StatelessWidget {
                     data: data.data,
                     title: export.name,
                     fields: export.fields,
-                    printedBy: 'Anonymous',
+                    printedBy: UserRepositoryApp.instance.user?.name ?? '-',
                   ),
                 );
               await Printing.sharePdf(
@@ -83,6 +85,7 @@ class ButtonExport extends StatelessWidget {
               final bytes = generalXlsx(context, data.data, export.fields);
               saveFile(bytes, '${export.name}.xlsx');
             }
+            Toast(context).notify('Exported successfully');
           },
           error: (error) => Toast(context).fail(error),
           orElse: () {},

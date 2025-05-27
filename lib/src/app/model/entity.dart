@@ -41,7 +41,10 @@ class EntityCustom {
       final path = 'asset/configuration/entity/$id.json';
       final data = await rootBundle.loadString(path);
       return EntityCustom.fromJson(json.decode(data));
+    } on Exception catch (e) {
+      rethrow;
     } catch (e) {
+      print('[EntityCustom] error $e');
       return null;
     }
   }
