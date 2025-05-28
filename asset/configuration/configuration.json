@@ -9,6 +9,7 @@
     },
     "logo_url": "https://files.catbox.moe/7fl9x7.png",
     "logo_named_url": "https://files.catbox.moe/0njlru.png",
+    "auth_url": "http://localhost:8080/login",
     "backend_host": "http://localhost:8080",
     "theme": {
         "color": "#6C6EEB",
