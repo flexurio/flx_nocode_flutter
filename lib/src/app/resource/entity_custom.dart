@@ -29,6 +29,7 @@ class EntityCustomRepository extends Repository {
     final url =
         path.replaceFirst('{backend_host}', Configuration.instance.backendHost);
 
+    print('[EntityCustomRepository] $method $url');
     switch (method.toUpperCase()) {
       case 'GET':
         return dio.get<T>(
@@ -83,6 +84,7 @@ class EntityCustomRepository extends Repository {
         totalRows: totalData,
       );
     } catch (error) {
+      print('[EntityCustomRepository] error $error');
       throw checkErrorApi(error);
     }
   }

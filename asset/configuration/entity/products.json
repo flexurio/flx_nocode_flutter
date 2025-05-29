@@ -28,14 +28,6 @@
       "allow_update": true,
       "pattern": "^[0-9]+$",
       "pattern_error": "Only numeric values are allowed."
-    },
-    {
-      "label": "Stock",
-      "reference": "stock",
-      "type": "number",
-      "auto_generated": true,
-      "pattern": "^[0-9]+$",
-      "pattern_error": "Only numeric values are allowed."
     }
   ],
   "backend": {
@@ -62,8 +54,8 @@
   },
   "layout_list_tile": {
     "title": "name",
-    "subtitle": "price",
-    "trailing": "stock"
+    "subtitle": "id",
+    "trailing": "price"
   },
   "layout_form": {
     "create": {
@@ -81,7 +73,28 @@
   "layout_table": {
     "id": 5,
     "name": 4,
-    "price": 4,
-    "stock": 4
-  }
+    "price": 4
+  },
+  "exports": [
+    {
+      "name": "Products",
+      "type": "xlsx",
+      "backend": "{backend_host}/products",
+      "fields": [
+        "id",
+        "name",
+        "price"
+      ]
+    },
+    {
+      "name": "Products",
+      "type": "pdf",
+      "backend": "{backend_host}/products",
+      "fields": [
+        "id",
+        "name",
+        "price"
+      ]
+    }
+  ]
 }

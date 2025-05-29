@@ -59,7 +59,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     if (_action.isEdit) {
       for (final field in widget.entity.fields) {
         _controllers[field.reference]!.text =
-            widget.data![field.reference].toString();
+            widget.data![field.reference] is num ? (widget.data![field.reference] as num).toStringAsFixed(0) : widget.data![field.reference].toString();
       }
     }
   }
