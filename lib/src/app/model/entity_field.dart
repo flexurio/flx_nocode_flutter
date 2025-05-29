@@ -114,7 +114,8 @@ class EntityField {
     }
 
     if (widget is Text && onTap != null) {
-      return widget.canCopy(onTap: onTap);
+      // return widget.canCopy(onTap: onTap);
+      return widget.canCopy();
     }
     return widget;
   }
