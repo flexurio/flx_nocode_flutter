@@ -20,14 +20,21 @@ class UserRepositoryApp extends UserRepository {
     final userPayload = extractPayloadFromJwt(accessToken);
     userApp = UserApp.fromJson(userPayload);
     permissions = permission;
+    setPermissions(permission);
+  }
 
-    () async {
+  Future<void> setPermissions(List<String> permission) async {
+    try {
+      permissions = permission;
       final userRepository = await Hive.openBox<dynamic>('user_repository');
       await userRepository.put(
         'permission',
-        Permission.toListString(permissions),
+        permissions,
       );
-    }();
+      print('[UserRepositoryApp] setPermissions');
+    } catch (e) {
+      print('[UserRepositoryApp] error $e');
+    }
   }
 
   @override

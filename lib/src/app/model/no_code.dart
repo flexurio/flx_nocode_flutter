@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +13,10 @@ class NoCode {
     await Configuration.load();
     final configuration = Configuration.instance;
     flavorConfig = configuration.flavorConfig;
+  }
+
+  static Future<void> setPermission(List<String> permission) async {
+    await UserRepositoryApp.instance.setPermissions(permission);
   }
 
   static Map<String, dynamic> pageData = {};
