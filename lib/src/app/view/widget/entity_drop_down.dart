@@ -57,6 +57,7 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
             await OptionsSource(optionsSource: widget.entityField.optionsSource)
                 .options();
         _loading = false;
+        print('[FDropDownSearchEntity] newValue');
         setState(() {});
       } catch (e) {
         _loading = false;
@@ -68,6 +69,29 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
         setState(() {});
       }
     }();
+  }
+
+  MapEntry? _getInitialValue() {
+    if (widget.initialValue == null) {
+      return null;
+    }
+
+    final keys = _options.keys.toList();
+    final indexKey = keys.indexWhere(
+          (e) => e.toString() == widget.initialValue!.key.toString(),
+        );
+    if (indexKey != -1) {
+      final label = _options[keys[indexKey]];
+      final key = widget.initialValue!.key;
+      print(
+          '[FDropDownSearchEntity] initialValue, key: $key, label: $label');
+      return MapEntry(
+        key,
+        label,
+      );
+    }
+
+    return null;
   }
 
   @override
@@ -83,15 +107,11 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
 
     print('[FDropDownSearchEntity] initialValue ${widget.initialValue}');
     return FDropDownSearch<MapEntry>(
+      key: ValueKey(_options.length),
       enabled: widget.enabled,
       labelText: widget.label ?? '(none)',
       onChanged: widget.onChanged,
-      initialValue: widget.initialValue == null
-          ? null
-          : (_options.containsKey(widget.initialValue!.key)
-              ? MapEntry(
-                  widget.initialValue!.key, _options[widget.initialValue!.key])
-              : null),
+      initialValue: _getInitialValue(),
       validator: validator,
       itemAsString: (data) => widget.itemAsString(data.key, data.value),
       items: _options.entries.toList(),

@@ -22,7 +22,7 @@ Future<void> main() async {
         logoNamed: configuration.logoNamedUrl,
         logoUrl: configuration.logoUrl,
         appName: configuration.appName,
-        menu: configuration.menu(disablePermissions: true),
+        menu: configuration.menu(),
         accountSubtitle: '${user.id} - ${user.role}',
         onChangePassword: (context) {},
         searchData: (context, query) => [],
@@ -36,6 +36,7 @@ Future<void> main() async {
     unAuthenticated: LoginPage.prepare(
       logoNamedUrl: configuration.logoNamedUrl,
       logoUrl: configuration.logoUrl,
+      urlAuthApi: configuration.authUrl,
       withTwoFactor: false,
       onLoginSuccess: (accessToken, userPayload) async {
         return userPayload;

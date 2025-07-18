@@ -1,34 +1,49 @@
 {
-    "app_name": "Flexurio",
+    "app_name": "Sell Point",
     "company": {
         "id": "03",
-        "name": "VNEU Teknologi Indonesia",
+        "name": "VNEU Teknologi Yogyakarta",
         "phone": "+628123456789",
         "website": "https://vneu.co.id",
-        "address": "Jl. Kebayoran Lama No. 1, Jakarta Selatan, Indonesia"
+        "address": "RW01 No.RT 01, Pantok Wetan, Banjaroyo, Kec. Kalibawang, Kabupaten Kulon Progo, Daerah Istimewa Yogyakarta 55672"
     },
     "logo_url": "https://files.catbox.moe/7fl9x7.png",
     "logo_named_url": "https://files.catbox.moe/0njlru.png",
-    "backend_host": "https://dev-nocode-api.flexurio.com",
+    "auth_url": "http://localhost:8080/login",
+    "backend_host": "http://localhost:8080",
     "theme": {
         "color": "#6C6EEB",
         "color_soft": "#CACBFF"
     },
     "menu_group": [
         {
-            "label": "Finance",
+            "label": "Sales Management",
             "menu": [
                 {
-                    "label": "Master",
-                    "icon": "fa fa-money",
+                    "label": "Master Data",
+                    "icon": "fa fa-database",
                     "menu_sub": [
                         {
-                            "label": "Bank",
-                            "entity": "banks"
+                            "label": "Products",
+                            "entity": "products"
                         },
                         {
-                            "label": "Bank Type",
-                            "entity": "bank_types"
+                            "label": "Customers",
+                            "entity": "customers"
+                        }
+                    ]
+                },
+                {
+                    "label": "Transactions",
+                    "icon": "fa fa-shopping-cart",
+                    "menu_sub": [
+                        {
+                            "label": "Sales",
+                            "entity": "sales"
+                        },
+                        {
+                            "label": "Sales Items",
+                            "entity": "sales_items"
                         }
                     ]
                 }
@@ -48,6 +63,20 @@
                         {
                             "label": "Role",
                             "entity": "flx_roles"
+                        }
+                    ]
+                },
+                {
+                    "label": "Settings",
+                    "icon": "fa fa-cog",
+                    "menu_sub": [
+                        {
+                            "label": "System Config",
+                            "entity": "system_config"
+                        },
+                        {
+                            "label": "Permissions",
+                            "entity": "permissions"
                         }
                     ]
                 }

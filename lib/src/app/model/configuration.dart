@@ -14,6 +14,7 @@ class Configuration {
   final String backendHost;
   final String logoUrl;
   final String logoNamedUrl;
+  final String authUrl;
 
   Configuration._({
     required this.menuGroups,
@@ -23,6 +24,7 @@ class Configuration {
     required this.backendHost,
     required this.logoUrl,
     required this.logoNamedUrl,
+    required this.authUrl,
   });
 
   static late Configuration instance;
@@ -35,6 +37,7 @@ class Configuration {
 
   factory Configuration.fromJson(Map<String, dynamic> json) {
     return Configuration._(
+      authUrl: json['auth_url'],
       backendHost: json['backend_host'],
       appName: json['app_name'],
       company: Company.fromJson(json['company']),
@@ -72,7 +75,7 @@ class Configuration {
         applicationConfig: null,
       );
 
-  List<core.Menu1> menu({bool disablePermissions = false}) {
+  List<core.Menu1> menu() {
     return menuGroups
         .map(
           (e) => core.Menu1(
@@ -88,8 +91,7 @@ class Configuration {
                             label: e.label,
                             home: MenuCustom(entityId: e.entity),
                             permissions: [],
-                            permission:
-                                disablePermissions ? null : e.entity + '_read',
+                            permission: e.entity + '_read',
                           ),
                         )
                         .toList(),

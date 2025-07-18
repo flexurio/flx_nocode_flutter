@@ -2,7 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/packages/flexurio_erp_authentication" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/packages/flx_authentication_flutter" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/packages/flx_core_flutter" vcs="Git" />
   </component>
 </project>

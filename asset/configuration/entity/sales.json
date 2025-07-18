@@ -1,0 +1,91 @@
+{
+    "id": "sales",
+    "label": "Sales",
+    "description": "Contains sales transaction information including customer and total amount.",
+    "fields": [
+        {
+            "label": "ID",
+            "reference": "id",
+            "type": "number",
+            "auto_generated": true
+        },
+        {
+            "label": "Customer ID",
+            "reference": "customer_id",
+            "type": "number",
+            "required": true,
+            "options_source": "backend.customers({id}:{name})",
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Customer Name",
+            "reference": "customer_name",
+            "type": "text",
+            "required": true,
+            "allow_create": true,
+            "allow_update": true
+        },
+        {
+            "label": "Total Amount",
+            "reference": "total_amount",
+            "type": "number",
+            "auto_generated": true
+        }
+    ],
+    "views": [
+        {
+            "label": "Sales Item",
+            "entity": "sales_items",
+            "filter": {
+                "sales_id": "id"
+            }
+        }
+    ],
+    "backend": {
+        "read_all": {
+            "method": "GET",
+            "url": "{backend_host}/sales"
+        },
+        "read": {
+            "method": "GET",
+            "url": "{backend_host}/sales/{id}"
+        },
+        "create": {
+            "method": "POST",
+            "url": "{backend_host}/sales"
+        },
+        "update": {
+            "method": "PUT",
+            "url": "{backend_host}/sales/{id}"
+        },
+        "delete": {
+            "method": "DELETE",
+            "url": "{backend_host}/sales/{id}"
+        }
+    },
+    "layout_list_tile": {
+        "title": "customer_id",
+        "subtitle": "total_amount",
+        "trailing": "id"
+    },
+    "layout_form": {
+        "create": {
+            "Sales Info": {
+                "customer_id": 1
+            }
+        },
+        "update": {
+            "Sales Info": {
+                "id": 1,
+                "customer_id": 1
+            }
+        }
+    },
+    "layout_table": {
+        "id": 4,
+        "customer_id": 4,
+        "customer_name": 4,
+        "total_amount": 4
+    }
+}
