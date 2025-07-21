@@ -48,7 +48,7 @@ class FilterField extends StatelessWidget {
       return LightButtonSmall(
         action: DataAction.delete,
         title: 'Filter',
-        permission: null,
+        permissions: null,
         onPressed: () => removeFilter(index),
       );
     } else {

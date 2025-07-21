@@ -97,7 +97,7 @@ class ButtonExport extends StatelessWidget {
             action:
                 export.isPdf ? DataAction.exportPdf : DataAction.exportExcel,
             title: export.name,
-            permission: null,
+            permissions: null,
             onPressed: () async {
               context.read<EntityCustomQueryBloc>().add(
                     EntityCustomQueryEvent.fetch(

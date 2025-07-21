@@ -29,7 +29,7 @@ class FilterButton extends StatelessWidget {
 
           return LightButtonSmall(
             action: DataAction.filter,
-            permission: null,
+            permissions: null,
             onPressed: () async {
               final formFilter = FormFilter(
                 isSmallScreen: isSmall,
