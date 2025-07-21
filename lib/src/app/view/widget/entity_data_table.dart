@@ -121,14 +121,14 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           entity: widget.entity,
           data: data,
           onTap: () async {
-            // Navigator.push(
-            //   context,
-            //   EntityViewPage.route(
-            //     embedded: true,
-            //     entity: widget.entity,
-            //     data: data,
-            //   ),
-            // ).then((value) => _fetch());
+            Navigator.push(
+              context,
+              EntityViewPage.route(
+                embedded: true,
+                entity: widget.entity,
+                data: data,
+              ),
+            ).then((value) => _fetch());
           },
         );
       },
