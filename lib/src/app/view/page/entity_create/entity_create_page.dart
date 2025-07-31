@@ -15,11 +15,13 @@ class EntityCreatePage extends StatefulWidget {
     this.entity,
     this.onSuccess,
     this.embedded,
+    this.filters,
   );
 
   final Map<String, dynamic>? data;
   final configuration.EntityCustom entity;
   final VoidCallback onSuccess;
+  final Map<String, dynamic> filters;
   final bool embedded;
 
   static Route<bool?> route({
@@ -27,13 +29,14 @@ class EntityCreatePage extends StatefulWidget {
     Map<String, dynamic>? data,
     required VoidCallback onSuccess,
     required bool embedded,
+    required Map<String, dynamic> filters,
   }) {
     return PageTransition(
       opaque: true,
       type: PageTransitionType.rightToLeft,
       child: MultiBlocProvider(
         providers: [BlocProvider(create: (_) => EntityBloc(entity))],
-        child: EntityCreatePage._(data, entity, onSuccess, embedded),
+        child: EntityCreatePage._(data, entity, onSuccess, embedded, filters),
       ),
     );
   }
@@ -59,7 +62,9 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     if (_action.isEdit) {
       for (final field in widget.entity.fields) {
         _controllers[field.reference]!.text =
-            widget.data![field.reference] is num ? (widget.data![field.reference] as num).toStringAsFixed(0) : widget.data![field.reference].toString();
+            widget.data![field.reference] is num
+                ? (widget.data![field.reference] as num).toStringAsFixed(0)
+                : widget.data![field.reference].toString();
       }
     }
   }
@@ -132,9 +137,9 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     if (_formKey.currentState!.validate()) {
       late EntityEvent event;
       if (_action.isEdit) {
-        event = EntityEvent.edit(data: _data);
+        event = EntityEvent.edit(data: _data, filters: widget.filters);
       } else {
-        event = EntityEvent.create(data: _data);
+        event = EntityEvent.create(data: _data, filters: widget.filters);
       }
 
       context.read<EntityBloc>().add(event);

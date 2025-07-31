@@ -9,8 +9,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
-import 'package:gap/gap.dart';
 import 'package:screen_identifier/screen_identifier.dart';
+
+import 'error.dart';
 
 class MenuDataTableCustom extends StatefulWidget {
   const MenuDataTableCustom._({
@@ -127,6 +128,9 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 embedded: true,
                 entity: widget.entity,
                 data: data,
+                filters: Map.fromEntries(_filters
+                    .map((e) => MapEntry(e.reference, e.value))
+                    .toList()),
               ),
             ).then((value) => _fetch());
           },
@@ -192,6 +196,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                                 embedded: widget.embedded,
                                 entity: widget.entity,
                                 data: entity,
+                                filters: _filters.toMap(),
                               ),
                             );
                             _fetch();
@@ -211,6 +216,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                     children: EntityViewPage.actionsLarge(
                       context,
                       data,
+                      _filters.toMap(),
                       widget.entity,
                       (context) => _fetch(),
                     ),
@@ -247,6 +253,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
         EntityCreateButton(
           embedded: widget.embedded,
           entity: widget.entity,
+          filters: _filters.toMap(),
           onSuccess: () {
             _fetch();
           },
@@ -282,30 +289,6 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             ),
           )
           .toList(),
-    );
-  }
-}
-
-class NoCodeError extends StatelessWidget {
-  const NoCodeError(this.message, {super.key});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        color: Colors.black,
-        border: Border.all(color: Colors.red, width: 6),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.error, color: Colors.red),
-          Gap(6),
-          Text(message, style: TextStyle(color: Colors.white)),
-        ],
-      ),
     );
   }
 }

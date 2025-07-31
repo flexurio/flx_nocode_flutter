@@ -10,6 +10,8 @@ import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'backend.dart';
+
 class EntityCustom {
   final String id;
   final String label;

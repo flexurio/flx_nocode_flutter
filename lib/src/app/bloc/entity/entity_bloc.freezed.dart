@@ -639,8 +639,12 @@ abstract class _Error implements EntityState {
 mixin _$EntityEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(Map<String, dynamic> data) create,
-    required TResult Function(Map<String, dynamic> data) edit,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> filters)
+        create,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> filters)
+        edit,
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
@@ -648,8 +652,10 @@ mixin _$EntityEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> data)? create,
-    TResult? Function(Map<String, dynamic> data)? edit,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        create,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        edit,
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
@@ -657,8 +663,10 @@ mixin _$EntityEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> data)? create,
-    TResult Function(Map<String, dynamic> data)? edit,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        create,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
     required TResult orElse(),
@@ -718,7 +726,7 @@ abstract class _$$CreateImplCopyWith<$Res> {
           _$CreateImpl value, $Res Function(_$CreateImpl) then) =
       __$$CreateImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({Map<String, dynamic> data});
+  $Res call({Map<String, dynamic> data, Map<String, dynamic> filters});
 }
 
 /// @nodoc
@@ -735,11 +743,16 @@ class __$$CreateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? data = null,
+    Object? filters = null,
   }) {
     return _then(_$CreateImpl(
       data: null == data
           ? _value._data
           : data // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
+      filters: null == filters
+          ? _value._filters
+          : filters // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
     ));
   }
@@ -748,7 +761,11 @@ class __$$CreateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$CreateImpl implements _Create {
-  const _$CreateImpl({required final Map<String, dynamic> data}) : _data = data;
+  const _$CreateImpl(
+      {required final Map<String, dynamic> data,
+      required final Map<String, dynamic> filters})
+      : _data = data,
+        _filters = filters;
 
   final Map<String, dynamic> _data;
   @override
@@ -758,9 +775,17 @@ class _$CreateImpl implements _Create {
     return EqualUnmodifiableMapView(_data);
   }
 
+  final Map<String, dynamic> _filters;
+  @override
+  Map<String, dynamic> get filters {
+    if (_filters is EqualUnmodifiableMapView) return _filters;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_filters);
+  }
+
   @override
   String toString() {
-    return 'EntityEvent.create(data: $data)';
+    return 'EntityEvent.create(data: $data, filters: $filters)';
   }
 
   @override
@@ -768,12 +793,15 @@ class _$CreateImpl implements _Create {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CreateImpl &&
-            const DeepCollectionEquality().equals(other._data, _data));
+            const DeepCollectionEquality().equals(other._data, _data) &&
+            const DeepCollectionEquality().equals(other._filters, _filters));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_data));
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_data),
+      const DeepCollectionEquality().hash(_filters));
 
   /// Create a copy of EntityEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -786,38 +814,46 @@ class _$CreateImpl implements _Create {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(Map<String, dynamic> data) create,
-    required TResult Function(Map<String, dynamic> data) edit,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> filters)
+        create,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> filters)
+        edit,
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
   }) {
-    return create(data);
+    return create(data, filters);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> data)? create,
-    TResult? Function(Map<String, dynamic> data)? edit,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        create,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        edit,
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
   }) {
-    return create?.call(data);
+    return create?.call(data, filters);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> data)? create,
-    TResult Function(Map<String, dynamic> data)? edit,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        create,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
     required TResult orElse(),
   }) {
     if (create != null) {
-      return create(data);
+      return create(data, filters);
     }
     return orElse();
   }
@@ -861,10 +897,12 @@ class _$CreateImpl implements _Create {
 }
 
 abstract class _Create implements EntityEvent {
-  const factory _Create({required final Map<String, dynamic> data}) =
-      _$CreateImpl;
+  const factory _Create(
+      {required final Map<String, dynamic> data,
+      required final Map<String, dynamic> filters}) = _$CreateImpl;
 
   Map<String, dynamic> get data;
+  Map<String, dynamic> get filters;
 
   /// Create a copy of EntityEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -879,7 +917,7 @@ abstract class _$$EditImplCopyWith<$Res> {
           _$EditImpl value, $Res Function(_$EditImpl) then) =
       __$$EditImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({Map<String, dynamic> data});
+  $Res call({Map<String, dynamic> data, Map<String, dynamic> filters});
 }
 
 /// @nodoc
@@ -895,11 +933,16 @@ class __$$EditImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? data = null,
+    Object? filters = null,
   }) {
     return _then(_$EditImpl(
       data: null == data
           ? _value._data
           : data // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
+      filters: null == filters
+          ? _value._filters
+          : filters // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
     ));
   }
@@ -908,7 +951,11 @@ class __$$EditImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$EditImpl implements _Edit {
-  const _$EditImpl({required final Map<String, dynamic> data}) : _data = data;
+  const _$EditImpl(
+      {required final Map<String, dynamic> data,
+      required final Map<String, dynamic> filters})
+      : _data = data,
+        _filters = filters;
 
   final Map<String, dynamic> _data;
   @override
@@ -918,9 +965,17 @@ class _$EditImpl implements _Edit {
     return EqualUnmodifiableMapView(_data);
   }
 
+  final Map<String, dynamic> _filters;
+  @override
+  Map<String, dynamic> get filters {
+    if (_filters is EqualUnmodifiableMapView) return _filters;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_filters);
+  }
+
   @override
   String toString() {
-    return 'EntityEvent.edit(data: $data)';
+    return 'EntityEvent.edit(data: $data, filters: $filters)';
   }
 
   @override
@@ -928,12 +983,15 @@ class _$EditImpl implements _Edit {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EditImpl &&
-            const DeepCollectionEquality().equals(other._data, _data));
+            const DeepCollectionEquality().equals(other._data, _data) &&
+            const DeepCollectionEquality().equals(other._filters, _filters));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_data));
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_data),
+      const DeepCollectionEquality().hash(_filters));
 
   /// Create a copy of EntityEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -946,38 +1004,46 @@ class _$EditImpl implements _Edit {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(Map<String, dynamic> data) create,
-    required TResult Function(Map<String, dynamic> data) edit,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> filters)
+        create,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> filters)
+        edit,
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
   }) {
-    return edit(data);
+    return edit(data, filters);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> data)? create,
-    TResult? Function(Map<String, dynamic> data)? edit,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        create,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        edit,
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
   }) {
-    return edit?.call(data);
+    return edit?.call(data, filters);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> data)? create,
-    TResult Function(Map<String, dynamic> data)? edit,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        create,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
     required TResult orElse(),
   }) {
     if (edit != null) {
-      return edit(data);
+      return edit(data, filters);
     }
     return orElse();
   }
@@ -1021,9 +1087,12 @@ class _$EditImpl implements _Edit {
 }
 
 abstract class _Edit implements EntityEvent {
-  const factory _Edit({required final Map<String, dynamic> data}) = _$EditImpl;
+  const factory _Edit(
+      {required final Map<String, dynamic> data,
+      required final Map<String, dynamic> filters}) = _$EditImpl;
 
   Map<String, dynamic> get data;
+  Map<String, dynamic> get filters;
 
   /// Create a copy of EntityEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -1100,8 +1169,12 @@ class _$DeleteImpl implements _Delete {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(Map<String, dynamic> data) create,
-    required TResult Function(Map<String, dynamic> data) edit,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> filters)
+        create,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> filters)
+        edit,
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
@@ -1112,8 +1185,10 @@ class _$DeleteImpl implements _Delete {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> data)? create,
-    TResult? Function(Map<String, dynamic> data)? edit,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        create,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        edit,
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
@@ -1124,8 +1199,10 @@ class _$DeleteImpl implements _Delete {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> data)? create,
-    TResult Function(Map<String, dynamic> data)? edit,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        create,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
     required TResult orElse(),
@@ -1271,8 +1348,12 @@ class _$OtherEventImpl implements _OtherEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(Map<String, dynamic> data) create,
-    required TResult Function(Map<String, dynamic> data) edit,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> filters)
+        create,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> filters)
+        edit,
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
@@ -1283,8 +1364,10 @@ class _$OtherEventImpl implements _OtherEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> data)? create,
-    TResult? Function(Map<String, dynamic> data)? edit,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        create,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        edit,
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
@@ -1295,8 +1378,10 @@ class _$OtherEventImpl implements _OtherEvent {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> data)? create,
-    TResult Function(Map<String, dynamic> data)? edit,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        create,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
     required TResult orElse(),

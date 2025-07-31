@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:dio/dio.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 
 class EntityCustomRepository extends Repository {
   EntityCustomRepository({
@@ -10,11 +10,13 @@ class EntityCustomRepository extends Repository {
     required super.onUnauthorized,
   });
 
-  static EntityCustomRepository instance = EntityCustomRepository(
+  /// Singleton instance
+  static final EntityCustomRepository instance = EntityCustomRepository(
     dio: Api.dio,
-    onUnauthorized: () {},
+    onUnauthorized: () {}, // You can replace with auth handler
   );
 
+  /// Internal request handler
   Future<Response<T>> _request<T>({
     required String? accessToken,
     required String path,
@@ -30,35 +32,39 @@ class EntityCustomRepository extends Repository {
         path.replaceFirst('{backend_host}', Configuration.instance.backendHost);
 
     print('[EntityCustomRepository] $method $url');
+
+    final options = Options(headers: headers);
+
     switch (method.toUpperCase()) {
       case 'GET':
         return dio.get<T>(
           url,
           queryParameters: queryParameters,
-          options: Options(headers: headers),
+          options: options,
         );
       case 'POST':
         return dio.post<T>(
           url,
           data: body != null ? FormData.fromMap(body) : null,
-          options: Options(headers: headers),
+          options: options,
         );
       case 'PUT':
         return dio.put<T>(
           url,
           data: body != null ? FormData.fromMap(body) : null,
-          options: Options(headers: headers),
+          options: options,
         );
       case 'DELETE':
         return dio.delete<T>(
           url,
-          options: Options(headers: headers),
+          options: options,
         );
       default:
         throw UnsupportedError('Unsupported HTTP method: $method');
     }
   }
 
+  /// Fetch list data (with pagination + filtering)
   Future<PageOptions<Map<String, dynamic>>> fetch({
     required String? accessToken,
     required PageOptions<Map<String, dynamic>> pageOptions,
@@ -67,28 +73,30 @@ class EntityCustomRepository extends Repository {
     required Map<String, dynamic> filterMap,
   }) async {
     try {
+      final queryParams = pageOptions.toUrlQueryMap()..addAll(filterMap);
+
       final response = await _request<Map<String, dynamic>>(
         accessToken: accessToken,
         path: path,
         method: method,
-        queryParameters: pageOptions.toUrlQueryMap()..addAll(filterMap),
+        queryParameters: queryParams,
       );
 
-      var totalData = 0;
-      if (response.data!.containsKey('total_data')) {
-        totalData = response.data!['total_data'] as int;
-      }
+      final dataList =
+          (response.data?['data'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+      final total = response.data?['total_data'] as int? ?? dataList.length;
 
       return pageOptions.copyWith(
-        data: (response.data!['data'] as List).cast(),
-        totalRows: totalData,
+        data: dataList,
+        totalRows: total,
       );
     } catch (error) {
-      print('[EntityCustomRepository] error $error');
+      print('[EntityCustomRepository] fetch error: $error');
       throw checkErrorApi(error);
     }
   }
 
+  /// Fetch single record by ID
   Future<Map<String, dynamic>> fetchById({
     required String? accessToken,
     required String path,
@@ -102,12 +110,16 @@ class EntityCustomRepository extends Repository {
         method: method,
         queryParameters: PageOptions.empty().toUrlQueryMap(),
       );
-      return (response.data!)['data'][0];
+      return (response.data?['data'] as List)
+          .cast<Map<String, dynamic>>()
+          .first;
     } catch (error) {
+      print('[EntityCustomRepository] fetchById error: $error');
       throw checkErrorApi(error);
     }
   }
 
+  /// Create or update a record
   Future<Map<String, dynamic>> modify({
     required String? accessToken,
     required String path,
@@ -115,14 +127,15 @@ class EntityCustomRepository extends Repository {
     Map<String, dynamic>? data,
   }) async {
     try {
-      final response = await _request<Map<String, dynamic>?>(
+      final response = await _request<Map<String, dynamic>>(
         accessToken: accessToken,
         path: path,
         method: method,
         body: data,
       );
-      return response.data!;
+      return response.data ?? {};
     } catch (error) {
+      print('[EntityCustomRepository] modify error: $error');
       throw checkErrorApi(error);
     }
   }

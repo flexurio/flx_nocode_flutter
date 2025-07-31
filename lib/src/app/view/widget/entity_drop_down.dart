@@ -3,6 +3,7 @@ import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_field_options_source.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 
 class FDropDownSearchEntity extends StatefulWidget
     implements DropDownObject<MapEntry> {
@@ -59,12 +60,12 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
         _loading = false;
         print('[FDropDownSearchEntity] newValue');
         setState(() {});
-      } catch (e) {
+      } catch (e, s) {
         _loading = false;
         if (e is ArgumentError) {
-          _errorMessage = e.message;
+          _errorMessage = 'DropDown Argument Error: ${e.message}';
         } else {
-          _errorMessage = e.toString();
+          _errorMessage = 'DropDown Error: $e';
         }
         setState(() {});
       }
@@ -78,13 +79,12 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
 
     final keys = _options.keys.toList();
     final indexKey = keys.indexWhere(
-          (e) => e.toString() == widget.initialValue!.key.toString(),
-        );
+      (e) => e.toString() == widget.initialValue!.key.toString(),
+    );
     if (indexKey != -1) {
       final label = _options[keys[indexKey]];
       final key = widget.initialValue!.key;
-      print(
-          '[FDropDownSearchEntity] initialValue, key: $key, label: $label');
+      print('[FDropDownSearchEntity] initialValue, key: $key, label: $label');
       return MapEntry(
         key,
         label,
@@ -97,7 +97,7 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
   @override
   Widget build(BuildContext context) {
     if (_errorMessage != null) {
-      return Center(child: Text(_errorMessage!));
+      return NoCodeError(_errorMessage!);
     }
 
     String? Function(MapEntry?)? validator;

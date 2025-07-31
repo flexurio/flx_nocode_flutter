@@ -14,21 +14,25 @@ class EntityViewPage extends StatelessWidget {
   const EntityViewPage._({
     required this.entity,
     required this.data,
+    required this.filters,
     required this.embedded,
   });
   final EntityCustom entity;
   final Map<String, dynamic> data;
+  final Map<String, dynamic> filters;
   final bool embedded;
 
   static Route<void> route({
     required EntityCustom entity,
     required Map<String, dynamic> data,
+    required Map<String, dynamic> filters,
     required bool embedded,
   }) {
     return MaterialPageRoute(
       builder: (_) => MultiBlocProvider(
         providers: [BlocProvider(create: (_) => EntityCustomQueryBloc())],
-        child: EntityViewPage._(entity: entity, data: data, embedded: embedded),
+        child: EntityViewPage._(
+            entity: entity, data: data, filters: filters, embedded: embedded),
       ),
     );
   }
@@ -44,6 +48,7 @@ class EntityViewPage extends StatelessWidget {
         items: EntityViewPage.actions(
           context,
           data,
+          filters,
           entity,
           _fetch,
           embedded,
@@ -81,6 +86,7 @@ class EntityViewPage extends StatelessWidget {
   static List<ActionButtonItem> actions(
     BuildContext context,
     Map<String, dynamic> data,
+    Map<String, dynamic> filters,
     EntityCustom entity,
     void Function(BuildContext) onRefresh,
     bool embedded,
@@ -89,6 +95,7 @@ class EntityViewPage extends StatelessWidget {
       entity,
       context,
       data,
+      filters,
       onRefresh,
       embedded,
     );
@@ -99,11 +106,12 @@ class EntityViewPage extends StatelessWidget {
   static List<Widget> actionsLarge(
     BuildContext context,
     Map<String, dynamic> data,
+    Map<String, dynamic> filters,
     EntityCustom entity,
     void Function(BuildContext) onRefresh,
   ) {
-    final modifyActions =
-        _buildEntityCustomActionsLarge(entity, context, data, onRefresh);
+    final modifyActions = _buildEntityCustomActionsLarge(
+        entity, context, data, filters, onRefresh);
     return entity.buttonViewsLarge(context, data)..addAll(modifyActions);
   }
 
@@ -111,6 +119,7 @@ class EntityViewPage extends StatelessWidget {
     EntityCustom entity,
     BuildContext context,
     Map<String, dynamic> data,
+    Map<String, dynamic> filters,
     void Function(BuildContext context) onRefresh,
   ) {
     return [
@@ -122,6 +131,7 @@ class EntityViewPage extends StatelessWidget {
             Navigator.push(
               context,
               EntityCreatePage.route(
+                filters: filters,
                 embedded: false,
                 entity: entity,
                 data: data,
@@ -143,6 +153,7 @@ class EntityViewPage extends StatelessWidget {
     EntityCustom entity,
     BuildContext context,
     Map<String, dynamic> data,
+    Map<String, dynamic> filters,
     void Function(BuildContext context) onRefresh,
     bool embedded,
   ) {
@@ -159,6 +170,7 @@ class EntityViewPage extends StatelessWidget {
                 embedded: embedded,
                 entity: entity,
                 data: data,
+                filters: filters,
                 onSuccess: () => onRefresh(context),
               ),
             );

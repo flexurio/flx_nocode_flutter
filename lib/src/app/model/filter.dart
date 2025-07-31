@@ -39,3 +39,11 @@ class Filter {
     return '$reference.eq';
   }
 }
+
+extension FilterList on List<Filter> {
+  Map<String, String> toMap() => Map.fromEntries(
+        map(
+          (e) => MapEntry(e.reference, e.value),
+        ),
+      );
+}

@@ -4,6 +4,8 @@ import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_data_table.dart';
 import 'package:flutter/material.dart';
 
+import 'error.dart';
+
 class MenuCustom extends StatelessWidget {
   const MenuCustom({
     super.key,

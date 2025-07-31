@@ -140,12 +140,18 @@ class BackendOther {
   }
 }
 
-Map<String, dynamic> mapAddPageData(Map<String, dynamic> data) {
+Map<String, dynamic> mapAddPageData({
+  required Map<String, dynamic> data,
+  required Map<String, dynamic> filters,
+}) {
   final newData = <String, dynamic>{};
   for (var key in data.keys) {
     var value = data[key];
     for (var pageKey in NoCode.pageData.keys) {
       value = value.replaceAll('{page.$pageKey}', NoCode.pageData[pageKey]);
+    }
+    for (var filterKey in filters.keys) {
+      value = value.replaceAll('{filter.$filterKey}', filters[filterKey]);
     }
     newData[key] = value;
   }

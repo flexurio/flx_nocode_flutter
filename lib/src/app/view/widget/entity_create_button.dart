@@ -9,11 +9,13 @@ class EntityCreateButton extends StatelessWidget {
     required this.entity,
     required this.onSuccess,
     required this.embedded,
+    required this.filters,
   });
 
   final configuration.EntityCustom entity;
   final void Function() onSuccess;
   final bool embedded;
+  final Map<String, dynamic> filters;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,7 @@ class EntityCreateButton extends StatelessWidget {
             entity: entity,
             onSuccess: onSuccess,
             embedded: embedded,
+            filters: filters,
           ),
         );
         if (success ?? false) {

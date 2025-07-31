@@ -21,9 +21,14 @@ class EntityState with _$EntityState {
 
 @freezed
 class EntityEvent with _$EntityEvent {
-  const factory EntityEvent.create({required Map<String, dynamic> data}) =
-      _Create;
-  const factory EntityEvent.edit({required Map<String, dynamic> data}) = _Edit;
+  const factory EntityEvent.create({
+    required Map<String, dynamic> data,
+    required Map<String, dynamic> filters,
+  }) = _Create;
+  const factory EntityEvent.edit({
+    required Map<String, dynamic> data,
+    required Map<String, dynamic> filters,
+  }) = _Edit;
   const factory EntityEvent.delete({required String id}) = _Delete;
   const factory EntityEvent.otherEvent({
     required Map<String, dynamic> data,
@@ -49,7 +54,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
             emit(_Error(errorMessage(error)));
           }
         },
-        create: (data) async {
+        create: (data, filters) async {
           emit(const _Loading());
           print('[EntityBloc] Edit - data $data');
           try {
@@ -62,7 +67,8 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               accessToken: UserRepositoryApp.instance.token,
               path: entity.backend.create!.url,
               method: entity.backend.create!.method,
-              data: Map.from(data)..addAll(entity.backend.create!.body),
+              data: Map.from(data)
+                ..addAll(entity.backend.create!.body(filters: filters)),
             );
             emit(_Success(response));
           } catch (error, stack) {
@@ -70,7 +76,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
             emit(_Error(errorMessage(error)));
           }
         },
-        edit: (data) async {
+        edit: (data, filters) async {
           emit(const _Loading());
           print('[EntityBloc] Edit - data $data');
           try {
@@ -86,7 +92,8 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
                 Uri.encodeComponent(data['id']),
               ),
               method: entity.backend.update!.method,
-              data: Map.from(data)..addAll(entity.backend.update!.body),
+              data: Map.from(data)
+                ..addAll(entity.backend.update!.body(filters: filters)),
             );
             emit(_Success(response));
           } catch (error, stack) {

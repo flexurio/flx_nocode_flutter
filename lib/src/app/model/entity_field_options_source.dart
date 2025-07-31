@@ -56,7 +56,7 @@ class OptionsSource {
     final options = <dynamic, dynamic>{};
     if (entity != null) {
       final data = await EntityCustomRepository.instance.fetch(
-        accessToken: UserRepositoryApp.instance.token!,
+        accessToken: UserRepositoryApp.instance.token ?? '',
         pageOptions: PageOptions.empty(),
         method: entity.backend.readAll!.method,
         path: entity.backend.readAll!.urlWithValues,
