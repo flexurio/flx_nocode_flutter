@@ -10,8 +10,18 @@
       "auto_generated": true
     },
     {
-      "label": "Name",
+      "label": "Gorengan",
       "reference": "name",
+      "type": "text",
+      "required": true,
+      "allow_create": true,
+      "allow_update": true,
+      "pattern": "^[a-zA-Z0-9 ]{1,}$",
+      "pattern_error": "Only letters, numbers, and spaces are allowed."
+    },
+    {
+      "label": "Kategory",
+      "reference": "category",
       "type": "text",
       "required": true,
       "allow_create": true,
@@ -54,26 +64,26 @@
   },
   "layout_list_tile": {
     "title": "name",
-    "subtitle": "id",
-    "trailing": "price"
+    "subtitle": "price",
+    "trailing": "id"
   },
   "layout_form": {
     "create": {
-      "Product Info": {
-        "name,price": 1
+      "Informasi": {
+        "name,price,category": 2
       }
     },
     "update": {
       "Product Info": {
-        "id": 1,
-        "name,price": 1
+        "id,name,price": 3
       }
     }
   },
   "layout_table": {
     "id": 5,
     "name": 4,
-    "price": 4
+    "category": 2,
+    "price": 1
   },
   "exports": [
     {
@@ -91,9 +101,8 @@
       "type": "pdf",
       "backend": "{backend_host}/products",
       "fields": [
-        "id",
-        "name",
-        "price"
+        "price",
+        "name"
       ]
     }
   ]
