@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class LandingPage extends StatefulWidget {
   @override
@@ -43,290 +46,13 @@ class _LandingPageState extends State<LandingPage>
     });
   }
 
-  void _loadContent() {
-    // JSON content data
-    contentData = {
-      "company": {"name": "TechSolutions", "logo": "rocket_launch"},
-      "navigation": {
-        "items": ["Home", "Services", "About", "Pricing", "Contact"],
-        "cta_primary": "Sign In",
-        "cta_secondary": "Sign Up"
-      },
-      "hero": {
-        "title": "Revolusi Digital Dimulai Dari Sini",
-        "subtitle":
-            "Kami menciptakan solusi teknologi inovatif yang mengubah cara bisnis Anda beroperasi. Dari AI hingga cloud computing, kami siap membawa perusahaan Anda ke era digital yang baru.",
-        "primary_button": "Mulai Sekarang",
-        "secondary_button": "Pelajari Lebih Lanjut"
-      },
-      "features": {
-        "title": "Kenapa Memilih Kami?",
-        "subtitle":
-            "Kami menyediakan solusi teknologi terdepan dengan pendekatan yang personal dan hasil yang terukur",
-        "items": [
-          {
-            "icon": "speed",
-            "title": "Performa Tinggi",
-            "description":
-                "Aplikasi yang kami buat 10x lebih cepat dari kompetitor dengan teknologi terdepan",
-            "color": "#2196F3"
-          },
-          {
-            "icon": "security",
-            "title": "Keamanan Terjamin",
-            "description":
-                "Sistem keamanan berlapis dengan enkripsi end-to-end dan monitoring 24/7",
-            "color": "#4CAF50"
-          },
-          {
-            "icon": "support_agent",
-            "title": "Support 24/7",
-            "description":
-                "Tim ahli kami siap membantu Anda kapan saja dengan response time kurang dari 1 jam",
-            "color": "#FF9800"
-          },
-          {
-            "icon": "trending_up",
-            "title": "Scalable",
-            "description":
-                "Infrastruktur yang dapat berkembang seiring pertumbuhan bisnis Anda",
-            "color": "#9C27B0"
-          },
-          {
-            "icon": "attach_money",
-            "title": "Cost Effective",
-            "description":
-                "Hemat hingga 60% biaya operasional dengan solusi cloud native kami",
-            "color": "#009688"
-          },
-          {
-            "icon": "insights",
-            "title": "AI Powered",
-            "description":
-                "Memanfaatkan kecerdasan buatan untuk analytics dan automation yang cerdas",
-            "color": "#F44336"
-          }
-        ]
-      },
-      "services": {
-        "title": "Layanan Kami",
-        "subtitle": "Solusi lengkap untuk transformasi digital perusahaan Anda",
-        "items": [
-          {
-            "title": "Web Development",
-            "description":
-                "Pembangunan website modern dengan teknologi React, Vue.js, dan framework terbaru lainnya. Responsive design dan SEO optimized.",
-            "technologies": ["React", "Vue.js", "Node.js", "MongoDB"],
-            "icon": "web"
-          },
-          {
-            "title": "Mobile Development",
-            "description":
-                "Aplikasi mobile native dan cross-platform untuk iOS dan Android dengan performa optimal dan user experience yang memukau.",
-            "technologies": ["Flutter", "React Native", "Swift", "Kotlin"],
-            "icon": "smartphone"
-          },
-          {
-            "title": "Cloud Solutions",
-            "description":
-                "Migrasi ke cloud, setup infrastructure, dan maintenance dengan AWS, Google Cloud, dan Azure. Scalable dan cost-effective.",
-            "technologies": ["AWS", "Google Cloud", "Azure", "Docker"],
-            "icon": "cloud"
-          }
-        ]
-      },
-      "stats": {
-        "items": [
-          {"number": "500+", "label": "Proyek Selesai"},
-          {"number": "98%", "label": "Tingkat Kepuasan"},
-          {"number": "24/7", "label": "Support"},
-          {"number": "5 Tahun", "label": "Pengalaman"}
-        ]
-      },
-      "testimonials": {
-        "title": "Kata Mereka Tentang Kami",
-        "items": [
-          {
-            "text":
-                "Sangat profesional dan hasil kerja melampaui ekspektasi. Tim TechSolutions berhasil meningkatkan efisiensi operasional kami hingga 70%.",
-            "name": "Budi Santoso",
-            "position": "CEO, PT. Maju Bersama",
-            "rating": 5
-          },
-          {
-            "text":
-                "Pelayanan excellent! Aplikasi mobile yang dibuat sangat user-friendly dan performanya luar biasa. Highly recommended!",
-            "name": "Sarah Wijaya",
-            "position": "Marketing Director, StartupXYZ",
-            "rating": 5
-          },
-          {
-            "text":
-                "Partnership terbaik yang pernah kami miliki. Solusi cloud mereka menghemat biaya IT kami hingga 50% dengan performa yang lebih baik.",
-            "name": "Ahmad Rahman",
-            "position": "CTO, TechCorp Indonesia",
-            "rating": 5
-          }
-        ]
-      },
-      "team": {
-        "title": "Tim Ahli Kami",
-        "subtitle":
-            "Bertemu dengan para expert yang akan mengerjakan proyek Anda",
-        "members": [
-          {
-            "name": "John Doe",
-            "role": "Senior Full Stack Developer",
-            "experience": "8+ tahun pengalaman"
-          },
-          {
-            "name": "Jane Smith",
-            "role": "UI/UX Designer",
-            "experience": "6+ tahun pengalaman"
-          },
-          {
-            "name": "Mike Johnson",
-            "role": "DevOps Engineer",
-            "experience": "7+ tahun pengalaman"
-          },
-          {
-            "name": "Lisa Wong",
-            "role": "Project Manager",
-            "experience": "5+ tahun pengalaman"
-          }
-        ]
-      },
-      "pricing": {
-        "title": "Paket Harga",
-        "subtitle": "Pilih paket yang sesuai dengan kebutuhan bisnis Anda",
-        "packages": [
-          {
-            "name": "Starter",
-            "price": "15 Juta",
-            "features": [
-              "Website Responsive",
-              "Mobile App (Android/iOS)",
-              "3 Bulan Support",
-              "Basic SEO",
-              "Hosting 1 Tahun"
-            ],
-            "popular": false
-          },
-          {
-            "name": "Professional",
-            "price": "35 Juta",
-            "features": [
-              "Website + Mobile App",
-              "Admin Dashboard",
-              "6 Bulan Support",
-              "Advanced SEO",
-              "Cloud Hosting",
-              "Payment Gateway",
-              "Analytics Integration"
-            ],
-            "popular": true
-          },
-          {
-            "name": "Enterprise",
-            "price": "75 Juta",
-            "features": [
-              "Full Custom Solution",
-              "AI Integration",
-              "12 Bulan Support",
-              "DevOps Setup",
-              "Scalable Infrastructure",
-              "Security Audit",
-              "Training Team",
-              "24/7 Monitoring"
-            ],
-            "popular": false
-          }
-        ]
-      },
-      "contact": {
-        "title": "Hubungi Kami",
-        "subtitle":
-            "Siap untuk memulai proyek Anda? Mari diskusikan kebutuhan bisnis Anda dengan tim ahli kami.",
-        "info": [
-          {
-            "icon": "location_on",
-            "title": "Alamat",
-            "value": "Jl. Sudirman No. 123, Jakarta Pusat 10220"
-          },
-          {"icon": "phone", "title": "Telepon", "value": "+62 21 1234 5678"},
-          {"icon": "email", "title": "Email", "value": "info@techsolutions.id"},
-          {
-            "icon": "access_time",
-            "title": "Jam Operasional",
-            "value": "Senin - Jumat: 09:00 - 18:00"
-          }
-        ],
-        "form": {
-          "title": "Kirim Pesan",
-          "fields": [
-            {"label": "Nama Lengkap", "icon": "person", "type": "text"},
-            {"label": "Email", "icon": "email", "type": "email"},
-            {"label": "Nomor Telepon", "icon": "phone", "type": "tel"},
-            {"label": "Pesan", "icon": "message", "type": "textarea"}
-          ]
-        }
-      },
-      "footer": {
-        "description":
-            "Kami adalah partner teknologi terpercaya yang membantu bisnis berkembang di era digital. Dengan pengalaman lebih dari 5 tahun, kami telah melayani 500+ klien dari berbagai industri.",
-        "links": {
-          "services": [
-            "Web Development",
-            "Mobile Development",
-            "Cloud Solutions",
-            "UI/UX Design",
-            "Digital Marketing"
-          ],
-          "company": ["Tentang Kami", "Tim", "Karir", "Blog", "Kontak"],
-          "support": [
-            "Help Center",
-            "Privacy Policy",
-            "Terms of Service",
-            "FAQ",
-            "Support"
-          ]
-        },
-        "social": [
-          {"icon": "facebook", "color": "#1877F2"},
-          {"icon": "linkedin", "color": "#0A66C2"},
-          {"icon": "twitter", "color": "#1DA1F2"},
-          {"icon": "instagram", "color": "#E4405F"}
-        ],
-        "copyright": "© 2025 TechSolutions. All rights reserved.",
-        "made_with": "Made with ❤️ in Indonesia"
-      }
-    };
+  Future<void> _loadContent() async {
+    final jsonString =
+        await rootBundle.loadString('asset/configuration/landing_page.json');
+    contentData = json.decode(jsonString);
+    themeData = contentData['theme'];
 
-    // Theme configuration
-    themeData = {
-      "colors": {
-        "primary": "#2196F3",
-        "secondary": "#9C27B0",
-        "accent": "#FF9800",
-        "background": "#FFFFFF",
-        "surface": "#F5F5F5",
-        "text_primary": "#212121",
-        "text_secondary": "#757575",
-        "success": "#4CAF50",
-        "error": "#F44336",
-        "warning": "#FF9800"
-      },
-      "gradients": {
-        "hero": ["#1A237E", "#7B1FA2", "#283593"],
-        "stats": ["#1565C0", "#3949AB"],
-        "footer": ["#424242", "#212121"]
-      },
-      "layout": {
-        "max_width": 1200,
-        "mobile_breakpoint": 768,
-        "tablet_breakpoint": 1024
-      }
-    };
+    setState(() {});
   }
 
   @override
@@ -364,25 +90,27 @@ class _LandingPageState extends State<LandingPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          _buildSliverAppBar(),
-          SliverList(
-            delegate: SliverChildListDelegate([
-              _buildHeroSection(),
-              _buildFeaturesSection(),
-              _buildServicesSection(),
-              _buildStatsSection(),
-              _buildTestimonialsSection(),
-              _buildTeamSection(),
-              _buildPricingSection(),
-              _buildContactSection(),
-              _buildFooter(),
-            ]),
-          ),
-        ],
-      ),
+      body: contentData.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                _buildSliverAppBar(),
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    _buildHeroSection(),
+                    _buildFeaturesSection(),
+                    _buildServicesSection(),
+                    _buildStatsSection(),
+                    _buildTestimonialsSection(),
+                    _buildTeamSection(),
+                    _buildPricingSection(),
+                    _buildContactSection(),
+                    _buildFooter(),
+                  ]),
+                ),
+              ],
+            ),
     );
   }
 
