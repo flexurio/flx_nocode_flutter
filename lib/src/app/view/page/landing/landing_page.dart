@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
 class LandingPage extends StatefulWidget {
   @override
@@ -13,7 +14,7 @@ class _LandingPageState extends State<LandingPage>
   late ScrollController _scrollController;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  bool _isScrolled = false;
+  double _scrollOffset = 0;
 
   // Content data from JSON
   Map<String, dynamic> contentData = {};
@@ -34,15 +35,11 @@ class _LandingPageState extends State<LandingPage>
     _animationController.forward();
 
     _scrollController.addListener(() {
-      if (_scrollController.offset > 100 && !_isScrolled) {
-        setState(() {
-          _isScrolled = true;
-        });
-      } else if (_scrollController.offset <= 100 && _isScrolled) {
-        setState(() {
-          _isScrolled = false;
-        });
-      }
+      final offset = _scrollController.offset.clamp(0.0, 100.0);
+      print(offset.toString());
+      setState(() {
+        _scrollOffset = offset;
+      });
     });
   }
 
@@ -73,8 +70,10 @@ class _LandingPageState extends State<LandingPage>
     return Color(int.parse(hex.substring(1, 7), radix: 16) + 0xFF000000);
   }
 
-  Widget _buildResponsiveContainer(
-      {required Widget child, bool fullWidth = false}) {
+  Widget _buildResponsiveContainer({
+    required Widget child,
+    bool fullWidth = false,
+  }) {
     if (fullWidth) return child;
 
     return Center(
@@ -92,12 +91,11 @@ class _LandingPageState extends State<LandingPage>
     return Scaffold(
       body: contentData.isEmpty
           ? Center(child: CircularProgressIndicator())
-          : CustomScrollView(
-              controller: _scrollController,
-              slivers: [
-                _buildSliverAppBar(),
-                SliverList(
-                  delegate: SliverChildListDelegate([
+          : Stack(
+              children: [
+                ListView(
+                  controller: _scrollController,
+                  children: [
                     _buildHeroSection(),
                     _buildFeaturesSection(),
                     _buildServicesSection(),
@@ -107,21 +105,24 @@ class _LandingPageState extends State<LandingPage>
                     _buildPricingSection(),
                     _buildContactSection(),
                     _buildFooter(),
-                  ]),
+                  ],
+                ),
+                Positioned(
+                  child: _buildAppBar(),
+                  top: 0,
+                  left: 0,
+                  right: 0,
                 ),
               ],
             ),
     );
   }
 
-  Widget _buildSliverAppBar() {
-    return SliverAppBar(
-      expandedHeight: 0,
-      floating: true,
-      pinned: true,
-      elevation: _isScrolled ? 8 : 0,
-      backgroundColor: _isScrolled ? Colors.white : Colors.transparent,
-      title: _buildResponsiveContainer(
+  Widget _buildAppBar() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 12),
+      color: Color.lerp(Colors.transparent, Colors.white, _scrollOffset / 100),
+      child: _buildResponsiveContainer(
         child: Row(
           children: [
             Container(
@@ -142,7 +143,7 @@ class _LandingPageState extends State<LandingPage>
             Text(
               contentData["company"]["name"],
               style: TextStyle(
-                color: _isScrolled ? Colors.black : Colors.white,
+                color: _scrollOffset > 50 ? Colors.black : Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: isMobile ? 20 : 24,
               ),
@@ -166,15 +167,21 @@ class _LandingPageState extends State<LandingPage>
     navItems.addAll([
       SizedBox(width: 16),
       OutlinedButton(
-        onPressed: () {},
+        onPressed: () {
+          context.go('/sign-in');
+        },
         style: OutlinedButton.styleFrom(
-          foregroundColor: _isScrolled
-              ? hexToColor(themeData["colors"]["primary"])
-              : Colors.white,
+          foregroundColor: Color.lerp(
+            Colors.white,
+            hexToColor(themeData["colors"]["primary"]),
+            _scrollOffset / 100,
+          ),
           side: BorderSide(
-            color: _isScrolled
-                ? hexToColor(themeData["colors"]["primary"])
-                : Colors.white,
+            color: Color.lerp(
+              Colors.white,
+              hexToColor(themeData["colors"]["primary"]),
+              _scrollOffset / 100,
+            )!,
           ),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -200,12 +207,11 @@ class _LandingPageState extends State<LandingPage>
   Widget _buildMobileMenuButton() {
     return IconButton(
       onPressed: () {
-        // Show mobile menu
         _showMobileMenu();
       },
       icon: Icon(
         Icons.menu,
-        color: _isScrolled ? Colors.black : Colors.white,
+        color: Color.lerp(Colors.white, Colors.black, _scrollOffset / 100),
       ),
     );
   }
@@ -231,7 +237,9 @@ class _LandingPageState extends State<LandingPage>
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () {
+                      context.go('/sign-in');
+                    },
                     child: Text(contentData["navigation"]["cta_primary"]),
                   ),
                 ),
@@ -260,7 +268,7 @@ class _LandingPageState extends State<LandingPage>
       child: Text(
         text,
         style: TextStyle(
-          color: _isScrolled ? Colors.black : Colors.white,
+          color: Color.lerp(Colors.white, Colors.black, _scrollOffset / 100),
           fontWeight: FontWeight.w500,
         ),
       ),

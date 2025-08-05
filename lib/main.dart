@@ -50,7 +50,16 @@ Future<void> main() async {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => LandingPage(),
+        builder: (context, state) => MaterialApp(
+          title: 'TechSolutions - Landing Page',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            fontFamily: 'Roboto',
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+          home: LandingPage(),
+          debugShowCheckedModeBanner: false,
+        ),
       ),
       GoRoute(
         path: '/sign-in',
