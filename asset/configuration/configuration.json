@@ -15,6 +15,7 @@
         "color": "#6C6EEB",
         "color_soft": "#CACBFF"
     },
+    "entity_registration": "flx_users",
     "menu_group": [
         {
             "label": "Sales Management",

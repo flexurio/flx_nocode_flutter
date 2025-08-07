@@ -1,5 +1,6 @@
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart' as configuration;
+import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
 import 'package:flx_nocode_flutter/src/app/model/layout.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
@@ -47,16 +48,14 @@ class EntityCreatePage extends StatefulWidget {
 
 class _EntityCreatePageState extends State<EntityCreatePage> {
   final _formKey = GlobalKey<FormState>();
-  final _controllers = <String, TextEditingController>{};
+  var _controllers = <String, TextEditingController>{};
   late DataAction _action;
 
   @override
   void initState() {
     super.initState();
 
-    for (final field in widget.entity.fields) {
-      _controllers[field.reference] = TextEditingController();
-    }
+    _controllers = widget.entity.fields.generateControllers();
 
     _action = createOrEdit(widget.data);
     if (_action.isEdit) {

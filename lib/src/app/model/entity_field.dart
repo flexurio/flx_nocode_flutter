@@ -270,3 +270,13 @@ class EntityField {
     };
   }
 }
+
+extension EntityFieldList on List<EntityField> {
+  Map<String, TextEditingController> generateControllers() {
+    final map = <String, TextEditingController>{};
+    for (final field in this) {
+      map[field.reference] = TextEditingController();
+    }
+    return map;
+  }
+}

@@ -1,7 +1,10 @@
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flx_nocode_flutter/src/app/view/page/entity_create/widget/form.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/landing/landing_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
@@ -13,6 +16,29 @@ Future<void> main() async {
   MenuBloc.instance = MenuBloc(
     logoNamedUrl: configuration.logoNamedUrl,
     logoUrl: configuration.logoUrl,
+  );
+  Widget? signUpPage;
+  final entityRegistration = configuration.entityRegistration;
+  if (entityRegistration != null) {
+    final entity = await EntityCustom.getEntity(entityRegistration);
+    if (entity != null) {
+      signUpPage = EntityCreateForm(
+        entity: entity,
+        dataAction: DataAction.create,
+        controllers: entity.fields.generateControllers(),
+      );
+    }
+  }
+
+  final signInPage = LoginPage.prepare(
+    logoNamedUrl: configuration.logoNamedUrl,
+    logoUrl: configuration.logoUrl,
+    signUpPage: signUpPage,
+    // urlAuthApi: configuration.authUrl,
+    withTwoFactor: false,
+    onLoginSuccess: (accessToken, userPayload) async {
+      return userPayload;
+    },
   );
   final home = AuthenticationBuilder(
     authenticated: () {
@@ -34,15 +60,7 @@ Future<void> main() async {
         ),
       );
     },
-    unAuthenticated: LoginPage.prepare(
-      logoNamedUrl: configuration.logoNamedUrl,
-      logoUrl: configuration.logoUrl,
-      // urlAuthApi: configuration.authUrl,
-      withTwoFactor: false,
-      onLoginSuccess: (accessToken, userPayload) async {
-        return userPayload;
-      },
-    ),
+    unAuthenticated: signInPage,
   );
 
   final router = GoRouter(

@@ -15,6 +15,7 @@ class Configuration {
   final String logoUrl;
   final String logoNamedUrl;
   final String authUrl;
+  final String? entityRegistration;
 
   Configuration._({
     required this.menuGroups,
@@ -25,6 +26,7 @@ class Configuration {
     required this.logoUrl,
     required this.logoNamedUrl,
     required this.authUrl,
+    required this.entityRegistration,
   });
 
   static late Configuration instance;
@@ -44,6 +46,7 @@ class Configuration {
       theme: Theme.fromJson(json['theme']),
       logoUrl: json['logo_url'],
       logoNamedUrl: json['logo_named_url'],
+      entityRegistration: json['entity_registration'],
       menuGroups: (json['menu_group'] as List<dynamic>)
           .map((e) => MenuGroup.fromJson(e))
           .toList(),
