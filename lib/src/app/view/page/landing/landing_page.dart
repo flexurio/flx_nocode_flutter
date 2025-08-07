@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flx_nocode_flutter/src/app/view/page/landing/widget/landing_app_bar.dart';
+
+import 'widget/responsive_container.dart';
 
 class LandingPage extends StatefulWidget {
   @override
@@ -74,15 +76,10 @@ class _LandingPageState extends State<LandingPage>
     required Widget child,
     bool fullWidth = false,
   }) {
-    if (fullWidth) return child;
-
-    return Center(
-      child: Container(
-        constraints: BoxConstraints(
-          maxWidth: themeData["layout"]["max_width"].toDouble(),
-        ),
-        child: child,
-      ),
+    return ResponsiveContainer(
+      fullWidth: fullWidth,
+      maxWidth: themeData["layout"]["max_width"].toDouble(),
+      child: child,
     );
   }
 
@@ -108,170 +105,18 @@ class _LandingPageState extends State<LandingPage>
                   ],
                 ),
                 Positioned(
-                  child: _buildAppBar(),
                   top: 0,
                   left: 0,
                   right: 0,
-                ),
-              ],
-            ),
-    );
-  }
-
-  Widget _buildAppBar() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 12),
-      color: Color.lerp(Colors.transparent, Colors.white, _scrollOffset / 100),
-      child: _buildResponsiveContainer(
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    hexToColor(themeData["colors"]["primary"]),
-                    hexToColor(themeData["colors"]["secondary"]),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(Icons.rocket_launch, color: Colors.white, size: 24),
-            ),
-            SizedBox(width: 12),
-            Text(
-              contentData["company"]["name"],
-              style: TextStyle(
-                color: _scrollOffset > 50 ? Colors.black : Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: isMobile ? 20 : 24,
-              ),
-            ),
-            Spacer(),
-            if (!isMobile) ..._buildDesktopNavigation(),
-            if (isMobile) _buildMobileMenuButton(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  List<Widget> _buildDesktopNavigation() {
-    List<Widget> navItems = [];
-
-    for (String item in contentData["navigation"]["items"]) {
-      navItems.add(_buildNavButton(item));
-    }
-
-    navItems.addAll([
-      SizedBox(width: 16),
-      OutlinedButton(
-        onPressed: () {
-          context.go('/sign-in');
-        },
-        style: OutlinedButton.styleFrom(
-          foregroundColor: Color.lerp(
-            Colors.white,
-            hexToColor(themeData["colors"]["primary"]),
-            _scrollOffset / 100,
-          ),
-          side: BorderSide(
-            color: Color.lerp(
-              Colors.white,
-              hexToColor(themeData["colors"]["primary"]),
-              _scrollOffset / 100,
-            )!,
-          ),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        ),
-        child: Text(contentData["navigation"]["cta_primary"]),
-      ),
-      SizedBox(width: 8),
-      ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          backgroundColor: hexToColor(themeData["colors"]["primary"]),
-          foregroundColor: Colors.white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        ),
-        child: Text(contentData["navigation"]["cta_secondary"]),
-      ),
-    ]);
-
-    return navItems;
-  }
-
-  Widget _buildMobileMenuButton() {
-    return IconButton(
-      onPressed: () {
-        _showMobileMenu();
-      },
-      icon: Icon(
-        Icons.menu,
-        color: Color.lerp(Colors.white, Colors.black, _scrollOffset / 100),
-      ),
-    );
-  }
-
-  void _showMobileMenu() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ...contentData["navigation"]["items"]
-                .map<Widget>(
-                  (item) => ListTile(
-                    title: Text(item),
-                    onTap: () => Navigator.pop(context),
-                  ),
-                )
-                .toList(),
-            Divider(),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      context.go('/sign-in');
-                    },
-                    child: Text(contentData["navigation"]["cta_primary"]),
-                  ),
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          hexToColor(themeData["colors"]["primary"]),
-                    ),
-                    child: Text(contentData["navigation"]["cta_secondary"]),
+                  child: LandingAppBar(
+                    scrollOffset: _scrollOffset,
+                    isMobile: isMobile,
+                    themeData: themeData,
+                    contentData: contentData,
                   ),
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavButton(String text) {
-    return TextButton(
-      onPressed: () {},
-      child: Text(
-        text,
-        style: TextStyle(
-          color: Color.lerp(Colors.white, Colors.black, _scrollOffset / 100),
-          fontWeight: FontWeight.w500,
-        ),
-      ),
     );
   }
 
