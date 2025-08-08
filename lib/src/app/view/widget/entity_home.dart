@@ -32,7 +32,8 @@ class MenuCustom extends StatelessWidget {
           final entity = snapshot.data;
           if (entity == null) {
             return Center(
-                child: NoCodeError('Entity not found! Id: $entityId'));
+              child: NoCodeError('Entity not found! Id: $entityId'),
+            );
           }
           return _home(context, entity);
         } else {

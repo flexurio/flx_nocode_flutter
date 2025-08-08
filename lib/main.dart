@@ -37,7 +37,7 @@ Future<void> main() async {
     unAuthenticated: LoginPage.prepare(
       logoNamedUrl: configuration.logoNamedUrl,
       logoUrl: configuration.logoUrl,
-      // urlAuthApi: configuration.authUrl,
+      urlAuthApi: configuration.authUrl,
       withTwoFactor: false,
       onLoginSuccess: (accessToken, userPayload) async {
         return userPayload;
