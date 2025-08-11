@@ -23,7 +23,7 @@ class MenuDataTableCustom extends StatefulWidget {
   static Widget prepare({
     required bool embedded,
     required EntityCustom entity,
-    required List<Filter> initialFilters,
+    List<Filter> initialFilters = const [],
   }) {
     return BlocProvider(
       create: (_) => EntityCustomQueryBloc(),

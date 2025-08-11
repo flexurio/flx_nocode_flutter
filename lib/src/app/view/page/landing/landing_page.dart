@@ -317,6 +317,7 @@ class _LandingPageState extends State<LandingPage>
   //
   Widget _buildFeaturesSection() {
     return FeatureSection(
+      key: ValueKey("feature_section"),
       isMobile: isMobile,
       landingPageData: landingPageData!,
     );

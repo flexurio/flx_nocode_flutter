@@ -19,6 +19,7 @@ class EntityCreatePage extends StatefulWidget {
     this.onSuccess,
     this.embedded,
     this.filters,
+    this.autoBackWhenSuccess,
   );
 
   final Map<String, dynamic>? data;
@@ -26,6 +27,7 @@ class EntityCreatePage extends StatefulWidget {
   final VoidCallback onSuccess;
   final Map<String, dynamic> filters;
   final bool embedded;
+  final bool autoBackWhenSuccess;
 
   static Route<bool?> route({
     required configuration.EntityCustom entity,
@@ -33,6 +35,7 @@ class EntityCreatePage extends StatefulWidget {
     required VoidCallback onSuccess,
     required bool embedded,
     required Map<String, dynamic> filters,
+    bool autoBackWhenSuccess = true,
   }) {
     return PageTransition(
       opaque: true,
@@ -43,6 +46,7 @@ class EntityCreatePage extends StatefulWidget {
         onSuccess: onSuccess,
         embedded: embedded,
         filters: filters,
+        autoBackWhenSuccess: autoBackWhenSuccess,
       ),
     );
   }
@@ -53,10 +57,18 @@ class EntityCreatePage extends StatefulWidget {
     required VoidCallback onSuccess,
     required bool embedded,
     required Map<String, dynamic> filters,
+    bool autoBackWhenSuccess = true,
   }) {
     return MultiBlocProvider(
       providers: [BlocProvider(create: (_) => EntityBloc(entity))],
-      child: EntityCreatePage._(data, entity, onSuccess, embedded, filters),
+      child: EntityCreatePage._(
+        data,
+        entity,
+        onSuccess,
+        embedded,
+        filters,
+        autoBackWhenSuccess,
+      ),
     );
   }
 
@@ -96,7 +108,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
           success: (_) {
             widget.onSuccess();
             Toast(context).dataChanged(_action, coreEntity);
-            Navigator.pop(context, true);
+            if (widget.autoBackWhenSuccess) Navigator.pop(context, true);
           },
           error: (error) => Toast(context).fail(error),
           orElse: () {},

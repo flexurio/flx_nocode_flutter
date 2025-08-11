@@ -1,171 +1,90 @@
 import 'package:flutter/material.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/landing/widget/responsive_container.dart';
 
 import '../../../../model/landing_page/landing_page.dart';
+import '../../../widget/entity_data_table.dart';
 import '../landing_page.dart';
 
-class FeatureSection extends StatelessWidget {
+class FeatureSection extends StatefulWidget {
   const FeatureSection({
     super.key,
     required this.landingPageData,
     required this.isMobile,
   });
+
   final LandingPageData landingPageData;
   final bool isMobile;
 
   @override
+  State<FeatureSection> createState() => _FeatureSectionState();
+}
+
+class _FeatureSectionState extends State<FeatureSection> {
+  EntityCustom? _entity;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEntity();
+  }
+
+  Future<void> _loadEntity() async {
+    final data = await widget.landingPageData.features.getEntity();
+    if (mounted) {
+      setState(() {
+        _entity = data;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final maxWidth = landingPageData.theme.layout.maxWidth.toDouble();
+    final maxWidth = widget.landingPageData.theme.layout.maxWidth.toDouble();
+
     return Container(
       padding: EdgeInsets.symmetric(
-        vertical: isMobile ? 60 : 100,
-        horizontal: isMobile ? 20 : 40,
+        vertical: widget.isMobile ? 60 : 100,
+        horizontal: widget.isMobile ? 20 : 40,
       ),
-      color: hexToColor(landingPageData.theme.colors.surface),
+      color: hexToColor(widget.landingPageData.theme.colors.surface),
       child: ResponsiveContainer(
         maxWidth: maxWidth,
         child: Column(
           children: [
             Text(
-              landingPageData.features.title,
+              widget.landingPageData.features.title,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: isMobile ? 28 : 42,
+                fontSize: widget.isMobile ? 28 : 42,
                 fontWeight: FontWeight.bold,
-                color: hexToColor(landingPageData.theme.colors.textPrimary),
+                color:
+                    hexToColor(widget.landingPageData.theme.colors.textPrimary),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
-              landingPageData.features.subtitle,
+              widget.landingPageData.features.subtitle,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: isMobile ? 16 : 18,
-                color: hexToColor(landingPageData.theme.colors.textSecondary),
+                fontSize: widget.isMobile ? 16 : 18,
+                color: hexToColor(
+                    widget.landingPageData.theme.colors.textSecondary),
                 height: 1.6,
               ),
             ),
-            SizedBox(height: isMobile ? 40 : 60),
-            if (isMobile) _buildMobileFeatures() else _buildDesktopFeatures(),
+            SizedBox(height: widget.isMobile ? 40 : 60),
+            if (_isLoading)
+              const CircularProgressIndicator()
+            else if (_entity != null)
+              MenuDataTableCustom.prepare(
+                entity: _entity!,
+                embedded: true,
+              ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildMobileFeatures() {
-    return Column(
-      children: landingPageData.features.items
-          .map<Widget>(
-            (feature) => Padding(
-              padding: EdgeInsets.only(bottom: 24),
-              child: FeatureCard(
-                isMobile: isMobile,
-                title: feature.title,
-                description: feature.description,
-                icon: getIconData(feature.icon),
-                color: hexToColor(feature.color),
-                themeData: landingPageData.theme.toJson(),
-              ),
-            ),
-          )
-          .toList(),
-    );
-  }
-
-  Widget _buildDesktopFeatures() {
-    return Wrap(
-      spacing: 30,
-      runSpacing: 30,
-      alignment: WrapAlignment.center,
-      children: landingPageData.features.items
-          .map<Widget>(
-            (feature) => FeatureCard(
-              isMobile: isMobile,
-              title: feature.title,
-              description: feature.description,
-              icon: getIconData(feature.icon),
-              color: hexToColor(feature.color),
-              themeData: landingPageData.theme.toJson(),
-            ),
-          )
-          .toList(),
-    );
-  }
-}
-
-class FeatureCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
-  final Color color;
-  final bool isMobile;
-  final Map<String, dynamic> themeData;
-
-  const FeatureCard({
-    Key? key,
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.color,
-    required this.isMobile,
-    required this.themeData,
-  }) : super(key: key);
-
-  Color hexToColor(String hex) {
-    hex = hex.replaceAll('#', '');
-    if (hex.length == 6) hex = 'FF$hex';
-    return Color(int.parse(hex, radix: 16));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: isMobile ? double.infinity : 350,
-      padding: EdgeInsets.all(isMobile ? 20 : 30),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 70,
-            height: 70,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(icon, color: color, size: 35),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: isMobile ? 20 : 22,
-              fontWeight: FontWeight.bold,
-              color: hexToColor(themeData["colors"]["text_primary"]),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            description,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: isMobile ? 14 : 16,
-              color: hexToColor(themeData["colors"]["text_secondary"]),
-              height: 1.5,
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -19,17 +19,21 @@ Future<void> main() async {
     logoNamedUrl: configuration.logoNamedUrl,
     logoUrl: configuration.logoUrl,
   );
-  Widget? signUpPage;
+  Widget Function({required VoidCallback onSuccess}) signUpPage =
+      ({required VoidCallback onSuccess}) => Container();
   final entityRegistration = configuration.entityRegistration;
   if (entityRegistration != null) {
     final entity = await EntityCustom.getEntity(entityRegistration);
     if (entity != null) {
-      signUpPage = EntityCreatePage.prepare(
-        entity: entity,
-        embedded: true,
-        filters: {},
-        onSuccess: () {},
-      );
+      signUpPage = ({required VoidCallback onSuccess}) {
+        return EntityCreatePage.prepare(
+          entity: entity,
+          embedded: true,
+          filters: {},
+          onSuccess: onSuccess,
+          autoBackWhenSuccess: false,
+        );
+      };
     }
   }
 
