@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flx_nocode_flutter/src/app/view/page/landing/widget/feature_section.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/landing/widget/landing_app_bar.dart';
 
+import '../../../model/landing_page/landing_page.dart';
 import 'widget/responsive_container.dart';
 
 class LandingPage extends StatefulWidget {
@@ -21,6 +23,7 @@ class _LandingPageState extends State<LandingPage>
   // Content data from JSON
   Map<String, dynamic> contentData = {};
   Map<String, dynamic> themeData = {};
+  LandingPageData? landingPageData;
 
   @override
   void initState() {
@@ -48,6 +51,7 @@ class _LandingPageState extends State<LandingPage>
   Future<void> _loadContent() async {
     final jsonString =
         await rootBundle.loadString('asset/configuration/landing_page.json');
+    landingPageData = LandingPageData.fromRawJson(jsonString);
     contentData = json.decode(jsonString);
     themeData = contentData['theme'];
 
@@ -67,10 +71,6 @@ class _LandingPageState extends State<LandingPage>
   bool get isTablet =>
       MediaQuery.of(context).size.width <
       themeData["layout"]["tablet_breakpoint"];
-
-  Color hexToColor(String hex) {
-    return Color(int.parse(hex.substring(1, 7), radix: 16) + 0xFF000000);
-  }
 
   Widget _buildResponsiveContainer({
     required Widget child,
@@ -314,167 +314,135 @@ class _LandingPageState extends State<LandingPage>
     );
   }
 
+  //
   Widget _buildFeaturesSection() {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        vertical: isMobile ? 60 : 100,
-        horizontal: isMobile ? 20 : 40,
-      ),
-      color: hexToColor(themeData["colors"]["surface"]),
-      child: _buildResponsiveContainer(
-        child: Column(
-          children: [
-            Text(
-              contentData["features"]["title"],
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: isMobile ? 28 : 42,
-                fontWeight: FontWeight.bold,
-                color: hexToColor(themeData["colors"]["text_primary"]),
-              ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              contentData["features"]["subtitle"],
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: isMobile ? 16 : 18,
-                color: hexToColor(themeData["colors"]["text_secondary"]),
-                height: 1.6,
-              ),
-            ),
-            SizedBox(height: isMobile ? 40 : 60),
-            if (isMobile) _buildMobileFeatures() else _buildDesktopFeatures(),
-          ],
-        ),
-      ),
+    return FeatureSection(
+      isMobile: isMobile,
+      landingPageData: landingPageData!,
     );
+    //   return Container(
+    //     padding: EdgeInsets.symmetric(
+    //       vertical: isMobile ? 60 : 100,
+    //       horizontal: isMobile ? 20 : 40,
+    //     ),
+    //     color: hexToColor(themeData["colors"]["surface"]),
+    //     child: _buildResponsiveContainer(
+    //       child: Column(
+    //         children: [
+    //           Text(
+    //             contentData["features"]["title"],
+    //             textAlign: TextAlign.center,
+    //             style: TextStyle(
+    //               fontSize: isMobile ? 28 : 42,
+    //               fontWeight: FontWeight.bold,
+    //               color: hexToColor(themeData["colors"]["text_primary"]),
+    //             ),
+    //           ),
+    //           SizedBox(height: 16),
+    //           Text(
+    //             contentData["features"]["subtitle"],
+    //             textAlign: TextAlign.center,
+    //             style: TextStyle(
+    //               fontSize: isMobile ? 16 : 18,
+    //               color: hexToColor(themeData["colors"]["text_secondary"]),
+    //               height: 1.6,
+    //             ),
+    //           ),
+    //           SizedBox(height: isMobile ? 40 : 60),
+    //           if (isMobile) _buildMobileFeatures() else _buildDesktopFeatures(),
+    //         ],
+    //       ),
+    //     ),
+    //   );
   }
-
-  Widget _buildMobileFeatures() {
-    return Column(
-      children: contentData["features"]["items"]
-          .map<Widget>(
-            (feature) => Padding(
-              padding: EdgeInsets.only(bottom: 24),
-              child: _buildFeatureCard(
-                _getIconData(feature["icon"]),
-                feature["title"],
-                feature["description"],
-                hexToColor(feature["color"]),
-              ),
-            ),
-          )
-          .toList(),
-    );
-  }
-
-  Widget _buildDesktopFeatures() {
-    return Wrap(
-      spacing: 30,
-      runSpacing: 30,
-      alignment: WrapAlignment.center,
-      children: contentData["features"]["items"]
-          .map<Widget>(
-            (feature) => _buildFeatureCard(
-              _getIconData(feature["icon"]),
-              feature["title"],
-              feature["description"],
-              hexToColor(feature["color"]),
-            ),
-          )
-          .toList(),
-    );
-  }
-
-  IconData _getIconData(String iconName) {
-    switch (iconName) {
-      case 'speed':
-        return Icons.speed;
-      case 'security':
-        return Icons.security;
-      case 'support_agent':
-        return Icons.support_agent;
-      case 'trending_up':
-        return Icons.trending_up;
-      case 'attach_money':
-        return Icons.attach_money;
-      case 'insights':
-        return Icons.insights;
-      case 'web':
-        return Icons.web;
-      case 'smartphone':
-        return Icons.smartphone;
-      case 'cloud':
-        return Icons.cloud;
-      case 'location_on':
-        return Icons.location_on;
-      case 'phone':
-        return Icons.phone;
-      case 'email':
-        return Icons.email;
-      case 'access_time':
-        return Icons.access_time;
-      case 'person':
-        return Icons.person;
-      case 'message':
-        return Icons.message;
-      default:
-        return Icons.star;
-    }
-  }
-
-  Widget _buildFeatureCard(
-      IconData icon, String title, String description, Color color) {
-    return Container(
-      width: isMobile ? double.infinity : 350,
-      padding: EdgeInsets.all(isMobile ? 20 : 30),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 70,
-            height: 70,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(icon, color: color, size: 35),
-          ),
-          SizedBox(height: 20),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: isMobile ? 20 : 22,
-              fontWeight: FontWeight.bold,
-              color: hexToColor(themeData["colors"]["text_primary"]),
-            ),
-          ),
-          SizedBox(height: 12),
-          Text(
-            description,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: isMobile ? 14 : 16,
-              color: hexToColor(themeData["colors"]["text_secondary"]),
-              height: 1.5,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  //
+  // Widget _buildMobileFeatures() {
+  //   return Column(
+  //     children: contentData["features"]["items"]
+  //         .map<Widget>(
+  //           (feature) => Padding(
+  //             padding: EdgeInsets.only(bottom: 24),
+  //             child: _buildFeatureCard(
+  //               getIconData(feature["icon"]),
+  //               feature["title"],
+  //               feature["description"],
+  //               hexToColor(feature["color"]),
+  //             ),
+  //           ),
+  //         )
+  //         .toList(),
+  //   );
+  // }
+  //
+  // Widget _buildDesktopFeatures() {
+  //   return Wrap(
+  //     spacing: 30,
+  //     runSpacing: 30,
+  //     alignment: WrapAlignment.center,
+  //     children: contentData["features"]["items"]
+  //         .map<Widget>(
+  //           (feature) => _buildFeatureCard(
+  //             getIconData(feature["icon"]),
+  //             feature["title"],
+  //             feature["description"],
+  //             hexToColor(feature["color"]),
+  //           ),
+  //         )
+  //         .toList(),
+  //   );
+  // }
+  //
+  // Widget _buildFeatureCard(
+  //     IconData icon, String title, String description, Color color) {
+  //   return Container(
+  //     width: isMobile ? double.infinity : 350,
+  //     padding: EdgeInsets.all(isMobile ? 20 : 30),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(16),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.black.withOpacity(0.1),
+  //           blurRadius: 20,
+  //           offset: Offset(0, 10),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Column(
+  //       children: [
+  //         Container(
+  //           width: 70,
+  //           height: 70,
+  //           decoration: BoxDecoration(
+  //             color: color.withOpacity(0.1),
+  //             borderRadius: BorderRadius.circular(16),
+  //           ),
+  //           child: Icon(icon, color: color, size: 35),
+  //         ),
+  //         SizedBox(height: 20),
+  //         Text(
+  //           title,
+  //           textAlign: TextAlign.center,
+  //           style: TextStyle(
+  //             fontSize: isMobile ? 20 : 22,
+  //             fontWeight: FontWeight.bold,
+  //             color: hexToColor(themeData["colors"]["text_primary"]),
+  //           ),
+  //         ),
+  //         SizedBox(height: 12),
+  //         Text(
+  //           description,
+  //           textAlign: TextAlign.center,
+  //           style: TextStyle(
+  //             fontSize: isMobile ? 14 : 16,
+  //             color: hexToColor(themeData["colors"]["text_secondary"]),
+  //             height: 1.5,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildServicesSection() {
     return Container(
@@ -522,7 +490,7 @@ class _LandingPageState extends State<LandingPage>
                 service["title"],
                 service["description"],
                 List<String>.from(service["technologies"]),
-                _getIconData(service["icon"]),
+                getIconData(service["icon"]),
               ),
             ),
           )
@@ -542,7 +510,7 @@ class _LandingPageState extends State<LandingPage>
                   service["title"],
                   service["description"],
                   List<String>.from(service["technologies"]),
-                  _getIconData(service["icon"]),
+                  getIconData(service["icon"]),
                 ),
               ),
             ),
@@ -1243,7 +1211,7 @@ class _LandingPageState extends State<LandingPage>
               (info) => Padding(
                 padding: EdgeInsets.only(bottom: 24),
                 child: _buildContactInfoItem(
-                  _getIconData(info["icon"]),
+                  getIconData(info["icon"]),
                   info["title"],
                   info["value"],
                 ),
@@ -1257,7 +1225,7 @@ class _LandingPageState extends State<LandingPage>
                 (social) => Padding(
                   padding: EdgeInsets.only(right: 16),
                   child: _buildSocialButton(
-                    _getIconData(social["icon"]),
+                    getIconData(social["icon"]),
                     hexToColor(social["color"]),
                   ),
                 ),
@@ -1357,7 +1325,7 @@ class _LandingPageState extends State<LandingPage>
                   padding: EdgeInsets.only(bottom: 20),
                   child: _buildTextField(
                     field["label"],
-                    _getIconData(field["icon"]),
+                    getIconData(field["icon"]),
                     maxLines: field["type"] == "textarea" ? 4 : 1,
                   ),
                 ),
@@ -1531,7 +1499,7 @@ class _LandingPageState extends State<LandingPage>
                 (social) => Padding(
                   padding: EdgeInsets.only(right: 12),
                   child: _buildFooterSocialButton(
-                    _getIconData(social["icon"]),
+                    getIconData(social["icon"]),
                     hexToColor(social["color"]),
                   ),
                 ),
@@ -1659,5 +1627,46 @@ class _LandingPageState extends State<LandingPage>
         ),
       ],
     );
+  }
+}
+
+Color hexToColor(String hex) {
+  return Color(int.parse(hex.substring(1, 7), radix: 16) + 0xFF000000);
+}
+
+IconData getIconData(String iconName) {
+  switch (iconName) {
+    case 'speed':
+      return Icons.speed;
+    case 'security':
+      return Icons.security;
+    case 'support_agent':
+      return Icons.support_agent;
+    case 'trending_up':
+      return Icons.trending_up;
+    case 'attach_money':
+      return Icons.attach_money;
+    case 'insights':
+      return Icons.insights;
+    case 'web':
+      return Icons.web;
+    case 'smartphone':
+      return Icons.smartphone;
+    case 'cloud':
+      return Icons.cloud;
+    case 'location_on':
+      return Icons.location_on;
+    case 'phone':
+      return Icons.phone;
+    case 'email':
+      return Icons.email;
+    case 'access_time':
+      return Icons.access_time;
+    case 'person':
+      return Icons.person;
+    case 'message':
+      return Icons.message;
+    default:
+      return Icons.star;
   }
 }
