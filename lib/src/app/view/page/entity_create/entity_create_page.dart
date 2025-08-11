@@ -10,6 +10,8 @@ import 'package:flx_nocode_flutter/src/app/view/page/entity_create/widget/form.d
 import 'package:gap/gap.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../../../model/entity.dart';
+
 class EntityCreatePage extends StatefulWidget {
   const EntityCreatePage._(
     this.data,
@@ -35,10 +37,26 @@ class EntityCreatePage extends StatefulWidget {
     return PageTransition(
       opaque: true,
       type: PageTransitionType.rightToLeft,
-      child: MultiBlocProvider(
-        providers: [BlocProvider(create: (_) => EntityBloc(entity))],
-        child: EntityCreatePage._(data, entity, onSuccess, embedded, filters),
+      child: EntityCreatePage.prepare(
+        data: data,
+        entity: entity,
+        onSuccess: onSuccess,
+        embedded: embedded,
+        filters: filters,
       ),
+    );
+  }
+
+  static Widget prepare({
+    required configuration.EntityCustom entity,
+    Map<String, dynamic>? data,
+    required VoidCallback onSuccess,
+    required bool embedded,
+    required Map<String, dynamic> filters,
+  }) {
+    return MultiBlocProvider(
+      providers: [BlocProvider(create: (_) => EntityBloc(entity))],
+      child: EntityCreatePage._(data, entity, onSuccess, embedded, filters),
     );
   }
 
@@ -84,23 +102,57 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
           orElse: () {},
         );
       },
-      child: Scaffold(
-        appBar: widget.embedded ? _buildAppBar(context) : null,
-        backgroundColor: widget.embedded ? theme.cardColor : Colors.transparent,
-        body: SingleFormPanel(
-          hideHeader: widget.embedded ? true : false,
-          formKey: _formKey,
-          action: _action,
-          entity: coreEntity,
-          actions: [_buildButtonSubmit()],
-          children: [
-            EntityCreateForm(
-              entity: widget.entity,
-              dataAction: _action,
-              controllers: _controllers,
+      child: widget.embedded
+          ? _buildFormEmbedded(
+              theme: theme,
+              coreEntity: coreEntity,
             )
-          ],
-        ),
+          : _buildForm(
+              theme: theme,
+              coreEntity: coreEntity,
+            ),
+    );
+  }
+
+  Widget _buildFormEmbedded({
+    required ThemeData theme,
+    required Entity coreEntity,
+  }) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          EntityCreateForm(
+            entity: widget.entity,
+            dataAction: _action,
+            controllers: _controllers,
+          ),
+          Gap(24),
+          Row(
+            children: [Expanded(child: _buildButtonSubmit())],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildForm({required ThemeData theme, required Entity coreEntity}) {
+    return Scaffold(
+      appBar: widget.embedded ? _buildAppBar(context) : null,
+      backgroundColor: widget.embedded ? theme.cardColor : Colors.transparent,
+      body: SingleFormPanel(
+        hideHeader: widget.embedded ? true : false,
+        formKey: _formKey,
+        action: _action,
+        entity: coreEntity,
+        actions: [_buildButtonSubmit()],
+        children: [
+          EntityCreateForm(
+            entity: widget.entity,
+            dataAction: _action,
+            controllers: _controllers,
+          )
+        ],
       ),
     );
   }

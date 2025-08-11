@@ -131,14 +131,12 @@ class _AuthPageState extends State<AuthPage> with TickerProviderStateMixin {
         ),
       );
 
-      // Auto focus first OTP field
       Future.delayed(Duration(milliseconds: 300), () {
         if (mounted) {
           _otpFocusNodes[0].requestFocus();
         }
       });
     } else if (isLogin && showOtpScreen) {
-      // Second step: Verify OTP
       if (otpValue.length != 6) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

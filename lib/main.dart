@@ -9,6 +9,8 @@ import 'package:flx_nocode_flutter/src/app/view/page/landing/landing_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
 
+import 'src/app/view/page/entity_create/entity_create_page.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Configuration.load();
@@ -22,10 +24,11 @@ Future<void> main() async {
   if (entityRegistration != null) {
     final entity = await EntityCustom.getEntity(entityRegistration);
     if (entity != null) {
-      signUpPage = EntityCreateForm(
+      signUpPage = EntityCreatePage.prepare(
         entity: entity,
-        dataAction: DataAction.create,
-        controllers: entity.fields.generateControllers(),
+        embedded: true,
+        filters: {},
+        onSuccess: () {},
       );
     }
   }
