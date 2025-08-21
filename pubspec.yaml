@@ -32,7 +32,10 @@ dependencies:
   hydrated_bloc: ^10.0.0
   hive: ^2.2.3
 
-  flx_authentication_flutter: ^0.1.0-dev.6
+  flx_authentication_flutter:
+    git:
+      url: https://github.com/flexurio/flx_authentication_flutter.git
+      ref: main
   # flx_authentication_flutter:
   #   path: packages/flx_authentication_flutter
 

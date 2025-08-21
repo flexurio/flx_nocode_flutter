@@ -36,7 +36,7 @@ Future<void> main() async {
   final signInPage = LoginPage.prepare(
     logoNamedUrl: configuration.logoNamedUrl,
     logoUrl: configuration.logoUrl,
-    signUpPage: signUpPage,
+    // signUpPage: signUpPage,
     // urlAuthApi: configuration.authUrl,
     withTwoFactor: false,
     onLoginSuccess: (accessToken, userPayload) async {
