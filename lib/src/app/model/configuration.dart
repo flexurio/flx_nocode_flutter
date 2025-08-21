@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flx_nocode_flutter/src/app/model/backend.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:flx_nocode_flutter/src/app/model/backend_other.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
@@ -92,7 +94,7 @@ class Configuration {
                         .map(
                           (e) => core.Menu3(
                             label: e.label,
-                            home: MenuCustom(entityId: e.entity),
+                            home: MenuCustom.fromId(entityId: e.entity),
                             permissions: [],
                             permission: e.entity + '_read',
                           ),

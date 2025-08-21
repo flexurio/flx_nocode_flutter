@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';

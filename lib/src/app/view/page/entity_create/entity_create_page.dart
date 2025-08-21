@@ -1,7 +1,6 @@
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart' as configuration;
 import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
-import 'package:flx_nocode_flutter/src/app/model/layout.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';
@@ -10,22 +9,42 @@ import 'package:flx_nocode_flutter/src/app/view/page/entity_create/widget/form.d
 import 'package:gap/gap.dart';
 import 'package:page_transition/page_transition.dart';
 
-import '../../../model/entity.dart';
-
 class EntityCreatePage extends StatefulWidget {
-  const EntityCreatePage._(
-    this.data,
-    this.entity,
-    this.onSuccess,
-    this.embedded,
-    this.filters,
-  );
+  const EntityCreatePage._({
+    super.key,
+    required this.data,
+    required this.entity,
+    required this.onSuccess,
+    required this.embedded,
+    this.filters = const {},
+  });
 
   final Map<String, dynamic>? data;
   final configuration.EntityCustom entity;
   final VoidCallback onSuccess;
   final Map<String, dynamic> filters;
   final bool embedded;
+
+  static Widget prepare({
+    Key? key,
+    required configuration.EntityCustom entity,
+    Map<String, dynamic>? data,
+    required VoidCallback onSuccess,
+    required bool embedded,
+    Map<String, dynamic> filters = const {},
+  }) {
+    return MultiBlocProvider(
+      providers: [BlocProvider(create: (context) => EntityBloc(entity))],
+      child: EntityCreatePage._(
+        data: data,
+        entity: entity,
+        onSuccess: onSuccess,
+        embedded: embedded,
+        key: key,
+        filters: filters,
+      ),
+    );
+  }
 
   static Route<bool?> route({
     required configuration.EntityCustom entity,
@@ -44,19 +63,6 @@ class EntityCreatePage extends StatefulWidget {
         embedded: embedded,
         filters: filters,
       ),
-    );
-  }
-
-  static Widget prepare({
-    required configuration.EntityCustom entity,
-    Map<String, dynamic>? data,
-    required VoidCallback onSuccess,
-    required bool embedded,
-    required Map<String, dynamic> filters,
-  }) {
-    return MultiBlocProvider(
-      providers: [BlocProvider(create: (_) => EntityBloc(entity))],
-      child: EntityCreatePage._(data, entity, onSuccess, embedded, filters),
     );
   }
 

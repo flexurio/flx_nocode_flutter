@@ -1,10 +1,9 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_ce/hive.dart';
 
-import 'entity_field.dart';
-
-class LayoutListTile {
+class LayoutListTile extends HiveObject {
   String? title;
   String? subtitle;
   String? trailing;

@@ -1,3 +1,4 @@
+import 'package:hive_ce/hive.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
@@ -8,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
-class Export {
+class Export extends HiveObject {
   final String name;
   final String backend;
   final String type;

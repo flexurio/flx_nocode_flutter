@@ -1,5 +1,4 @@
 import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
-import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/user.dart';
 import 'package:hive/hive.dart';
 
