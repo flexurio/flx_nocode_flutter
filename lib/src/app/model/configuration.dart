@@ -41,7 +41,7 @@ class Configuration {
 
   factory Configuration.fromJson(Map<String, dynamic> json) {
     return Configuration._(
-      authUrl: json['auth_url'],
+      authUrl: json['auth_url'] ?? '',
       backendHost: json['backend_host'],
       appName: json['app_name'],
       company: Company.fromJson(json['company']),
