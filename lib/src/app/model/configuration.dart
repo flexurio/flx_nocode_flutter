@@ -31,6 +31,20 @@ class Configuration {
     required this.entityRegistration,
   });
 
+  factory Configuration.empty() {
+    return Configuration._(
+      menuGroups: [],
+      company: Company.empty(),
+      theme: Theme(),
+      appName: 'Dummy',
+      backendHost: 'https://dummy.com',
+      logoUrl: 'https://dummy.com/logo.png',
+      logoNamedUrl: 'https://dummy.com/logo_named.png',
+      authUrl: 'https://dummy.com/auth',
+      entityRegistration: null,
+    );
+  }
+
   static late Configuration instance;
 
   static load() async {
@@ -114,8 +128,8 @@ class Theme {
   final String colorSoft;
 
   Theme({
-    required this.color,
-    required this.colorSoft,
+    this.color = '#F0F0F0',
+    this.colorSoft = '#F0F0F0',
   });
 
   factory Theme.fromJson(Map<String, dynamic> json) {
@@ -147,6 +161,16 @@ class Company {
     required this.website,
     required this.address,
   });
+
+  factory Company.empty() {
+    return Company(
+      id: 'dummy_id',
+      name: 'Dummy Company',
+      phone: '+6281234567890',
+      website: 'https://dummy.com',
+      address: 'Jalan Dummy No. 123, Kota Dummy',
+    );
+  }
 
   factory Company.fromJson(Map<String, dynamic> json) {
     return Company(
