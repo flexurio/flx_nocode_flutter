@@ -1,5 +1,7 @@
+import 'package:hive/hive.dart';
+
 /// A class that represents a theme with a primary color and a soft color.
-class ThemeC {
+class ThemeC extends HiveObject {
   /// The primary color of the theme, represented as a hexadecimal string (e.g., '#F0F0F0').
   final String color;
 

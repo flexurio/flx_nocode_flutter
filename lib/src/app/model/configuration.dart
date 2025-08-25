@@ -4,9 +4,10 @@ import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
 import 'theme.dart' as t;
 
-class Configuration {
+class Configuration extends HiveObject {
   final List<MenuGroup> menuGroups;
   final Company company;
   final t.ThemeC theme;
@@ -17,7 +18,7 @@ class Configuration {
   final String authUrl;
   final String? entityRegistration;
 
-  Configuration._({
+  Configuration({
     required this.menuGroups,
     required this.company,
     required this.theme,
@@ -30,7 +31,7 @@ class Configuration {
   });
 
   factory Configuration.empty() {
-    return Configuration._(
+    return Configuration(
       menuGroups: [],
       company: Company.empty(),
       theme: t.ThemeC(),
@@ -54,7 +55,7 @@ class Configuration {
     String? authUrl,
     String? entityRegistration,
   }) {
-    return Configuration._(
+    return Configuration(
       menuGroups: menuGroups ?? this.menuGroups,
       company: company ?? this.company,
       theme: theme ?? this.theme,
@@ -76,7 +77,7 @@ class Configuration {
   }
 
   factory Configuration.fromJson(Map<String, dynamic> json) {
-    return Configuration._(
+    return Configuration(
       authUrl: json['auth_url'] ?? '',
       backendHost: json['backend_host'],
       appName: json['app_name'],
@@ -102,19 +103,6 @@ class Configuration {
       'logo_named_url': logoNamedUrl,
     };
   }
-
-  core.FlavorConfig get flavorConfig => core.FlavorConfig(
-        companyId: company.id,
-        companyName: company.name,
-        companyPhone: company.phone,
-        companyWebsite: company.website,
-        companyAddress: company.address,
-        apiUrl: '',
-        color: core.colorFromHex(theme.color),
-        colorSoft: core.colorFromHex(theme.colorSoft),
-        backgroundLoginPage: 'asset/image/background-3.jpg',
-        applicationConfig: null,
-      );
 
   List<core.Menu1> menu() {
     return menuGroups
@@ -145,7 +133,22 @@ class Configuration {
   }
 }
 
-class Company {
+extension ConfigurationExtension on Configuration {
+  core.FlavorConfig get flavorConfig => core.FlavorConfig(
+        companyId: company.id,
+        companyName: company.name,
+        companyPhone: company.phone,
+        companyWebsite: company.website,
+        companyAddress: company.address,
+        apiUrl: '',
+        color: core.colorFromHex(theme.color),
+        colorSoft: core.colorFromHex(theme.colorSoft),
+        backgroundLoginPage: 'asset/image/background-3.jpg',
+        applicationConfig: null,
+      );
+}
+
+class Company extends HiveObject {
   final String id;
   final String name;
   final String phone;
@@ -207,7 +210,7 @@ class Company {
   }
 }
 
-class MenuGroup {
+class MenuGroup extends HiveObject {
   final String label;
   final List<Menu> menu;
 
@@ -229,7 +232,7 @@ class MenuGroup {
   }
 }
 
-class Menu {
+class Menu extends HiveObject {
   final String label;
   final String icon;
   final List<MenuSub> menuSub;
@@ -259,7 +262,7 @@ class Menu {
   }
 }
 
-class MenuSub {
+class MenuSub extends HiveObject {
   final String label;
   final String entity;
 
