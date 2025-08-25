@@ -1,17 +1,15 @@
 import 'dart:convert';
 
-import 'package:flx_nocode_flutter/src/app/model/backend.dart';
-import 'package:hive_ce/hive.dart';
-import 'package:flx_nocode_flutter/src/app/model/backend_other.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'theme.dart' as t;
 
 class Configuration {
   final List<MenuGroup> menuGroups;
   final Company company;
-  final Theme theme;
+  final t.ThemeC theme;
   final String appName;
   final String backendHost;
   final String logoUrl;
@@ -35,13 +33,37 @@ class Configuration {
     return Configuration._(
       menuGroups: [],
       company: Company.empty(),
-      theme: Theme(),
+      theme: t.ThemeC(),
       appName: 'Dummy',
       backendHost: 'https://dummy.com',
       logoUrl: 'https://dummy.com/logo.png',
       logoNamedUrl: 'https://dummy.com/logo_named.png',
       authUrl: 'https://dummy.com/auth',
       entityRegistration: null,
+    );
+  }
+
+  Configuration copyWith({
+    List<MenuGroup>? menuGroups,
+    Company? company,
+    t.ThemeC? theme,
+    String? appName,
+    String? backendHost,
+    String? logoUrl,
+    String? logoNamedUrl,
+    String? authUrl,
+    String? entityRegistration,
+  }) {
+    return Configuration._(
+      menuGroups: menuGroups ?? this.menuGroups,
+      company: company ?? this.company,
+      theme: theme ?? this.theme,
+      appName: appName ?? this.appName,
+      backendHost: backendHost ?? this.backendHost,
+      logoUrl: logoUrl ?? this.logoUrl,
+      logoNamedUrl: logoNamedUrl ?? this.logoNamedUrl,
+      authUrl: authUrl ?? this.authUrl,
+      entityRegistration: entityRegistration ?? this.entityRegistration,
     );
   }
 
@@ -59,7 +81,7 @@ class Configuration {
       backendHost: json['backend_host'],
       appName: json['app_name'],
       company: Company.fromJson(json['company']),
-      theme: Theme.fromJson(json['theme']),
+      theme: t.ThemeC.fromJson(json['theme']),
       logoUrl: json['logo_url'],
       logoNamedUrl: json['logo_named_url'],
       entityRegistration: json['entity_registration'],
@@ -123,30 +145,6 @@ class Configuration {
   }
 }
 
-class Theme {
-  final String color;
-  final String colorSoft;
-
-  Theme({
-    this.color = '#F0F0F0',
-    this.colorSoft = '#F0F0F0',
-  });
-
-  factory Theme.fromJson(Map<String, dynamic> json) {
-    return Theme(
-      color: json['color'],
-      colorSoft: json['color_soft'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'color': color,
-      'color_soft': colorSoft,
-    };
-  }
-}
-
 class Company {
   final String id;
   final String name;
@@ -161,6 +159,22 @@ class Company {
     required this.website,
     required this.address,
   });
+
+  Company copyWith({
+    String? id,
+    String? name,
+    String? phone,
+    String? website,
+    String? address,
+  }) {
+    return Company(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      website: website ?? this.website,
+      address: address ?? this.address,
+    );
+  }
 
   factory Company.empty() {
     return Company(
