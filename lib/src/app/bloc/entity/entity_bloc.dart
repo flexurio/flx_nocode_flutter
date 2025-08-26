@@ -49,7 +49,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               method: event.method,
             );
             emit(_Success(response));
-          } catch (error, stack) {
+          } catch (error) {
             print('[EntityBloc] Create - error $error');
             emit(_Error(errorMessage(error)));
           }

@@ -18,7 +18,7 @@ class EntityCustom extends HiveObject {
   final Backend backend;
   final Map<String, dynamic> layoutForm;
   final LayoutListTile? layoutListTile;
-  final Map<String, double>? layoutTable;
+  Map<String, double> layoutTable;
   var _position = CanvasPosition.zero();
 
   EntityCustom({
@@ -69,6 +69,10 @@ class EntityCustom extends HiveObject {
     _position = CanvasPosition(x: x, y: y);
   }
 
+  void layoutTableReorder(oldIndex, newIndex) {
+    layoutTable = reorderMap(layoutTable, oldIndex, newIndex);
+  }
+
   factory EntityCustom.fromJson(Map<String, dynamic> json) {
     try {
       return EntityCustom(
@@ -93,10 +97,7 @@ class EntityCustom extends HiveObject {
         layoutListTile: json.containsKey('layout_list_tile')
             ? LayoutListTile.fromJson(json['layout_list_tile'])
             : null,
-        layoutTable: json.containsKey('layout_table')
-            ? (json['layout_table'] as Map<String, dynamic>)
-                .map((key, value) => MapEntry(key, value.toDouble()))
-            : null,
+        layoutTable: json['layout_table'],
       );
     } catch (e) {
       print('[EntityCustom] fromJson: $e');
@@ -197,4 +198,18 @@ class CanvasPosition extends HiveObject {
   factory CanvasPosition.zero() => CanvasPosition(x: 0, y: 0);
 
   Map<String, dynamic> toJson() => {'x': x, 'y': y};
+}
+
+Map<K, V> reorderMap<K, V>(
+  Map<K, V> map,
+  int oldIndex,
+  int newIndex,
+) {
+  final entries = map.entries.toList();
+  final entry = entries.removeAt(oldIndex);
+  if (newIndex > oldIndex) {
+    newIndex -= 1;
+  }
+  entries.insert(newIndex, entry);
+  return Map<K, V>.fromEntries(entries);
 }

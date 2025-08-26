@@ -143,12 +143,12 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     required Status status,
     required PageOptions<Map<String, dynamic>> pageOptions,
   }) {
-    if (widget.entity.layoutTable == null) {
-      return NoCodeError('layout_table is null');
+    final fields = widget.entity.layoutTable.keys.toList();
+    final fieldsValue = widget.entity.layoutTable.values.toList();
+    if (fields.isEmpty) {
+      return NoCodeError('layout_table is empty');
     }
 
-    final fields = widget.entity.layoutTable!.keys.toList();
-    final fieldsValue = widget.entity.layoutTable!.values.toList();
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: DataTableBackend<Map<String, dynamic>>(
