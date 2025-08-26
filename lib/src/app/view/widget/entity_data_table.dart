@@ -174,9 +174,9 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 );
               }
 
-              final width = fieldsValue[index] as double?;
+              final width = fieldsValue[index] as int?;
               return DTColumn(
-                widthFlex: width ?? 1,
+                widthFlex: (width ?? 1).toDouble(),
                 head: DTHead(
                   backendKeySort: field.reference,
                   label: field.label,

@@ -18,7 +18,7 @@ class EntityCustom extends HiveObject {
   final Backend backend;
   final Map<String, dynamic> layoutForm;
   final LayoutListTile? layoutListTile;
-  Map<String, double> layoutTable;
+  Map<String, int> layoutTable;
   var _position = CanvasPosition.zero();
 
   EntityCustom({
@@ -111,6 +111,7 @@ class EntityCustom extends HiveObject {
     List<EntityField>? fields,
     CanvasPosition? position,
     String? id,
+    Map<String, int>? layoutTable,
   }) {
     return EntityCustom(
       id: id ?? this.id,
@@ -118,11 +119,12 @@ class EntityCustom extends HiveObject {
       description: description ?? this.description,
       fields: fields ?? this.fields,
       position: position ?? _position,
-      // --
       views: [],
       backend: Backend(others: []),
       layoutListTile: null,
-      exports: [], layoutForm: {}, layoutTable: {},
+      layoutTable: layoutTable ?? this.layoutTable,
+      exports: [],
+      layoutForm: {},
     );
   }
 
