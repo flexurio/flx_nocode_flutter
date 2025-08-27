@@ -130,20 +130,25 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     required ThemeData theme,
     required Entity coreEntity,
   }) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          EntityCreateForm(
-            entity: widget.entity,
-            dataAction: _action,
-            controllers: _controllers,
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              EntityCreateForm(
+                entity: widget.entity,
+                dataAction: _action,
+                controllers: _controllers,
+              ),
+              Gap(24),
+              Row(
+                children: [Expanded(child: _buildButtonSubmit())],
+              ),
+            ],
           ),
-          Gap(24),
-          Row(
-            children: [Expanded(child: _buildButtonSubmit())],
-          ),
-        ],
+        ),
       ),
     );
   }
