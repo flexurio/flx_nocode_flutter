@@ -57,7 +57,7 @@ class OptionsSource {
     if (entity != null) {
       final data = await EntityCustomRepository.instance.fetch(
         accessToken: UserRepositoryApp.instance.token ?? '',
-        pageOptions: PageOptions.empty(),
+        pageOptions: PageOptions.emptyNoLimit(),
         method: entity.backend.readAll!.method,
         path: entity.backend.readAll!.urlWithValues,
         filterMap: {},
