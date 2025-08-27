@@ -131,22 +131,24 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     required Entity coreEntity,
   }) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              EntityCreateForm(
-                entity: widget.entity,
-                dataAction: _action,
-                controllers: _controllers,
-              ),
-              Gap(24),
-              Row(
-                children: [Expanded(child: _buildButtonSubmit())],
-              ),
-            ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                EntityCreateForm(
+                  entity: widget.entity,
+                  dataAction: _action,
+                  controllers: _controllers,
+                ),
+                Gap(24),
+                Row(
+                  children: [Expanded(child: _buildButtonSubmit())],
+                ),
+              ],
+            ),
           ),
         ),
       ),
