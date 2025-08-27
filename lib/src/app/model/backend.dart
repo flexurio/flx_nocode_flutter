@@ -1,11 +1,13 @@
+import 'package:hive/hive.dart';
+
 import 'backend_other.dart';
 
-class Backend {
+class Backend extends HiveObject {
   final BackendEndpoint? readAll;
   final BackendEndpoint? read;
   final BackendEndpoint? create;
   final BackendEndpoint? update;
-  final BackendEndpoint? delete;
+  final BackendEndpoint? deleteX;
   final List<BackendOther> others;
 
   Backend({
@@ -13,7 +15,7 @@ class Backend {
     this.read,
     this.create,
     this.update,
-    this.delete,
+    this.deleteX,
     required this.others,
   });
 
@@ -35,7 +37,7 @@ class Backend {
         update: json['update'] != null
             ? BackendEndpoint.fromJson(json['update'])
             : null,
-        delete: json['delete'] != null
+        deleteX: json['delete'] != null
             ? BackendEndpoint.fromJson(json['delete'])
             : null,
       );
@@ -51,12 +53,12 @@ class Backend {
       'read': read?.toJson(),
       'create': create?.toJson(),
       'update': update?.toJson(),
-      'delete': delete?.toJson(),
+      'delete': deleteX?.toJson(),
     };
   }
 }
 
-class BackendEndpoint {
+class BackendEndpoint extends HiveObject {
   final String method;
   final String url;
   final Map<String, dynamic>? data;

@@ -1,28 +1,25 @@
 import 'dart:convert';
 
+import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
-import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
-import 'package:flx_nocode_flutter/src/app/model/export.dart';
-import 'package:flx_nocode_flutter/src/app/model/layout_list_tile.dart';
 import 'package:flx_nocode_flutter/src/app/model/view.dart' as view;
 import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'backend.dart';
-
-class EntityCustom {
+class EntityCustom extends HiveObject {
   final String id;
   final String label;
   final String description;
   final List<EntityField> fields;
-  final List<view.View> views;
+  final List<view.DView> views;
   final List<Export> exports;
   final Backend backend;
   final Map<String, dynamic> layoutForm;
   final LayoutListTile? layoutListTile;
-  final Map<String, double>? layoutTable;
+  Map<String, int> layoutTable;
+  var _position = CanvasPosition.zero();
 
   EntityCustom({
     required this.id,
@@ -35,7 +32,16 @@ class EntityCustom {
     required this.layoutListTile,
     required this.layoutTable,
     required this.exports,
-  });
+    CanvasPosition? position,
+  }) : _position = position ?? CanvasPosition.zero();
+
+  Map<String, dynamic> dummy() {
+    final data = <String, dynamic>{};
+    for (var field in fields) {
+      data[field.reference] = field.dummyValue();
+    }
+    return data;
+  }
 
   static Future<EntityCustom?> getEntity(String id) async {
     try {
@@ -57,6 +63,16 @@ class EntityCustom {
     return field.first;
   }
 
+  CanvasPosition get position => _position;
+
+  void setPosition(double x, double y) {
+    _position = CanvasPosition(x: x, y: y);
+  }
+
+  void layoutTableReorder(oldIndex, newIndex) {
+    layoutTable = reorderMap(layoutTable, oldIndex, newIndex);
+  }
+
   factory EntityCustom.fromJson(Map<String, dynamic> json) {
     try {
       return EntityCustom(
@@ -68,7 +84,7 @@ class EntityCustom {
             .toList(),
         views: json.containsKey('views')
             ? (json['views'] as List<dynamic>)
-                .map((e) => view.View.fromJson(e))
+                .map((e) => view.DView.fromJson(e))
                 .toList()
             : [],
         layoutForm: json.containsKey('layout_form') ? json['layout_form'] : {},
@@ -81,15 +97,35 @@ class EntityCustom {
         layoutListTile: json.containsKey('layout_list_tile')
             ? LayoutListTile.fromJson(json['layout_list_tile'])
             : null,
-        layoutTable: json.containsKey('layout_table')
-            ? (json['layout_table'] as Map<String, dynamic>)
-                .map((key, value) => MapEntry(key, value.toDouble()))
-            : null,
+        layoutTable: json['layout_table'],
       );
     } catch (e) {
       print('[EntityCustom] fromJson: $e');
       rethrow;
     }
+  }
+
+  EntityCustom copyWith({
+    String? label,
+    String? description,
+    List<EntityField>? fields,
+    CanvasPosition? position,
+    String? id,
+    Map<String, int>? layoutTable,
+  }) {
+    return EntityCustom(
+      id: id ?? this.id,
+      label: label ?? this.label,
+      description: description ?? this.description,
+      fields: fields ?? this.fields,
+      position: position ?? _position,
+      views: [],
+      backend: Backend(others: []),
+      layoutListTile: null,
+      layoutTable: layoutTable ?? this.layoutTable,
+      exports: [],
+      layoutForm: {},
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -110,7 +146,7 @@ class EntityCustom {
 
   bool get allowCreate => backend.create != null;
   bool get allowUpdate => backend.update != null;
-  bool get allowDelete => backend.delete != null;
+  bool get allowDelete => backend.deleteX != null;
 
   List<ActionButtonItem> buttonViews(
     BuildContext context,
@@ -134,4 +170,48 @@ class EntityCustom {
       BuildContext context, Map<String, dynamic> data) {
     return views.map((e) => e.buttonLarge(context, data)).toList();
   }
+}
+
+extension EntitiesExtenstion on List<EntityCustom> {
+  EntityCustom? findById(String id) {
+    for (var entity in this) {
+      if (entity.id == id) return entity;
+    }
+    return null;
+  }
+
+  int findIndexField(String entityId, String reference) {
+    final entity = findById(entityId);
+    if (entity != null) {
+      return entity.fields.findIndex(reference);
+    }
+    return -1;
+  }
+}
+
+class CanvasPosition extends HiveObject {
+  final double x;
+  final double y;
+
+  CanvasPosition({required this.x, required this.y});
+
+  Offset toOffset() => Offset(x, y);
+
+  factory CanvasPosition.zero() => CanvasPosition(x: 0, y: 0);
+
+  Map<String, dynamic> toJson() => {'x': x, 'y': y};
+}
+
+Map<K, V> reorderMap<K, V>(
+  Map<K, V> map,
+  int oldIndex,
+  int newIndex,
+) {
+  final entries = map.entries.toList();
+  final entry = entries.removeAt(oldIndex);
+  if (newIndex > oldIndex) {
+    newIndex -= 1;
+  }
+  entries.insert(newIndex, entry);
+  return Map<K, V>.fromEntries(entries);
 }

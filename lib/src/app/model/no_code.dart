@@ -30,34 +30,16 @@ class NoCode {
     required Map<String, dynamic> pageData,
   }) async {
     NoCode.pageData = pageData;
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EasyLocalization(
-          supportedLocales: const [Locale('en'), Locale('id')],
-          path: 'asset/translation',
-          fallbackLocale: const Locale('en'),
-          child: Builder(builder: (context) {
-            return MaterialApp(
-              localizationsDelegates: context.localizationDelegates,
-              supportedLocales: context.supportedLocales,
-              locale: context.locale,
-              theme: MyTheme.getTheme(
-                Configuration.instance.flavorConfig.color,
-                ThemeMode.light,
-              ),
-              home: Scaffold(
-                body: MenuCustom(
-                  entityId: entityId,
-                  embedded: true,
-                  firstPage: true,
-                ),
-              ),
-            );
-          }),
-        ),
+    final primaryColor = Configuration.instance.flavorConfig.color;
+    final app = NoCode.app(
+      child: MenuCustom.fromId(
+        entityId: entityId,
+        embedded: true,
+        firstPage: true,
       ),
+      primaryColor: primaryColor,
     );
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => app));
   }
 
   static navigatePushCreate({
@@ -73,5 +55,29 @@ class NoCode {
     //   data: data,
     //   onSuccess: () => onRefresh(context),
     // );
+  }
+
+  static Widget app({
+    required Widget child,
+    required Color primaryColor,
+    String prefixPathTranslation = '',
+  }) {
+    return EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('id')],
+      path: '${prefixPathTranslation}asset/translation',
+      fallbackLocale: const Locale('en'),
+      child: Builder(builder: (context) {
+        return MaterialApp(
+          localizationsDelegates: context.localizationDelegates,
+          supportedLocales: context.supportedLocales,
+          locale: context.locale,
+          theme: MyTheme.getTheme(
+            primaryColor,
+            ThemeMode.light,
+          ),
+          home: Scaffold(body: child),
+        );
+      }),
+    );
   }
 }

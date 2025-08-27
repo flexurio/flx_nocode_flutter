@@ -9,7 +9,7 @@ import 'error.dart';
 class MenuCustom extends StatelessWidget {
   const MenuCustom({
     super.key,
-    required this.entityId,
+    required this.entity,
     this.firstPage = false,
     this.embedded = false,
     this.initialFilters = const [],
@@ -17,11 +17,15 @@ class MenuCustom extends StatelessWidget {
 
   final bool firstPage;
   final bool embedded;
-  final String entityId;
+  final EntityCustom entity;
   final List<Filter> initialFilters;
 
-  @override
-  Widget build(BuildContext context) {
+  static Widget fromId({
+    required String entityId,
+    bool firstPage = false,
+    bool embedded = false,
+    List<Filter> initialFilters = const [],
+  }) {
     return FutureBuilder<EntityCustom?>(
       future: EntityCustom.getEntity(entityId),
       builder: (context, snapshot) {
@@ -35,7 +39,12 @@ class MenuCustom extends StatelessWidget {
               child: NoCodeError('Entity not found! Id: $entityId'),
             );
           }
-          return _home(context, entity);
+          return MenuCustom(
+            entity: entity,
+            embedded: embedded,
+            firstPage: firstPage,
+            initialFilters: initialFilters,
+          );
         } else {
           return const Center(child: CircularProgressIndicator());
         }
@@ -43,30 +52,29 @@ class MenuCustom extends StatelessWidget {
     );
   }
 
-  Widget _home(BuildContext context, EntityCustom entity) {
-    return Builder(builder: (context) {
-      return Scaffold(
-        appBar: embedded ? _buildAppBar(context, entity) : null,
-        body: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
-          children: [
-            if (!embedded)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: TitlePage(entity: entity.coreEntity, x: true),
-              ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: MenuDataTableCustom.prepare(
-                entity: entity,
-                initialFilters: initialFilters,
-                embedded: embedded,
-              ),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: embedded ? _buildAppBar(context, entity) : null,
+      body: ListView(
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
+        children: [
+          if (!embedded)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: TitlePage(entity: entity.coreEntity, x: true),
             ),
-          ],
-        ),
-      );
-    });
+          SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: MenuDataTableCustom.prepare(
+              entity: entity,
+              initialFilters: initialFilters,
+              embedded: embedded,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   AppBar _buildAppBar(BuildContext context, EntityCustom entity) {

@@ -14,13 +14,32 @@ class EntityViewPage extends StatelessWidget {
   const EntityViewPage._({
     required this.entity,
     required this.data,
-    required this.filters,
     required this.embedded,
+    required this.dummy,
+    this.filters = const {},
   });
   final EntityCustom entity;
   final Map<String, dynamic> data;
   final Map<String, dynamic> filters;
+  final bool dummy;
   final bool embedded;
+
+  static prepare({
+    required EntityCustom entity,
+    required Map<String, dynamic> data,
+    required bool embedded,
+    required bool dummy,
+  }) {
+    return MultiBlocProvider(
+      providers: [BlocProvider(create: (_) => EntityCustomQueryBloc())],
+      child: EntityViewPage._(
+        entity: entity,
+        data: data,
+        embedded: embedded,
+        dummy: dummy,
+      ),
+    );
+  }
 
   static Route<void> route({
     required EntityCustom entity,
@@ -32,7 +51,12 @@ class EntityViewPage extends StatelessWidget {
       builder: (_) => MultiBlocProvider(
         providers: [BlocProvider(create: (_) => EntityCustomQueryBloc())],
         child: EntityViewPage._(
-            entity: entity, data: data, filters: filters, embedded: embedded),
+          entity: entity,
+          data: data,
+          filters: filters,
+          embedded: embedded,
+          dummy: false,
+        ),
       ),
     );
   }
@@ -203,6 +227,7 @@ class EntityViewPage extends StatelessWidget {
   }
 
   void _fetch(BuildContext context) {
+    if (entity.backend.readAll == null) return;
     context.read<EntityCustomQueryBloc>().add(
           EntityCustomQueryEvent.fetchById(
             id: data['id'].toString(),

@@ -53,6 +53,18 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     _fetch();
   }
 
+  void _fetch([PageOptions<Map<String, dynamic>>? pageOptions]) {
+    if (widget.entity.backend.readAll == null) return;
+    context.read<EntityCustomQueryBloc>().add(
+          EntityCustomQueryEvent.fetch(
+            pageOptions: pageOptions,
+            filters: _filters,
+            method: widget.entity.backend.readAll!.method,
+            url: widget.entity.backend.readAll!.url,
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
@@ -89,18 +101,6 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
         );
       },
     );
-  }
-
-  void _fetch([PageOptions<Map<String, dynamic>>? pageOptions]) {
-    print('[MenuDataTableCustom] _fetch');
-    context.read<EntityCustomQueryBloc>().add(
-          EntityCustomQueryEvent.fetch(
-            pageOptions: pageOptions,
-            filters: _filters,
-            method: widget.entity.backend.readAll!.method,
-            url: widget.entity.backend.readAll!.url,
-          ),
-        );
   }
 
   Widget _buildListView({
@@ -143,12 +143,12 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     required Status status,
     required PageOptions<Map<String, dynamic>> pageOptions,
   }) {
-    if (widget.entity.layoutTable == null) {
-      return NoCodeError('layout_table is null');
+    final fields = widget.entity.layoutTable.keys.toList();
+    final fieldsValue = widget.entity.layoutTable.values.toList();
+    if (fields.isEmpty) {
+      return NoCodeError('layout_table is empty');
     }
 
-    final fields = widget.entity.layoutTable!.keys.toList();
-    final fieldsValue = widget.entity.layoutTable!.values.toList();
     return SizedBox(
       width: MediaQuery.of(context).size.width,
       child: DataTableBackend<Map<String, dynamic>>(
@@ -174,9 +174,9 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 );
               }
 
-              final width = fieldsValue[index] as double?;
+              final width = fieldsValue[index] as int?;
               return DTColumn(
-                widthFlex: width ?? 1,
+                widthFlex: (width ?? 1).toDouble(),
                 head: DTHead(
                   backendKeySort: field.reference,
                   label: field.label,

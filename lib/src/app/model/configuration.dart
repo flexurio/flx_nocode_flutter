@@ -1,15 +1,16 @@
 import 'dart:convert';
 
-import 'package:flx_nocode_flutter/src/app/model/backend_other.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
+import 'theme.dart' as t;
 
-class Configuration {
+class Configuration extends HiveObject {
   final List<MenuGroup> menuGroups;
   final Company company;
-  final Theme theme;
+  final t.ThemeC theme;
   final String appName;
   final String backendHost;
   final String logoUrl;
@@ -17,7 +18,7 @@ class Configuration {
   final String authUrl;
   final String? entityRegistration;
 
-  Configuration._({
+  Configuration({
     required this.menuGroups,
     required this.company,
     required this.theme,
@@ -29,6 +30,44 @@ class Configuration {
     required this.entityRegistration,
   });
 
+  factory Configuration.empty() {
+    return Configuration(
+      menuGroups: [],
+      company: Company.empty(),
+      theme: t.ThemeC(),
+      appName: 'Dummy',
+      backendHost: 'https://dummy.com',
+      logoUrl: 'https://dummy.com/logo.png',
+      logoNamedUrl: 'https://dummy.com/logo_named.png',
+      authUrl: 'https://dummy.com/auth',
+      entityRegistration: null,
+    );
+  }
+
+  Configuration copyWith({
+    List<MenuGroup>? menuGroups,
+    Company? company,
+    t.ThemeC? theme,
+    String? appName,
+    String? backendHost,
+    String? logoUrl,
+    String? logoNamedUrl,
+    String? authUrl,
+    String? entityRegistration,
+  }) {
+    return Configuration(
+      menuGroups: menuGroups ?? this.menuGroups,
+      company: company ?? this.company,
+      theme: theme ?? this.theme,
+      appName: appName ?? this.appName,
+      backendHost: backendHost ?? this.backendHost,
+      logoUrl: logoUrl ?? this.logoUrl,
+      logoNamedUrl: logoNamedUrl ?? this.logoNamedUrl,
+      authUrl: authUrl ?? this.authUrl,
+      entityRegistration: entityRegistration ?? this.entityRegistration,
+    );
+  }
+
   static late Configuration instance;
 
   static load() async {
@@ -38,12 +77,12 @@ class Configuration {
   }
 
   factory Configuration.fromJson(Map<String, dynamic> json) {
-    return Configuration._(
-      authUrl: json['auth_url'],
+    return Configuration(
+      authUrl: json['auth_url'] ?? '',
       backendHost: json['backend_host'],
       appName: json['app_name'],
       company: Company.fromJson(json['company']),
-      theme: Theme.fromJson(json['theme']),
+      theme: t.ThemeC.fromJson(json['theme']),
       logoUrl: json['logo_url'],
       logoNamedUrl: json['logo_named_url'],
       entityRegistration: json['entity_registration'],
@@ -65,19 +104,6 @@ class Configuration {
     };
   }
 
-  core.FlavorConfig get flavorConfig => core.FlavorConfig(
-        companyId: company.id,
-        companyName: company.name,
-        companyPhone: company.phone,
-        companyWebsite: company.website,
-        companyAddress: company.address,
-        apiUrl: '',
-        color: core.colorFromHex(theme.color),
-        colorSoft: core.colorFromHex(theme.colorSoft),
-        backgroundLoginPage: 'asset/image/background-3.jpg',
-        applicationConfig: null,
-      );
-
   List<core.Menu1> menu() {
     return menuGroups
         .map(
@@ -92,7 +118,7 @@ class Configuration {
                         .map(
                           (e) => core.Menu3(
                             label: e.label,
-                            home: MenuCustom(entityId: e.entity),
+                            home: MenuCustom.fromId(entityId: e.entity),
                             permissions: [],
                             permission: e.entity + '_read',
                           ),
@@ -107,31 +133,22 @@ class Configuration {
   }
 }
 
-class Theme {
-  final String color;
-  final String colorSoft;
-
-  Theme({
-    required this.color,
-    required this.colorSoft,
-  });
-
-  factory Theme.fromJson(Map<String, dynamic> json) {
-    return Theme(
-      color: json['color'],
-      colorSoft: json['color_soft'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'color': color,
-      'color_soft': colorSoft,
-    };
-  }
+extension ConfigurationExtension on Configuration {
+  core.FlavorConfig get flavorConfig => core.FlavorConfig(
+        companyId: company.id,
+        companyName: company.name,
+        companyPhone: company.phone,
+        companyWebsite: company.website,
+        companyAddress: company.address,
+        apiUrl: '',
+        color: core.colorFromHex(theme.color),
+        colorSoft: core.colorFromHex(theme.colorSoft),
+        backgroundLoginPage: 'asset/image/background-3.jpg',
+        applicationConfig: null,
+      );
 }
 
-class Company {
+class Company extends HiveObject {
   final String id;
   final String name;
   final String phone;
@@ -145,6 +162,32 @@ class Company {
     required this.website,
     required this.address,
   });
+
+  Company copyWith({
+    String? id,
+    String? name,
+    String? phone,
+    String? website,
+    String? address,
+  }) {
+    return Company(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      website: website ?? this.website,
+      address: address ?? this.address,
+    );
+  }
+
+  factory Company.empty() {
+    return Company(
+      id: 'dummy_id',
+      name: 'Dummy Company',
+      phone: '+6281234567890',
+      website: 'https://dummy.com',
+      address: 'Jalan Dummy No. 123, Kota Dummy',
+    );
+  }
 
   factory Company.fromJson(Map<String, dynamic> json) {
     return Company(
@@ -167,7 +210,7 @@ class Company {
   }
 }
 
-class MenuGroup {
+class MenuGroup extends HiveObject {
   final String label;
   final List<Menu> menu;
 
@@ -189,7 +232,7 @@ class MenuGroup {
   }
 }
 
-class Menu {
+class Menu extends HiveObject {
   final String label;
   final String icon;
   final List<MenuSub> menuSub;
@@ -219,7 +262,7 @@ class Menu {
   }
 }
 
-class MenuSub {
+class MenuSub extends HiveObject {
   final String label;
   final String entity;
 

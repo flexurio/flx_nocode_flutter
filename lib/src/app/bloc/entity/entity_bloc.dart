@@ -49,7 +49,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               method: event.method,
             );
             emit(_Success(response));
-          } catch (error, stack) {
+          } catch (error) {
             print('[EntityBloc] Create - error $error');
             emit(_Error(errorMessage(error)));
           }
@@ -71,7 +71,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
                 ..addAll(entity.backend.create!.body(filters: filters)),
             );
             emit(_Success(response));
-          } catch (error, stack) {
+          } catch (error) {
             print('[EntityBloc] Create - error $error');
             emit(_Error(errorMessage(error)));
           }
@@ -96,7 +96,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
                 ..addAll(entity.backend.update!.body(filters: filters)),
             );
             emit(_Success(response));
-          } catch (error, stack) {
+          } catch (error) {
             print('[EntityBloc] Edit - error $error');
             emit(_Error(errorMessage(error)));
           }
@@ -106,11 +106,11 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
           try {
             await EntityCustomRepository.instance.modify(
               accessToken: UserRepositoryApp.instance.token,
-              path: entity.backend.delete!.url.replaceFirst(
+              path: entity.backend.deleteX!.url.replaceFirst(
                 '{id}',
                 Uri.encodeComponent(id),
               ),
-              method: entity.backend.delete!.method,
+              method: entity.backend.deleteX!.method,
             );
             emit(const _Success(null));
           } catch (error) {
