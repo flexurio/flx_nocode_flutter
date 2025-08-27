@@ -97,7 +97,8 @@ class EntityCustom extends HiveObject {
         layoutListTile: json.containsKey('layout_list_tile')
             ? LayoutListTile.fromJson(json['layout_list_tile'])
             : null,
-        layoutTable: json['layout_table'],
+        layoutTable: (json['layout_table'] as Map<String, dynamic>)
+            .map((key, value) => MapEntry(key, value as int)),
       );
     } catch (e) {
       print('[EntityCustom] fromJson: $e');
