@@ -1,0 +1,107 @@
+typedef JsonMap = Map<String, dynamic>;
+
+class LayoutForm {
+  final String name;
+  final List<GroupLayout> groups;
+
+  const LayoutForm({
+    required this.name,
+    required this.groups,
+  })  : assert(name != ''),
+        assert(groups != const []);
+
+  factory LayoutForm.fromMap(JsonMap map) {
+    final name = (map['name'] ?? '').toString().trim();
+    if (name.isEmpty) {
+      throw const FormatException('Action "name" is required');
+    }
+    final gs = map['groups'];
+    if (gs is! List) {
+      throw const FormatException('"groups" must be an array');
+    }
+    return LayoutForm(
+      name: name,
+      groups: gs.map((e) => GroupLayout.fromMap(e as JsonMap)).toList(),
+    );
+  }
+
+  JsonMap toMap() => {
+        'name': name,
+        'groups': groups.map((e) => e.toMap()).toList(),
+      };
+
+  LayoutForm copyWith({String? name, List<GroupLayout>? groups}) =>
+      LayoutForm(name: name ?? this.name, groups: groups ?? this.groups);
+}
+
+class GroupLayout {
+  final String title;
+  final List<RowLayout> rows;
+
+  const GroupLayout({
+    required this.title,
+    required this.rows,
+  })  : assert(title != ''),
+        assert(rows != const []);
+
+  factory GroupLayout.fromMap(JsonMap map) {
+    final title = (map['title'] ?? '').toString().trim();
+    if (title.isEmpty) {
+      throw const FormatException('Group "title" is required');
+    }
+    final rs = map['rows'];
+    if (rs is! List) {
+      throw const FormatException('"rows" must be an array');
+    }
+    return GroupLayout(
+      title: title,
+      rows: rs.map((e) => RowLayout.fromMap(e as JsonMap)).toList(),
+    );
+  }
+
+  JsonMap toMap() => {
+        'title': title,
+        'rows': rows.map((e) => e.toMap()).toList(),
+      };
+
+  GroupLayout copyWith({String? title, List<RowLayout>? rows}) =>
+      GroupLayout(title: title ?? this.title, rows: rows ?? this.rows);
+}
+
+class RowLayout {
+  final int columns;
+  final List<String> fields;
+
+  const RowLayout({
+    required this.columns,
+    required this.fields,
+  })  : assert(columns >= 1),
+        assert(fields != const []);
+
+  factory RowLayout.fromMap(JsonMap map) {
+    final colsAny = map['columns'];
+    if (colsAny == null) {
+      throw const FormatException('Row "columns" is required');
+    }
+    final columns = colsAny is num ? colsAny.toInt() : int.tryParse('$colsAny');
+    if (columns == null || columns < 1) {
+      throw const FormatException('"columns" must be an integer >= 1');
+    }
+
+    final f = map['fields'];
+    if (f is! List) {
+      throw const FormatException('"fields" must be an array of strings');
+    }
+    final fields = f.map((e) => e.toString()).toList();
+
+    return RowLayout(columns: columns, fields: fields);
+  }
+
+  JsonMap toMap() => {
+        'columns': columns,
+        'fields': fields,
+      };
+
+  RowLayout copyWith({int? columns, List<String>? fields}) => RowLayout(
+      columns: columns ?? this.columns, fields: fields ?? this.fields);
+}

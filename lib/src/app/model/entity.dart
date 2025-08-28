@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:flx_nocode_flutter/src/app/model/layout_form.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/view.dart' as view;
@@ -16,7 +17,7 @@ class EntityCustom extends HiveObject {
   final List<view.DView> views;
   final List<Export> exports;
   final Backend backend;
-  final Map<String, dynamic> layoutForm;
+  final List<LayoutForm> layoutForm;
   final LayoutListTile? layoutListTile;
   Map<String, int> layoutTable;
   var _position = CanvasPosition.zero();
@@ -113,6 +114,7 @@ class EntityCustom extends HiveObject {
     CanvasPosition? position,
     String? id,
     Map<String, int>? layoutTable,
+    List<LayoutForm>? layoutForm,
   }) {
     return EntityCustom(
       id: id ?? this.id,
@@ -124,8 +126,8 @@ class EntityCustom extends HiveObject {
       backend: Backend(others: []),
       layoutListTile: null,
       layoutTable: layoutTable ?? this.layoutTable,
+      layoutForm: layoutForm ?? this.layoutForm,
       exports: [],
-      layoutForm: {},
     );
   }
 

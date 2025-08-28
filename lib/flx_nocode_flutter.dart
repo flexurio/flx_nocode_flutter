@@ -6,6 +6,7 @@ export 'src/app/model/theme.dart';
 export 'src/app/model/entity_field.dart';
 export 'src/app/model/layout_list_tile.dart';
 export 'src/app/model/export.dart';
+export 'src/app/model/layout_form.dart';
 export 'src/app/model/view.dart';
 export 'src/app/model/backend_other.dart';
 export 'src/app/model/backend.dart';
