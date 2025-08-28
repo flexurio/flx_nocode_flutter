@@ -1,10 +1,12 @@
+import 'package:hive/hive.dart';
+
 typedef JsonMap = Map<String, dynamic>;
 
-class LayoutForm {
+class LayoutForm extends HiveObject {
   final String name;
   final List<GroupLayout> groups;
 
-  const LayoutForm({
+  LayoutForm({
     required this.name,
     required this.groups,
   })  : assert(name != ''),
@@ -34,11 +36,11 @@ class LayoutForm {
       LayoutForm(name: name ?? this.name, groups: groups ?? this.groups);
 }
 
-class GroupLayout {
+class GroupLayout extends HiveObject {
   final String title;
   final List<RowLayout> rows;
 
-  const GroupLayout({
+  GroupLayout({
     required this.title,
     required this.rows,
   })  : assert(title != ''),
@@ -68,11 +70,11 @@ class GroupLayout {
       GroupLayout(title: title ?? this.title, rows: rows ?? this.rows);
 }
 
-class RowLayout {
+class RowLayout extends HiveObject {
   final int columns;
   final List<String> fields;
 
-  const RowLayout({
+  RowLayout({
     required this.columns,
     required this.fields,
   })  : assert(columns >= 1),
