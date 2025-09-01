@@ -34,6 +34,15 @@ class LayoutForm extends HiveObject {
 
   LayoutForm copyWith({String? name, List<GroupLayout>? groups}) =>
       LayoutForm(name: name ?? this.name, groups: groups ?? this.groups);
+
+  (List<String> usedFields, List<String> availableFields) getFields() {
+    final usedFields = <String>[];
+    final availableFields = <String>[];
+    for (final group in groups) {
+      usedFields.addAll(group.usedFields());
+    }
+    return (usedFields, availableFields);
+  }
 }
 
 class GroupLayout extends HiveObject {
@@ -43,8 +52,9 @@ class GroupLayout extends HiveObject {
   GroupLayout({
     required this.title,
     required this.rows,
-  })  : assert(title != ''),
-        assert(rows != const []);
+  });
+
+  factory GroupLayout.empty() => GroupLayout(title: '', rows: []);
 
   factory GroupLayout.fromMap(JsonMap map) {
     final title = (map['title'] ?? '').toString().trim();
@@ -68,6 +78,14 @@ class GroupLayout extends HiveObject {
 
   GroupLayout copyWith({String? title, List<RowLayout>? rows}) =>
       GroupLayout(title: title ?? this.title, rows: rows ?? this.rows);
+
+  List<String> usedFields() {
+    final usedFields = <String>[];
+    for (final row in rows) {
+      usedFields.addAll(row.fields);
+    }
+    return usedFields;
+  }
 }
 
 class RowLayout extends HiveObject {
@@ -106,4 +124,11 @@ class RowLayout extends HiveObject {
 
   RowLayout copyWith({int? columns, List<String>? fields}) => RowLayout(
       columns: columns ?? this.columns, fields: fields ?? this.fields);
+}
+
+extension LayoutFormListExtension on List<LayoutForm> {
+  LayoutForm? getByName(String name) {
+    final index = indexWhere((e) => e.name == name);
+    return index == -1 ? null : this[index];
+  }
 }
