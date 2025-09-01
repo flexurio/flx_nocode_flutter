@@ -2,9 +2,25 @@ import 'package:hive/hive.dart';
 
 typedef JsonMap = Map<String, dynamic>;
 
+enum FormType {
+  create,
+  update;
+
+  factory FormType.fromString(String? s) {
+    if (s == null) return FormType.create;
+    try {
+      return FormType.values.byName(s);
+    } catch (_) {
+      throw ArgumentError('Invalid FormType: $s');
+    }
+  }
+}
+
 class LayoutForm extends HiveObject {
   final String name;
   final List<GroupLayout> groups;
+
+  FormType get formType => FormType.fromString(name);
 
   LayoutForm({
     required this.name,
@@ -127,8 +143,8 @@ class RowLayout extends HiveObject {
 }
 
 extension LayoutFormListExtension on List<LayoutForm> {
-  LayoutForm? getByName(String name) {
-    final index = indexWhere((e) => e.name == name);
+  LayoutForm? getByType(FormType type) {
+    final index = indexWhere((e) => e.name == type.name);
     return index == -1 ? null : this[index];
   }
 }
