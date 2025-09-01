@@ -1,3 +1,4 @@
+import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:hive/hive.dart';
 
 typedef JsonMap = Map<String, dynamic>;
@@ -51,11 +52,17 @@ class LayoutForm extends HiveObject {
   LayoutForm copyWith({String? name, List<GroupLayout>? groups}) =>
       LayoutForm(name: name ?? this.name, groups: groups ?? this.groups);
 
-  (List<String> usedFields, List<String> availableFields) getFields() {
+  (List<String> usedFields, List<String> availableFields) getFieldByStatus(
+      List<EntityField> fields) {
     final usedFields = <String>[];
     final availableFields = <String>[];
     for (final group in groups) {
       usedFields.addAll(group.usedFields());
+    }
+    for (final field in fields) {
+      if (!usedFields.contains(field.reference)) {
+        availableFields.add(field.reference);
+      }
     }
     return (usedFields, availableFields);
   }
