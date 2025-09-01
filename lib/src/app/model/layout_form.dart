@@ -154,4 +154,9 @@ extension LayoutFormListExtension on List<LayoutForm> {
     final index = indexWhere((e) => e.name == type.name);
     return index == -1 ? null : this[index];
   }
+
+  int getTypeIndex(FormType type) {
+    final index = indexWhere((e) => e.name == type.name);
+    return index == -1 ? 0 : index;
+  }
 }
