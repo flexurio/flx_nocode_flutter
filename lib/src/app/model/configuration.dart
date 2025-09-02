@@ -16,6 +16,7 @@ class Configuration extends HiveObject {
   final String logoUrl;
   final String logoNamedUrl;
   final String authUrl;
+  final List<String> preload;
   final String? entityRegistration;
 
   Configuration({
@@ -28,10 +29,12 @@ class Configuration extends HiveObject {
     required this.logoNamedUrl,
     required this.authUrl,
     required this.entityRegistration,
+    required this.preload,
   });
 
   factory Configuration.empty() {
     return Configuration(
+      preload: [],
       menuGroups: [],
       company: Company.empty(),
       theme: t.ThemeC(),
@@ -54,8 +57,10 @@ class Configuration extends HiveObject {
     String? logoNamedUrl,
     String? authUrl,
     String? entityRegistration,
+    List<String>? preload,
   }) {
     return Configuration(
+      preload: preload ?? this.preload,
       menuGroups: menuGroups ?? this.menuGroups,
       company: company ?? this.company,
       theme: theme ?? this.theme,
@@ -78,6 +83,7 @@ class Configuration extends HiveObject {
 
   factory Configuration.fromJson(Map<String, dynamic> json) {
     return Configuration(
+      preload: json['preload'].cast<String>() ?? [],
       authUrl: json['auth_url'] ?? '',
       backendHost: json['backend_host'],
       appName: json['app_name'],

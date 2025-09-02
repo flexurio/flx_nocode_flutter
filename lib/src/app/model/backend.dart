@@ -63,9 +63,6 @@ class BackendEndpoint extends HiveObject {
   final String url;
   final Map<String, dynamic>? data;
 
-  /// Whether this endpoint should be preloaded (e.g. at app startup).
-  final bool preload;
-
   /// Whether the response of this endpoint should be cached.
   final bool cached;
 
@@ -81,7 +78,6 @@ class BackendEndpoint extends HiveObject {
     required this.method,
     required this.url,
     this.data,
-    this.preload = false,
     this.cached = false,
     this.cacheDuration,
   });
@@ -128,7 +124,6 @@ class BackendEndpoint extends HiveObject {
         method: json['method'],
         url: json['url'],
         data: json['data'],
-        preload: json['preload'] ?? false,
         cacheDuration: json['cache_duration'],
       );
     } catch (e) {
@@ -153,7 +148,6 @@ class BackendEndpoint extends HiveObject {
       'method': method,
       'url': url,
       'data': data,
-      'preload': preload,
       'cached': cached,
       'cacheDuration': cacheDuration,
     };

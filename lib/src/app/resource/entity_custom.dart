@@ -73,6 +73,7 @@ class EntityCustomRepository extends Repository {
     int? cachedDurationSeconds,
   }) async {
     try {
+      print('[EntityCustomRepository] fetch $path $method $filterMap');
       final cacheKey = EntityCustomCache.buildKey(
         url: path,
         method: method,

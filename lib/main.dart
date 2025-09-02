@@ -1,6 +1,7 @@
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
+import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/landing/landing_page.dart';
@@ -57,6 +58,24 @@ Future<void> main() async {
       final name = user.name;
       final permissions = UserRepositoryApp.instance.permissions;
       return MenuPage.prepare(
+        initialState: () async {
+          final p = configuration.preload;
+          for (final preload in p) {
+            try {
+              final e = await EntityCustom.getEntity(preload);
+              EntityCustomRepository.instance.fetch(
+                accessToken: UserRepositoryApp.instance.token ?? '',
+                pageOptions: PageOptions.emptyNoLimit(),
+                method: e!.backend.readAll!.method,
+                path: e.backend.readAll!.urlWithValues,
+                filterMap: {},
+                cachedDurationSeconds: e.backend.readAll!.cacheDurationSeconds,
+              );
+            } catch (e) {
+              print('Error preload $preload $e');
+            }
+          }
+        },
         logoNamed: configuration.logoNamedUrl,
         logoUrl: configuration.logoUrl,
         appName: configuration.appName,
