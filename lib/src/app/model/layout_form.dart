@@ -1,5 +1,8 @@
+import 'dart:math' as logger;
+
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:hive/hive.dart';
+import 'package:uuid/uuid.dart';
 
 typedef JsonMap = Map<String, dynamic>;
 
@@ -69,15 +72,18 @@ class LayoutForm extends HiveObject {
 }
 
 class GroupLayout extends HiveObject {
+  final String id;
   final String title;
   final List<RowLayout> rows;
 
   GroupLayout({
     required this.title,
     required this.rows,
+    required this.id,
   });
 
-  factory GroupLayout.empty() => GroupLayout(title: '', rows: []);
+  factory GroupLayout.empty() =>
+      GroupLayout(title: '', rows: [], id: const Uuid().v4());
 
   factory GroupLayout.fromMap(JsonMap map) {
     final title = (map['title'] ?? '').toString().trim();
@@ -89,18 +95,24 @@ class GroupLayout extends HiveObject {
       throw const FormatException('"rows" must be an array');
     }
     return GroupLayout(
+      id: map['id'] ?? const Uuid().v4(),
       title: title,
       rows: rs.map((e) => RowLayout.fromMap(e as JsonMap)).toList(),
     );
   }
 
   JsonMap toMap() => {
+        'id': id,
         'title': title,
         'rows': rows.map((e) => e.toMap()).toList(),
       };
 
-  GroupLayout copyWith({String? title, List<RowLayout>? rows}) =>
-      GroupLayout(title: title ?? this.title, rows: rows ?? this.rows);
+  GroupLayout copyWith({String? title, List<RowLayout>? rows, String? id}) =>
+      GroupLayout(
+        title: title ?? this.title,
+        rows: rows ?? this.rows,
+        id: id ?? this.id,
+      );
 
   List<String> usedFields() {
     final usedFields = <String>[];
