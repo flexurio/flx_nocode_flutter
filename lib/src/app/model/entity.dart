@@ -75,9 +75,19 @@ class EntityCustom extends HiveObject {
   }
 
   factory EntityCustom.fromJson(Map<String, dynamic> json) {
+    final id = json['id'];
     try {
+      late List<LayoutForm> layoutForm;
+      try {
+        layoutForm = (json['layout_form'] as List<dynamic>)
+            .map((e) => LayoutForm.fromMap(e))
+            .toList();
+      } catch (e) {
+        layoutForm = [];
+      }
+
       return EntityCustom(
-        id: json['id'],
+        id: id,
         label: json['label'],
         description: json['description'],
         fields: (json['fields'] as List<dynamic>)
@@ -88,7 +98,7 @@ class EntityCustom extends HiveObject {
                 .map((e) => view.DView.fromJson(e))
                 .toList()
             : [],
-        layoutForm: json.containsKey('layout_form') ? json['layout_form'] : {},
+        layoutForm: layoutForm,
         backend: Backend.fromJson(json['backend']),
         exports: json.containsKey('exports')
             ? (json['exports'] as List<dynamic>)
@@ -102,7 +112,7 @@ class EntityCustom extends HiveObject {
             .map((key, value) => MapEntry(key, value as int)),
       );
     } catch (e) {
-      print('[EntityCustom] fromJson: $e');
+      print('[EntityCustom] Entity: $id fromJson: $e');
       rethrow;
     }
   }

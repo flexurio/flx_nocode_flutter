@@ -29,3 +29,7 @@ doc/api/
 
 packages/flexurio_erp_core/.flutter-plugins
 packages/flexurio_erp_core/.flutter-plugins-dependencies
+
+asset/configuration/entity/
+asset/configuration/configuration.json
+asset/configuration/landing_page.json
