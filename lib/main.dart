@@ -6,11 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/landing/landing_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
+import 'package:hive_ce/hive.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'src/app/view/page/entity_create/entity_create_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final path = (await getApplicationDocumentsDirectory());
+  Hive.init(path.path);
+
   await Configuration.load();
   final configuration = Configuration.instance;
   MenuBloc.instance = MenuBloc(

@@ -73,30 +73,36 @@ class OptionsSource {
   /// backend.bank_type({id}:{name})?active=true&nip=123
   /// ```
   Future<Map<dynamic, dynamic>> extractBackend() async {
-    final backend = backendSource;
-    final entity = (await EntityCustom.getEntity(backend.entity));
-    final options = <dynamic, dynamic>{};
-    if (entity != null) {
-      final data = await EntityCustomRepository.instance.fetch(
-        accessToken: UserRepositoryApp.instance.token ?? '',
-        pageOptions: PageOptions.emptyNoLimit(),
-        method: entity.backend.readAll!.method,
-        path: entity.backend.readAll!.urlWithValues,
-        filterMap: backend.queryParams,
-      );
+    try {
+      final backend = backendSource;
+      final entity = (await EntityCustom.getEntity(backend.entity));
+      final options = <dynamic, dynamic>{};
+      if (entity != null) {
+        final data = await EntityCustomRepository.instance.fetch(
+          accessToken: UserRepositoryApp.instance.token ?? '',
+          pageOptions: PageOptions.emptyNoLimit(),
+          method: entity.backend.readAll!.method,
+          path: entity.backend.readAll!.urlWithValues,
+          filterMap: backend.queryParams,
+          cachedDurationSeconds: entity.backend.readAll!.cacheDurationSeconds,
+        );
 
-      final result = data.data;
-      for (final item in result) {
-        final key = item[backend.key];
-        final value = item[backend.value];
-        options[key] = value;
+        final result = data.data;
+        for (final item in result) {
+          final key = item[backend.key];
+          final value = item[backend.value];
+          options[key] = value;
+        }
+      } else {
+        print('[OptionsSource] Entity ${backend.entity} not found!');
+        throw ArgumentError('Entity ${backend.entity} not found!');
       }
-    } else {
-      print('[OptionsSource] Entity ${backend.entity} not found!');
-      throw ArgumentError('Entity ${backend.entity} not found!');
-    }
 
-    return options;
+      return options;
+    } catch (e) {
+      print('[OptionsSource] Error: $e');
+      return {};
+    }
   }
 
   /// Extracts dynamic dropdown configuration from a backend pattern string.

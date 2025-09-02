@@ -3,3 +3,6 @@ pub-d:
 
 pub:
 	dart pub publish
+
+bld:
+	flutter pub run build_runner build --delete-conflicting-outputs

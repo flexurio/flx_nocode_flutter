@@ -84,9 +84,6 @@ class _$EntityStateCopyWithImpl<$Res, $Val extends EntityState>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
-
-  /// Create a copy of EntityState
-  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -103,9 +100,6 @@ class __$$InitialImplCopyWithImpl<$Res>
   __$$InitialImplCopyWithImpl(
       _$InitialImpl _value, $Res Function(_$InitialImpl) _then)
       : super(_value, _then);
-
-  /// Create a copy of EntityState
-  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -220,9 +214,6 @@ class __$$LoadingImplCopyWithImpl<$Res>
   __$$LoadingImplCopyWithImpl(
       _$LoadingImpl _value, $Res Function(_$LoadingImpl) _then)
       : super(_value, _then);
-
-  /// Create a copy of EntityState
-  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -340,8 +331,6 @@ class __$$SuccessImplCopyWithImpl<$Res>
       _$SuccessImpl _value, $Res Function(_$SuccessImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of EntityState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -388,9 +377,7 @@ class _$SuccessImpl implements _Success {
   int get hashCode =>
       Object.hash(runtimeType, const DeepCollectionEquality().hash(_data));
 
-  /// Create a copy of EntityState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
@@ -475,10 +462,7 @@ abstract class _Success implements EntityState {
   const factory _Success(final Map<String, dynamic>? data) = _$SuccessImpl;
 
   Map<String, dynamic>? get data;
-
-  /// Create a copy of EntityState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -500,8 +484,6 @@ class __$$ErrorImplCopyWithImpl<$Res>
       _$ErrorImpl _value, $Res Function(_$ErrorImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of EntityState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -540,9 +522,7 @@ class _$ErrorImpl implements _Error {
   @override
   int get hashCode => Object.hash(runtimeType, error);
 
-  /// Create a copy of EntityState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>
@@ -627,10 +607,7 @@ abstract class _Error implements EntityState {
   const factory _Error(final String error) = _$ErrorImpl;
 
   String get error;
-
-  /// Create a copy of EntityState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -715,9 +692,6 @@ class _$EntityEventCopyWithImpl<$Res, $Val extends EntityEvent>
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
-
-  /// Create a copy of EntityEvent
-  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -737,8 +711,6 @@ class __$$CreateImplCopyWithImpl<$Res>
       _$CreateImpl _value, $Res Function(_$CreateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of EntityEvent
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -803,9 +775,7 @@ class _$CreateImpl implements _Create {
       const DeepCollectionEquality().hash(_data),
       const DeepCollectionEquality().hash(_filters));
 
-  /// Create a copy of EntityEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$CreateImplCopyWith<_$CreateImpl> get copyWith =>
@@ -903,10 +873,7 @@ abstract class _Create implements EntityEvent {
 
   Map<String, dynamic> get data;
   Map<String, dynamic> get filters;
-
-  /// Create a copy of EntityEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$CreateImplCopyWith<_$CreateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -927,8 +894,6 @@ class __$$EditImplCopyWithImpl<$Res>
   __$$EditImplCopyWithImpl(_$EditImpl _value, $Res Function(_$EditImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of EntityEvent
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -993,9 +958,7 @@ class _$EditImpl implements _Edit {
       const DeepCollectionEquality().hash(_data),
       const DeepCollectionEquality().hash(_filters));
 
-  /// Create a copy of EntityEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$EditImplCopyWith<_$EditImpl> get copyWith =>
@@ -1093,10 +1056,7 @@ abstract class _Edit implements EntityEvent {
 
   Map<String, dynamic> get data;
   Map<String, dynamic> get filters;
-
-  /// Create a copy of EntityEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$EditImplCopyWith<_$EditImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1118,8 +1078,6 @@ class __$$DeleteImplCopyWithImpl<$Res>
       _$DeleteImpl _value, $Res Function(_$DeleteImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of EntityEvent
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1158,9 +1116,7 @@ class _$DeleteImpl implements _Delete {
   @override
   int get hashCode => Object.hash(runtimeType, id);
 
-  /// Create a copy of EntityEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$DeleteImplCopyWith<_$DeleteImpl> get copyWith =>
@@ -1255,10 +1211,7 @@ abstract class _Delete implements EntityEvent {
   const factory _Delete({required final String id}) = _$DeleteImpl;
 
   String get id;
-
-  /// Create a copy of EntityEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$DeleteImplCopyWith<_$DeleteImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1280,8 +1233,6 @@ class __$$OtherEventImplCopyWithImpl<$Res>
       _$OtherEventImpl _value, $Res Function(_$OtherEventImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of EntityEvent
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1337,9 +1288,7 @@ class _$OtherEventImpl implements _OtherEvent {
   int get hashCode => Object.hash(
       runtimeType, const DeepCollectionEquality().hash(_data), event);
 
-  /// Create a copy of EntityEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$OtherEventImplCopyWith<_$OtherEventImpl> get copyWith =>
@@ -1437,10 +1386,7 @@ abstract class _OtherEvent implements EntityEvent {
 
   Map<String, dynamic> get data;
   BackendOther get event;
-
-  /// Create a copy of EntityEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$OtherEventImplCopyWith<_$OtherEventImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

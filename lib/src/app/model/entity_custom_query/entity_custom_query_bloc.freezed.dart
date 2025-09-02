@@ -87,9 +87,6 @@ class _$EntityCustomQueryStateCopyWithImpl<$Res,
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
-
-  /// Create a copy of EntityCustomQueryState
-  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -106,9 +103,6 @@ class __$$InitialImplCopyWithImpl<$Res>
   __$$InitialImplCopyWithImpl(
       _$InitialImpl _value, $Res Function(_$InitialImpl) _then)
       : super(_value, _then);
-
-  /// Create a copy of EntityCustomQueryState
-  /// with the given fields replaced by the non-null parameter values.
 }
 
 /// @nodoc
@@ -228,8 +222,6 @@ class __$$LoadingImplCopyWithImpl<$Res>
       _$LoadingImpl _value, $Res Function(_$LoadingImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of EntityCustomQueryState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -269,9 +261,7 @@ class _$LoadingImpl implements _Loading {
   @override
   int get hashCode => Object.hash(runtimeType, pageOptions);
 
-  /// Create a copy of EntityCustomQueryState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$LoadingImplCopyWith<_$LoadingImpl> get copyWith =>
@@ -359,10 +349,7 @@ abstract class _Loading implements EntityCustomQueryState {
       _$LoadingImpl;
 
   PageOptions<Map<String, dynamic>> get pageOptions;
-
-  /// Create a copy of EntityCustomQueryState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$LoadingImplCopyWith<_$LoadingImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -384,8 +371,6 @@ class __$$LoadedImplCopyWithImpl<$Res>
       _$LoadedImpl _value, $Res Function(_$LoadedImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of EntityCustomQueryState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -425,9 +410,7 @@ class _$LoadedImpl implements _Loaded {
   @override
   int get hashCode => Object.hash(runtimeType, pageOptions);
 
-  /// Create a copy of EntityCustomQueryState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$LoadedImplCopyWith<_$LoadedImpl> get copyWith =>
@@ -515,10 +498,7 @@ abstract class _Loaded implements EntityCustomQueryState {
       _$LoadedImpl;
 
   PageOptions<Map<String, dynamic>> get pageOptions;
-
-  /// Create a copy of EntityCustomQueryState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$LoadedImplCopyWith<_$LoadedImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -540,8 +520,6 @@ class __$$ErrorImplCopyWithImpl<$Res>
       _$ErrorImpl _value, $Res Function(_$ErrorImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of EntityCustomQueryState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -580,9 +558,7 @@ class _$ErrorImpl implements _Error {
   @override
   int get hashCode => Object.hash(runtimeType, error);
 
-  /// Create a copy of EntityCustomQueryState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>
@@ -669,10 +645,7 @@ abstract class _Error implements EntityCustomQueryState {
   const factory _Error(final String error) = _$ErrorImpl;
 
   String get error;
-
-  /// Create a copy of EntityCustomQueryState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$ErrorImplCopyWith<_$ErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -683,24 +656,36 @@ mixin _$EntityCustomQueryEvent {
   String get url => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters, String method, String url)
+    required TResult Function(
+            PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters,
+            String method,
+            String url,
+            int? cachedDurationSeconds)
         fetch,
     required TResult Function(String id, String method, String url) fetchById,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters, String method, String url)?
+    TResult? Function(
+            PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters,
+            String method,
+            String url,
+            int? cachedDurationSeconds)?
         fetch,
     TResult? Function(String id, String method, String url)? fetchById,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters, String method, String url)?
+    TResult Function(
+            PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters,
+            String method,
+            String url,
+            int? cachedDurationSeconds)?
         fetch,
     TResult Function(String id, String method, String url)? fetchById,
     required TResult orElse(),
@@ -726,9 +711,7 @@ mixin _$EntityCustomQueryEvent {
   }) =>
       throw _privateConstructorUsedError;
 
-  /// Create a copy of EntityCustomQueryEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $EntityCustomQueryEventCopyWith<EntityCustomQueryEvent> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -753,8 +736,6 @@ class _$EntityCustomQueryEventCopyWithImpl<$Res,
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of EntityCustomQueryEvent
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -786,7 +767,8 @@ abstract class _$$FetchImplCopyWith<$Res>
       {PageOptions<Map<String, dynamic>>? pageOptions,
       List<Filter>? filters,
       String method,
-      String url});
+      String url,
+      int? cachedDurationSeconds});
 }
 
 /// @nodoc
@@ -797,8 +779,6 @@ class __$$FetchImplCopyWithImpl<$Res>
       _$FetchImpl _value, $Res Function(_$FetchImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of EntityCustomQueryEvent
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -806,6 +786,7 @@ class __$$FetchImplCopyWithImpl<$Res>
     Object? filters = freezed,
     Object? method = null,
     Object? url = null,
+    Object? cachedDurationSeconds = freezed,
   }) {
     return _then(_$FetchImpl(
       pageOptions: freezed == pageOptions
@@ -824,6 +805,10 @@ class __$$FetchImplCopyWithImpl<$Res>
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String,
+      cachedDurationSeconds: freezed == cachedDurationSeconds
+          ? _value.cachedDurationSeconds
+          : cachedDurationSeconds // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -835,7 +820,8 @@ class _$FetchImpl implements _Fetch {
       {this.pageOptions,
       final List<Filter>? filters,
       required this.method,
-      required this.url})
+      required this.url,
+      required this.cachedDurationSeconds})
       : _filters = filters;
 
   @override
@@ -854,10 +840,12 @@ class _$FetchImpl implements _Fetch {
   final String method;
   @override
   final String url;
+  @override
+  final int? cachedDurationSeconds;
 
   @override
   String toString() {
-    return 'EntityCustomQueryEvent.fetch(pageOptions: $pageOptions, filters: $filters, method: $method, url: $url)';
+    return 'EntityCustomQueryEvent.fetch(pageOptions: $pageOptions, filters: $filters, method: $method, url: $url, cachedDurationSeconds: $cachedDurationSeconds)';
   }
 
   @override
@@ -869,16 +857,21 @@ class _$FetchImpl implements _Fetch {
                 other.pageOptions == pageOptions) &&
             const DeepCollectionEquality().equals(other._filters, _filters) &&
             (identical(other.method, method) || other.method == method) &&
-            (identical(other.url, url) || other.url == url));
+            (identical(other.url, url) || other.url == url) &&
+            (identical(other.cachedDurationSeconds, cachedDurationSeconds) ||
+                other.cachedDurationSeconds == cachedDurationSeconds));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, pageOptions,
-      const DeepCollectionEquality().hash(_filters), method, url);
+  int get hashCode => Object.hash(
+      runtimeType,
+      pageOptions,
+      const DeepCollectionEquality().hash(_filters),
+      method,
+      url,
+      cachedDurationSeconds);
 
-  /// Create a copy of EntityCustomQueryEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$FetchImplCopyWith<_$FetchImpl> get copyWith =>
@@ -887,36 +880,49 @@ class _$FetchImpl implements _Fetch {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters, String method, String url)
+    required TResult Function(
+            PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters,
+            String method,
+            String url,
+            int? cachedDurationSeconds)
         fetch,
     required TResult Function(String id, String method, String url) fetchById,
   }) {
-    return fetch(pageOptions, filters, method, url);
+    return fetch(pageOptions, filters, method, url, cachedDurationSeconds);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters, String method, String url)?
+    TResult? Function(
+            PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters,
+            String method,
+            String url,
+            int? cachedDurationSeconds)?
         fetch,
     TResult? Function(String id, String method, String url)? fetchById,
   }) {
-    return fetch?.call(pageOptions, filters, method, url);
+    return fetch?.call(
+        pageOptions, filters, method, url, cachedDurationSeconds);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters, String method, String url)?
+    TResult Function(
+            PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters,
+            String method,
+            String url,
+            int? cachedDurationSeconds)?
         fetch,
     TResult Function(String id, String method, String url)? fetchById,
     required TResult orElse(),
   }) {
     if (fetch != null) {
-      return fetch(pageOptions, filters, method, url);
+      return fetch(pageOptions, filters, method, url, cachedDurationSeconds);
     }
     return orElse();
   }
@@ -958,7 +964,8 @@ abstract class _Fetch implements EntityCustomQueryEvent {
       {final PageOptions<Map<String, dynamic>>? pageOptions,
       final List<Filter>? filters,
       required final String method,
-      required final String url}) = _$FetchImpl;
+      required final String url,
+      required final int? cachedDurationSeconds}) = _$FetchImpl;
 
   PageOptions<Map<String, dynamic>>? get pageOptions;
   List<Filter>? get filters;
@@ -966,11 +973,9 @@ abstract class _Fetch implements EntityCustomQueryEvent {
   String get method;
   @override
   String get url;
-
-  /// Create a copy of EntityCustomQueryEvent
-  /// with the given fields replaced by the non-null parameter values.
+  int? get cachedDurationSeconds;
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$FetchImplCopyWith<_$FetchImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -994,8 +999,6 @@ class __$$FetchByIdImplCopyWithImpl<$Res>
       _$FetchByIdImpl _value, $Res Function(_$FetchByIdImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of EntityCustomQueryEvent
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1051,9 +1054,7 @@ class _$FetchByIdImpl implements _FetchById {
   @override
   int get hashCode => Object.hash(runtimeType, id, method, url);
 
-  /// Create a copy of EntityCustomQueryEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$FetchByIdImplCopyWith<_$FetchByIdImpl> get copyWith =>
@@ -1062,8 +1063,12 @@ class _$FetchByIdImpl implements _FetchById {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters, String method, String url)
+    required TResult Function(
+            PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters,
+            String method,
+            String url,
+            int? cachedDurationSeconds)
         fetch,
     required TResult Function(String id, String method, String url) fetchById,
   }) {
@@ -1073,8 +1078,12 @@ class _$FetchByIdImpl implements _FetchById {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters, String method, String url)?
+    TResult? Function(
+            PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters,
+            String method,
+            String url,
+            int? cachedDurationSeconds)?
         fetch,
     TResult? Function(String id, String method, String url)? fetchById,
   }) {
@@ -1084,8 +1093,12 @@ class _$FetchByIdImpl implements _FetchById {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(PageOptions<Map<String, dynamic>>? pageOptions,
-            List<Filter>? filters, String method, String url)?
+    TResult Function(
+            PageOptions<Map<String, dynamic>>? pageOptions,
+            List<Filter>? filters,
+            String method,
+            String url,
+            int? cachedDurationSeconds)?
         fetch,
     TResult Function(String id, String method, String url)? fetchById,
     required TResult orElse(),
@@ -1139,11 +1152,8 @@ abstract class _FetchById implements EntityCustomQueryEvent {
   String get method;
   @override
   String get url;
-
-  /// Create a copy of EntityCustomQueryEvent
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$FetchByIdImplCopyWith<_$FetchByIdImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

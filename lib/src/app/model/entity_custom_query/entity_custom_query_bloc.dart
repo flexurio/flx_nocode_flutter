@@ -28,6 +28,7 @@ class EntityCustomQueryEvent with _$EntityCustomQueryEvent {
     List<Filter>? filters,
     required String method,
     required String url,
+    required int? cachedDurationSeconds,
   }) = _Fetch;
   const factory EntityCustomQueryEvent.fetchById({
     required String id,
@@ -56,7 +57,13 @@ class EntityCustomQueryBloc
               emit(_Error(errorMessage(error)));
             }
           },
-          fetch: (pageOptions, filter, method, url) async {
+          fetch: (
+            pageOptions,
+            filter,
+            method,
+            url,
+            cachedDurationSeconds,
+          ) async {
             emit(_Loading(_pageOptions));
             try {
               if (pageOptions != null) {
@@ -64,8 +71,8 @@ class EntityCustomQueryBloc
               }
 
               final filterMap = <String, dynamic>{};
-              for (final filter in filter ?? []) {
-                filterMap[filter.getKeyBackend()] = filter.value;
+              for (final f in filter ?? []) {
+                filterMap[f.getKeyBackend()] = f.value;
               }
 
               _pageOptions = await EntityCustomRepository.instance.fetch(
@@ -74,7 +81,9 @@ class EntityCustomQueryBloc
                 method: method,
                 path: urlWithValuesReplace(url, {}),
                 filterMap: filterMap,
+                cachedDurationSeconds: cachedDurationSeconds,
               );
+
               emit(_Loaded(_pageOptions));
             } catch (error) {
               emit(_Error(errorMessage(error)));

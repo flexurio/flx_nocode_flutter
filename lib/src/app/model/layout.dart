@@ -2,7 +2,6 @@ import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:hive/hive.dart';
 
 class Layout {
   List<String> fields;

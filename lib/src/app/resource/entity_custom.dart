@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity_cache.dart';
 
 class EntityCustomRepository extends Repository {
   EntityCustomRepository({
@@ -69,8 +70,30 @@ class EntityCustomRepository extends Repository {
     required String path,
     required String method,
     required Map<String, dynamic> filterMap,
+    int? cachedDurationSeconds,
   }) async {
     try {
+      final cacheKey = EntityCustomCache.buildKey(
+        url: path,
+        method: method,
+        filterMap: filterMap,
+      );
+
+      // 🔹 cek cache lebih dulu
+      if (cachedDurationSeconds != null) {
+        final cachedData = await EntityCustomCache.get(
+          cacheKey,
+          durationSeconds: cachedDurationSeconds,
+        );
+        if (cachedData != null) {
+          final data = pageOptions.copyWith(
+            data: cachedData,
+            totalRows: cachedData.length,
+          );
+          return data;
+        }
+      }
+
       final queryParams = pageOptions.toUrlQueryMap()..addAll(filterMap);
 
       final response = await _request<Map<String, dynamic>>(
@@ -84,10 +107,15 @@ class EntityCustomRepository extends Repository {
           (response.data?['data'] as List?)?.cast<Map<String, dynamic>>() ?? [];
       final total = response.data?['total_data'] as int? ?? dataList.length;
 
-      return pageOptions.copyWith(
+      final newPageOptions = pageOptions.copyWith(
         data: dataList,
         totalRows: total,
       );
+
+      // 🔹 simpan ke cache setelah ambil dari API
+      await EntityCustomCache.put(cacheKey, newPageOptions.data);
+
+      return newPageOptions;
     } catch (error) {
       print('[EntityCustomRepository] fetch error: $error');
       throw checkErrorApi(error);

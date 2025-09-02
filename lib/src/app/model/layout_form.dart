@@ -1,5 +1,3 @@
-import 'dart:math' as logger;
-
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';

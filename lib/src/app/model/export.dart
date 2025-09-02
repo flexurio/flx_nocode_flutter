@@ -105,6 +105,7 @@ class ButtonExport extends StatelessWidget {
                       method: 'GET',
                       url: export.backend,
                       filters: filters,
+                      cachedDurationSeconds: null,
                       pageOptions: PageOptions.emptyNoLimit(sortBy: ''),
                     ),
                   );

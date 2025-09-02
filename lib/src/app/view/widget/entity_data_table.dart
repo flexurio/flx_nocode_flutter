@@ -57,6 +57,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     if (widget.entity.backend.readAll == null) return;
     context.read<EntityCustomQueryBloc>().add(
           EntityCustomQueryEvent.fetch(
+            cachedDurationSeconds: null,
             pageOptions: pageOptions,
             filters: _filters,
             method: widget.entity.backend.readAll!.method,

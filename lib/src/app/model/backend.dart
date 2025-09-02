@@ -63,22 +63,73 @@ class BackendEndpoint extends HiveObject {
   final String url;
   final Map<String, dynamic>? data;
 
+  /// Whether this endpoint should be preloaded (e.g. at app startup).
+  final bool preload;
+
+  /// Whether the response of this endpoint should be cached.
+  final bool cached;
+
+  /// Cache duration string (e.g. `"23s"`, `"34m"`, `"45d"`).
+  /// Supported suffix:
+  /// - `s` = seconds
+  /// - `m` = minutes
+  /// - `h` = hours
+  /// - `d` = days
+  final String? cacheDuration;
+
   BackendEndpoint({
     required this.method,
     required this.url,
-    required this.data,
+    this.data,
+    this.preload = false,
+    this.cached = false,
+    this.cacheDuration,
   });
 
+  /// Returns the URL with dynamic values replaced using `data`.
   String get urlWithValues {
     return urlWithValuesReplace(url, data ?? {});
   }
 
+  /// Returns cache duration in seconds, parsed from [cacheDuration].
+  ///
+  /// Examples:
+  /// - `"23s"` → `23`
+  /// - `"34m"` → `34 * 60`
+  /// - `"12h"` → `12 * 3600`
+  /// - `"45d"` → `45 * 86400`
+  int? get cacheDurationSeconds {
+    if (cacheDuration == null || cacheDuration!.isEmpty) return null;
+
+    final match = RegExp(r'^(\d+)([smhd])$').firstMatch(cacheDuration!.trim());
+    if (match == null) return null;
+
+    final value = int.tryParse(match.group(1)!);
+    if (value == null) return null;
+
+    switch (match.group(2)) {
+      case 's':
+        return value;
+      case 'm':
+        return value * 60;
+      case 'h':
+        return value * 3600;
+      case 'd':
+        return value * 86400;
+      default:
+        return null;
+    }
+  }
+
+  /// Factory constructor to create [BackendEndpoint] from JSON.
   factory BackendEndpoint.fromJson(Map<String, dynamic> json) {
     try {
       return BackendEndpoint(
         method: json['method'],
         url: json['url'],
         data: json['data'],
+        preload: json['preload'] ?? false,
+        cacheDuration: json['cache_duration'],
       );
     } catch (e) {
       print('[BackendEndpoint] fromJson: $e');
@@ -86,6 +137,7 @@ class BackendEndpoint extends HiveObject {
     }
   }
 
+  /// Builds the request body by merging static [data] with provided [filters].
   Map<String, dynamic> body({
     required Map<String, dynamic> filters,
   }) {
@@ -95,11 +147,15 @@ class BackendEndpoint extends HiveObject {
     );
   }
 
+  /// Converts this [BackendEndpoint] into JSON.
   Map<String, dynamic> toJson() {
     return {
       'method': method,
       'url': url,
       'data': data,
+      'preload': preload,
+      'cached': cached,
+      'cacheDuration': cacheDuration,
     };
   }
 }
