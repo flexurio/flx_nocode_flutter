@@ -31,6 +31,7 @@ dependencies:
   pdf: ^3.10.0
   hydrated_bloc: ^10.0.0
   hive_ce: ^2.11.3
+  hive_ce_flutter: ^2.3.2
 
   flx_authentication_flutter:
     git:
