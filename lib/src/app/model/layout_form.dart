@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 typedef JsonMap = Map<String, dynamic>;
 
 enum FormType {
+  view,
   create,
   update;
 
@@ -162,7 +163,10 @@ class RowLayout extends HiveObject {
 extension LayoutFormListExtension on List<LayoutForm> {
   LayoutForm? getByType(FormType type) {
     final index = indexWhere((e) => e.name == type.name);
-    return index == -1 ? null : this[index];
+    if (index > -1) {
+      return this[index];
+    }
+    return null;
   }
 
   int getTypeIndex(FormType type) {
