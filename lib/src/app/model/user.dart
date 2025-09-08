@@ -9,7 +9,7 @@ class UserApp extends User {
 
   factory UserApp.fromJson(Map<String, dynamic> json) {
     return UserApp(
-      id: json['id'] as int,
+      id: int.parse(json['id'] as String),
       name: json['nm'] as String,
       role: json['cs'] as String,
     );
