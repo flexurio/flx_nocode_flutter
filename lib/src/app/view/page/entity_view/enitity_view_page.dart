@@ -1,14 +1,10 @@
+import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
-import 'package:flx_nocode_flutter/src/app/model/backend_other.dart';
-import 'package:flx_nocode_flutter/src/app/model/entity.dart';
-import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
-import 'package:flx_nocode_flutter/src/app/view/page/entity_create/entity_create_page.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_view/widget/delete_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 
 class EntityViewPage extends StatelessWidget {
   const EntityViewPage._({
@@ -80,6 +76,18 @@ class EntityViewPage extends StatelessWidget {
       ),
       body: BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
         builder: (context, state) {
+          if (dummy) {
+            return SingleFormPanel(
+              hideHeader: embedded ? true : false,
+              action: DataAction.view,
+              entity: entity.coreEntity,
+              size: SingleFormPanelSize.large,
+              children: [
+                _buildData(data),
+              ],
+            );
+          }
+
           return state.maybeWhen(
             orElse: SomethingWrong.new,
             loading: (_) => const ProgressingIndicator(),
@@ -238,44 +246,92 @@ class EntityViewPage extends StatelessWidget {
   }
 
   Widget _buildData(Map<String, dynamic> data) {
-    final leftColumnChildren = <Widget>[];
-    final rightColumnChildren = <Widget>[];
-    var isFirst = true;
+    List<Widget> children = [];
+    final entityForm = entity.layoutForm.getByType(FormType.view)!;
+    final groups = entityForm.groups;
 
-    for (int i = 0; i < entity.fields.length; i++) {
-      final field = entity.fields[i];
+    for (final group in groups) {
+      final rows = group.rows;
+      List<Widget> childrenRows = [];
+      for (final row in rows) {
+        final c = row.columns;
+        final fields = row.fields;
+        final chunks = _chunk<String>(fields, c);
+        for (final chunk in chunks) {
+          final fields = chunk.map<Widget>((field) {
+            return TileDataVertical(
+              label: field,
+              child: Text(field),
+            );
+          }).toList();
+          final remainingFields = c - fields.length;
+          for (int i = 0; i < remainingFields; i++) {
+            fields.add(
+              SizedBox.shrink(),
+            );
+          }
 
-      if (!isFirst) {
-        leftColumnChildren.add(Gap(12));
-        rightColumnChildren.add(Gap(12));
+          childrenRows.add(RowFields(children: fields));
+        }
       }
-      if (isFirst) {
-        isFirst = false;
-      }
 
-      final widget = TileDataVertical(
-        label: field.label,
-        child: EntityField.buildDisplay(
-          entity,
-          field.reference,
-          data[field.reference],
+      children.addAll([
+        Text(
+          group.title,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-      );
-
-      // Add alternating widgets to each column
-      if (i % 2 == 0) {
-        leftColumnChildren.add(widget);
-      } else {
-        rightColumnChildren.add(widget);
-      }
+        ...childrenRows
+      ]);
     }
 
-    // Return a Row containing both columns
-    return RowFields(
-      children: [
-        Column(children: leftColumnChildren),
-        Column(children: rightColumnChildren),
-      ],
+    // final leftColumnChildren = <Widget>[];
+    // final rightColumnChildren = <Widget>[];
+    // var isFirst = true;
+    //
+    // for (int i = 0; i < entity.fields.length; i++) {
+    //   final field = entity.fields[i];
+    //
+    //   if (!isFirst) {
+    //     leftColumnChildren.add(Gap(12));
+    //     rightColumnChildren.add(Gap(12));
+    //   }
+    //   if (isFirst) {
+    //     isFirst = false;
+    //   }
+    //
+    //   final widget = TileDataVertical(
+    //     label: field.label,
+    //     child: EntityField.buildDisplay(
+    //       entity,
+    //       field.reference,
+    //       data[field.reference],
+    //     ),
+    //   );
+    //
+    //   // Add alternating widgets to each column
+    //   if (i % 2 == 0) {
+    //     leftColumnChildren.add(widget);
+    //   } else {
+    //     rightColumnChildren.add(widget);
+    //   }
+    // }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: children,
     );
   }
+}
+
+List<List<T>> _chunk<T>(List<T> items, int maxSize) {
+  if (maxSize <= 0) {
+    throw ArgumentError('maxSize must be greater than 0');
+  }
+
+  final List<List<T>> chunks = [];
+  for (var i = 0; i < items.length; i += maxSize) {
+    final end = (i + maxSize < items.length) ? i + maxSize : items.length;
+    chunks.add(items.sublist(i, end));
+  }
+  return chunks;
 }
