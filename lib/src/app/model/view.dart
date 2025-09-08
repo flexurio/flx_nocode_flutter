@@ -80,31 +80,6 @@ class DView extends HiveObject {
             ),
           );
         }
-        if (embedded) {
-          Future.delayed(const Duration(milliseconds: 200), () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MenuCustom.fromId(
-
-                  embedded: true,
-                  entityId: this.entity,
-                  initialFilters: _filters(entity, data),
-                ),
-              ),
-            );
-          });
-        } else {
-          MenuBloc.instance.add(
-            Menu3Selected(
-              home: MenuCustom.fromId(
-                entityId: entity.id,
-                initialFilters: _filters(entity, data),
-              ),
-              label: entity.label,
-            ),
-          );
-        }
       },
     );
   }
@@ -122,15 +97,25 @@ class DView extends HiveObject {
           onPressed: entity == null
               ? null
               : () async {
-                  MenuBloc.instance.add(
-                    Menu3Selected(
-                      home: MenuCustom.fromId(
-                        entityId: entity.id,
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MenuCustom.fromId(
+                        breadcrumbList: [entity.label],
+                        entityId: this.entity,
                         initialFilters: _filters(entity, data),
                       ),
-                      label: entity.label,
                     ),
                   );
+                  // MenuBloc.instance.add(
+                  //   Menu3Selected(
+                  //     home: MenuCustom.fromId(
+                  //       entityId: entity.id,
+                  //       initialFilters: _filters(entity, data),
+                  //     ),
+                  //     label: entity.label,
+                  //   ),
+                  // );
                 },
         );
       },
