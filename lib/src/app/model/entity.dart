@@ -15,8 +15,8 @@ class EntityCustom extends HiveObject {
   final String description;
   final List<EntityField> fields;
   final List<view.DView> views;
-  final List<Export> exports;
-  final Backend backend;
+  final List<Export> exports; //
+  final Backend backend; //
   final List<LayoutForm> layoutForm;
   final LayoutListTile? layoutListTile;
   Map<String, int> layoutTable;
@@ -125,6 +125,7 @@ class EntityCustom extends HiveObject {
     String? id,
     Map<String, int>? layoutTable,
     List<LayoutForm>? layoutForm,
+    List<DView>? view,
   }) {
     return EntityCustom(
       id: id ?? this.id,
@@ -132,7 +133,7 @@ class EntityCustom extends HiveObject {
       description: description ?? this.description,
       fields: fields ?? this.fields,
       position: position ?? _position,
-      views: [],
+      views: view ?? this.views,
       backend: Backend(others: []),
       layoutListTile: null,
       layoutTable: layoutTable ?? this.layoutTable,

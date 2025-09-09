@@ -6,22 +6,50 @@ import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
 import 'package:flutter/material.dart';
 
 class DView extends HiveObject {
+  final String id;
   final String label;
   final String entity;
   final Map<String, String> filter;
 
-  DView({required this.label, required this.entity, required this.filter});
+  DView({
+    required this.label,
+    required this.entity,
+    required this.filter,
+    required this.id,
+  });
 
   factory DView.fromJson(Map<String, dynamic> json) {
     return DView(
+      id: json['id'],
       label: json['label'],
       entity: json['entity'],
       filter: Map<String, String>.from(json['filter']),
     );
   }
 
+  DView.empty()
+      : id = '',
+        label = '',
+        entity = '',
+        filter = {};
+
+  DView copyWith({
+    String? id,
+    String? label,
+    String? entity,
+    Map<String, String>? filter,
+  }) {
+    return DView(
+      id: id ?? this.id,
+      label: label ?? this.label,
+      entity: entity ?? this.entity,
+      filter: filter ?? this.filter,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'label': label,
       'entity': entity,
       'filter': filter,
