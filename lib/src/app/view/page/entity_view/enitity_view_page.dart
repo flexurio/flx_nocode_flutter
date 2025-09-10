@@ -247,7 +247,9 @@ class EntityViewPage extends StatelessWidget {
 
   Widget _buildData(Map<String, dynamic> data) {
     List<Widget> children = [];
-    final entityForm = entity.layoutForm.getByType(FormType.view)!;
+    final entityForm = entity.layoutForm.getByType(FormType.view);
+    if (entityForm == null) return SizedBox.shrink();
+
     final groups = entityForm.groups;
 
     for (final group in groups) {
