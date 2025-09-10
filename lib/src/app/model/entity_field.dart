@@ -8,6 +8,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_drop_down.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:flutter/foundation.dart'; // NOTE: for debugPrint
 
 enum EntityFieldType {
   text('text'),
@@ -24,15 +25,13 @@ enum EntityFieldType {
   final String id;
 
   IconData get icon {
-    switch (this.id) {
-      case 'text':
+    switch (this) {
+      case EntityFieldType.text:
         return Icons.text_fields;
-      case 'number':
+      case EntityFieldType.number:
         return Icons.tag;
-      case 'bool':
+      case EntityFieldType.bool:
         return Icons.toggle_on;
-      default:
-        return Icons.auto_awesome;
     }
   }
 }
@@ -136,11 +135,8 @@ class EntityField extends HiveObject {
   }
 
   EntityFieldType get typeEnum {
-    if (isNumber) {
-      return EntityFieldType.number;
-    } else if (isBool) {
-      return EntityFieldType.bool;
-    }
+    if (isNumber) return EntityFieldType.number;
+    if (isBool) return EntityFieldType.bool;
     return EntityFieldType.text;
   }
 
@@ -148,9 +144,8 @@ class EntityField extends HiveObject {
     if (isNumber) {
       final regExp = RegExp(r'number\((\d+)\)');
       final match = regExp.firstMatch(type);
-
       if (match != null) {
-        String number = match.group(1)!;
+        final number = match.group(1)!;
         return int.tryParse(number) ?? 0;
       }
     }
@@ -162,15 +157,15 @@ class EntityField extends HiveObject {
       throw Exception('Source is null');
     }
 
+    // NOTE: more precise, tolerate hyphen or arrow-like separator within braces
     final pattern =
-        r'(?<type>\w+)\.(?<entity>\w+)\(\{(?<key>\w+)\}-{(?<value>\w+)}\)';
-
+        r'(?<type>\w+)\.(?<entity>\w+)\(\{(?<key>\w+)\}-\{(?<value>\w+)\}\)';
     final regExp = RegExp(pattern);
     final match = regExp.firstMatch(optionsSource!);
 
-    String entity = '';
-    String key = '';
-    String value = '';
+    var entity = '';
+    var key = '';
+    var value = '';
 
     if (match != null) {
       entity = match.namedGroup('entity')!;
@@ -181,33 +176,48 @@ class EntityField extends HiveObject {
     return (entity, key, value);
   }
 
-  static Widget buildDisplay(EntityCustom entity, String label, dynamic value,
-      [void Function()? onTap]) {
+  static Widget buildDisplay(
+    EntityCustom entity,
+    String label,
+    dynamic value, [
+    void Function()? onTap,
+  ]) {
     if (value == null) {
-      return Text('-');
+      return const Text('-');
     }
 
-    final field = entity.fields.firstWhere((e) => e.reference == label);
+    // NOTE: avoid firstWhere throwing if not found
+    final field = entity.fields.firstWhere(
+      (e) => e.reference == label,
+      orElse: () => EntityField.empty(),
+    );
+
     late Widget widget;
     if (field.isDateTime) {
-      final date = DateTime.parse(value);
-      widget = Text(DateFormat(field.dateTimeFormat).format(date));
+      try {
+        final date = DateTime.tryParse(value.toString()) ??
+            DateFormat(field.dateTimeFormat).parse(value.toString());
+        widget = Text(DateFormat(field.dateTimeFormat).format(date));
+      } catch (_) {
+        widget = Text(value.toString());
+      }
     } else if (field.isBool) {
       widget = BoolIcon(value == 1);
     } else if (field.isPermission) {
-      final access = Access.fromValue(int.parse(value.toString()));
+      final access = Access.fromValue(int.tryParse(value.toString()) ?? 0);
       widget = Wrap(
         spacing: 3,
         runSpacing: 3,
         children: access.permissions.entries.map((entry) {
           return Chip(
-            label: Text(entry.key.tr(), style: TextStyle(color: Colors.white)),
+            label: Text(entry.key.tr(),
+                style: const TextStyle(color: Colors.white)),
             backgroundColor: entry.value
-                ? Access.permissionColors[entry.key] ?? Colors.grey
+                ? (Access.permissionColors[entry.key] ?? Colors.grey)
                 : Colors.grey.shade400,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4),
-              side: BorderSide(color: Colors.transparent),
+              side: const BorderSide(color: Colors.transparent),
             ),
           );
         }).toList(),
@@ -216,7 +226,8 @@ class EntityField extends HiveObject {
       if (value is num) {
         widget = Text(value.format(field.decimal));
       } else {
-        widget = Text('type is not number');
+        final parsed = num.tryParse(value.toString());
+        widget = Text(parsed?.format(field.decimal) ?? 'type is not number');
       }
     } else {
       widget = Text(LayoutListTile.getValue(value));
@@ -244,7 +255,7 @@ class EntityField extends HiveObject {
     TextEditingController controller,
     bool isEnabled,
   ) {
-    final value = controller.text == '1' ? true : false;
+    final value = controller.text == '1';
     return AbsorbPointer(
       absorbing: !isEnabled,
       child: FieldCheckBox(
@@ -265,7 +276,6 @@ class EntityField extends HiveObject {
       child: FieldCheckboxPermission(
         initialValue: Access.fromValue(int.tryParse(controller.text) ?? 0),
         onChanged: (value) {
-          print("value :" + value.getValue().toString());
           controller.text = value.getValue().toString();
         },
       ),
@@ -331,7 +341,7 @@ class EntityField extends HiveObject {
       enabled: isEnabled,
       controller: controller,
       inputFormatters:
-          type == 'number' ? [FilteringTextInputFormatter.digitsOnly] : null,
+          isNumber ? [FilteringTextInputFormatter.digitsOnly] : null,
       validator: MultiValidator([
         if (required ?? false) requiredValidator,
         LengthValidator(
@@ -354,17 +364,17 @@ class EntityField extends HiveObject {
 
   String get dateTimeFormat {
     final regex = RegExp(r'datetime\((.*?)\)');
-    final matches = regex.allMatches(type);
-
-    for (final match in matches) {
-      return match.group(1) as String;
+    final match = regex.firstMatch(type);
+    if (match != null) {
+      final fmt = match.group(1);
+      if (fmt != null && fmt.isNotEmpty) return fmt;
     }
-    throw Exception('Invalid datetime format');
+    throw Exception('Invalid datetime format: "$type"');
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'source': optionsSource,
+      'options_source': optionsSource,
       'column_width': columnWidth,
       'label': label,
       'reference': reference,
@@ -372,6 +382,7 @@ class EntityField extends HiveObject {
       'auto_generated': autoGenerated,
       'required': required,
       'pattern': pattern,
+      'pattern_error': patternError,
       'min_length': minLength,
       'max_length': maxLength,
       'allow_create': allowCreate,
@@ -418,7 +429,7 @@ extension EntityFieldList on List<EntityField> {
   }
 
   int findIndex(String reference) {
-    for (int i = 0; i < length; i++) {
+    for (var i = 0; i < length; i++) {
       if (this[i].reference == reference) {
         return i;
       }
