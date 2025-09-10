@@ -83,7 +83,7 @@ class Configuration extends HiveObject {
 
   factory Configuration.fromJson(Map<String, dynamic> json) {
     return Configuration(
-      preload: json['preload'].cast<String>() ?? [],
+      preload: json['preload'] ?? [],
       authUrl: json['auth_url'] ?? '',
       backendHost: json['backend_host'],
       appName: json['app_name'],
