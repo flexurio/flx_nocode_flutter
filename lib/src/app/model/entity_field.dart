@@ -22,6 +22,19 @@ enum EntityFieldType {
       EntityFieldType.values.firstWhere((element) => element.id == id);
 
   final String id;
+
+  IconData get icon {
+    switch (this.id) {
+      case 'text':
+        return Icons.text_fields;
+      case 'number':
+        return Icons.tag;
+      case 'bool':
+        return Icons.toggle_on;
+      default:
+        return Icons.auto_awesome;
+    }
+  }
 }
 
 class EntityField extends HiveObject {
@@ -120,6 +133,15 @@ class EntityField extends HiveObject {
       return 1;
     }
     return 'Sample text here';
+  }
+
+  EntityFieldType get typeEnum {
+    if (isNumber) {
+      return EntityFieldType.number;
+    } else if (isBool) {
+      return EntityFieldType.bool;
+    }
+    return EntityFieldType.text;
   }
 
   int get decimal {
@@ -394,9 +416,7 @@ extension EntityFieldList on List<EntityField> {
     }
     return map;
   }
-}
 
-extension EntityFieldsExtenstion on List<EntityField> {
   int findIndex(String reference) {
     for (int i = 0; i < length; i++) {
       if (this[i].reference == reference) {
