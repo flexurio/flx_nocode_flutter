@@ -36,6 +36,46 @@ class EntityCustom extends HiveObject {
     CanvasPosition? position,
   }) : _position = position ?? CanvasPosition.zero();
 
+  EntityCustom.empty()
+      : id = '',
+        label = '',
+        description = '',
+        fields = [],
+        views = [],
+        backend = Backend(others: []),
+        layoutForm = [],
+        layoutListTile = null,
+        layoutTable = {},
+        exports = [];
+
+  EntityCustom copyWith({
+    String? id,
+    String? label,
+    String? description,
+    List<EntityField>? fields,
+    CanvasPosition? position,
+    List<view.DView>? views,
+    Backend? backend,
+    List<LayoutForm>? layoutForm,
+    LayoutListTile? layoutListTile,
+    Map<String, int>? layoutTable,
+    List<Export>? exports,
+  }) {
+    return EntityCustom(
+      id: id ?? this.id,
+      label: label ?? this.label,
+      description: description ?? this.description,
+      fields: fields ?? this.fields,
+      position: position ?? _position,
+      backend: backend ?? this.backend,
+      views: views ?? this.views,
+      layoutForm: layoutForm ?? this.layoutForm,
+      layoutListTile: layoutListTile ?? this.layoutListTile,
+      layoutTable: layoutTable ?? this.layoutTable,
+      exports: exports ?? this.exports,
+    );
+  }
+
   Map<String, dynamic> dummy() {
     final data = <String, dynamic>{};
     for (var field in fields) {
@@ -115,31 +155,6 @@ class EntityCustom extends HiveObject {
       print('[EntityCustom] Entity: $id fromJson: $e');
       rethrow;
     }
-  }
-
-  EntityCustom copyWith({
-    String? label,
-    String? description,
-    List<EntityField>? fields,
-    CanvasPosition? position,
-    String? id,
-    Map<String, int>? layoutTable,
-    List<LayoutForm>? layoutForm,
-    List<DView>? view,
-  }) {
-    return EntityCustom(
-      id: id ?? this.id,
-      label: label ?? this.label,
-      description: description ?? this.description,
-      fields: fields ?? this.fields,
-      position: position ?? _position,
-      views: view ?? this.views,
-      backend: Backend(others: []),
-      layoutListTile: null,
-      layoutTable: layoutTable ?? this.layoutTable,
-      layoutForm: layoutForm ?? this.layoutForm,
-      exports: [],
-    );
   }
 
   Map<String, dynamic> toJson() {
