@@ -32,6 +32,32 @@ class Configuration extends HiveObject {
     required this.preload,
   });
 
+  Configuration copyWith({
+    List<MenuGroup>? menuGroups,
+    Company? company,
+    t.ThemeC? theme,
+    String? appName,
+    String? backendHost,
+    String? logoUrl,
+    String? logoNamedUrl,
+    String? authUrl,
+    String? entityRegistration,
+    List<String>? preload,
+  }) {
+    return Configuration(
+      preload: preload ?? this.preload,
+      menuGroups: menuGroups ?? this.menuGroups,
+      company: company ?? this.company,
+      theme: theme ?? this.theme,
+      appName: appName ?? this.appName,
+      backendHost: backendHost ?? this.backendHost,
+      logoUrl: logoUrl ?? this.logoUrl,
+      logoNamedUrl: logoNamedUrl ?? this.logoNamedUrl,
+      authUrl: authUrl ?? this.authUrl,
+      entityRegistration: entityRegistration ?? this.entityRegistration,
+    );
+  }
+
   factory Configuration.fromJson(Map<String, dynamic> json) {
     try {
       return Configuration(
@@ -77,32 +103,6 @@ class Configuration extends HiveObject {
     );
   }
 
-  Configuration copyWith({
-    List<MenuGroup>? menuGroups,
-    Company? company,
-    t.ThemeC? theme,
-    String? appName,
-    String? backendHost,
-    String? logoUrl,
-    String? logoNamedUrl,
-    String? authUrl,
-    String? entityRegistration,
-    List<String>? preload,
-  }) {
-    return Configuration(
-      preload: preload ?? this.preload,
-      menuGroups: menuGroups ?? this.menuGroups,
-      company: company ?? this.company,
-      theme: theme ?? this.theme,
-      appName: appName ?? this.appName,
-      backendHost: backendHost ?? this.backendHost,
-      logoUrl: logoUrl ?? this.logoUrl,
-      logoNamedUrl: logoNamedUrl ?? this.logoNamedUrl,
-      authUrl: authUrl ?? this.authUrl,
-      entityRegistration: entityRegistration ?? this.entityRegistration,
-    );
-  }
-
   static late Configuration instance;
 
   static load() async {
@@ -120,6 +120,9 @@ class Configuration extends HiveObject {
       'theme': theme.toJson(),
       'logo_url': logoUrl,
       'logo_named_url': logoNamedUrl,
+      'auth_url': authUrl,
+      'preload': preload,
+      'entity_registration': entityRegistration,
     };
   }
 
