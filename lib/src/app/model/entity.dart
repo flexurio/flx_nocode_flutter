@@ -36,6 +36,49 @@ class EntityCustom extends HiveObject {
     CanvasPosition? position,
   }) : _position = position ?? CanvasPosition.zero();
 
+  factory EntityCustom.fromJson(Map<String, dynamic> json) {
+    final id = json['id'];
+    try {
+      late List<LayoutForm> layoutForm;
+      try {
+        layoutForm = (json['layout_form'] as List<dynamic>)
+            .map((e) => LayoutForm.fromMap(e))
+            .toList();
+      } catch (e) {
+        layoutForm = [];
+      }
+
+      return EntityCustom(
+        id: id,
+        label: json['label'],
+        description: json['description'],
+        fields: (json['fields'] as List<dynamic>)
+            .map((e) => EntityField.fromJson(e))
+            .toList(),
+        views: json.containsKey('views')
+            ? (json['views'] as List<dynamic>)
+                .map((e) => view.DView.fromJson(e))
+                .toList()
+            : [],
+        layoutForm: layoutForm,
+        backend: Backend.fromJson(json['backend']),
+        exports: json.containsKey('exports')
+            ? (json['exports'] as List<dynamic>)
+                .map((e) => Export.fromJson(e))
+                .toList()
+            : [],
+        layoutListTile: json.containsKey('layout_list_tile')
+            ? LayoutListTile.fromJson(json['layout_list_tile'])
+            : null,
+        layoutTable: (json['layout_table'] as Map<String, dynamic>)
+            .map((key, value) => MapEntry(key, value as int)),
+      );
+    } catch (e) {
+      print('[EntityCustom] Entity: $id fromJson: $e');
+      rethrow;
+    }
+  }
+
   EntityCustom.empty()
       : id = '',
         label = '',
@@ -112,49 +155,6 @@ class EntityCustom extends HiveObject {
 
   void layoutTableReorder(oldIndex, newIndex) {
     layoutTable = reorderMap(layoutTable, oldIndex, newIndex);
-  }
-
-  factory EntityCustom.fromJson(Map<String, dynamic> json) {
-    final id = json['id'];
-    try {
-      late List<LayoutForm> layoutForm;
-      try {
-        layoutForm = (json['layout_form'] as List<dynamic>)
-            .map((e) => LayoutForm.fromMap(e))
-            .toList();
-      } catch (e) {
-        layoutForm = [];
-      }
-
-      return EntityCustom(
-        id: id,
-        label: json['label'],
-        description: json['description'],
-        fields: (json['fields'] as List<dynamic>)
-            .map((e) => EntityField.fromJson(e))
-            .toList(),
-        views: json.containsKey('views')
-            ? (json['views'] as List<dynamic>)
-                .map((e) => view.DView.fromJson(e))
-                .toList()
-            : [],
-        layoutForm: layoutForm,
-        backend: Backend.fromJson(json['backend']),
-        exports: json.containsKey('exports')
-            ? (json['exports'] as List<dynamic>)
-                .map((e) => Export.fromJson(e))
-                .toList()
-            : [],
-        layoutListTile: json.containsKey('layout_list_tile')
-            ? LayoutListTile.fromJson(json['layout_list_tile'])
-            : null,
-        layoutTable: (json['layout_table'] as Map<String, dynamic>)
-            .map((key, value) => MapEntry(key, value as int)),
-      );
-    } catch (e) {
-      print('[EntityCustom] Entity: $id fromJson: $e');
-      rethrow;
-    }
   }
 
   Map<String, dynamic> toJson() {

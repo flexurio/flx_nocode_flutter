@@ -32,6 +32,23 @@ class Configuration extends HiveObject {
     required this.preload,
   });
 
+  factory Configuration.fromJson(Map<String, dynamic> json) {
+    return Configuration(
+      preload: json['preload'] ?? [],
+      authUrl: json['auth_url'] ?? '',
+      backendHost: json['backend_host'],
+      appName: json['app_name'],
+      company: Company.fromJson(json['company']),
+      theme: t.ThemeC.fromJson(json['theme']),
+      logoUrl: json['logo_url'],
+      logoNamedUrl: json['logo_named_url'],
+      entityRegistration: json['entity_registration'],
+      menuGroups: (json['menu_group'] as List<dynamic>)
+          .map((e) => MenuGroup.fromJson(e))
+          .toList(),
+    );
+  }
+
   factory Configuration.empty() {
     return Configuration(
       preload: [],
@@ -79,23 +96,6 @@ class Configuration extends HiveObject {
     final path = 'asset/configuration/configuration.json';
     final data = await rootBundle.loadString(path);
     Configuration.instance = Configuration.fromJson(json.decode(data));
-  }
-
-  factory Configuration.fromJson(Map<String, dynamic> json) {
-    return Configuration(
-      preload: json['preload'] ?? [],
-      authUrl: json['auth_url'] ?? '',
-      backendHost: json['backend_host'],
-      appName: json['app_name'],
-      company: Company.fromJson(json['company']),
-      theme: t.ThemeC.fromJson(json['theme']),
-      logoUrl: json['logo_url'],
-      logoNamedUrl: json['logo_named_url'],
-      entityRegistration: json['entity_registration'],
-      menuGroups: (json['menu_group'] as List<dynamic>)
-          .map((e) => MenuGroup.fromJson(e))
-          .toList(),
-    );
   }
 
   Map<String, dynamic> toJson() {
