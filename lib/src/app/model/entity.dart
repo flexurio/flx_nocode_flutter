@@ -37,7 +37,6 @@ class EntityCustom extends HiveObject {
   }) : _position = position ?? CanvasPosition.zero();
 
   factory EntityCustom.fromJson(Map<String, dynamic> json) {
-    // ===== Helper agar error lebih informatif =====
     T requireKey<T>(String key) {
       if (!json.containsKey(key) || json[key] == null) {
         throw FormatException("Missing key: '$key' (expected $T).");
@@ -51,7 +50,6 @@ class EntityCustom extends HiveObject {
       return v as T;
     }
 
-    // List wajib dengan mapper & pesan error per index
     List<T> parseListRequired<T>(
       String key,
       T Function(dynamic raw, int index) mapItem,
@@ -68,7 +66,6 @@ class EntityCustom extends HiveObject {
       return out;
     }
 
-    // List opsional
     List<T> parseListOptional<T>(
       String key,
       T Function(dynamic raw, int index) mapItem,
@@ -91,7 +88,6 @@ class EntityCustom extends HiveObject {
       return out;
     }
 
-    // Map opsional <String,int> yang toleran (num -> int)
     Map<String, int> parseLayoutTable(String key) {
       if (!json.containsKey(key) || json[key] == null) return <String, int>{};
       final raw = json[key];
@@ -159,7 +155,6 @@ class EntityCustom extends HiveObject {
         },
       );
 
-      // layout_form opsional → kalau gagal, kosong (seperti kode kamu)
       List<LayoutForm> layoutForm;
       try {
         layoutForm = parseListOptional<LayoutForm>(
@@ -216,7 +211,6 @@ class EntityCustom extends HiveObject {
         layoutTable: layoutTable,
       );
     } catch (e) {
-      // id sudah diparse duluan, jadi log-nya tetap informatif
       print("[EntityCustom] Entity: $id fromJson error: $e");
       rethrow;
     }
@@ -304,9 +298,15 @@ class EntityCustom extends HiveObject {
     return {
       'id': id,
       'label': label,
-      'fields': fields.map((e) => e.toJson()).toList(),
-      'backend': backend.toJson(),
       'description': description,
+      'fields': fields.map((e) => e.toJson()).toList(),
+      'views': views.map((e) => e.toJson()).toList(),
+      'exports': exports.map((e) => e.toJson()).toList(),
+      'backend': backend.toJson(),
+      'layout_form': layoutForm.map((e) => e.toMap()).toList(),
+      'layout_list_tile': layoutListTile?.toJson(),
+      'layout_table': layoutTable,
+      'position': _position.toJson(),
     };
   }
 
@@ -409,7 +409,6 @@ T? _optional<T>(Map<String, dynamic> json, String key) {
   return v;
 }
 
-/// parse list dengan index-aware error
 List<R> _listOf<R>(
   Map<String, dynamic> json,
   String key,
@@ -424,7 +423,6 @@ List<R> _listOf<R>(
     try {
       out.add(parse(item, i));
     } catch (e) {
-      // Beri konteks key + index
       throw FormatException('Error at "$key"[$i]: $e');
     }
   }

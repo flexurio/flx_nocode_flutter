@@ -47,6 +47,12 @@ class LayoutListTile extends HiveObject {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'title': title,
+        'subtitle': subtitle,
+        'trailing': trailing,
+      };
+
   static String getValue(dynamic value) {
     if (value == null) {
       return '-';

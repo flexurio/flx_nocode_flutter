@@ -36,6 +36,13 @@ class Export extends HiveObject {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'backend': backend,
+        'type': type,
+        'fields': fields,
+      };
+
   bool get isPdf => type == 'pdf';
   bool get isXlsx => type == 'xlsx';
 
