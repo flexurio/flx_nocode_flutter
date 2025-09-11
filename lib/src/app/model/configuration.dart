@@ -33,20 +33,33 @@ class Configuration extends HiveObject {
   });
 
   factory Configuration.fromJson(Map<String, dynamic> json) {
-    return Configuration(
-      preload: json['preload'] ?? [],
-      authUrl: json['auth_url'] ?? '',
-      backendHost: json['backend_host'],
-      appName: json['app_name'],
-      company: Company.fromJson(json['company']),
-      theme: t.ThemeC.fromJson(json['theme']),
-      logoUrl: json['logo_url'],
-      logoNamedUrl: json['logo_named_url'],
-      entityRegistration: json['entity_registration'],
-      menuGroups: (json['menu_group'] as List<dynamic>)
-          .map((e) => MenuGroup.fromJson(e))
-          .toList(),
-    );
+    try {
+      return Configuration(
+        preload: (json['preload'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            <String>[],
+        authUrl: json['auth_url'] ?? '',
+        backendHost: json['backend_host'] ??
+            (throw Exception("Missing key: backend_host")),
+        appName: json['app_name'] ?? (throw Exception("Missing key: app_name")),
+        company: json['company'] != null
+            ? Company.fromJson(json['company'])
+            : (throw Exception("Missing key: company")),
+        theme: json['theme'] != null
+            ? t.ThemeC.fromJson(json['theme'])
+            : (throw Exception("Missing key: theme")),
+        logoUrl: json['logo_url'],
+        logoNamedUrl: json['logo_named_url'],
+        entityRegistration: json['entity_registration'],
+        menuGroups: (json['menu_group'] as List<dynamic>?)
+                ?.map((e) => MenuGroup.fromJson(e))
+                .toList() ??
+            (throw Exception("Missing or invalid key: menu_group")),
+      );
+    } catch (e) {
+      throw Exception('Failed to parse configuration: $e');
+    }
   }
 
   factory Configuration.empty() {

@@ -8,7 +8,6 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_drop_down.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import 'package:flutter/foundation.dart'; // NOTE: for debugPrint
 
 enum EntityFieldType {
   text('text'),

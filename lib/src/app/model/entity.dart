@@ -37,44 +37,187 @@ class EntityCustom extends HiveObject {
   }) : _position = position ?? CanvasPosition.zero();
 
   factory EntityCustom.fromJson(Map<String, dynamic> json) {
-    final id = json['id'];
-    try {
-      late List<LayoutForm> layoutForm;
-      try {
-        layoutForm = (json['layout_form'] as List<dynamic>)
-            .map((e) => LayoutForm.fromMap(e))
-            .toList();
-      } catch (e) {
-        layoutForm = [];
+    // ===== Helper agar error lebih informatif =====
+    T requireKey<T>(String key) {
+      if (!json.containsKey(key) || json[key] == null) {
+        throw FormatException("Missing key: '$key' (expected $T).");
       }
+      final v = json[key];
+      if (v is! T) {
+        throw FormatException(
+          "Invalid type for '$key': expected $T, got ${v.runtimeType}. Value: $v",
+        );
+      }
+      return v as T;
+    }
+
+    // List wajib dengan mapper & pesan error per index
+    List<T> parseListRequired<T>(
+      String key,
+      T Function(dynamic raw, int index) mapItem,
+    ) {
+      final raw = requireKey<List<dynamic>>(key);
+      final out = <T>[];
+      for (var i = 0; i < raw.length; i++) {
+        try {
+          out.add(mapItem(raw[i], i));
+        } catch (e) {
+          throw FormatException("Error on '$key'[$i]: $e");
+        }
+      }
+      return out;
+    }
+
+    // List opsional
+    List<T> parseListOptional<T>(
+      String key,
+      T Function(dynamic raw, int index) mapItem,
+    ) {
+      if (!json.containsKey(key) || json[key] == null) return <T>[];
+      final raw = json[key];
+      if (raw is! List) {
+        throw FormatException(
+          "Invalid type for '$key': expected List, got ${raw.runtimeType}.",
+        );
+      }
+      final out = <T>[];
+      for (var i = 0; i < raw.length; i++) {
+        try {
+          out.add(mapItem(raw[i], i));
+        } catch (e) {
+          throw FormatException("Error on '$key'[$i]: $e");
+        }
+      }
+      return out;
+    }
+
+    // Map opsional <String,int> yang toleran (num -> int)
+    Map<String, int> parseLayoutTable(String key) {
+      if (!json.containsKey(key) || json[key] == null) return <String, int>{};
+      final raw = json[key];
+      if (raw is! Map) {
+        throw FormatException(
+          "Invalid type for '$key': expected Map, got ${raw.runtimeType}.",
+        );
+      }
+      final result = <String, int>{};
+      for (final entry in raw.entries) {
+        final k = entry.key;
+        final v = entry.value;
+        if (k is! String) {
+          throw FormatException(
+              "Invalid key type in '$key': expected String, got ${k.runtimeType} (key=$k)");
+        }
+        if (v is int) {
+          result[k] = v;
+        } else if (v is num) {
+          result[k] = v.toInt();
+        } else {
+          throw FormatException(
+              "Invalid value type for '$key[$k]': expected int/num, got ${v.runtimeType}. Value: $v");
+        }
+      }
+      return result;
+    }
+
+    String parseId() {
+      final v = json['id'];
+      if (v == null) {
+        throw FormatException("Missing key: 'id'.");
+      }
+      if (v is! String) {
+        throw FormatException(
+            "Invalid type for 'id': expected String, got ${v.runtimeType}. Value: $v");
+      }
+      return v;
+    }
+
+    final id = parseId();
+    try {
+      final label = requireKey<String>('label');
+      final description = requireKey<String>('description');
+
+      final fields = parseListRequired<EntityField>(
+        'fields',
+        (raw, i) {
+          if (raw is! Map<String, dynamic>) {
+            throw FormatException(
+                "expected Map for 'fields'[$i], got ${raw.runtimeType}");
+          }
+          return EntityField.fromJson(raw);
+        },
+      );
+
+      final views = parseListOptional<view.DView>(
+        'views',
+        (raw, i) {
+          if (raw is! Map<String, dynamic>) {
+            throw FormatException(
+                "expected Map for 'views'[$i], got ${raw.runtimeType}");
+          }
+          return view.DView.fromJson(raw);
+        },
+      );
+
+      // layout_form opsional → kalau gagal, kosong (seperti kode kamu)
+      List<LayoutForm> layoutForm;
+      try {
+        layoutForm = parseListOptional<LayoutForm>(
+          'layout_form',
+          (raw, i) {
+            if (raw is! Map<String, dynamic>) {
+              throw FormatException(
+                  "expected Map for 'layout_form'[$i], got ${raw.runtimeType}");
+            }
+            return LayoutForm.fromMap(raw);
+          },
+        );
+      } catch (_) {
+        layoutForm = <LayoutForm>[];
+      }
+
+      final backendRaw = requireKey<Map<String, dynamic>>('backend');
+      final backend = Backend.fromJson(backendRaw);
+
+      final exports = parseListOptional<Export>(
+        'exports',
+        (raw, i) {
+          if (raw is! Map<String, dynamic>) {
+            throw FormatException(
+                "expected Map for 'exports'[$i], got ${raw.runtimeType}");
+          }
+          return Export.fromJson(raw);
+        },
+      );
+
+      LayoutListTile? layoutListTile;
+      if (json.containsKey('layout_list_tile') &&
+          json['layout_list_tile'] != null) {
+        final ltRaw = json['layout_list_tile'];
+        if (ltRaw is! Map<String, dynamic>) {
+          throw FormatException(
+              "Invalid type for 'layout_list_tile': expected Map, got ${ltRaw.runtimeType}.");
+        }
+        layoutListTile = LayoutListTile.fromJson(ltRaw);
+      }
+
+      final layoutTable = parseLayoutTable('layout_table');
 
       return EntityCustom(
         id: id,
-        label: json['label'],
-        description: json['description'],
-        fields: (json['fields'] as List<dynamic>)
-            .map((e) => EntityField.fromJson(e))
-            .toList(),
-        views: json.containsKey('views')
-            ? (json['views'] as List<dynamic>)
-                .map((e) => view.DView.fromJson(e))
-                .toList()
-            : [],
+        label: label,
+        description: description,
+        fields: fields,
+        views: views,
+        exports: exports,
+        backend: backend,
         layoutForm: layoutForm,
-        backend: Backend.fromJson(json['backend']),
-        exports: json.containsKey('exports')
-            ? (json['exports'] as List<dynamic>)
-                .map((e) => Export.fromJson(e))
-                .toList()
-            : [],
-        layoutListTile: json.containsKey('layout_list_tile')
-            ? LayoutListTile.fromJson(json['layout_list_tile'])
-            : null,
-        layoutTable: (json['layout_table'] as Map<String, dynamic>)
-            .map((key, value) => MapEntry(key, value as int)),
+        layoutListTile: layoutListTile,
+        layoutTable: layoutTable,
       );
     } catch (e) {
-      print('[EntityCustom] Entity: $id fromJson: $e');
+      // id sudah diparse duluan, jadi log-nya tetap informatif
+      print("[EntityCustom] Entity: $id fromJson error: $e");
       rethrow;
     }
   }
@@ -243,4 +386,47 @@ Map<K, V> reorderMap<K, V>(
   }
   entries.insert(newIndex, entry);
   return Map<K, V>.fromEntries(entries);
+}
+
+Never _missing(String key) => throw FormatException('Missing key: "$key"');
+
+Never _invalid(String key, String expected, Object? got) =>
+    throw FormatException(
+        'Invalid "$key": expected $expected, got ${got.runtimeType} -> $got');
+
+T _require<T>(Map<String, dynamic> json, String key) {
+  if (!json.containsKey(key)) _missing(key);
+  final v = json[key];
+  if (v is! T) _invalid(key, T.toString(), v);
+  return v;
+}
+
+T? _optional<T>(Map<String, dynamic> json, String key) {
+  if (!json.containsKey(key)) return null;
+  final v = json[key];
+  if (v == null) return null;
+  if (v is! T) _invalid(key, T.toString(), v);
+  return v;
+}
+
+/// parse list dengan index-aware error
+List<R> _listOf<R>(
+  Map<String, dynamic> json,
+  String key,
+  R Function(Object raw, int index) parse, {
+  bool optional = false,
+}) {
+  final raw = optional ? _optional<List>(json, key) : _require<List>(json, key);
+  if (raw == null) return <R>[];
+  final out = <R>[];
+  for (var i = 0; i < raw.length; i++) {
+    final item = raw[i];
+    try {
+      out.add(parse(item, i));
+    } catch (e) {
+      // Beri konteks key + index
+      throw FormatException('Error at "$key"[$i]: $e');
+    }
+  }
+  return out;
 }
