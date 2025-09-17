@@ -371,6 +371,10 @@ class CanvasPosition extends HiveObject {
 
   factory CanvasPosition.zero() => CanvasPosition(x: 0, y: 0);
 
+  factory CanvasPosition.fromJson(Map<String, dynamic> json) {
+    return CanvasPosition(x: json['x'], y: json['y']);
+  }
+
   Map<String, dynamic> toJson() => {'x': x, 'y': y};
 }
 
