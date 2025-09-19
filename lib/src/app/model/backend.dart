@@ -61,17 +61,14 @@ class Backend extends HiveObject {
 class BackendEndpoint extends HiveObject {
   final String method;
   final String url;
-  final Map<String, dynamic>? data;
+
+  final Map<String, Object>? data;
 
   /// Whether the response of this endpoint should be cached.
   final bool cached;
 
-  /// Cache duration string (e.g. `"23s"`, `"34m"`, `"45d"`).
-  /// Supported suffix:
-  /// - `s` = seconds
-  /// - `m` = minutes
-  /// - `h` = hours
-  /// - `d` = days
+  /// Cache duration string (e.g. "23s", "34m", "45d").
+  /// s=seconds, m=minutes, h=hours, d=days
   final String? cacheDuration;
 
   BackendEndpoint({
@@ -82,18 +79,43 @@ class BackendEndpoint extends HiveObject {
     this.cacheDuration,
   });
 
+  /// Factory constructor to create [BackendEndpoint] from JSON.
+  factory BackendEndpoint.fromJson(Map<String, Object?> json) {
+    try {
+      return BackendEndpoint(
+        method: (json['method'] as String?) ?? '',
+        url: (json['url'] as String?) ?? '',
+        data: (json['data'] as Map?)?.cast<String, Object>(),
+        cached: (json['cached'] as bool?) ?? false,
+        cacheDuration: json['cache_duration'] as String?,
+      );
+    } catch (e) {
+      // Hindari print berlebihan di production; ganti dengan logger bila perlu.
+      // ignore: avoid_print
+      print('[BackendEndpoint] fromJson: $e');
+      rethrow;
+    }
+  }
+
+  /// Converts this [BackendEndpoint] into JSON.
+  Map<String, Object?> toJson() {
+    return {
+      'method': method,
+      'url': url,
+      'data': data,
+      'cached': cached,
+      'cacheDuration': cacheDuration,
+    };
+  }
+}
+
+extension BackendEndpointExt on BackendEndpoint {
   /// Returns the URL with dynamic values replaced using `data`.
   String get urlWithValues {
     return urlWithValuesReplace(url, data ?? {});
   }
 
   /// Returns cache duration in seconds, parsed from [cacheDuration].
-  ///
-  /// Examples:
-  /// - `"23s"` → `23`
-  /// - `"34m"` → `34 * 60`
-  /// - `"12h"` → `12 * 3600`
-  /// - `"45d"` → `45 * 86400`
   int? get cacheDurationSeconds {
     if (cacheDuration == null || cacheDuration!.isEmpty) return null;
 
@@ -117,21 +139,6 @@ class BackendEndpoint extends HiveObject {
     }
   }
 
-  /// Factory constructor to create [BackendEndpoint] from JSON.
-  factory BackendEndpoint.fromJson(Map<String, dynamic> json) {
-    try {
-      return BackendEndpoint(
-        method: json['method'],
-        url: json['url'],
-        data: json['data'],
-        cacheDuration: json['cache_duration'],
-      );
-    } catch (e) {
-      print('[BackendEndpoint] fromJson: $e');
-      rethrow;
-    }
-  }
-
   /// Builds the request body by merging static [data] with provided [filters].
   Map<String, dynamic> body({
     required Map<String, dynamic> filters,
@@ -140,16 +147,5 @@ class BackendEndpoint extends HiveObject {
       data: data ?? {},
       filters: filters,
     );
-  }
-
-  /// Converts this [BackendEndpoint] into JSON.
-  Map<String, dynamic> toJson() {
-    return {
-      'method': method,
-      'url': url,
-      'data': data,
-      'cached': cached,
-      'cacheDuration': cacheDuration,
-    };
   }
 }
