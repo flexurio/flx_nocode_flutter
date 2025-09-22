@@ -1,5 +1,4 @@
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
-import 'package:flx_nocode_flutter/src/app/model/backend_other.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';

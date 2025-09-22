@@ -59,7 +59,7 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
         _loading = false;
         print('[FDropDownSearchEntity] newValue');
         setState(() {});
-      } catch (e, s) {
+      } catch (e) {
         _loading = false;
         if (e is ArgumentError) {
           _errorMessage = 'DropDown Argument Error: ${e.message}';

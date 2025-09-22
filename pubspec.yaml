@@ -47,6 +47,8 @@ dependencies:
   flx_core_flutter:
     path: packages/flx_core_flutter
 
+  hive: any
+  uuid: any
 dependency_overrides:
   intl: ^0.20.2
   flx_core_flutter:

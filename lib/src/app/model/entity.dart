@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
-import 'package:flx_nocode_flutter/src/app/model/layout_form.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/view.dart' as view;
@@ -47,7 +46,7 @@ class EntityCustom extends HiveObject {
           "Invalid type for '$key': expected $T, got ${v.runtimeType}. Value: $v",
         );
       }
-      return v as T;
+      return v;
     }
 
     List<T> parseListRequired<T>(
@@ -270,7 +269,7 @@ class EntityCustom extends HiveObject {
       final path = 'asset/configuration/entity/$id.json';
       final data = await rootBundle.loadString(path);
       return EntityCustom.fromJson(json.decode(data));
-    } on Exception catch (e) {
+    } on Exception {
       rethrow;
     } catch (e) {
       print('[EntityCustom] error $e');
