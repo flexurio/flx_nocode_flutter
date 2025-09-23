@@ -19,6 +19,24 @@ class Backend extends HiveObject {
     required this.others,
   });
 
+  Backend copyWith({
+    BackendEndpoint? readAll,
+    BackendEndpoint? read,
+    BackendEndpoint? create,
+    BackendEndpoint? update,
+    BackendEndpoint? deleteX,
+    List<BackendOther>? others,
+  }) {
+    return Backend(
+      readAll: readAll ?? this.readAll,
+      read: read ?? this.read,
+      create: create ?? this.create,
+      update: update ?? this.update,
+      deleteX: deleteX ?? this.deleteX,
+      others: others ?? this.others,
+    );
+  }
+
   factory Backend.fromJson(Map<String, dynamic> json) {
     try {
       return Backend(
