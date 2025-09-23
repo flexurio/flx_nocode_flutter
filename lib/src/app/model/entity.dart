@@ -19,7 +19,6 @@ class EntityCustom extends HiveObject {
   final List<LayoutForm> layoutForm;
   final LayoutListTile? layoutListTile;
   Map<String, int> layoutTable;
-  var _position = CanvasPosition.zero();
 
   EntityCustom({
     required this.id,
@@ -32,8 +31,7 @@ class EntityCustom extends HiveObject {
     required this.layoutListTile,
     required this.layoutTable,
     required this.exports,
-    CanvasPosition? position,
-  }) : _position = position ?? CanvasPosition.zero();
+  });
 
   factory EntityCustom.fromJson(Map<String, dynamic> json) {
     T requireKey<T>(String key) {
@@ -232,7 +230,6 @@ class EntityCustom extends HiveObject {
     String? label,
     String? description,
     List<EntityField>? fields,
-    CanvasPosition? position,
     List<view.DView>? views,
     Backend? backend,
     List<LayoutForm>? layoutForm,
@@ -245,7 +242,6 @@ class EntityCustom extends HiveObject {
       label: label ?? this.label,
       description: description ?? this.description,
       fields: fields ?? this.fields,
-      position: position ?? _position,
       backend: backend ?? this.backend,
       views: views ?? this.views,
       layoutForm: layoutForm ?? this.layoutForm,
@@ -283,12 +279,6 @@ class EntityCustom extends HiveObject {
     return field.first;
   }
 
-  CanvasPosition get position => _position;
-
-  void setPosition(double x, double y) {
-    _position = CanvasPosition(x: x, y: y);
-  }
-
   void layoutTableReorder(oldIndex, newIndex) {
     layoutTable = reorderMap(layoutTable, oldIndex, newIndex);
   }
@@ -305,7 +295,6 @@ class EntityCustom extends HiveObject {
       'layout_form': layoutForm.map((e) => e.toMap()).toList(),
       'layout_list_tile': layoutListTile?.toJson(),
       'layout_table': layoutTable,
-      'position': _position.toJson(),
     };
   }
 
@@ -358,23 +347,6 @@ extension EntitiesExtenstion on List<EntityCustom> {
     }
     return -1;
   }
-}
-
-class CanvasPosition extends HiveObject {
-  final double x;
-  final double y;
-
-  CanvasPosition({required this.x, required this.y});
-
-  Offset toOffset() => Offset(x, y);
-
-  factory CanvasPosition.zero() => CanvasPosition(x: 0, y: 0);
-
-  factory CanvasPosition.fromJson(Map<String, dynamic> json) {
-    return CanvasPosition(x: json['x'], y: json['y']);
-  }
-
-  Map<String, dynamic> toJson() => {'x': x, 'y': y};
 }
 
 Map<K, V> reorderMap<K, V>(
