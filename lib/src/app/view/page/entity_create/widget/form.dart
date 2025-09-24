@@ -109,27 +109,50 @@ class _RowBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cells = <Widget>[];
+    final columns = (row.columns <= 0) ? 1 : row.columns;
 
-    for (var i = 0; i < row.columns; i++) {
-      if (i < row.fields.length) {
-        final key = row.fields[i];
-        final field = entity.getField(key);
-        final controller = controllers[key];
+    final fieldWidgets = <Widget>[];
+    for (final key in row.fields) {
+      final field = entity.getField(key);
+      final controller = controllers[key];
 
-        if (field != null && controller != null) {
-          final child = field.buildForm(dataAction, controller);
-          cells.add(child);
-        } else if (field == null) {
-          cells.add(Text('Error: field "$key" not found'));
-        } else {
-          cells.add(Text('Error: controller for "$key" not found'));
-        }
+      if (field != null && controller != null) {
+        fieldWidgets.add(field.buildForm(dataAction, controller));
+      } else if (field == null) {
+        fieldWidgets.add(Text('Error: field "$key" not found'));
       } else {
-        cells.add(Container());
+        fieldWidgets.add(Text('Error: controller for "$key" not found'));
       }
     }
 
-    return RowFields(children: List<Widget>.from(cells));
+    final rows = <List<Widget>>[];
+    for (var i = 0; i < fieldWidgets.length; i += columns) {
+      final end = (i + columns < fieldWidgets.length)
+          ? i + columns
+          : fieldWidgets.length;
+      final chunk = fieldWidgets.sublist(i, end);
+
+      while (chunk.length < columns) {
+        chunk.add(Container());
+      }
+
+      final wrappedColumns = chunk
+          .map((w) => Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [w],
+              ))
+          .toList();
+
+      rows.add(wrappedColumns);
+    }
+
+    return Column(
+      children: [
+        for (var i = 0; i < rows.length; i++) ...[
+          RowFields(children: rows[i]),
+          if (i < rows.length - 1) const Gap(12),
+        ],
+      ],
+    );
   }
 }
