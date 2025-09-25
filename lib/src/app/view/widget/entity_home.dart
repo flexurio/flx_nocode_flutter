@@ -1,6 +1,8 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_data_table.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -25,6 +27,7 @@ class MenuCustom extends StatelessWidget {
 
   static Widget fromId({
     required String entityId,
+    String? accessToken,
     bool firstPage = false,
     bool embedded = false,
     List<String> breadcrumbList = const [],
@@ -186,6 +189,75 @@ class BreadcrumbWithBack extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class NoCodePageLoader extends StatefulWidget {
+  final String entityId;
+  final bool firstPage;
+  final bool embedded;
+  final List<String> breadcrumbList;
+  final List<Filter> initialFilters;
+  final String Function()? getAccess;
+  final Configuration Function()? getConfiguration;
+
+  const NoCodePageLoader({
+    super.key,
+    required this.entityId,
+    this.getAccess,
+    this.firstPage = false,
+    this.embedded = false,
+    this.breadcrumbList = const [],
+    this.initialFilters = const [],
+    this.getConfiguration,
+  });
+
+  @override
+  State<NoCodePageLoader> createState() => _NoCodePageLoaderState();
+}
+
+class _NoCodePageLoaderState extends State<NoCodePageLoader> {
+  late Future<EntityCustom?> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.getAccess != null) {
+      UserRepositoryApp.instance.token = widget.getAccess!();
+    }
+    if (widget.getConfiguration != null) {
+      Configuration.instance = widget.getConfiguration!();
+    }
+    _future = EntityCustom.getEntity(widget.entityId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<EntityCustom?>(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: NoCodeError('${snapshot.error}'));
+        } else if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.hasData) {
+          final entity = snapshot.data;
+          if (entity == null) {
+            return Center(
+              child: NoCodeError('Entity not found! Id: ${widget.entityId}'),
+            );
+          }
+          return MenuCustom(
+            entity: entity,
+            breadcrumbList: widget.breadcrumbList,
+            embedded: widget.embedded,
+            firstPage: widget.firstPage,
+            initialFilters: widget.initialFilters,
+          );
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 }

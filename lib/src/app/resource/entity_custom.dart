@@ -80,7 +80,6 @@ class EntityCustomRepository extends Repository {
         filterMap: filterMap,
       );
 
-      // 🔹 cek cache lebih dulu
       if (cachedDurationSeconds != null) {
         final cachedData = await EntityCustomCache.get(
           cacheKey,
@@ -113,9 +112,9 @@ class EntityCustomRepository extends Repository {
         totalRows: total,
       );
 
-      // 🔹 simpan ke cache setelah ambil dari API
-      await EntityCustomCache.put(cacheKey, newPageOptions.data);
-
+      if (cachedDurationSeconds != null) {
+        await EntityCustomCache.put(cacheKey, newPageOptions.data);
+      }
       return newPageOptions;
     } catch (error) {
       print('[EntityCustomRepository] fetch error: $error');
