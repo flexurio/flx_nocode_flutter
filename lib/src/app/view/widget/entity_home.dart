@@ -17,6 +17,7 @@ class MenuCustom extends StatelessWidget {
     this.embedded = false,
     this.initialFilters = const [],
     this.breadcrumbList = const [],
+    required this.bypassPermission,
   });
 
   final bool firstPage;
@@ -24,6 +25,7 @@ class MenuCustom extends StatelessWidget {
   final EntityCustom entity;
   final List<Filter> initialFilters;
   final List<String> breadcrumbList;
+  final bool bypassPermission;
 
   static Widget fromId({
     required String entityId,
@@ -32,6 +34,7 @@ class MenuCustom extends StatelessWidget {
     bool embedded = false,
     List<String> breadcrumbList = const [],
     List<Filter> initialFilters = const [],
+    bool bypassPermission = false,
   }) {
     return FutureBuilder<EntityCustom?>(
       future: EntityCustom.getEntity(entityId),
@@ -52,6 +55,7 @@ class MenuCustom extends StatelessWidget {
             embedded: embedded,
             firstPage: firstPage,
             initialFilters: initialFilters,
+            bypassPermission: bypassPermission,
           );
         } else {
           return const Center(child: CircularProgressIndicator());
@@ -87,6 +91,7 @@ class MenuCustom extends StatelessWidget {
               entity: entity,
               initialFilters: initialFilters,
               embedded: embedded,
+              bypassPermission: bypassPermission,
             ),
           ),
         ],
@@ -201,6 +206,7 @@ class NoCodePageLoader extends StatefulWidget {
   final List<Filter> initialFilters;
   final String Function()? getAccess;
   final Configuration Function()? getConfiguration;
+  final bool bypassPermission;
 
   const NoCodePageLoader({
     super.key,
@@ -211,6 +217,7 @@ class NoCodePageLoader extends StatefulWidget {
     this.breadcrumbList = const [],
     this.initialFilters = const [],
     this.getConfiguration,
+    required this.bypassPermission,
   });
 
   @override
@@ -253,6 +260,7 @@ class _NoCodePageLoaderState extends State<NoCodePageLoader> {
             embedded: widget.embedded,
             firstPage: widget.firstPage,
             initialFilters: widget.initialFilters,
+            bypassPermission: widget.bypassPermission,
           );
         } else {
           return const Center(child: CircularProgressIndicator());

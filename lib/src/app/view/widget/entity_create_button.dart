@@ -10,17 +10,19 @@ class EntityCreateButton extends StatelessWidget {
     required this.onSuccess,
     required this.embedded,
     required this.filters,
+    required this.bypassPermission,
   });
 
   final configuration.EntityCustom entity;
   final void Function() onSuccess;
   final bool embedded;
   final Map<String, dynamic> filters;
+  final bool bypassPermission;
 
   @override
   Widget build(BuildContext context) {
     return Button.small(
-      permission: '${entity.id}_write',
+      permission: bypassPermission ? null : '${entity.id}_write',
       action: DataAction.create,
       onPressed: () async {
         final success = await Navigator.push(

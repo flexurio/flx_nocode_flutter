@@ -9,20 +9,27 @@ class EntityDeleteButton extends StatelessWidget {
     required this.entity,
     required this.data,
     required this.onSuccess,
+    required this.bypassPermission,
   });
 
   final Map<String, dynamic> data;
   final VoidCallback onSuccess;
+  final bool bypassPermission;
 
   static Widget prepare({
     required EntityCustom entity,
     required Map<String, dynamic> data,
     required VoidCallback onSuccess,
+    required bool bypassPermission,
   }) {
     return BlocProvider(
       create: (context) => EntityBloc(entity),
       child: EntityDeleteButton._(
-          entity: entity, data: data, onSuccess: onSuccess),
+        entity: entity,
+        data: data,
+        onSuccess: onSuccess,
+        bypassPermission: bypassPermission,
+      ),
     );
   }
 
@@ -31,7 +38,7 @@ class EntityDeleteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LightButton(
-      permission: '${entity.id}_delete',
+      permission: bypassPermission ? null : '${entity.id}_delete',
       action: DataAction.delete,
       onPressed: () async {
         await _showConfirmationDialog(context);

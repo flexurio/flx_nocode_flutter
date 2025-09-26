@@ -18,16 +18,19 @@ class MenuDataTableCustom extends StatefulWidget {
     required this.entity,
     required this.embedded,
     required this.initialFilters,
+    required this.bypassPermission,
   });
 
   static Widget prepare({
     required bool embedded,
     required EntityCustom entity,
+    required bool bypassPermission,
     List<Filter> initialFilters = const [],
   }) {
     return BlocProvider(
       create: (_) => EntityCustomQueryBloc(),
       child: MenuDataTableCustom._(
+        bypassPermission: bypassPermission,
         entity: entity,
         embedded: embedded,
         initialFilters: initialFilters,
@@ -38,6 +41,7 @@ class MenuDataTableCustom extends StatefulWidget {
   final EntityCustom entity;
   final bool embedded;
   final List<Filter> initialFilters;
+  final bool bypassPermission;
 
   @override
   State<MenuDataTableCustom> createState() => _MenuDataTableCustomState();
@@ -215,11 +219,12 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 children: [
                   ActionsButton(
                     children: EntityViewPage.actionsLarge(
-                      context,
-                      data,
-                      _filters.toMap(),
-                      widget.entity,
-                      (context) => _fetch(),
+                      context: context,
+                      data: data,
+                      filters: _filters.toMap(),
+                      entity: widget.entity,
+                      onRefresh: (context) => _fetch(),
+                      bypassPermission: widget.bypassPermission,
                     ),
                   )
                 ],
@@ -255,6 +260,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           embedded: widget.embedded,
           entity: widget.entity,
           filters: _filters.toMap(),
+          bypassPermission: widget.bypassPermission,
           onSuccess: () {
             _fetch();
           },

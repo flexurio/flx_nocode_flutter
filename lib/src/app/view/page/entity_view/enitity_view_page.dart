@@ -135,29 +135,37 @@ class EntityViewPage extends StatelessWidget {
       ..addAll(modifyActions);
   }
 
-  static List<Widget> actionsLarge(
-    BuildContext context,
-    Map<String, dynamic> data,
-    Map<String, dynamic> filters,
-    EntityCustom entity,
-    void Function(BuildContext) onRefresh,
-  ) {
+  static List<Widget> actionsLarge({
+    required BuildContext context,
+    required Map<String, dynamic> data,
+    required Map<String, dynamic> filters,
+    required EntityCustom entity,
+    required void Function(BuildContext) onRefresh,
+    required bool bypassPermission,
+  }) {
     final modifyActions = _buildEntityCustomActionsLarge(
-        entity, context, data, filters, onRefresh);
+      entity: entity,
+      context: context,
+      data: data,
+      filters: filters,
+      onRefresh: onRefresh,
+      bypassPermission: bypassPermission,
+    );
     return entity.buttonViewsLarge(context, data)..addAll(modifyActions);
   }
 
-  static List<Widget> _buildEntityCustomActionsLarge(
-    EntityCustom entity,
-    BuildContext context,
-    Map<String, dynamic> data,
-    Map<String, dynamic> filters,
-    void Function(BuildContext context) onRefresh,
-  ) {
+  static List<Widget> _buildEntityCustomActionsLarge({
+    required EntityCustom entity,
+    required BuildContext context,
+    required Map<String, dynamic> data,
+    required Map<String, dynamic> filters,
+    required void Function(BuildContext context) onRefresh,
+    required bool bypassPermission,
+  }) {
     return [
       if (entity.allowDelete)
         LightButton(
-          permission: '${entity.id}_write',
+          permission: bypassPermission ? null : '${entity.id}_write',
           action: DataAction.edit,
           onPressed: () async {
             Navigator.push(
@@ -174,6 +182,7 @@ class EntityViewPage extends StatelessWidget {
         ),
       if (entity.allowDelete)
         EntityDeleteButton.prepare(
+          bypassPermission: bypassPermission,
           entity: entity,
           data: data,
           onSuccess: () => onRefresh(context),
