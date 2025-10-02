@@ -28,6 +28,7 @@ Future<void> main() async {
         return EntityCreatePage.prepare(
           entity: entity,
           embedded: true,
+          noHeader: true,
           filters: {},
           onSuccess: onSuccess,
           autoBackWhenSuccess: false,

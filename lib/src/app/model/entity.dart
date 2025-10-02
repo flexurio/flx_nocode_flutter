@@ -14,8 +14,8 @@ class EntityCustom extends HiveObject {
   final String description;
   final List<EntityField> fields;
   final List<view.DView> views;
-  final List<Export> exports; //
-  final Backend backend; //
+  final List<Export> exports;
+  final Backend backend;
   final List<LayoutForm> layoutForm;
   final LayoutListTile? layoutListTile;
   Map<String, int> layoutTable;

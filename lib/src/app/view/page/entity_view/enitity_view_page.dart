@@ -271,8 +271,12 @@ class EntityViewPage extends StatelessWidget {
         for (final chunk in chunks) {
           final fields = chunk.map<Widget>((field) {
             return TileDataVertical(
-              label: field,
-              child: Text(field),
+              label: entity.getField(field)?.label ?? field,
+              child: EntityField.buildDisplay(
+                entity,
+                field,
+                data[field],
+              ),
             );
           }).toList();
           final remainingFields = c - fields.length;

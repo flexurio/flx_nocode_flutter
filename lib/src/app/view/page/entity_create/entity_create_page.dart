@@ -1,5 +1,5 @@
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
-import 'package:flx_nocode_flutter/src/app/model/entity.dart' as configuration;
+import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
@@ -18,21 +18,24 @@ class EntityCreatePage extends StatefulWidget {
     required this.embedded,
     required this.autoBackWhenSuccess,
     this.filters = const {},
+    required this.noHeader,
   });
 
   final Map<String, dynamic>? data;
-  final configuration.EntityCustom entity;
+  final EntityCustom entity;
   final VoidCallback onSuccess;
   final Map<String, dynamic> filters;
   final bool embedded;
   final bool autoBackWhenSuccess;
+  final bool noHeader;
 
   static Widget prepare({
     Key? key,
-    required configuration.EntityCustom entity,
+    required EntityCustom entity,
     Map<String, dynamic>? data,
     required VoidCallback onSuccess,
     required bool embedded,
+    bool noHeader = false,
     Map<String, dynamic> filters = const {},
     bool autoBackWhenSuccess = true,
   }) {
@@ -45,13 +48,14 @@ class EntityCreatePage extends StatefulWidget {
         embedded: embedded,
         key: key,
         filters: filters,
+        noHeader: noHeader,
         autoBackWhenSuccess: autoBackWhenSuccess,
       ),
     );
   }
 
   static Route<bool?> route({
-    required configuration.EntityCustom entity,
+    required EntityCustom entity,
     Map<String, dynamic>? data,
     required VoidCallback onSuccess,
     required bool embedded,
@@ -99,9 +103,18 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
   }
 
   @override
+  void dispose() {
+    for (final c in _controllers.values) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final coreEntity = widget.entity.coreEntity;
+
     return BlocListener<EntityBloc, EntityState>(
       listener: (context, state) {
         state.maybeWhen(
@@ -114,7 +127,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
           orElse: () {},
         );
       },
-      child: widget.embedded
+      child: widget.noHeader
           ? _buildFormEmbedded(
               theme: theme,
               coreEntity: coreEntity,
@@ -143,7 +156,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
                   dataAction: _action,
                   controllers: _controllers,
                 ),
-                Gap(24),
+                const Gap(24),
                 Row(
                   children: [Expanded(child: _buildButtonSubmit())],
                 ),
@@ -219,12 +232,14 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
   Widget _buildButtonSubmit() {
     return BlocBuilder<EntityBloc, EntityState>(
       builder: (context, state) {
+        final inProgress = state.maybeWhen(
+          loading: () => true,
+          orElse: () => false,
+        );
+
         return Button.action(
           permission: null,
-          isInProgress: state.maybeWhen(
-            loading: () => true,
-            orElse: () => false,
-          ),
+          isInProgress: inProgress,
           onPressed: _submit,
           action: _action,
         );
