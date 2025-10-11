@@ -261,14 +261,14 @@ class EntityCustom extends HiveObject {
 
   static Future<EntityCustom?> getEntity(String id) async {
     try {
-      print('[EntityCustom] getEntity $id');
+      print('[EntityCustom] getEntity "$id"');
       final path = 'asset/configuration/entity/$id.json';
       final data = await rootBundle.loadString(path);
       return EntityCustom.fromJson(json.decode(data));
     } on Exception {
       rethrow;
-    } catch (e) {
-      print('[EntityCustom] error $e');
+    } catch (e, stackTrace) {
+      print('[EntityCustom] error :$e,\n$stackTrace');
       return null;
     }
   }

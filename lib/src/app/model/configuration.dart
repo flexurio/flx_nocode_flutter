@@ -18,6 +18,7 @@ class Configuration extends HiveObject {
   final String authUrl;
   final List<String> preload;
   final String? entityRegistration;
+  final bool showLandingPage;
 
   Configuration({
     required this.menuGroups,
@@ -30,6 +31,7 @@ class Configuration extends HiveObject {
     required this.authUrl,
     required this.entityRegistration,
     required this.preload,
+    required this.showLandingPage,
   });
 
   Configuration copyWith({
@@ -43,8 +45,10 @@ class Configuration extends HiveObject {
     String? authUrl,
     String? entityRegistration,
     List<String>? preload,
+    bool? showLandingPage,
   }) {
     return Configuration(
+      showLandingPage: showLandingPage ?? this.showLandingPage,
       preload: preload ?? this.preload,
       menuGroups: menuGroups ?? this.menuGroups,
       company: company ?? this.company,
@@ -61,6 +65,7 @@ class Configuration extends HiveObject {
   factory Configuration.fromJson(Map<String, dynamic> json) {
     try {
       return Configuration(
+        showLandingPage: json['show_landing_page'] ?? false,
         preload: (json['preload'] as List<dynamic>?)
                 ?.map((e) => e.toString())
                 .toList() ??
@@ -90,15 +95,16 @@ class Configuration extends HiveObject {
 
   factory Configuration.empty() {
     return Configuration(
+      showLandingPage: false,
       preload: [],
       menuGroups: [],
       company: Company.empty(),
       theme: t.ThemeC(),
       appName: 'Dummy',
-      backendHost: 'https://dummy.com',
+      backendHost: 'http://0.0.0.0:8000',
       logoUrl: 'https://dummy.com/logo.png',
       logoNamedUrl: 'https://dummy.com/logo_named.png',
-      authUrl: 'https://dummy.com/auth',
+      authUrl: 'http://0.0.0.0:8000/login',
       entityRegistration: null,
     );
   }
