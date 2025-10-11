@@ -138,6 +138,9 @@ class EntityField extends HiveObject {
     if (isNumber) {
       return 1;
     }
+    if (isDateTime) {
+      return DateTime.now().yMMMMd;
+    }
     return 'Sample text here';
   }
 
