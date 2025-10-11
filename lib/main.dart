@@ -35,8 +35,11 @@ Future<void> main() async {
         );
       };
     }
+  } else {
+    print('[main] entityRegistration is null');
   }
 
+  print('[main] configuration.authUrl: ${configuration.authUrl}');
   final signInPage = LoginPage.prepare(
     logoNamedUrl: configuration.logoNamedUrl,
     logoUrl: configuration.logoUrl,
@@ -89,7 +92,7 @@ Future<void> main() async {
   );
 
   final router = GoRouter(
-    initialLocation: '/',
+    initialLocation: configuration.showLandingPage ? '/' : '/sign-in',
     routes: [
       GoRoute(
         path: '/',
