@@ -101,10 +101,10 @@ class Configuration extends HiveObject {
       company: Company.empty(),
       theme: t.ThemeC(),
       appName: 'Dummy',
-      backendHost: 'http://0.0.0.0:8000',
+      backendHost: 'http://0.0.0.0:8080',
       logoUrl: 'https://dummy.com/logo.png',
       logoNamedUrl: 'https://dummy.com/logo_named.png',
-      authUrl: 'http://0.0.0.0:8000/login',
+      authUrl: 'http://0.0.0.0:8080/login',
       entityRegistration: null,
     );
   }
@@ -244,6 +244,16 @@ class MenuGroup extends HiveObject {
 
   MenuGroup({required this.label, required this.menu});
 
+  MenuGroup copyWith({
+    String? label,
+    List<Menu>? menu,
+  }) {
+    return MenuGroup(
+      label: label ?? this.label,
+      menu: menu ?? this.menu,
+    );
+  }
+
   factory MenuGroup.fromJson(Map<String, dynamic> json) {
     return MenuGroup(
       label: json['label'],
@@ -271,6 +281,18 @@ class Menu extends HiveObject {
     required this.menuSub,
   });
 
+  Menu copyWith({
+    String? label,
+    String? icon,
+    List<MenuSub>? menuSub,
+  }) {
+    return Menu(
+      label: label ?? this.label,
+      icon: icon ?? this.icon,
+      menuSub: menuSub ?? this.menuSub,
+    );
+  }
+
   factory Menu.fromJson(Map<String, dynamic> json) {
     return Menu(
       label: json['label'],
@@ -295,6 +317,16 @@ class MenuSub extends HiveObject {
   final String entity;
 
   MenuSub({required this.label, required this.entity});
+
+  MenuSub copyWith({
+    String? label,
+    String? entity,
+  }) {
+    return MenuSub(
+      label: label ?? this.label,
+      entity: entity ?? this.entity,
+    );
+  }
 
   factory MenuSub.fromJson(Map<String, dynamic> json) {
     return MenuSub(

@@ -12,8 +12,8 @@ class ThemeC extends HiveObject {
   ///
   /// The [color] and [colorSoft] parameters have default values of '#F0F0F0' if not provided.
   ThemeC({
-    this.color = '#F0F0F0',
-    this.colorSoft = '#F0F0F0',
+    this.color = '#03A9F4',
+    this.colorSoft = '#B3E5FC',
   });
 
   /// Creates a [ThemeC] instance from a JSON object.
