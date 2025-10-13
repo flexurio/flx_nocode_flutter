@@ -97,14 +97,28 @@ class Configuration extends HiveObject {
     return Configuration(
       showLandingPage: false,
       preload: [],
-      menuGroups: [],
+      menuGroups: [
+        MenuGroup(
+          label: "Master",
+          menu: [
+            Menu(
+              label: "Entity",
+              icon: "fa fa-database",
+              menuSub: [
+                MenuSub(label: "FLX Roles", entity: "flx_roles"),
+                MenuSub(label: "FLX Users", entity: "flx_users"),
+              ],
+            ),
+          ],
+        ),
+      ],
       company: Company.empty(),
       theme: t.ThemeC(),
       appName: 'Dummy',
-      backendHost: 'http://0.0.0.0:8080',
+      backendHost: 'http://localhost:8080',
       logoUrl: 'https://dummy.com/logo.png',
       logoNamedUrl: 'https://dummy.com/logo_named.png',
-      authUrl: 'http://0.0.0.0:8080/login',
+      authUrl: 'http://localhost:8080/login',
       entityRegistration: null,
     );
   }
