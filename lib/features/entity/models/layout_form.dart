@@ -43,8 +43,11 @@ class LayoutForm extends HiveObject {
     if (gs is! List) {
       throw const FormatException('"groups" must be an array');
     }
-
     final label = (map['label'] ?? '').toString().trim();
+    if (label.isEmpty) {
+      throw const FormatException('Action "label" is required');
+    }
+
     return LayoutForm(
       label: label,
       type: type,
