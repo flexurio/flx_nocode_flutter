@@ -33,12 +33,12 @@ dependencies:
   hive_ce: ^2.11.3
   hive_ce_flutter: ^2.3.2
 
-  flx_authentication_flutter:
-    git:
-      url: https://github.com/flexurio/flx_authentication_flutter.git
-      ref: main
   # flx_authentication_flutter:
-  #   path: packages/flx_authentication_flutter
+  #   git:
+  #     url: https://github.com/flexurio/flx_authentication_flutter.git
+  #     ref: main
+  flx_authentication_flutter:
+    path: packages/flx_authentication_flutter
 
   # flx_core_flutter:
   #   git:

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/features/entity/models/group_layout.dart';
 
 import 'package:gap/gap.dart';
 
-import '../../../../../../flx_nocode_flutter.dart';
+import '../../../../flx_nocode_flutter.dart';
 
 class EntityCreateForm extends StatelessWidget {
   const EntityCreateForm({
@@ -11,26 +12,17 @@ class EntityCreateForm extends StatelessWidget {
     required this.dataAction,
     required this.entity,
     required this.controllers,
+    required this.layoutForm,
   });
 
   final DataAction dataAction;
   final EntityCustom entity;
   final Map<String, TextEditingController> controllers;
+  final LayoutForm layoutForm;
 
   @override
   Widget build(BuildContext context) {
-    final actionName = dataAction.isEdit ? 'update' : 'create';
-
-    final actions = entity.layoutForm;
-
-    final action = actions.cast<LayoutForm?>().firstWhere(
-          (a) => a?.name == actionName,
-          orElse: () => null,
-        );
-
-    if (action == null) {
-      return Text('Error: Layout "$actionName" not found');
-    }
+    final action = layoutForm;
 
     final children = <Widget>[];
     for (var i = 0; i < action.groups.length; i++) {
