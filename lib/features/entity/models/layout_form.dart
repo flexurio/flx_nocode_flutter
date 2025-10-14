@@ -35,17 +35,19 @@ class LayoutForm extends HiveObject {
         assert(groups != const []);
 
   factory LayoutForm.fromMap(JsonMap map) {
-    final name = (map['name'] ?? '').toString().trim();
-    if (name.isEmpty) {
-      throw const FormatException('Action "name" is required');
+    final type = (map['type'] ?? '').toString().trim();
+    if (type.isEmpty) {
+      throw const FormatException('Action "type" is required');
     }
     final gs = map['groups'];
     if (gs is! List) {
       throw const FormatException('"groups" must be an array');
     }
+
+    final label = (map['label'] ?? '').toString().trim();
     return LayoutForm(
-      label: name,
-      type: name,
+      label: label,
+      type: type,
       groups: gs.map((e) => GroupLayout.fromMap(e as JsonMap)).toList(),
     );
   }
