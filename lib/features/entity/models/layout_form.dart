@@ -100,13 +100,12 @@ class LayoutForm extends HiveObject {
     String? type,
     List<GroupLayout>? groups,
     Rule? visibleIf,
-    bool clearVisibleIf = false, // set true to null out visibleIf
   }) {
     return LayoutForm(
       label: label ?? this.label,
       type: type ?? this.type,
       groups: groups ?? this.groups,
-      visibleIf: clearVisibleIf ? null : (visibleIf ?? this.visibleIf),
+      visibleIf: visibleIf ?? this.visibleIf,
     );
   }
 

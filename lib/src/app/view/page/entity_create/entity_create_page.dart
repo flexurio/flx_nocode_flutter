@@ -6,7 +6,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flx_nocode_flutter/features/entity/models/layout_form.dart';
-import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/enitty_create_form.dart';
 import 'package:gap/gap.dart';
 import 'package:page_transition/page_transition.dart';
 

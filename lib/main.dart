@@ -57,6 +57,7 @@ Future<void> main() async {
       final name = user.name;
       final permissions = UserRepositoryApp.instance.permissions;
       return MenuPage.prepare(
+        bypassPermission: true,
         initialState: () async {
           final p = configuration.preload;
           for (final preload in p) {
