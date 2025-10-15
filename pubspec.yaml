@@ -34,26 +34,30 @@ dependencies:
   hive_ce_flutter: ^2.3.2
   get: ^4.7.2
 
-  # flx_authentication_flutter:
-  #   git:
-  #     url: https://github.com/flexurio/flx_authentication_flutter.git
-  #     ref: main
   flx_authentication_flutter:
-    path: packages/flx_authentication_flutter
+    git:
+      url: https://github.com/flexurio/flx_authentication_flutter.git
+      ref: main
+  # flx_authentication_flutter:
+  #   path: packages/flx_authentication_flutter
 
-  # flx_core_flutter:
-  #   git:
-  #     url: https://gitlab.com/VNEU/flexurio-erp-core.git
-  #     ref: main
   flx_core_flutter:
-    path: packages/flx_core_flutter
+    git:
+      url: https://gitlab.com/VNEU/flexurio-erp-core.git
+      ref: main
+  # flx_core_flutter:
+  #   path: packages/flx_core_flutter
 
   hive: any
   uuid: any
 dependency_overrides:
   intl: ^0.20.2
   flx_core_flutter:
-    path: packages/flx_core_flutter
+    git:
+      url: https://gitlab.com/VNEU/flexurio-erp-core.git
+      ref: main
+  # flx_core_flutter:
+  #   path: packages/flx_core_flutter
 
 dev_dependencies:
   bloc_test: ^10.0.0

@@ -241,6 +241,35 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     ];
   }
 
+  List<Widget> _buildHomeActions() {
+    final buttons = <Widget>[];
+    final actions = widget.entity.layoutForm.homeActionForms;
+    for (final action in actions) {
+      buttons.add(
+        LightButtonSmall(
+          title: action.label,
+          action: DataAction.edit,
+          permissions: null,
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              EntityCreatePage.route(
+                layoutForm: action,
+                entity: widget.entity,
+                onSuccess: () {
+                  _fetch();
+                },
+                embedded: false,
+                filters: {},
+              ),
+            );
+          },
+        ),
+      );
+    }
+    return buttons;
+  }
+
   List<Widget> _buildActionRight(Widget refreshButton) {
     return [
       _buildButtonExports(),
@@ -252,6 +281,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           _fetch();
         },
       ),
+      ..._buildHomeActions(),
       refreshButton,
       if (widget.entity.allowCreate)
         EntityCreateButton(
