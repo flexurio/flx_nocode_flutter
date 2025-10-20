@@ -219,7 +219,7 @@ class EntityCustom extends HiveObject {
         description = '',
         fields = [],
         views = [],
-        backend = Backend(others: []),
+        backend = Backend(others: [], homeActions: []),
         layoutForm = [],
         layoutListTile = null,
         layoutTable = {},

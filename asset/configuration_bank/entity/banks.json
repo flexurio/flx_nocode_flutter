@@ -76,12 +76,12 @@
     },
     "layout": {
         "create": {
-            "Information" : {
+            "Information": {
                 "name,bank_type_id": 1
             }
         },
         "update": {
-            "Information" : {
+            "Information": {
                 "id,name,bank_type_id": 1
             }
         }

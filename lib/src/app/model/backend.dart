@@ -9,6 +9,7 @@ class Backend extends HiveObject {
   final BackendEndpoint? update;
   final BackendEndpoint? deleteX;
   final List<BackendOther> others;
+  final List<BackendOther> homeActions;
 
   Backend({
     this.readAll,
@@ -17,6 +18,7 @@ class Backend extends HiveObject {
     this.update,
     this.deleteX,
     required this.others,
+    required this.homeActions,
   });
 
   Backend copyWith({
@@ -26,6 +28,7 @@ class Backend extends HiveObject {
     BackendEndpoint? update,
     BackendEndpoint? deleteX,
     List<BackendOther>? others,
+    List<BackendOther>? homeActions,
   }) {
     return Backend(
       readAll: readAll ?? this.readAll,
@@ -34,6 +37,7 @@ class Backend extends HiveObject {
       update: update ?? this.update,
       deleteX: deleteX ?? this.deleteX,
       others: others ?? this.others,
+      homeActions: homeActions ?? this.homeActions,
     );
   }
 
@@ -42,6 +46,9 @@ class Backend extends HiveObject {
       return Backend(
         others: json['others'] != null
             ? BackendOther.fromJsonList(json['others'])
+            : [],
+        homeActions: json['home_actions'] != null
+            ? BackendOther.fromJsonList(json['home_actions'])
             : [],
         readAll: json['read_all'] != null
             ? BackendEndpoint.fromJson(json['read_all'])
