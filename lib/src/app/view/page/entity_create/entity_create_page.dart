@@ -5,7 +5,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flx_nocode_flutter/src/app/view/page/entity_create/widget/form.dart';
+import 'package:flx_nocode_flutter/features/entity/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/enitty_create_form.dart';
 import 'package:gap/gap.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -19,6 +20,7 @@ class EntityCreatePage extends StatefulWidget {
     required this.autoBackWhenSuccess,
     this.filters = const {},
     required this.noHeader,
+    required this.layoutForm,
   });
 
   final Map<String, dynamic>? data;
@@ -28,6 +30,7 @@ class EntityCreatePage extends StatefulWidget {
   final bool embedded;
   final bool autoBackWhenSuccess;
   final bool noHeader;
+  final LayoutForm layoutForm;
 
   static Widget prepare({
     Key? key,
@@ -38,10 +41,14 @@ class EntityCreatePage extends StatefulWidget {
     bool noHeader = false,
     Map<String, dynamic> filters = const {},
     bool autoBackWhenSuccess = true,
+    required LayoutForm? layoutForm,
   }) {
+    if (layoutForm == null) return const SizedBox.shrink();
+
     return MultiBlocProvider(
       providers: [BlocProvider(create: (context) => EntityBloc(entity))],
       child: EntityCreatePage._(
+        layoutForm: layoutForm,
         data: data,
         entity: entity,
         onSuccess: onSuccess,
@@ -55,6 +62,7 @@ class EntityCreatePage extends StatefulWidget {
   }
 
   static Route<bool?> route({
+    required LayoutForm layoutForm,
     required EntityCustom entity,
     Map<String, dynamic>? data,
     required VoidCallback onSuccess,
@@ -66,6 +74,7 @@ class EntityCreatePage extends StatefulWidget {
       opaque: true,
       type: PageTransitionType.rightToLeft,
       child: EntityCreatePage.prepare(
+        layoutForm: layoutForm,
         data: data,
         entity: entity,
         onSuccess: onSuccess,
@@ -152,6 +161,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
             child: Column(
               children: [
                 EntityCreateForm(
+                  layoutForm: widget.layoutForm,
                   entity: widget.entity,
                   dataAction: _action,
                   controllers: _controllers,
@@ -180,6 +190,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
         actions: [_buildButtonSubmit()],
         children: [
           EntityCreateForm(
+            layoutForm: widget.layoutForm,
             entity: widget.entity,
             dataAction: _action,
             controllers: _controllers,

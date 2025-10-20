@@ -1,3 +1,4 @@
+import 'package:flx_nocode_flutter/features/entity/models/group_layout.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
@@ -163,22 +164,26 @@ class EntityViewPage extends StatelessWidget {
     required bool bypassPermission,
   }) {
     return [
-      if (entity.allowDelete)
-        LightButton(
-          permission: bypassPermission ? null : '${entity.id}_write',
-          action: DataAction.edit,
-          onPressed: () async {
-            Navigator.push(
-              context,
-              EntityCreatePage.route(
-                filters: filters,
-                embedded: false,
-                entity: entity,
-                data: data,
-                onSuccess: () => onRefresh(context),
-              ),
-            );
-          },
+      if (entity.allowUpdate)
+        ...entity.layoutForm.updateForms.map(
+          (e) => LightButton(
+            permission: bypassPermission ? null : '${entity.id}_write',
+            action: DataAction.edit,
+            title: e.label,
+            onPressed: () async {
+              Navigator.push(
+                context,
+                EntityCreatePage.route(
+                  layoutForm: e,
+                  filters: filters,
+                  embedded: false,
+                  entity: entity,
+                  data: data,
+                  onSuccess: () => onRefresh(context),
+                ),
+              );
+            },
+          ),
         ),
       if (entity.allowDelete)
         EntityDeleteButton.prepare(
@@ -200,22 +205,25 @@ class EntityViewPage extends StatelessWidget {
   ) {
     final actions = [
       if (entity.allowUpdate)
-        ActionButtonItem(
-          color: DataAction.edit.color,
-          icon: DataAction.edit.icon,
-          label: DataAction.edit.title,
-          onPressed: () async {
-            Navigator.push(
-              context,
-              EntityCreatePage.route(
-                embedded: embedded,
-                entity: entity,
-                data: data,
-                filters: filters,
-                onSuccess: () => onRefresh(context),
-              ),
-            );
-          },
+        ...entity.layoutForm.updateForms.map(
+          (e) => ActionButtonItem(
+            color: DataAction.edit.color,
+            icon: DataAction.edit.icon,
+            label: e.label,
+            onPressed: () async {
+              Navigator.push(
+                context,
+                EntityCreatePage.route(
+                  layoutForm: e,
+                  embedded: embedded,
+                  entity: entity,
+                  data: data,
+                  filters: filters,
+                  onSuccess: () => onRefresh(context),
+                ),
+              );
+            },
+          ),
         ),
       if (entity.allowDelete)
         ActionButtonItem(
@@ -298,38 +306,6 @@ class EntityViewPage extends StatelessWidget {
         ...childrenRows
       ]);
     }
-
-    // final leftColumnChildren = <Widget>[];
-    // final rightColumnChildren = <Widget>[];
-    // var isFirst = true;
-    //
-    // for (int i = 0; i < entity.fields.length; i++) {
-    //   final field = entity.fields[i];
-    //
-    //   if (!isFirst) {
-    //     leftColumnChildren.add(Gap(12));
-    //     rightColumnChildren.add(Gap(12));
-    //   }
-    //   if (isFirst) {
-    //     isFirst = false;
-    //   }
-    //
-    //   final widget = TileDataVertical(
-    //     label: field.label,
-    //     child: EntityField.buildDisplay(
-    //       entity,
-    //       field.reference,
-    //       data[field.reference],
-    //     ),
-    //   );
-    //
-    //   // Add alternating widgets to each column
-    //   if (i % 2 == 0) {
-    //     leftColumnChildren.add(widget);
-    //   } else {
-    //     rightColumnChildren.add(widget);
-    //   }
-    // }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
