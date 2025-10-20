@@ -20,14 +20,12 @@ enum FormType {
 }
 
 class LayoutForm extends HiveObject {
-  final bool homeAction;
   final String name;
   final List<GroupLayout> groups;
 
   FormType get formType => FormType.fromString(name);
 
   LayoutForm({
-    required this.homeAction,
     required this.name,
     required this.groups,
   })  : assert(name != ''),
@@ -43,7 +41,6 @@ class LayoutForm extends HiveObject {
       throw const FormatException('"groups" must be an array');
     }
     return LayoutForm(
-      homeAction: false,
       name: name,
       groups: gs.map((e) => GroupLayout.fromMap(e as JsonMap)).toList(),
     );
@@ -54,13 +51,8 @@ class LayoutForm extends HiveObject {
         'groups': groups.map((e) => e.toMap()).toList(),
       };
 
-  LayoutForm copyWith(
-          {String? name, List<GroupLayout>? groups, bool? homeAction}) =>
-      LayoutForm(
-        name: name ?? this.name,
-        groups: groups ?? this.groups,
-        homeAction: homeAction ?? this.homeAction,
-      );
+  LayoutForm copyWith({String? name, List<GroupLayout>? groups}) =>
+      LayoutForm(name: name ?? this.name, groups: groups ?? this.groups);
 
   (List<String> usedFields, List<String> availableFields) getFieldByStatus(
       List<EntityField> fields) {
