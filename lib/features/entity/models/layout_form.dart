@@ -29,6 +29,10 @@ enum FormType {
   }
 }
 
+extension FormTypeExtension on FormType {
+  bool get isHome => this == FormType.home;
+}
+
 class LayoutForm extends HiveObject {
   final String label;
   final String type; // "create" | "update" | "view"

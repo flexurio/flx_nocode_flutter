@@ -185,7 +185,9 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
       body: SingleFormPanel(
         hideHeader: widget.embedded ? true : false,
         formKey: _formKey,
-        action: _action,
+        action:
+            widget.layoutForm.formType.isHome ? DataAction.reprocess : _action,
+        suffixText: _buildTitle(),
         entity: coreEntity,
         actions: [_buildButtonSubmit()],
         children: [
@@ -200,10 +202,19 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     );
   }
 
+  String _buildTitle() {
+    var title = '${_action.title} ${widget.entity.coreEntity.title}';
+    if (widget.layoutForm.formType.isHome) {
+      title = widget.layoutForm.label;
+    }
+    return title;
+  }
+
   AppBar _buildAppBar(BuildContext context) {
     final theme = Theme.of(context);
+
     return AppBar(
-      title: Text('${_action.title} ${widget.entity.coreEntity.title}'),
+      title: Text(_buildTitle()),
       backgroundColor: theme.scaffoldBackgroundColor,
     );
   }
@@ -230,7 +241,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
   void _submit() {
     if (_formKey.currentState!.validate()) {
       late EntityEvent event;
-      if (_action.isEdit) {
+      if (_action.isEdit || widget.layoutForm.formType.isHome) {
         event = EntityEvent.edit(data: _data, filters: widget.filters);
       } else {
         event = EntityEvent.create(data: _data, filters: widget.filters);
@@ -252,7 +263,9 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
           permission: null,
           isInProgress: inProgress,
           onPressed: _submit,
-          action: _action,
+          action: widget.layoutForm.formType.isHome
+              ? DataAction.reprocess
+              : _action,
         );
       },
     );
