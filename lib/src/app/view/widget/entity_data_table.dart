@@ -248,7 +248,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       buttons.add(
         LightButtonSmall(
           title: action.label,
-          action: DataAction.edit,
+          action: DataAction.reprocess,
           permissions: null,
           onPressed: () async {
             await Navigator.push(

@@ -34,6 +34,9 @@ class EntityCustom extends HiveObject {
   });
 
   factory EntityCustom.fromJson(Map<String, dynamic> json) {
+    print("==================================== Parse Entity");
+    print('[EntityCustom] - ID: ${json['id']}');
+
     T requireKey<T>(String key) {
       if (!json.containsKey(key) || json[key] == null) {
         throw FormatException("Missing key: '$key' (expected $T).");
@@ -164,7 +167,8 @@ class EntityCustom extends HiveObject {
             return LayoutForm.fromMap(raw);
           },
         );
-      } catch (_) {
+      } catch (e) {
+        print('[EntityCustom] layout_form - error :$e');
         layoutForm = <LayoutForm>[];
       }
 

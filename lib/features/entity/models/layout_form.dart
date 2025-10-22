@@ -14,7 +14,7 @@ JsonMap _coerceJsonMap(dynamic v) {
 }
 
 enum FormType {
-  homeAction,
+  home,
   view,
   create,
   update;
@@ -151,7 +151,7 @@ class LayoutForm extends HiveObject {
       }
     }
     // 2) Optional: verify supported type values
-    final allowed = {'create', 'update', 'view'};
+    final allowed = {'create', 'update', 'view', 'home'};
     if (!allowed.contains(type)) {
       throw FormatException(
         'Invalid "type": "$type". Allowed: ${allowed.join(", ")}',
@@ -172,7 +172,7 @@ extension LayoutFormListExtension on List<LayoutForm> {
   }
 
   List<LayoutForm> get homeActionForms {
-    return where((element) => element.formType == FormType.homeAction).toList();
+    return where((element) => element.formType == FormType.home).toList();
   }
 
   LayoutForm? getByType(FormType type) {
