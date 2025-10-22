@@ -75,25 +75,32 @@ class ButtonExport extends StatelessWidget {
       listener: (context, state) {
         state.maybeWhen(
           loaded: (data) async {
-            if (export.isPdf) {
-              final pdf = pw.Document()
-                ..addPage(
-                  await pdfGeneral(
-                    data: data.data,
-                    title: export.name,
-                    fields: export.fields,
-                    printedBy: UserRepositoryApp.instance.user?.name ?? '-',
-                  ),
+            try {
+              if (export.isPdf) {
+                final pdf = pw.Document()
+                  ..addPage(
+                    await pdfGeneral(
+                      data: data.data,
+                      title: export.name,
+                      fields: export.fields,
+                      printedBy: UserRepositoryApp.instance.user?.name ?? '-',
+                    ),
+                  );
+                await Printing.sharePdf(
+                  bytes: await pdf.save(),
+                  filename: '${export.name}.pdf',
                 );
-              await Printing.sharePdf(
-                bytes: await pdf.save(),
-                filename: '${export.name}.pdf',
-              );
-            } else {
-              final bytes = generalXlsx(context, data.data, export.fields);
-              saveFile(bytes, '${export.name}.xlsx');
+              } else {
+                final bytes = generalXlsx(context, data.data, export.fields);
+                final filename = '${export.name}.xlsx';
+                saveFile(bytes, filename);
+              }
+              Toast(context).notify('Exported successfully');
+            } on Exception catch (e) {
+              Toast(context).fail(e.toString());
+            } catch (e) {
+              Toast(context).fail(e.toString());
             }
-            Toast(context).notify('Exported successfully');
           },
           error: (error) => Toast(context).fail(error),
           orElse: () {},

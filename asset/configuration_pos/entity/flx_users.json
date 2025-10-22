@@ -97,24 +97,24 @@
     },
     "layout_form": {
         "create": {
-            "Information" : {
+            "Information": {
                 "name": 1
             },
-            "Contact" : {
+            "Contact": {
                 "email,email_verified,phone": 2
             },
-            "Status" : {
+            "Status": {
                 "enabled": 1
             }
         },
         "update": {
-            "Information" : {
+            "Information": {
                 "id,name": 1
             },
-            "Contact" : {
+            "Contact": {
                 "email,email_verified,phone": 2
             },
-            "Status" : {
+            "Status": {
                 "enabled": 1
             }
         }
