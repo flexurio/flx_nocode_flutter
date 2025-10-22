@@ -52,10 +52,6 @@ dependencies:
   uuid: any
 dependency_overrides:
   intl: ^0.20.2
-  flx_core_flutter:
-    git:
-      url: https://gitlab.com/VNEU/flexurio-erp-core.git
-      ref: main
   # flx_core_flutter:
   #   path: packages/flx_core_flutter
 
