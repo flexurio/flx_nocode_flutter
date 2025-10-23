@@ -59,7 +59,8 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
           print('[EntityBloc] Edit - data $data');
           try {
             if (!data.containsKey('id')) {
-              emit(_Error('ID not found'));
+              emit(_Error(
+                  'ID is required to perform the create operation but was not provided in the data map.'));
               return;
             }
 
@@ -81,7 +82,8 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
           print('[EntityBloc] Edit - data $data');
           try {
             if (!data.containsKey('id')) {
-              emit(_Error('ID not found'));
+              emit(_Error(
+                  'ID is required to perform the edit operation but was not provided in the data map.'));
               return;
             }
 
