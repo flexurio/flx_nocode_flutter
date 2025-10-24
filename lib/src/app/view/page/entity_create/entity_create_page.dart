@@ -251,6 +251,32 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     }
   }
 
+  List<Widget> _buildButtonActions(BuildContext context) {
+    final actions = <Widget>[];
+    final buttons = widget.layoutForm.buttons;
+    for (final button in buttons) {
+      actions.add(
+        Button.string(
+          permission: null,
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              final event = EntityEvent.execute(
+                data: _data,
+                method: button.method,
+                url: button.url,
+              );
+
+              context.read<EntityBloc>().add(event);
+            }
+          },
+          action: button.label,
+          isInProgress: false,
+        ),
+      );
+    }
+    return actions;
+  }
+
   Widget _buildButtonSubmit() {
     return BlocBuilder<EntityBloc, EntityState>(
       builder: (context, state) {
@@ -258,6 +284,12 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
           loading: () => true,
           orElse: () => false,
         );
+
+        if (widget.layoutForm.buttons.isNotEmpty) {
+          return Row(
+            children: _buildButtonActions(context),
+          );
+        }
 
         return Button.action(
           permission: null,

@@ -39,7 +39,7 @@ class LayoutForm extends HiveObject {
   final String type; // "create" | "update" | "view" | "home"
   final List<GroupLayout> groups;
   final Rule? visibleIf;
-  final List<ButtonAction> actions;
+  final List<ButtonAction> buttons;
 
   FormType get formType => FormType.fromString(type);
 
@@ -48,12 +48,12 @@ class LayoutForm extends HiveObject {
     required this.type,
     required List<GroupLayout> groups,
     this.visibleIf,
-    List<ButtonAction>? actions,
+    List<ButtonAction>? buttons,
   })  : assert(label.trim().isNotEmpty, 'label is required'),
         assert(type.trim().isNotEmpty, 'type is required'),
         assert(groups.isNotEmpty, 'groups must not be empty'),
         groups = List<GroupLayout>.unmodifiable(groups),
-        actions = List<ButtonAction>.unmodifiable(actions ?? const []);
+        buttons = List<ButtonAction>.unmodifiable(buttons ?? const []);
 
   factory LayoutForm.fromMap(JsonMap map) {
     if (map['type'] == null || map['type'].toString().trim().isEmpty) {
@@ -77,9 +77,8 @@ class LayoutForm extends HiveObject {
       return GroupLayout.fromMap(e.cast<String, dynamic>());
     }).toList(growable: false);
 
-    final dynamic rawActions = map.containsKey('actions')
-        ? map['actions']
-        : (map.containsKey('buttons') ? map['buttons'] : null);
+    final dynamic rawActions =
+        map.containsKey('buttons') ? map['buttons'] : null;
 
     List<ButtonAction> parsedActions = const [];
     if (rawActions != null) {
@@ -122,7 +121,7 @@ class LayoutForm extends HiveObject {
       visibleIf: map['visible_if'] == null
           ? null
           : Rule.fromMap(_coerceJsonMap(map['visible_if'])),
-      actions: parsedActions,
+      buttons: parsedActions,
     );
 
     lf.validate();
@@ -139,8 +138,8 @@ class LayoutForm extends HiveObject {
     if (visibleIf != null) {
       m['visible_if'] = visibleIf!.toMap();
     }
-    if (actions.isNotEmpty) {
-      m['actions'] = actions.map((e) => e.toJson()).toList(growable: false);
+    if (buttons.isNotEmpty) {
+      m['buttons'] = buttons.map((e) => e.toJson()).toList(growable: false);
     }
     return m;
   }
@@ -157,7 +156,7 @@ class LayoutForm extends HiveObject {
       type: type ?? this.type,
       groups: groups ?? this.groups,
       visibleIf: visibleIf ?? this.visibleIf,
-      actions: actions ?? this.actions,
+      buttons: actions ?? this.buttons,
     );
   }
 

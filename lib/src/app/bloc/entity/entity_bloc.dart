@@ -21,6 +21,11 @@ class EntityState with _$EntityState {
 
 @freezed
 class EntityEvent with _$EntityEvent {
+  const factory EntityEvent.execute({
+    required Map<String, dynamic> data,
+    required String method,
+    required String url,
+  }) = _Execute;
   const factory EntityEvent.create({
     required Map<String, dynamic> data,
     required Map<String, dynamic> filters,
@@ -40,6 +45,21 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
   EntityBloc(configuration.EntityCustom entity) : super(const _Initial()) {
     on<EntityEvent>((event, emit) async {
       await event.when(
+        execute: (data, method, url) async {
+          emit(const _Loading());
+          try {
+            final response = await EntityCustomRepository.instance.modify(
+              accessToken: UserRepositoryApp.instance.token,
+              path: url,
+              method: method,
+              data: data,
+            );
+            emit(_Success(response));
+          } catch (error) {
+            print('[EntityBloc] Execute - error $error');
+            emit(_Error(errorMessage(error)));
+          }
+        },
         otherEvent: (data, event) async {
           emit(const _Loading());
           try {
