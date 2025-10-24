@@ -4,6 +4,7 @@ import 'package:flx_nocode_flutter/features/entity/models/group_layout.dart';
 import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:hive/hive.dart';
+import 'package:flx_nocode_flutter/features/entity/models/button_action.dart';
 
 typedef JsonMap = Map<String, dynamic>;
 
@@ -35,9 +36,10 @@ extension FormTypeExtension on FormType {
 
 class LayoutForm extends HiveObject {
   final String label;
-  final String type; // "create" | "update" | "view"
+  final String type; // "create" | "update" | "view" | "home"
   final List<GroupLayout> groups;
-  final Rule? visibleIf; // optional conditional visibility
+  final Rule? visibleIf;
+  final List<ButtonAction> actions;
 
   FormType get formType => FormType.fromString(type);
 
@@ -46,10 +48,12 @@ class LayoutForm extends HiveObject {
     required this.type,
     required List<GroupLayout> groups,
     this.visibleIf,
+    List<ButtonAction>? actions,
   })  : assert(label.trim().isNotEmpty, 'label is required'),
         assert(type.trim().isNotEmpty, 'type is required'),
         assert(groups.isNotEmpty, 'groups must not be empty'),
-        groups = List<GroupLayout>.unmodifiable(groups);
+        groups = List<GroupLayout>.unmodifiable(groups),
+        actions = List<ButtonAction>.unmodifiable(actions ?? const []);
 
   factory LayoutForm.fromMap(JsonMap map) {
     if (map['type'] == null || map['type'].toString().trim().isEmpty) {
@@ -73,6 +77,44 @@ class LayoutForm extends HiveObject {
       return GroupLayout.fromMap(e.cast<String, dynamic>());
     }).toList(growable: false);
 
+    final dynamic rawActions = map.containsKey('actions')
+        ? map['actions']
+        : (map.containsKey('buttons') ? map['buttons'] : null);
+
+    List<ButtonAction> parsedActions = const [];
+    if (rawActions != null) {
+      if (rawActions is! List) {
+        throw const FormatException('"actions"/"buttons" must be an array');
+      }
+      parsedActions = rawActions.map<ButtonAction>((e) {
+        if (e is! Map) {
+          throw const FormatException(
+              'Each item in actions/buttons must be an object');
+        }
+        final m = e.cast<String, dynamic>();
+
+        final isActionLike = m.containsKey('kind') &&
+            m.containsKey('method') &&
+            m.containsKey('url');
+
+        if (isActionLike) {
+          // e.g. { kind, method, url, content_type, payload }
+          return ButtonAction.fromJson(m);
+        }
+
+        // Jika item berbentuk LayoutButton { id, label, action: {...} }
+        if (m['action'] is Map) {
+          final am = _coerceJsonMap(m['action']);
+          return ButtonAction.fromJson(am);
+        }
+
+        throw const FormatException(
+          'actions/buttons item must be either an action object '
+          'or a button object containing an "action" object.',
+        );
+      }).toList(growable: false);
+    }
+
     final lf = LayoutForm(
       label: map['label'].toString().trim(),
       type: map['type'].toString().trim(),
@@ -80,9 +122,9 @@ class LayoutForm extends HiveObject {
       visibleIf: map['visible_if'] == null
           ? null
           : Rule.fromMap(_coerceJsonMap(map['visible_if'])),
+      actions: parsedActions,
     );
 
-    // Optional: validate invariants after construction
     lf.validate();
 
     return lf;
@@ -97,6 +139,9 @@ class LayoutForm extends HiveObject {
     if (visibleIf != null) {
       m['visible_if'] = visibleIf!.toMap();
     }
+    if (actions.isNotEmpty) {
+      m['actions'] = actions.map((e) => e.toJson()).toList(growable: false);
+    }
     return m;
   }
 
@@ -105,12 +150,14 @@ class LayoutForm extends HiveObject {
     String? type,
     List<GroupLayout>? groups,
     Rule? visibleIf,
+    List<ButtonAction>? actions,
   }) {
     return LayoutForm(
       label: label ?? this.label,
       type: type ?? this.type,
       groups: groups ?? this.groups,
       visibleIf: visibleIf ?? this.visibleIf,
+      actions: actions ?? this.actions,
     );
   }
 
@@ -154,7 +201,7 @@ class LayoutForm extends HiveObject {
         throw FormatException('Duplicate group id "$id" detected.');
       }
     }
-    // 2) Optional: verify supported type values
+    // 2) Verify supported type values
     final allowed = {'create', 'update', 'view', 'home'};
     if (!allowed.contains(type)) {
       throw FormatException(
