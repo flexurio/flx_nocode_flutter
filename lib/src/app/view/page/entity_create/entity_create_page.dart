@@ -251,7 +251,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     }
   }
 
-  List<Widget> _buildButtonActions(BuildContext context) {
+  List<Widget> _buildButtonActions(BuildContext context, bool isInProgress) {
     final actions = <Widget>[];
     final buttons = widget.layoutForm.buttons;
     for (final button in buttons) {
@@ -287,7 +287,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
 
         if (widget.layoutForm.buttons.isNotEmpty) {
           return Row(
-            children: _buildButtonActions(context),
+            children: _buildButtonActions(context, inProgress),
           );
         }
 
