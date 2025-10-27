@@ -1,57 +1,13 @@
-import 'package:hive_ce/hive.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/src/app/util/picker_file.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
-
-class Export extends HiveObject {
-  final String name;
-  final String backend;
-  final String type;
-  final List<String> fields;
-
-  Export({
-    required this.name,
-    required this.backend,
-    required this.type,
-    required this.fields,
-  });
-
-  static List<String> allowedTypes = ['pdf', 'xlsx'];
-
-  factory Export.fromJson(Map<String, dynamic> json) {
-    final type = json['type'];
-    if (!allowedTypes.contains(type))
-      throw Exception('Invalid export type: $type');
-    return Export(
-      name: json['name'],
-      backend: json['backend'],
-      type: type,
-      fields: json['fields'].cast<String>(),
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'name': name,
-        'backend': backend,
-        'type': type,
-        'fields': fields,
-      };
-
-  bool get isPdf => type == 'pdf';
-  bool get isXlsx => type == 'xlsx';
-
-  Widget buildButton({
-    required List<Filter> filters,
-  }) {
-    return ButtonExport.prepare(export: this, filters: filters);
-  }
-}
 
 class ButtonExport extends StatelessWidget {
   const ButtonExport._({required this.export, required this.filters});
