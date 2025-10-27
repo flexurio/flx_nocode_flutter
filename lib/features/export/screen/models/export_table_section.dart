@@ -7,12 +7,14 @@ class ExportTableSection extends ExportSection {
   final String? method;
   final List<String>? columns;
   final List<String>? fields;
+  final List<double>? columnWidths; // ⬅️ tambahan
 
   ExportTableSection({
     this.endpoint,
     this.method,
     this.columns,
     this.fields,
+    this.columnWidths,
   }) : super('table');
 
   factory ExportTableSection.fromJson(Map<String, dynamic> json) {
@@ -22,6 +24,11 @@ class ExportTableSection extends ExportSection {
       columns:
           json['columns'] != null ? List<String>.from(json['columns']) : null,
       fields: json['fields'] != null ? List<String>.from(json['fields']) : null,
+      columnWidths: json['column_widths'] != null
+          ? (json['column_widths'] as List)
+              .map((e) => double.tryParse(e.toString()) ?? 0)
+              .toList()
+          : null,
     );
   }
 
@@ -32,12 +39,21 @@ class ExportTableSection extends ExportSection {
         if (method != null) 'method': method,
         if (columns != null) 'columns': columns,
         if (fields != null) 'fields': fields,
+        if (columnWidths != null) 'column_widths': columnWidths,
       };
 }
 
 extension ExportTableSectionPdf on ExportTableSection {
   pw.Widget toPdfWidget(List<List<String>> data) {
     final headers = columns ?? [];
+    final widths = columnWidths ?? [];
+
+    // Konversi width list jadi Map<int, TableColumnWidth>
+    final Map<int, pw.TableColumnWidth> widthMap = {};
+    for (int i = 0; i < widths.length; i++) {
+      final w = widths[i];
+      if (w > 0) widthMap[i] = pw.FixedColumnWidth(w);
+    }
 
     return pw.Padding(
       padding: const pw.EdgeInsets.only(top: 10, bottom: 16),
@@ -56,6 +72,7 @@ extension ExportTableSectionPdf on ExportTableSection {
           horizontalInside: pw.BorderSide(width: 0.3),
           verticalInside: pw.BorderSide(width: 0.3),
         ),
+        columnWidths: widthMap, // ⬅️ pakai widthMap di sini
         cellAlignments: {
           0: pw.Alignment.centerLeft,
           1: pw.Alignment.center,
