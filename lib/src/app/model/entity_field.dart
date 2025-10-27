@@ -298,10 +298,18 @@ class EntityField extends HiveObject {
     TextEditingController controller,
     bool isEnabled,
   ) {
-    final initialDate = action.isEdit
-        ? (DateTime.tryParse(controller.text) ??
-            DateFormat.yMMMMd().parse(controller.text))
-        : null;
+    final value = controller.text;
+    controller.text = '';
+    DateTime? initialDate;
+    try {
+      if (value != 'null') {
+        initialDate = action.isEdit
+            ? (DateTime.tryParse(value) ?? DateFormat.yMMMMd().parse(value))
+            : null;
+      }
+    } catch (e) {
+      print('[EntityField] error $e');
+    }
     return FieldDatePicker(
       labelText: label,
       initialSelectedDate: initialDate,
