@@ -4,6 +4,7 @@ import 'package:flx_nocode_flutter/features/export/screen/widgets/export_button.
 import 'package:flx_nocode_flutter/features/export/screen/widgets/export_to_pdf.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flutter/material.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:hive_ce/hive.dart';
 
 class Export extends HiveObject {
@@ -71,10 +72,15 @@ extension ExportList on List<Export> {
     for (final e in this) {
       if (!e.isSingle || e.template == null) continue;
       final button = LightButton(
-        action: DataAction.export,
+        action: DataAction.exportPdf,
         title: e.name,
         onPressed: () async {
-          await exportToPdf(e);
+          await exportToPdf(
+            e,
+            headerProvider: () async => {
+              'Authorization': 'Bearer ${UserRepositoryApp.instance.token}',
+            },
+          );
         },
         permission: null,
       );

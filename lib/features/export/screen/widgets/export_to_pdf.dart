@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flx_nocode_flutter/features/export/screen/models/export.dart';
 import 'package:flx_nocode_flutter/features/export/screen/models/export_section.dart';
+import 'package:flx_nocode_flutter/features/export/screen/models/export_table_section.dart';
+import 'package:flx_nocode_flutter/src/app/util/picker_file.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
 import 'package:http/http.dart' as http;
@@ -14,21 +16,49 @@ Future<void> exportToPdf(
   Export export, {
   HeaderProvider? headerProvider,
 }) async {
+  print('==============================');
+  print('[ExportPDF] 🚀 Starting exportToPdf()');
+  print('[ExportPDF] → Export name: ${export.name}');
+  print('[ExportPDF] → Type: ${export.type}');
+  print('[ExportPDF] → Type mode: ${export.typeMode}');
+  print('[ExportPDF] → Backend: ${export.backend}');
+  print('==============================');
+
   final template = export.template;
-  if (template == null) return;
+  if (template == null) {
+    print('[ExportPDF] ❌ No template found for export: ${export.name}');
+    return;
+  }
+
+  print('[ExportPDF] ✅ Template title: ${template.title}');
+  print('[ExportPDF] 📄 Section count: ${template.sections.length}');
 
   final pdf = pw.Document();
   final tableDataCache = <ExportSection, List<List<String>>>{};
 
   // 🔹 Prefetch semua data table dari endpoint-nya
   for (final section in template.sections) {
+    print('[ExportPDF] ───────────────────────────────');
+    print('[ExportPDF] ⬇️ Processing section type: ${section.type}');
+
     if (section is ExportTableSection) {
-      tableDataCache[section] = await _fetchTableData(
-        section,
-        headerProvider: headerProvider,
-      );
+      print('[ExportPDF] 🔍 Found table section:');
+      print('[ExportPDF] → Endpoint: ${section.endpoint}');
+      print('[ExportPDF] → Method: ${section.method}');
+      print('[ExportPDF] → Fields: ${section.fields}');
+      print('[ExportPDF] → Columns: ${section.columns}');
+      try {
+        final rows =
+            await _fetchTableData(section, headerProvider: headerProvider);
+        tableDataCache[section] = rows;
+        print('[ExportPDF] ✅ Table data fetched: ${rows.length} rows');
+      } catch (e) {
+        print('[ExportPDF] ❌ Error fetching table data: $e');
+      }
     }
   }
+
+  print('[ExportPDF] 🏗 Building PDF layout...');
 
   pdf.addPage(
     pw.MultiPage(
@@ -45,34 +75,54 @@ Future<void> exportToPdf(
         ),
         pw.SizedBox(height: 20),
         ...template.sections.map((section) {
+          print('[ExportPDF] 🧩 Rendering section: ${section.type}');
           if (section is ExportFieldSection) {
+            print('[ExportPDF] → Field: ${section.label} = ${section.value}');
             return section.toPdfWidget();
           } else if (section is ExportTableSection) {
             final rows = tableDataCache[section] ?? [];
+            print('[ExportPDF] → Table rows: ${rows.length}');
             return section.toPdfWidget(rows);
           } else if (section is ExportSignersSection) {
+            print('[ExportPDF] → Signers: ${section.signers.length}');
             return section.toPdfWidget();
           }
+          print('[ExportPDF] ⚠️ Unknown section type: ${section.runtimeType}');
           return pw.Container();
         }),
       ],
     ),
   );
 
+  print('[ExportPDF] 💾 Saving PDF file...');
+
   // 🔹 Simpan dan buka file
-  final dir = await getTemporaryDirectory();
-  final file = File('${dir.path}/${export.name}.pdf');
-  await file.writeAsBytes(await pdf.save());
-  // await OpenFilex.open(file.path);
+  try {
+    final dir = await getTemporaryDirectory();
+    final filename = '${export.name}.pdf';
+    final file = File('${dir.path}/$filename');
+
+    await file.writeAsBytes(await pdf.save());
+    print('[ExportPDF] ✅ File saved at: ${file.path}');
+    print('[ExportPDF] 🖨 Opening file...');
+    saveFile(file.readAsBytesSync(), filename);
+    print('[ExportPDF] 🎉 Export complete!');
+  } catch (e) {
+    print('[ExportPDF] ❌ Failed to save or open file: $e');
+  }
+
+  print('==============================');
 }
 
-/// 🔸 Fetch data untuk section tabel
 Future<List<List<String>>> _fetchTableData(
   ExportTableSection section, {
   HeaderProvider? headerProvider,
 }) async {
   final fields = section.fields ?? [];
-  if (section.endpoint == null) return [];
+  if (section.endpoint == null) {
+    print('[ExportPDF] ❌ Endpoint not found in section: ${section}');
+    return [];
+  }
 
   final headers = <String, String>{
     'Accept': 'application/json',
@@ -83,28 +133,60 @@ Future<List<List<String>>> _fetchTableData(
   final uri = Uri.parse(section.endpoint!);
   final method = (section.method ?? 'GET').toUpperCase();
 
-  http.Response resp;
-  switch (method) {
-    case 'POST':
-      resp = await http.post(uri, headers: headers);
-      break;
-    default:
-      resp = await http.get(uri, headers: headers);
-      break;
-  }
+  print('[ExportPDF] 🚀 Fetching data...');
+  print('[ExportPDF] → URL: ${uri.toString()}');
+  print('[ExportPDF] → Method: $method');
+  print('[ExportPDF] → Headers: $headers');
 
-  if (resp.statusCode < 200 || resp.statusCode >= 300) {
+  http.Response resp;
+  try {
+    switch (method) {
+      case 'POST':
+        resp = await http.post(uri, headers: headers);
+        break;
+      default:
+        resp = await http.get(uri, headers: headers);
+        break;
+    }
+  } catch (e) {
+    print('[ExportPDF] ❌ Request error: $e');
     return [];
   }
 
-  final jsonBody = json.decode(resp.body);
+  print('[ExportPDF] ✅ Response status: ${resp.statusCode}');
+  print('[ExportPDF] 📦 Response body length: ${resp.body.length} chars');
+
+  if (resp.statusCode < 200 || resp.statusCode >= 300) {
+    print('[ExportPDF] ❌ Invalid status code (${resp.statusCode})');
+    return [];
+  }
+
+  dynamic jsonBody;
+  try {
+    jsonBody = json.decode(resp.body);
+  } catch (e) {
+    print('[ExportPDF] ❌ JSON decode error: $e');
+    return [];
+  }
+
   final List<dynamic> list =
       (jsonBody is Map && jsonBody['data'] is List) ? jsonBody['data'] : [];
 
-  return list.map<List<String>>((item) {
+  print('[ExportPDF] 📊 Data count: ${list.length}');
+  print('[ExportPDF] 🧩 Fields to extract: $fields');
+
+  final rows = list.map<List<String>>((item) {
     if (item is Map<String, dynamic>) {
       return fields.map((f) => '${item[f] ?? ''}').toList();
     }
     return List.generate(fields.length, (_) => '');
   }).toList();
+
+  if (rows.isNotEmpty) {
+    print('[ExportPDF] 🔍 Sample row: ${rows.first}');
+  } else {
+    print('[ExportPDF] ⚠️ No rows parsed.');
+  }
+
+  return rows;
 }
