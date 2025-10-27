@@ -164,6 +164,7 @@ class EntityViewPage extends StatelessWidget {
     required bool bypassPermission,
   }) {
     return [
+      ...entity.exports.singleButtons,
       if (entity.allowUpdate)
         ...entity.layoutForm.updateForms.map(
           (e) => LightButton(
