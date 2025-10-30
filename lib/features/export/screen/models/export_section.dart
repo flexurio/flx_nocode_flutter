@@ -1,5 +1,5 @@
 import 'package:flx_nocode_flutter/features/export/screen/models/export_table_section.dart';
-import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:flx_nocode_flutter/src/app/util/string.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -150,7 +150,7 @@ extension ExportFieldSectionPdf on ExportFieldSection {
             ),
             pw.Expanded(
               child: pw.Text(
-                (value ?? '').replaceStringWithValues(data),
+                (value ?? '').replaceStringWithValues(data).renderDatetime,
               ),
             ),
           ],

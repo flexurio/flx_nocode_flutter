@@ -170,18 +170,3 @@ String urlWithValuesReplace(String urlX, Map<String, dynamic> data) {
   }
   return url;
 }
-
-extension StringReplaceExtension on String {
-  String replaceStringWithValues(Map<String, dynamic> data,
-      {bool urlEncode = false}) {
-    var url = this;
-    for (var key in data.keys) {
-      url = url.replaceAll(
-          '{$key}',
-          urlEncode
-              ? Uri.encodeComponent(data[key].toString())
-              : data[key].toString());
-    }
-    return url;
-  }
-}

@@ -1,4 +1,5 @@
 import 'package:flx_nocode_flutter/features/export/screen/models/export_section.dart';
+import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -7,7 +8,7 @@ class ExportTableSection extends ExportSection {
   final String? method;
   final List<String>? columns;
   final List<String>? fields;
-  final List<double>? columnWidths; // ⬅️ tambahan
+  final List<double>? columnWidths;
 
   ExportTableSection({
     this.endpoint,
@@ -92,20 +93,32 @@ extension ExportTableSectionPdf on ExportTableSection {
           : (data.isNotEmpty ? data.first.length : 0);
 
       bool _isNumeric(String s) {
-        final t = s
-            .trim()
-            .replaceAll('.', '')
-            .replaceAll(',', '.'); // 1.234,56 or 1,234.56
-        return double.tryParse(t) != null;
+        final str = s.trim();
+        if (str.isEmpty) return false;
+
+        if (double.tryParse(str) != null) return true;
+
+        final cleaned = str.replaceAll(' ', '');
+
+        try {
+          final en = NumberFormat('#,##0.###', 'en_US');
+          en.parse(cleaned);
+          return true;
+        } catch (_) {}
+
+        try {
+          final eu = NumberFormat('#.##0,###', 'id_ID');
+          eu.parse(cleaned);
+          return true;
+        } catch (_) {}
+
+        return double.tryParse(cleaned.replaceAll(RegExp(r'[^\d\.-]'), '')) !=
+            null;
       }
 
       for (int c = 0; c < colCount; c++) {
-        // cek beberapa sampel saja agar cepat
-        final samples = data
-            .take(10)
-            .map((r) => c < r.length ? r[c] : '')
-            .where((e) => e != null)
-            .cast<String>();
+        final samples =
+            data.take(10).map((r) => c < r.length ? r[c] : '').cast<String>();
         final numericRatio = samples.isEmpty
             ? 0.0
             : samples.where((s) => _isNumeric(s)).length / samples.length;

@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/export/screen/models/export_section.dart';
 import 'package:flx_nocode_flutter/features/export/screen/models/export_table_section.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/util/picker_file.dart';
+import 'package:flx_nocode_flutter/src/app/util/string.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
 import 'package:http/http.dart' as http;
@@ -248,7 +250,14 @@ Future<List<List<String>>> _fetchTableData(
 
   final rows = list.map<List<String>>((item) {
     if (item is Map<String, dynamic>) {
-      return fields.map((f) => '${item[f] ?? ''}').toList();
+      return fields.map((f) {
+        final value = item[f];
+        if (value is num) {
+          return value.format(2);
+        }
+
+        return '${value ?? ''}';
+      }).toList();
     }
     return List.generate(fields.length, (_) => '');
   }).toList();
