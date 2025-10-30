@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flx_nocode_flutter/features/export/screen/models/export.dart';
 import 'package:flx_nocode_flutter/features/export/screen/models/export_section.dart';
 import 'package:flx_nocode_flutter/features/export/screen/models/export_table_section.dart';
+import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/util/picker_file.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
@@ -14,6 +15,7 @@ typedef HeaderProvider = Future<Map<String, String>> Function();
 /// Fungsi utama untuk generate dan buka PDF
 Future<void> exportToPdf(
   Export export, {
+  required Map<String, dynamic> data,
   HeaderProvider? headerProvider,
 }) async {
   print('==============================');
@@ -48,8 +50,8 @@ Future<void> exportToPdf(
       print('[ExportPDF] → Fields: ${section.fields}');
       print('[ExportPDF] → Columns: ${section.columns}');
       try {
-        final rows =
-            await _fetchTableData(section, headerProvider: headerProvider);
+        final rows = await _fetchTableData(section,
+            data: data, headerProvider: headerProvider);
         tableDataCache[section] = rows;
         print('[ExportPDF] ✅ Table data fetched: ${rows.length} rows');
       } catch (e) {
@@ -78,7 +80,7 @@ Future<void> exportToPdf(
           print('[ExportPDF] 🧩 Rendering section: ${section.type}');
           if (section is ExportFieldSection) {
             print('[ExportPDF] → Field: ${section.label} = ${section.value}');
-            return section.toPdfWidget();
+            return section.toPdfWidget(data);
           } else if (section is ExportTableSection) {
             final rows = tableDataCache[section] ?? [];
             print('[ExportPDF] → Table rows: ${rows.length}');
@@ -98,14 +100,9 @@ Future<void> exportToPdf(
 
   // 🔹 Simpan dan buka file
   try {
-    final dir = await getTemporaryDirectory();
     final filename = '${export.name}.pdf';
-    final file = File('${dir.path}/$filename');
-
-    await file.writeAsBytes(await pdf.save());
-    print('[ExportPDF] ✅ File saved at: ${file.path}');
     print('[ExportPDF] 🖨 Opening file...');
-    saveFile(file.readAsBytesSync(), filename);
+    saveFile(await pdf.save(), filename);
     print('[ExportPDF] 🎉 Export complete!');
   } catch (e) {
     print('[ExportPDF] ❌ Failed to save or open file: $e');
@@ -116,6 +113,7 @@ Future<void> exportToPdf(
 
 Future<List<List<String>>> _fetchTableData(
   ExportTableSection section, {
+  required Map<String, dynamic> data,
   HeaderProvider? headerProvider,
 }) async {
   final fields = section.fields ?? [];
@@ -130,7 +128,8 @@ Future<List<List<String>>> _fetchTableData(
     if (headerProvider != null) ...(await headerProvider()),
   };
 
-  final uri = Uri.parse(section.endpoint!);
+  final uri = Uri.parse(
+      section.endpoint!.replaceStringWithValues(data, urlEncode: true));
   final method = (section.method ?? 'GET').toUpperCase();
 
   print('[ExportPDF] 🚀 Fetching data...');

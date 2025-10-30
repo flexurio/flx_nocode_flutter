@@ -1,4 +1,5 @@
 import 'package:flx_nocode_flutter/features/export/screen/models/export_table_section.dart';
+import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import 'signer.dart';
@@ -90,7 +91,7 @@ extension ExportSignersSectionPdf on ExportSignersSection {
 }
 
 extension ExportFieldSectionPdf on ExportFieldSection {
-  pw.Widget toPdfWidget() {
+  pw.Widget toPdfWidget(Map<String, dynamic> data) {
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 3),
       child: pw.Row(
@@ -103,7 +104,11 @@ extension ExportFieldSectionPdf on ExportFieldSection {
               style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
             ),
           ),
-          pw.Expanded(child: pw.Text(value ?? '')),
+          pw.Expanded(
+            child: pw.Text(
+              (value ?? '').replaceStringWithValues(data),
+            ),
+          ),
         ],
       ),
     );
