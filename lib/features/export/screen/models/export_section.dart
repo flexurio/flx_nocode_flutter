@@ -148,11 +148,7 @@ extension ExportFieldSectionPdf on ExportFieldSection {
                 style: pw.TextStyle(fontWeight: labelWeight),
               ),
             ),
-            pw.Expanded(
-              child: pw.Text(
-                (value ?? '').replaceStringWithValues(data).renderDatetime,
-              ),
-            ),
+            pw.Expanded(child: pw.Text((value ?? '').renderWithData(data))),
           ],
         ),
       ),

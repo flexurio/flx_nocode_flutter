@@ -1,6 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 
 extension StringReplaceExtension on String {
+  String renderWithData(Map<String, dynamic> data) {
+    return replaceStringWithValues(data)
+        .functionDatetimeFormat
+        .functionNumberFormat;
+  }
+
   String replaceStringWithValues(Map<String, dynamic> data,
       {bool urlEncode = false}) {
     var url = this;
@@ -16,11 +22,11 @@ extension StringReplaceExtension on String {
 
   /// Example:
   /// ```dart
-  /// "Today is \$datetime(2025-10-21 08:48:33,, yyyy-MM-dd)".renderDatetime
+  /// "Today is \$datetimeFormat(2025-10-21 08:48:33,, yyyy-MM-dd)".renderDatetime
   /// // Output: "Today is 2025-10-21"
   /// ```
-  String get renderDatetime {
-    final regex = RegExp(r'\$datetime\((.*?)\)');
+  String get functionDatetimeFormat {
+    final regex = RegExp(r'\$datetimeFormat\((.*?)\)');
     var result = this;
 
     for (final match in regex.allMatches(this)) {
@@ -45,6 +51,43 @@ extension StringReplaceExtension on String {
       } catch (e) {
         // fallback: leave original
         result = result.replaceFirst(match.group(0)!, input);
+      }
+    }
+
+    return result;
+  }
+
+  /// Example:
+  /// ```dart
+  /// "Price: \$numberFormat(1234567.89,2)".functionNumberFormat
+  /// // Output (en_US): "Price: 1,234,567.89"
+  /// // Output (id_ID): "Price: 1.234.567,89"
+  /// ```
+  String get functionNumberFormat {
+    final regex = RegExp(r'\$numberFormat\((.*?)\)');
+    var result = this;
+
+    for (final match in regex.allMatches(this)) {
+      final inside = match.group(1);
+      if (inside == null) continue;
+
+      final parts = inside.split(',').map((e) => e.trim()).toList();
+      if (parts.isEmpty) continue;
+
+      final rawValue = parts[0];
+      final decimals = parts.length > 1 ? int.tryParse(parts[1]) ?? 0 : 0;
+
+      try {
+        final number = double.parse(rawValue);
+        final locale = Intl.getCurrentLocale();
+        final formatter = NumberFormat.decimalPattern(locale)
+          ..minimumFractionDigits = decimals
+          ..maximumFractionDigits = decimals;
+
+        final formatted = formatter.format(number);
+        result = result.replaceFirst(match.group(0)!, formatted);
+      } catch (e) {
+        result = result.replaceFirst(match.group(0)!, rawValue);
       }
     }
 
