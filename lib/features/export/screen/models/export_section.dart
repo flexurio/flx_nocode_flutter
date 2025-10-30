@@ -1,5 +1,6 @@
 import 'package:flx_nocode_flutter/features/export/screen/models/export_table_section.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 import 'signer.dart';
@@ -67,49 +68,93 @@ class ExportSignersSection extends ExportSection {
       };
 }
 
+/// ====== PDF EXTENSIONS (Compact-friendly) ======
+
 extension ExportSignersSectionPdf on ExportSignersSection {
-  pw.Widget toPdfWidget() {
+  /// [fontSize] default 9 untuk A5 compact
+  /// [roleWeight] berat font untuk jabatan/role
+  /// [topPadding] jarak atas blok tanda tangan
+  /// [signGap] jarak antara role dan nama (area tanda tangan)
+  pw.Widget toPdfWidget({
+    double fontSize = 9,
+    pw.FontWeight roleWeight = pw.FontWeight.bold,
+    double topPadding = 14, // sebelumnya 30
+    double signGap = 26, // sebelumnya 40
+    bool drawLine = false, // opsional garis tanda tangan
+    double lineWidth = 80,
+    double lineThickness = 0.6,
+  }) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.only(top: 30),
-      child: pw.Row(
-        mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
-        children: signers.map((s) {
-          return pw.Column(
-            children: [
-              pw.Text(
-                s.role,
-                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-              ),
-              pw.SizedBox(height: 40),
-              pw.Text(s.name),
-            ],
-          );
-        }).toList(),
+      padding: pw.EdgeInsets.only(top: topPadding),
+      child: pw.DefaultTextStyle.merge(
+        style: pw.TextStyle(fontSize: fontSize),
+        child: pw.Row(
+          mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: pw.CrossAxisAlignment.end,
+          children: signers.map((s) {
+            return pw.Column(
+              mainAxisSize: pw.MainAxisSize.min,
+              children: [
+                pw.Text(
+                  s.role,
+                  style: pw.TextStyle(fontWeight: roleWeight),
+                  textAlign: pw.TextAlign.center,
+                ),
+                pw.SizedBox(height: signGap),
+                if (drawLine)
+                  pw.Container(
+                    width: lineWidth,
+                    height: lineThickness,
+                    color: PdfColors.black,
+                  ),
+                if (drawLine) pw.SizedBox(height: 4),
+                pw.Text(
+                  s.name,
+                  textAlign: pw.TextAlign.center,
+                ),
+              ],
+            );
+          }).toList(),
+        ),
       ),
     );
   }
 }
 
 extension ExportFieldSectionPdf on ExportFieldSection {
-  pw.Widget toPdfWidget(Map<String, dynamic> data) {
+  /// [fontSize] default 9 agar padat di A5
+  /// [labelWidth] lebar kolom label (diperkecil dari 120)
+  /// [vPadding] padding vertikal antar baris
+  /// [labelWeight] ketebalan font label
+  pw.Widget toPdfWidget(
+    Map<String, dynamic> data, {
+    double fontSize = 9,
+    double labelWidth = 90, // sebelumnya 120
+    double vPadding = 2, // sebelumnya 3
+    pw.FontWeight labelWeight = pw.FontWeight.bold,
+    pw.CrossAxisAlignment crossAxis = pw.CrossAxisAlignment.start,
+  }) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 3),
-      child: pw.Row(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.Container(
-            width: 120,
-            child: pw.Text(
-              label ?? '',
-              style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+      padding: pw.EdgeInsets.symmetric(vertical: vPadding),
+      child: pw.DefaultTextStyle.merge(
+        style: pw.TextStyle(fontSize: fontSize),
+        child: pw.Row(
+          crossAxisAlignment: crossAxis,
+          children: [
+            pw.Container(
+              width: labelWidth,
+              child: pw.Text(
+                label ?? '',
+                style: pw.TextStyle(fontWeight: labelWeight),
+              ),
             ),
-          ),
-          pw.Expanded(
-            child: pw.Text(
-              (value ?? '').replaceStringWithValues(data),
+            pw.Expanded(
+              child: pw.Text(
+                (value ?? '').replaceStringWithValues(data),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

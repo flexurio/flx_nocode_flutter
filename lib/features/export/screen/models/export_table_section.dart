@@ -44,43 +44,119 @@ class ExportTableSection extends ExportSection {
 }
 
 extension ExportTableSectionPdf on ExportTableSection {
-  pw.Widget toPdfWidget(List<List<String>> data) {
+  /// Versi compact dengan opsi kustomisasi:
+  /// - [fontSize]: ukuran font sel (default 9)
+  /// - [headerFontSize]: ukuran font header (default 9.5)
+  /// - [cellHPad]/[cellVPad]: padding horizontal/vertikal sel
+  /// - [borderW]: ketebalan garis tabel
+  /// - [zebra]: aktifkan striping baris ganjil
+  /// - [scale]: skala keseluruhan tabel (mis. 0.92 untuk kompres)
+  pw.Widget toPdfWidget(
+    List<List<String>> data, {
+    double fontSize = 9,
+    double headerFontSize = 9.5,
+    double cellHPad = 3,
+    double cellVPad = 2,
+    double borderW = 0.3,
+    bool zebra = true,
+    double? scale, // kalau mau kompres tambahan, mis. 0.92
+  }) {
     final headers = columns ?? [];
     final widths = columnWidths ?? [];
 
-    // Konversi width list jadi Map<int, TableColumnWidth>
+    // build columnWidths map (0/negatif = auto/flex)
     final Map<int, pw.TableColumnWidth> widthMap = {};
-    for (int i = 0; i < widths.length; i++) {
-      final w = widths[i];
-      if (w > 0) widthMap[i] = pw.FixedColumnWidth(w);
+    for (int i = 0;
+        i <
+            (headers.isNotEmpty
+                ? headers.length
+                : (data.isNotEmpty ? data.first.length : 0));
+        i++) {
+      if (i < widths.length) {
+        final w = widths[i];
+        if (w > 0) {
+          widthMap[i] = pw.FixedColumnWidth(w);
+        } else {
+          widthMap[i] = const pw.FlexColumnWidth(); // auto
+        }
+      } else {
+        widthMap[i] = const pw.FlexColumnWidth(); // default auto
+      }
     }
 
-    return pw.Padding(
-      padding: const pw.EdgeInsets.only(top: 10, bottom: 16),
+    // auto-detect kolom numerik → align right
+    Map<int, pw.Alignment> buildAlignments() {
+      final Map<int, pw.Alignment> map = {};
+      final int colCount = headers.isNotEmpty
+          ? headers.length
+          : (data.isNotEmpty ? data.first.length : 0);
+
+      bool _isNumeric(String s) {
+        final t = s
+            .trim()
+            .replaceAll('.', '')
+            .replaceAll(',', '.'); // 1.234,56 or 1,234.56
+        return double.tryParse(t) != null;
+      }
+
+      for (int c = 0; c < colCount; c++) {
+        // cek beberapa sampel saja agar cepat
+        final samples = data
+            .take(10)
+            .map((r) => c < r.length ? r[c] : '')
+            .where((e) => e != null)
+            .cast<String>();
+        final numericRatio = samples.isEmpty
+            ? 0.0
+            : samples.where((s) => _isNumeric(s)).length / samples.length;
+        map[c] = numericRatio >= 0.6
+            ? pw.Alignment.centerRight
+            : pw.Alignment.centerLeft;
+      }
+      return map;
+    }
+
+    final table = pw.Padding(
+      padding: const pw.EdgeInsets.only(top: 6, bottom: 10),
       child: pw.TableHelper.fromTextArray(
         headers: headers,
         data: data,
-        headerStyle: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold),
-        cellStyle: const pw.TextStyle(fontSize: 10),
-        headerDecoration:
-            const pw.BoxDecoration(color: PdfColor.fromInt(0xFFE0E0E0)),
-        border: pw.TableBorder(
-          top: pw.BorderSide(width: 0.5),
-          bottom: pw.BorderSide(width: 0.5),
-          left: pw.BorderSide(width: 0.5),
-          right: pw.BorderSide(width: 0.5),
-          horizontalInside: pw.BorderSide(width: 0.3),
-          verticalInside: pw.BorderSide(width: 0.3),
+        columnWidths: widthMap,
+        // compact styles
+        headerStyle: pw.TextStyle(
+          fontSize: headerFontSize,
+          fontWeight: pw.FontWeight.bold,
         ),
-        columnWidths: widthMap, // ⬅️ pakai widthMap di sini
-        cellAlignments: {
-          0: pw.Alignment.centerLeft,
-          1: pw.Alignment.center,
-          2: pw.Alignment.centerLeft,
-          3: pw.Alignment.center,
-          4: pw.Alignment.centerRight,
-        },
+        cellStyle: pw.TextStyle(fontSize: fontSize),
+        // compact paddings
+        cellPadding:
+            pw.EdgeInsets.symmetric(horizontal: cellHPad, vertical: cellVPad),
+        // hairline borders
+        border: pw.TableBorder(
+          top: pw.BorderSide(width: borderW),
+          bottom: pw.BorderSide(width: borderW),
+          left: pw.BorderSide(width: borderW),
+          right: pw.BorderSide(width: borderW),
+          horizontalInside: pw.BorderSide(width: borderW * 0.8),
+          verticalInside: pw.BorderSide(width: borderW * 0.8),
+        ),
+        // header shading ringan
+        headerDecoration: const pw.BoxDecoration(
+          color: PdfColor.fromInt(0xFFEAEAEA),
+        ),
+        // zebra row agar tetap terbaca walau padat
+        oddRowDecoration: zebra
+            ? const pw.BoxDecoration(color: PdfColor.fromInt(0xFFF7F7F7))
+            : null,
+        // auto alignment (angka → kanan)
+        cellAlignments: buildAlignments(),
       ),
     );
+
+    // opsi kompres tabel ekstra
+    if (scale != null && scale > 0 && scale != 1.0) {
+      return pw.Transform.scale(scale: scale, child: table);
+    }
+    return table;
   }
 }
