@@ -307,6 +307,7 @@ class EntityCustom extends HiveObject {
   bool get allowCreate => backend.create != null;
   bool get allowUpdate => backend.update != null;
   bool get allowDelete => backend.deleteX != null;
+  bool get isProtected => ['flx_roles', 'flx_users'].contains(id);
 
   List<ActionButtonItem> buttonViews(
     BuildContext context,
