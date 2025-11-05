@@ -257,6 +257,16 @@ class MenuGroup extends HiveObject {
     );
   }
 
+  MenuGroup copyWith({
+    String? label,
+    List<Menu>? menu,
+  }) {
+    return MenuGroup(
+      label: label ?? this.label,
+      menu: menu ?? this.menu,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'label': label,
@@ -275,6 +285,18 @@ class Menu extends HiveObject {
     required this.icon,
     required this.menuSub,
   });
+
+  Menu copyWith({
+    String? label,
+    String? icon,
+    List<MenuSub>? menuSub,
+  }) {
+    return Menu(
+      label: label ?? this.label,
+      icon: icon ?? this.icon,
+      menuSub: menuSub ?? this.menuSub,
+    );
+  }
 
   factory Menu.fromJson(Map<String, dynamic> json) {
     return Menu(
@@ -305,6 +327,16 @@ class MenuSub extends HiveObject {
     return MenuSub(
       label: json['label'],
       entity: json['entity'],
+    );
+  }
+
+  MenuSub copyWith({
+    String? label,
+    String? entity,
+  }) {
+    return MenuSub(
+      label: label ?? this.label,
+      entity: entity ?? this.entity,
     );
   }
 
