@@ -1,3 +1,4 @@
+import 'package:flx_nocode_flutter/features/configuration/screen/pages/configuration_error_page.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
@@ -19,11 +20,7 @@ Future<void> main() async {
     print('[main] error loading configuration: $e');
     runApp(
       MaterialApp(
-        home: Scaffold(
-          body: Center(
-            child: Text(e.toString()),
-          ),
-        ),
+        home: ConfigurationErrorPage(error: e),
       ),
     );
     return;
