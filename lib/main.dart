@@ -12,7 +12,23 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
 
-  await Configuration.load();
+  try {
+    print('[main] loading configuration');
+    await Configuration.load();
+  } catch (e) {
+    print('[main] error loading configuration: $e');
+    runApp(
+      MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Text(e.toString()),
+          ),
+        ),
+      ),
+    );
+    return;
+  }
+
   final configuration = Configuration.instance;
   MenuBloc.instance = MenuBloc(
     logoNamedUrl: configuration.logoNamedUrl,
