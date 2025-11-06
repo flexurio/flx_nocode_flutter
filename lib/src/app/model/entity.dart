@@ -318,12 +318,14 @@ class EntityCustom extends HiveObject {
     Map<String, dynamic> data,
     EntityCustom entity,
     bool embedded,
+    List<Map<String, dynamic>> parentData,
   ) {
     return views
         .map(
           (e) => e.button(
             context,
             data,
+            parentData,
             entity,
             embedded,
           ),
@@ -332,8 +334,11 @@ class EntityCustom extends HiveObject {
   }
 
   List<Widget> buttonViewsLarge(
-      BuildContext context, Map<String, dynamic> data) {
-    return views.map((e) => e.buttonLarge(context, data)).toList();
+    BuildContext context,
+    Map<String, dynamic> data,
+    List<Map<String, dynamic>> parentData,
+  ) {
+    return views.map((e) => e.buttonLarge(context, data, parentData)).toList();
   }
 }
 

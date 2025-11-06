@@ -21,9 +21,11 @@ class EntityCreatePage extends StatefulWidget {
     this.filters = const {},
     required this.noHeader,
     required this.layoutForm,
+    required this.parentData,
   });
 
   final Map<String, dynamic>? data;
+  final List<Map<String, dynamic>> parentData;
   final EntityCustom entity;
   final VoidCallback onSuccess;
   final Map<String, dynamic> filters;
@@ -34,20 +36,22 @@ class EntityCreatePage extends StatefulWidget {
 
   static Widget prepare({
     Key? key,
-    required EntityCustom entity,
-    Map<String, dynamic>? data,
-    required VoidCallback onSuccess,
-    required bool embedded,
+    bool autoBackWhenSuccess = true,
     bool noHeader = false,
     Map<String, dynamic> filters = const {},
-    bool autoBackWhenSuccess = true,
+    Map<String, dynamic>? data,
+    required bool embedded,
+    required EntityCustom entity,
     required LayoutForm? layoutForm,
+    required List<Map<String, dynamic>> parentData,
+    required VoidCallback onSuccess,
   }) {
     if (layoutForm == null) return const SizedBox.shrink();
 
     return MultiBlocProvider(
       providers: [BlocProvider(create: (context) => EntityBloc(entity))],
       child: EntityCreatePage._(
+        parentData: parentData,
         layoutForm: layoutForm,
         data: data,
         entity: entity,
@@ -68,12 +72,14 @@ class EntityCreatePage extends StatefulWidget {
     required VoidCallback onSuccess,
     required bool embedded,
     required Map<String, dynamic> filters,
+    required List<Map<String, dynamic>> parentData,
     bool autoBackWhenSuccess = true,
   }) {
     return PageTransition(
       opaque: true,
       type: PageTransitionType.rightToLeft,
       child: EntityCreatePage.prepare(
+        parentData: parentData,
         layoutForm: layoutForm,
         data: data,
         entity: entity,
@@ -161,6 +167,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
             child: Column(
               children: [
                 EntityCreateForm(
+                  parentData: widget.parentData,
                   layoutForm: widget.layoutForm,
                   entity: widget.entity,
                   dataAction: _action,
@@ -192,6 +199,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
         actions: [_buildButtonSubmit()],
         children: [
           EntityCreateForm(
+            parentData: widget.parentData,
             layoutForm: widget.layoutForm,
             entity: widget.entity,
             dataAction: _action,

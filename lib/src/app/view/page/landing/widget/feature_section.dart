@@ -80,6 +80,7 @@ class _FeatureSectionState extends State<FeatureSection> {
               const CircularProgressIndicator()
             else if (_entity != null)
               MenuDataTableCustom.prepare(
+                parentData: [],
                 bypassPermission: false,
                 entity: _entity!,
                 embedded: true,

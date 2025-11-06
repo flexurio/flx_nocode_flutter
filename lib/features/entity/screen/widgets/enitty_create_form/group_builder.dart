@@ -14,6 +14,7 @@ class GroupBuilder extends StatelessWidget {
     required this.dataAction,
     required this.controllers,
     required this.formState,
+    required this.parentData,
   });
 
   final GroupLayout group;
@@ -21,6 +22,7 @@ class GroupBuilder extends StatelessWidget {
   final DataAction dataAction;
   final Map<String, TextEditingController> controllers;
   final FormStateController formState;
+  final List<Map<String, dynamic>> parentData;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,6 @@ class GroupBuilder extends StatelessWidget {
       builder: (context, _) {
         final state = formState.state;
 
-        // Group-level visibility
         if (!group.isVisible(state)) {
           return const SizedBox.shrink();
         }
@@ -40,6 +41,7 @@ class GroupBuilder extends StatelessWidget {
         final rowsWidgets = <Widget>[];
         for (var i = 0; i < visibleRows.length; i++) {
           rowsWidgets.add(RowBuilder(
+            parentData: parentData,
             row: visibleRows[i],
             entity: entity,
             dataAction: dataAction,
@@ -50,7 +52,6 @@ class GroupBuilder extends StatelessWidget {
         }
 
         if (rowsWidgets.isEmpty) {
-          // No visible rows => hide the entire group section gracefully
           return const SizedBox.shrink();
         }
 

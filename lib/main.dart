@@ -39,6 +39,7 @@ Future<void> main() async {
     if (entity != null) {
       signUpPage = ({required VoidCallback onSuccess}) {
         return EntityCreatePage.prepare(
+          parentData: [],
           layoutForm: entity.layoutForm.getByType(FormType.create),
           entity: entity,
           embedded: true,

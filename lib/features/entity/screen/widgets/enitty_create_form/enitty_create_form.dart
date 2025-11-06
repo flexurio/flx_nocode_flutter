@@ -13,12 +13,14 @@ class EntityCreateForm extends StatefulWidget {
     required this.entity,
     required this.controllers,
     required this.layoutForm,
+    required this.parentData,
   });
 
   final DataAction dataAction;
   final EntityCustom entity;
   final Map<String, TextEditingController> controllers;
   final LayoutForm layoutForm;
+  final List<Map<String, dynamic>> parentData;
 
   @override
   State<EntityCreateForm> createState() => _EntityCreateFormState();
@@ -41,13 +43,11 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
 
   @override
   Widget build(BuildContext context) {
-    // Rebuild reactively when any controller changes
     return AnimatedBuilder(
       animation: _formState,
       builder: (context, _) {
         final state = _formState.state;
 
-        // Top-level visibility (form-level visible_if, if provided)
         final formVisible = widget.layoutForm.isVisible(state);
         if (!formVisible) {
           return const SizedBox.shrink();
@@ -60,13 +60,16 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
         final children = <Widget>[];
         for (var i = 0; i < visibleGroups.length; i++) {
           final group = visibleGroups[i];
-          children.add(GroupBuilder(
-            group: group,
-            entity: widget.entity,
-            dataAction: widget.dataAction,
-            controllers: widget.controllers,
-            formState: _formState, // pass down for reactive rows
-          ));
+          children.add(
+            GroupBuilder(
+              parentData: widget.parentData,
+              group: group,
+              entity: widget.entity,
+              dataAction: widget.dataAction,
+              controllers: widget.controllers,
+              formState: _formState, // pass down for reactive rows
+            ),
+          );
           if (i < visibleGroups.length - 1) children.add(const Gap(24));
         }
 
