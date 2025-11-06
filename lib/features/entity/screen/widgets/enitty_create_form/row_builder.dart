@@ -49,7 +49,6 @@ class RowBuilder extends StatelessWidget {
           }
         }
 
-        // Chunk fields into rows of N columns
         final rows = <List<Widget>>[];
         for (var i = 0; i < fieldWidgets.length; i += columns) {
           final end = (i + columns < fieldWidgets.length)
@@ -57,7 +56,6 @@ class RowBuilder extends StatelessWidget {
               : fieldWidgets.length;
           final chunk = fieldWidgets.sublist(i, end);
 
-          // pad empty cells to keep grid balanced
           while (chunk.length < columns) {
             chunk.add(const SizedBox.shrink());
           }

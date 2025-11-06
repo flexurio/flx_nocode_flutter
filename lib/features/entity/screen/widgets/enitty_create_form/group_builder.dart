@@ -29,7 +29,6 @@ class GroupBuilder extends StatelessWidget {
       builder: (context, _) {
         final state = formState.state;
 
-        // Group-level visibility
         if (!group.isVisible(state)) {
           return const SizedBox.shrink();
         }
@@ -50,7 +49,6 @@ class GroupBuilder extends StatelessWidget {
         }
 
         if (rowsWidgets.isEmpty) {
-          // No visible rows => hide the entire group section gracefully
           return const SizedBox.shrink();
         }
 

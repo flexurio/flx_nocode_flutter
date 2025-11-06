@@ -41,13 +41,11 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
 
   @override
   Widget build(BuildContext context) {
-    // Rebuild reactively when any controller changes
     return AnimatedBuilder(
       animation: _formState,
       builder: (context, _) {
         final state = _formState.state;
 
-        // Top-level visibility (form-level visible_if, if provided)
         final formVisible = widget.layoutForm.isVisible(state);
         if (!formVisible) {
           return const SizedBox.shrink();
