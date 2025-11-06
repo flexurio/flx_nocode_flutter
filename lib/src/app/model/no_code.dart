@@ -36,6 +36,7 @@ class NoCode {
         entityId: entityId,
         embedded: true,
         firstPage: true,
+        parentData: [pageData],
       ),
       primaryColor: primaryColor,
     );

@@ -1,14 +1,12 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
-import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
-import 'package:flx_nocode_flutter/src/app/view/page/entity_view/enitity_view_page.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_create_button.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/filter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:screen_identifier/screen_identifier.dart';
 
 import 'error.dart';
@@ -19,17 +17,20 @@ class MenuDataTableCustom extends StatefulWidget {
     required this.embedded,
     required this.initialFilters,
     required this.bypassPermission,
+    required this.parentData,
   });
 
   static Widget prepare({
     required bool embedded,
     required EntityCustom entity,
     required bool bypassPermission,
+    required List<Map<String, dynamic>> parentData,
     List<Filter> initialFilters = const [],
   }) {
     return BlocProvider(
       create: (_) => EntityCustomQueryBloc(),
       child: MenuDataTableCustom._(
+        parentData: parentData,
         bypassPermission: bypassPermission,
         entity: entity,
         embedded: embedded,
@@ -42,6 +43,7 @@ class MenuDataTableCustom extends StatefulWidget {
   final bool embedded;
   final List<Filter> initialFilters;
   final bool bypassPermission;
+  final List<Map<String, dynamic>> parentData;
 
   @override
   State<MenuDataTableCustom> createState() => _MenuDataTableCustomState();
@@ -90,6 +92,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 ),
               ),
               sm: _buildListView(
+                parentData: widget.parentData,
                 status: state.maybeWhen(
                   loading: (_) => Status.progress,
                   orElse: () => Status.error,
@@ -111,6 +114,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   Widget _buildListView({
     required Status status,
     required PageOptions<Map<String, dynamic>> pageOptions,
+    required List<Map<String, dynamic>> parentData,
   }) {
     return DataListView(
       actionLeft: _buildActionLeft(),
@@ -130,6 +134,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             Navigator.push(
               context,
               EntityViewPage.route(
+                parentData: parentData,
                 embedded: true,
                 entity: widget.entity,
                 data: data,
@@ -198,6 +203,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                             await Navigator.push(
                               context,
                               EntityViewPage.route(
+                                parentData: widget.parentData,
                                 embedded: widget.embedded,
                                 entity: widget.entity,
                                 data: entity,
@@ -219,6 +225,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 children: [
                   ActionsButton(
                     children: EntityViewPage.actionsLarge(
+                      parentData: widget.parentData,
                       context: context,
                       data: data,
                       filters: _filters.toMap(),
@@ -243,6 +250,36 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     ];
   }
 
+  List<Widget> _buildHomeActions() {
+    final buttons = <Widget>[];
+    final actions = widget.entity.layoutForm.homeActionForms;
+    for (final action in actions) {
+      buttons.add(
+        LightButtonSmall(
+          title: action.label,
+          action: DataAction.reprocess,
+          permissions: null,
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              EntityCreatePage.route(
+                layoutForm: action,
+                entity: widget.entity,
+                onSuccess: () {
+                  _fetch();
+                },
+                embedded: false,
+                parentData: widget.parentData,
+                filters: {},
+              ),
+            );
+          },
+        ),
+      );
+    }
+    return buttons;
+  }
+
   List<Widget> _buildActionRight(Widget refreshButton) {
     return [
       _buildButtonExports(),
@@ -254,9 +291,12 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           _fetch();
         },
       ),
+      ..._buildHomeActions(),
       refreshButton,
       if (widget.entity.allowCreate)
         EntityCreateButton(
+          parentData: widget.parentData,
+          layoutForm: widget.entity.layoutForm.getByType(FormType.create),
           embedded: widget.embedded,
           entity: widget.entity,
           filters: _filters.toMap(),

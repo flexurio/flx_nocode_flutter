@@ -5,7 +5,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flx_nocode_flutter/src/app/view/page/entity_create/widget/form.dart';
+import 'package:flx_nocode_flutter/features/entity/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/enitty_create_form.dart';
 import 'package:gap/gap.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -19,29 +20,39 @@ class EntityCreatePage extends StatefulWidget {
     required this.autoBackWhenSuccess,
     this.filters = const {},
     required this.noHeader,
+    required this.layoutForm,
+    required this.parentData,
   });
 
   final Map<String, dynamic>? data;
+  final List<Map<String, dynamic>> parentData;
   final EntityCustom entity;
   final VoidCallback onSuccess;
   final Map<String, dynamic> filters;
   final bool embedded;
   final bool autoBackWhenSuccess;
   final bool noHeader;
+  final LayoutForm layoutForm;
 
   static Widget prepare({
     Key? key,
-    required EntityCustom entity,
-    Map<String, dynamic>? data,
-    required VoidCallback onSuccess,
-    required bool embedded,
+    bool autoBackWhenSuccess = true,
     bool noHeader = false,
     Map<String, dynamic> filters = const {},
-    bool autoBackWhenSuccess = true,
+    Map<String, dynamic>? data,
+    required bool embedded,
+    required EntityCustom entity,
+    required LayoutForm? layoutForm,
+    required List<Map<String, dynamic>> parentData,
+    required VoidCallback onSuccess,
   }) {
+    if (layoutForm == null) return const SizedBox.shrink();
+
     return MultiBlocProvider(
       providers: [BlocProvider(create: (context) => EntityBloc(entity))],
       child: EntityCreatePage._(
+        parentData: parentData,
+        layoutForm: layoutForm,
         data: data,
         entity: entity,
         onSuccess: onSuccess,
@@ -55,17 +66,21 @@ class EntityCreatePage extends StatefulWidget {
   }
 
   static Route<bool?> route({
+    required LayoutForm layoutForm,
     required EntityCustom entity,
     Map<String, dynamic>? data,
     required VoidCallback onSuccess,
     required bool embedded,
     required Map<String, dynamic> filters,
+    required List<Map<String, dynamic>> parentData,
     bool autoBackWhenSuccess = true,
   }) {
     return PageTransition(
       opaque: true,
       type: PageTransitionType.rightToLeft,
       child: EntityCreatePage.prepare(
+        parentData: parentData,
+        layoutForm: layoutForm,
         data: data,
         entity: entity,
         onSuccess: onSuccess,
@@ -152,6 +167,8 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
             child: Column(
               children: [
                 EntityCreateForm(
+                  parentData: widget.parentData,
+                  layoutForm: widget.layoutForm,
                   entity: widget.entity,
                   dataAction: _action,
                   controllers: _controllers,
@@ -175,11 +192,15 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
       body: SingleFormPanel(
         hideHeader: widget.embedded ? true : false,
         formKey: _formKey,
-        action: _action,
+        action:
+            widget.layoutForm.formType.isHome ? DataAction.reprocess : _action,
+        suffixText: _buildTitle(),
         entity: coreEntity,
         actions: [_buildButtonSubmit()],
         children: [
           EntityCreateForm(
+            parentData: widget.parentData,
+            layoutForm: widget.layoutForm,
             entity: widget.entity,
             dataAction: _action,
             controllers: _controllers,
@@ -189,10 +210,19 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
     );
   }
 
+  String _buildTitle() {
+    var title = '${_action.title} ${widget.entity.coreEntity.title}';
+    if (widget.layoutForm.formType.isHome) {
+      title = widget.layoutForm.label;
+    }
+    return title;
+  }
+
   AppBar _buildAppBar(BuildContext context) {
     final theme = Theme.of(context);
+
     return AppBar(
-      title: Text('${_action.title} ${widget.entity.coreEntity.title}'),
+      title: Text(_buildTitle()),
       backgroundColor: theme.scaffoldBackgroundColor,
     );
   }
@@ -219,7 +249,7 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
   void _submit() {
     if (_formKey.currentState!.validate()) {
       late EntityEvent event;
-      if (_action.isEdit) {
+      if (_action.isEdit || widget.layoutForm.formType.isHome) {
         event = EntityEvent.edit(data: _data, filters: widget.filters);
       } else {
         event = EntityEvent.create(data: _data, filters: widget.filters);
@@ -227,6 +257,32 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
 
       context.read<EntityBloc>().add(event);
     }
+  }
+
+  List<Widget> _buildButtonActions(BuildContext context, bool isInProgress) {
+    final actions = <Widget>[];
+    final buttons = widget.layoutForm.buttons;
+    for (final button in buttons) {
+      actions.add(
+        Button.string(
+          permission: null,
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              final event = EntityEvent.execute(
+                data: _data,
+                method: button.method,
+                url: button.url,
+              );
+
+              context.read<EntityBloc>().add(event);
+            }
+          },
+          action: button.label,
+          isInProgress: false,
+        ),
+      );
+    }
+    return actions;
   }
 
   Widget _buildButtonSubmit() {
@@ -237,11 +293,19 @@ class _EntityCreatePageState extends State<EntityCreatePage> {
           orElse: () => false,
         );
 
+        if (widget.layoutForm.buttons.isNotEmpty) {
+          return Row(
+            children: _buildButtonActions(context, inProgress),
+          );
+        }
+
         return Button.action(
           permission: null,
           isInProgress: inProgress,
           onPressed: _submit,
-          action: _action,
+          action: widget.layoutForm.formType.isHome
+              ? DataAction.reprocess
+              : _action,
         );
       },
     );

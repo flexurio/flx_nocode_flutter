@@ -12,10 +12,12 @@ class EntityViewPage extends StatelessWidget {
     required this.data,
     required this.embedded,
     required this.dummy,
+    required this.parentData,
     this.filters = const {},
   });
   final EntityCustom entity;
   final Map<String, dynamic> data;
+  final List<Map<String, dynamic>> parentData;
   final Map<String, dynamic> filters;
   final bool dummy;
   final bool embedded;
@@ -25,6 +27,7 @@ class EntityViewPage extends StatelessWidget {
     required Map<String, dynamic> data,
     required bool embedded,
     required bool dummy,
+    required List<Map<String, dynamic>> parentData,
   }) {
     return MultiBlocProvider(
       providers: [BlocProvider(create: (_) => EntityCustomQueryBloc())],
@@ -33,6 +36,7 @@ class EntityViewPage extends StatelessWidget {
         data: data,
         embedded: embedded,
         dummy: dummy,
+        parentData: parentData,
       ),
     );
   }
@@ -40,6 +44,7 @@ class EntityViewPage extends StatelessWidget {
   static Route<void> route({
     required EntityCustom entity,
     required Map<String, dynamic> data,
+    required List<Map<String, dynamic>> parentData,
     required Map<String, dynamic> filters,
     required bool embedded,
   }) {
@@ -47,6 +52,7 @@ class EntityViewPage extends StatelessWidget {
       builder: (_) => MultiBlocProvider(
         providers: [BlocProvider(create: (_) => EntityCustomQueryBloc())],
         child: EntityViewPage._(
+          parentData: parentData,
           entity: entity,
           data: data,
           filters: filters,
@@ -67,6 +73,7 @@ class EntityViewPage extends StatelessWidget {
       floatingActionButton: ActionButtonX(
         items: EntityViewPage.actions(
           context,
+          parentData,
           data,
           filters,
           entity,
@@ -117,6 +124,7 @@ class EntityViewPage extends StatelessWidget {
 
   static List<ActionButtonItem> actions(
     BuildContext context,
+    List<Map<String, dynamic>> parentData,
     Map<String, dynamic> data,
     Map<String, dynamic> filters,
     EntityCustom entity,
@@ -129,15 +137,17 @@ class EntityViewPage extends StatelessWidget {
       data,
       filters,
       onRefresh,
+      parentData,
       embedded,
     );
-    return entity.buttonViews(context, data, entity, embedded)
+    return entity.buttonViews(context, data, entity, embedded, parentData)
       ..addAll(modifyActions);
   }
 
   static List<Widget> actionsLarge({
     required BuildContext context,
     required Map<String, dynamic> data,
+    required List<Map<String, dynamic>> parentData,
     required Map<String, dynamic> filters,
     required EntityCustom entity,
     required void Function(BuildContext) onRefresh,
@@ -150,8 +160,10 @@ class EntityViewPage extends StatelessWidget {
       filters: filters,
       onRefresh: onRefresh,
       bypassPermission: bypassPermission,
+      parentData: parentData,
     );
-    return entity.buttonViewsLarge(context, data)..addAll(modifyActions);
+    return entity.buttonViewsLarge(context, data, parentData)
+      ..addAll(modifyActions);
   }
 
   static List<Widget> _buildEntityCustomActionsLarge({
@@ -161,24 +173,31 @@ class EntityViewPage extends StatelessWidget {
     required Map<String, dynamic> filters,
     required void Function(BuildContext context) onRefresh,
     required bool bypassPermission,
+    required List<Map<String, dynamic>> parentData,
   }) {
     return [
-      if (entity.allowDelete)
-        LightButton(
-          permission: bypassPermission ? null : '${entity.id}_write',
-          action: DataAction.edit,
-          onPressed: () async {
-            Navigator.push(
-              context,
-              EntityCreatePage.route(
-                filters: filters,
-                embedded: false,
-                entity: entity,
-                data: data,
-                onSuccess: () => onRefresh(context),
-              ),
-            );
-          },
+      ...entity.exports.buildSingleButtons(data),
+      if (entity.allowUpdate)
+        ...entity.layoutForm.updateForms.map(
+          (e) => LightButton(
+            permission: bypassPermission ? null : '${entity.id}_write',
+            action: DataAction.edit,
+            title: e.label,
+            onPressed: () async {
+              Navigator.push(
+                context,
+                EntityCreatePage.route(
+                  parentData: parentData,
+                  layoutForm: e,
+                  filters: filters,
+                  embedded: false,
+                  entity: entity,
+                  data: data,
+                  onSuccess: () => onRefresh(context),
+                ),
+              );
+            },
+          ),
         ),
       if (entity.allowDelete)
         EntityDeleteButton.prepare(
@@ -196,26 +215,31 @@ class EntityViewPage extends StatelessWidget {
     Map<String, dynamic> data,
     Map<String, dynamic> filters,
     void Function(BuildContext context) onRefresh,
+    List<Map<String, dynamic>> parentData,
     bool embedded,
   ) {
     final actions = [
       if (entity.allowUpdate)
-        ActionButtonItem(
-          color: DataAction.edit.color,
-          icon: DataAction.edit.icon,
-          label: DataAction.edit.title,
-          onPressed: () async {
-            Navigator.push(
-              context,
-              EntityCreatePage.route(
-                embedded: embedded,
-                entity: entity,
-                data: data,
-                filters: filters,
-                onSuccess: () => onRefresh(context),
-              ),
-            );
-          },
+        ...entity.layoutForm.updateForms.map(
+          (e) => ActionButtonItem(
+            color: DataAction.edit.color,
+            icon: DataAction.edit.icon,
+            label: e.label,
+            onPressed: () async {
+              Navigator.push(
+                context,
+                EntityCreatePage.route(
+                  parentData: parentData,
+                  layoutForm: e,
+                  embedded: embedded,
+                  entity: entity,
+                  data: data,
+                  filters: filters,
+                  onSuccess: () => onRefresh(context),
+                ),
+              );
+            },
+          ),
         ),
       if (entity.allowDelete)
         ActionButtonItem(
@@ -298,38 +322,6 @@ class EntityViewPage extends StatelessWidget {
         ...childrenRows
       ]);
     }
-
-    // final leftColumnChildren = <Widget>[];
-    // final rightColumnChildren = <Widget>[];
-    // var isFirst = true;
-    //
-    // for (int i = 0; i < entity.fields.length; i++) {
-    //   final field = entity.fields[i];
-    //
-    //   if (!isFirst) {
-    //     leftColumnChildren.add(Gap(12));
-    //     rightColumnChildren.add(Gap(12));
-    //   }
-    //   if (isFirst) {
-    //     isFirst = false;
-    //   }
-    //
-    //   final widget = TileDataVertical(
-    //     label: field.label,
-    //     child: EntityField.buildDisplay(
-    //       entity,
-    //       field.reference,
-    //       data[field.reference],
-    //     ),
-    //   );
-    //
-    //   // Add alternating widgets to each column
-    //   if (i % 2 == 0) {
-    //     leftColumnChildren.add(widget);
-    //   } else {
-    //     rightColumnChildren.add(widget);
-    //   }
-    // }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

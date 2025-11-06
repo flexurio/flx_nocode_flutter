@@ -12,6 +12,7 @@ class MenuCustom extends StatelessWidget {
   const MenuCustom({
     super.key,
     required this.entity,
+    required this.parentData,
     this.firstPage = false,
     this.embedded = false,
     this.initialFilters = const [],
@@ -25,6 +26,7 @@ class MenuCustom extends StatelessWidget {
   final List<Filter> initialFilters;
   final List<String> breadcrumbList;
   final bool bypassPermission;
+  final List<Map<String, dynamic>> parentData;
 
   static Widget fromId({
     required String entityId,
@@ -34,6 +36,7 @@ class MenuCustom extends StatelessWidget {
     List<String> breadcrumbList = const [],
     List<Filter> initialFilters = const [],
     bool bypassPermission = false,
+    required List<Map<String, dynamic>> parentData,
   }) {
     return FutureBuilder<EntityCustom?>(
       future: EntityCustom.getEntity(entityId),
@@ -49,6 +52,7 @@ class MenuCustom extends StatelessWidget {
             );
           }
           return MenuCustom(
+            parentData: parentData,
             entity: entity,
             breadcrumbList: breadcrumbList,
             embedded: embedded,
@@ -65,6 +69,8 @@ class MenuCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(
+        '[MenuCustom] level: ${parentData.length + 1}, parentData: ${parentData.length}');
     return Scaffold(
       appBar: embedded ? _buildAppBar(context, entity) : null,
       body: ListView(
@@ -87,6 +93,7 @@ class MenuCustom extends StatelessWidget {
           SizedBox(
             width: MediaQuery.of(context).size.width,
             child: MenuDataTableCustom.prepare(
+              parentData: parentData,
               entity: entity,
               initialFilters: initialFilters,
               embedded: embedded,
@@ -254,6 +261,7 @@ class _NoCodePageLoaderState extends State<NoCodePageLoader> {
             );
           }
           return MenuCustom(
+            parentData: [],
             entity: entity,
             breadcrumbList: widget.breadcrumbList,
             embedded: widget.embedded,

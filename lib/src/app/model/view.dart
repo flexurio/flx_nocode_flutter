@@ -76,6 +76,7 @@ class DView extends HiveObject {
   ActionButtonItem button(
     BuildContext context,
     Map<String, dynamic> data,
+    List<Map<String, dynamic>> parentData,
     EntityCustom entity,
     bool embedded,
   ) {
@@ -90,6 +91,7 @@ class DView extends HiveObject {
               context,
               MaterialPageRoute(
                 builder: (context) => MenuCustom.fromId(
+                  parentData: parentData,
                   embedded: true,
                   entityId: this.entity,
                   initialFilters: _filters(entity, data),
@@ -101,6 +103,7 @@ class DView extends HiveObject {
           MenuBloc.instance.add(
             Menu3Selected(
               home: MenuCustom.fromId(
+                parentData: parentData,
                 entityId: entity.id,
                 initialFilters: _filters(entity, data),
               ),
@@ -112,7 +115,8 @@ class DView extends HiveObject {
     );
   }
 
-  Widget buttonLarge(BuildContext context, Map<String, dynamic> data) {
+  Widget buttonLarge(BuildContext context, Map<String, dynamic> data,
+      List<Map<String, dynamic>> parentData) {
     return FutureBuilder<EntityCustom?>(
       future: EntityCustom.getEntity(entity),
       builder: (context, snapshot) {
@@ -129,21 +133,13 @@ class DView extends HiveObject {
                     context,
                     MaterialPageRoute(
                       builder: (context) => MenuCustom.fromId(
+                        parentData: List.from(parentData)..add(data),
                         breadcrumbList: [entity.label],
                         entityId: this.entity,
                         initialFilters: _filters(entity, data),
                       ),
                     ),
                   );
-                  // MenuBloc.instance.add(
-                  //   Menu3Selected(
-                  //     home: MenuCustom.fromId(
-                  //       entityId: entity.id,
-                  //       initialFilters: _filters(entity, data),
-                  //     ),
-                  //     label: entity.label,
-                  //   ),
-                  // );
                 },
         );
       },

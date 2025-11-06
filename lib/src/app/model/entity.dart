@@ -34,6 +34,9 @@ class EntityCustom extends HiveObject {
   });
 
   factory EntityCustom.fromJson(Map<String, dynamic> json) {
+    print("==================================== Parse Entity");
+    print('[EntityCustom] - ID: ${json['id']}');
+
     T requireKey<T>(String key) {
       if (!json.containsKey(key) || json[key] == null) {
         throw FormatException("Missing key: '$key' (expected $T).");
@@ -164,7 +167,8 @@ class EntityCustom extends HiveObject {
             return LayoutForm.fromMap(raw);
           },
         );
-      } catch (_) {
+      } catch (e) {
+        print('[EntityCustom] layout_form - error :$e');
         layoutForm = <LayoutForm>[];
       }
 
@@ -314,12 +318,14 @@ class EntityCustom extends HiveObject {
     Map<String, dynamic> data,
     EntityCustom entity,
     bool embedded,
+    List<Map<String, dynamic>> parentData,
   ) {
     return views
         .map(
           (e) => e.button(
             context,
             data,
+            parentData,
             entity,
             embedded,
           ),
@@ -328,8 +334,11 @@ class EntityCustom extends HiveObject {
   }
 
   List<Widget> buttonViewsLarge(
-      BuildContext context, Map<String, dynamic> data) {
-    return views.map((e) => e.buttonLarge(context, data)).toList();
+    BuildContext context,
+    Map<String, dynamic> data,
+    List<Map<String, dynamic>> parentData,
+  ) {
+    return views.map((e) => e.buttonLarge(context, data, parentData)).toList();
   }
 }
 
@@ -362,45 +371,4 @@ Map<K, V> reorderMap<K, V>(
   }
   entries.insert(newIndex, entry);
   return Map<K, V>.fromEntries(entries);
-}
-
-Never _missing(String key) => throw FormatException('Missing key: "$key"');
-
-Never _invalid(String key, String expected, Object? got) =>
-    throw FormatException(
-        'Invalid "$key": expected $expected, got ${got.runtimeType} -> $got');
-
-T _require<T>(Map<String, dynamic> json, String key) {
-  if (!json.containsKey(key)) _missing(key);
-  final v = json[key];
-  if (v is! T) _invalid(key, T.toString(), v);
-  return v;
-}
-
-T? _optional<T>(Map<String, dynamic> json, String key) {
-  if (!json.containsKey(key)) return null;
-  final v = json[key];
-  if (v == null) return null;
-  if (v is! T) _invalid(key, T.toString(), v);
-  return v;
-}
-
-List<R> _listOf<R>(
-  Map<String, dynamic> json,
-  String key,
-  R Function(Object raw, int index) parse, {
-  bool optional = false,
-}) {
-  final raw = optional ? _optional<List>(json, key) : _require<List>(json, key);
-  if (raw == null) return <R>[];
-  final out = <R>[];
-  for (var i = 0; i < raw.length; i++) {
-    final item = raw[i];
-    try {
-      out.add(parse(item, i));
-    } catch (e) {
-      throw FormatException('Error at "$key"[$i]: $e');
-    }
-  }
-  return out;
 }

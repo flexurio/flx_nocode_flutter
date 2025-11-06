@@ -97,7 +97,21 @@ class Configuration extends HiveObject {
     return Configuration(
       showLandingPage: false,
       preload: [],
-      menuGroups: [],
+      menuGroups: [
+        MenuGroup(
+          label: "Master",
+          menu: [
+            Menu(
+              label: "Entity",
+              icon: "fa fa-database",
+              menuSub: [
+                MenuSub(label: "FLX Roles", entity: "flx_roles"),
+                MenuSub(label: "FLX Users", entity: "flx_users"),
+              ],
+            ),
+          ],
+        ),
+      ],
       company: Company.empty(),
       theme: t.ThemeC(),
       appName: 'Dummy',
@@ -151,7 +165,8 @@ class Configuration extends HiveObject {
                         .map(
                           (e) => core.Menu3(
                             label: e.label,
-                            home: MenuCustom.fromId(entityId: e.entity),
+                            home: MenuCustom.fromId(
+                                entityId: e.entity, parentData: []),
                             permissions: [],
                             permission: e.entity + '_read',
                           ),
@@ -249,14 +264,6 @@ class MenuGroup extends HiveObject {
 
   MenuGroup({required this.label, required this.menu});
 
-  factory MenuGroup.fromJson(Map<String, dynamic> json) {
-    return MenuGroup(
-      label: json['label'],
-      menu:
-          (json['menu'] as List<dynamic>).map((e) => Menu.fromJson(e)).toList(),
-    );
-  }
-
   MenuGroup copyWith({
     String? label,
     List<Menu>? menu,
@@ -264,6 +271,14 @@ class MenuGroup extends HiveObject {
     return MenuGroup(
       label: label ?? this.label,
       menu: menu ?? this.menu,
+    );
+  }
+
+  factory MenuGroup.fromJson(Map<String, dynamic> json) {
+    return MenuGroup(
+      label: json['label'],
+      menu:
+          (json['menu'] as List<dynamic>).map((e) => Menu.fromJson(e)).toList(),
     );
   }
 
@@ -323,13 +338,6 @@ class MenuSub extends HiveObject {
 
   MenuSub({required this.label, required this.entity});
 
-  factory MenuSub.fromJson(Map<String, dynamic> json) {
-    return MenuSub(
-      label: json['label'],
-      entity: json['entity'],
-    );
-  }
-
   MenuSub copyWith({
     String? label,
     String? entity,
@@ -337,6 +345,13 @@ class MenuSub extends HiveObject {
     return MenuSub(
       label: label ?? this.label,
       entity: entity ?? this.entity,
+    );
+  }
+
+  factory MenuSub.fromJson(Map<String, dynamic> json) {
+    return MenuSub(
+      label: json['label'],
+      entity: json['entity'],
     );
   }
 
