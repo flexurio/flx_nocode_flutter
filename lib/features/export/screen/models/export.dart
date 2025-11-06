@@ -67,7 +67,7 @@ class Export extends HiveObject {
 }
 
 extension ExportList on List<Export> {
-  List<Widget> get singleButtons {
+  List<Widget> buildSingleButtons(Map<String, dynamic> data) {
     final buttons = <Widget>[];
     for (final e in this) {
       if (!e.isSingle || e.template == null) continue;
@@ -77,6 +77,7 @@ extension ExportList on List<Export> {
         onPressed: () async {
           await exportToPdf(
             e,
+            data: data,
             headerProvider: () async => {
               'Authorization': 'Bearer ${UserRepositoryApp.instance.token}',
             },
