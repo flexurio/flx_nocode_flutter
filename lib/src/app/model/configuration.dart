@@ -115,10 +115,10 @@ class Configuration extends HiveObject {
       company: Company.empty(),
       theme: t.ThemeC(),
       appName: 'Dummy',
-      backendHost: 'http://localhost:8080',
+      backendHost: 'http://0.0.0.0:8080',
       logoUrl: 'https://dummy.com/logo.png',
       logoNamedUrl: 'https://dummy.com/logo_named.png',
-      authUrl: 'http://localhost:8080/login',
+      authUrl: 'http://0.0.0.0:8080/login',
       entityRegistration: null,
     );
   }
