@@ -71,7 +71,7 @@ Future<void> exportToPdf(
     pageFormat: a5Format.copyWith(
       marginLeft: 10,
       marginRight: 10,
-      marginTop: 12,
+      marginTop: 18, // sedikit lebih besar untuk header
       marginBottom: 12,
     ),
   );
@@ -85,6 +85,26 @@ Future<void> exportToPdf(
   pdf.addPage(
     pw.MultiPage(
       pageTheme: pageTheme,
+
+      // ============= HEADER (pindahan "Hal. x/y" ke sini) =============
+      header: (context) => pw.Column(
+        children: [
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.end,
+            children: [
+              pw.Text(
+                'Hal. ${context.pageNumber}/${context.pagesCount}',
+                style: const pw.TextStyle(fontSize: 8),
+              ),
+            ],
+          ),
+          pw.SizedBox(height: 4),
+        ],
+      ),
+      // ============================ FOOTER ============================
+      // kosong agar penomoran hanya muncul di header
+      footer: (context) => pw.SizedBox(height: 0),
+
       // kecilkan default font agar konten lebih padat
       build: (context) => [
         // judul diperkecil dan tanpa jarak berlebihan
@@ -133,7 +153,12 @@ Future<void> exportToPdf(
                     crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                     children: [
                       // scale down tabel agar muat lebih banyak kolom/baris di A5
-                      _compactTable(section.toPdfWidget(rows)),
+                      _compactTable(
+                        section.toPdfWidget(
+                          data: rows,
+                          dataHeader: data,
+                        ),
+                      ),
                       sectionGap,
                     ],
                   );
@@ -159,15 +184,6 @@ Future<void> exportToPdf(
           ),
         ),
       ],
-      // header/footer tipis agar tetap compact
-      header: (context) => pw.SizedBox(height: 0),
-      footer: (context) => pw.Align(
-        alignment: pw.Alignment.centerRight,
-        child: pw.Text(
-          'Hal. ${context.pageNumber}/${context.pagesCount}',
-          style: const pw.TextStyle(fontSize: 8),
-        ),
-      ),
     ),
   );
 
@@ -255,7 +271,6 @@ Future<List<List<String>>> _fetchTableData(
         if (value is num) {
           return value.format(2);
         }
-
         return '${value ?? ''}';
       }).toList();
     }

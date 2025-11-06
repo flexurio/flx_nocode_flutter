@@ -1,4 +1,5 @@
 import 'package:flx_nocode_flutter/features/export/screen/models/export_section.dart';
+import 'package:flx_nocode_flutter/src/app/util/string.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -116,8 +117,9 @@ extension ExportTableSectionPdf on ExportTableSection {
   /// - Border yang lebih tegas dan jelas
   /// - Visual hierarchy yang lebih baik
   /// - Footer dengan styling konsisten
-  pw.Widget toPdfWidget(
-    List<List<String>> data, {
+  pw.Widget toPdfWidget({
+    required List<List<String>> data,
+    required Map<String, dynamic> dataHeader,
     double fontSize = 9,
     double headerFontSize = 9.5,
     double cellHPad = 3,
@@ -219,7 +221,8 @@ extension ExportTableSectionPdf on ExportTableSection {
     );
 
     // Footer row builder dengan styling konsisten
-    pw.Widget _buildFooterRow(ExportTableFooter footer) {
+    pw.Widget _buildFooterRow(
+        ExportTableFooter footer, Map<String, dynamic> data) {
       final bold = footer.style.bold == true;
       final topW = footer.style.borderTop;
 
@@ -252,7 +255,7 @@ extension ExportTableSectionPdf on ExportTableSection {
                   vertical: cellVPad + 1,
                 ),
                 child: pw.Text(
-                  cells[c],
+                  cells[c].renderWithData(data),
                   style: pw.TextStyle(
                     fontSize: fontSize,
                     fontWeight:
@@ -280,7 +283,7 @@ extension ExportTableSectionPdf on ExportTableSection {
     final List<pw.Widget> footerWidgets = [];
     if (footers != null && footers!.isNotEmpty) {
       for (final f in footers!) {
-        footerWidgets.add(_buildFooterRow(f));
+        footerWidgets.add(_buildFooterRow(f, dataHeader));
       }
       // Bottom border tegas
       footerWidgets.add(
