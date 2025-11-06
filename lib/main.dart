@@ -1,3 +1,4 @@
+import 'package:flx_nocode_flutter/features/configuration/screen/pages/configuration_error_page.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
@@ -12,7 +13,19 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
 
-  await Configuration.load();
+  try {
+    print('[main] loading configuration');
+    await Configuration.load();
+  } catch (e) {
+    print('[main] error loading configuration: $e');
+    runApp(
+      MaterialApp(
+        home: ConfigurationErrorPage(error: e),
+      ),
+    );
+    return;
+  }
+
   final configuration = Configuration.instance;
   MenuBloc.instance = MenuBloc(
     logoNamedUrl: configuration.logoNamedUrl,

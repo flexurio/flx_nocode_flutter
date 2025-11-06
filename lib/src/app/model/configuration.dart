@@ -126,9 +126,14 @@ class Configuration extends HiveObject {
   static late Configuration instance;
 
   static load() async {
-    final path = 'asset/configuration/configuration.json';
-    final data = await rootBundle.loadString(path);
-    Configuration.instance = Configuration.fromJson(json.decode(data));
+    try {
+      final path = 'asset/configuration/configuration.json';
+      final data = await rootBundle.loadString(path);
+      Configuration.instance = Configuration.fromJson(json.decode(data));
+    } catch (e) {
+      print('Error loading configuration: $e');
+      throw Exception('Failed to parse configuration: $e');
+    }
   }
 
   Map<String, dynamic> toJson() {
