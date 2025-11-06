@@ -13,6 +13,7 @@ class EntityCreateButton extends StatelessWidget {
     required this.filters,
     required this.bypassPermission,
     required this.layoutForm,
+    required this.parentData,
   });
 
   final configuration.EntityCustom entity;
@@ -21,6 +22,7 @@ class EntityCreateButton extends StatelessWidget {
   final Map<String, dynamic> filters;
   final LayoutForm? layoutForm;
   final bool bypassPermission;
+  final List<Map<String, dynamic>> parentData;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,7 @@ class EntityCreateButton extends StatelessWidget {
         final success = await Navigator.push(
           context,
           EntityCreatePage.route(
+            parentData: parentData,
             layoutForm: layoutForm!,
             entity: entity,
             onSuccess: onSuccess,

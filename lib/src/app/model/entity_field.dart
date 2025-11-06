@@ -322,8 +322,10 @@ class EntityField extends HiveObject {
     DataAction action,
     TextEditingController controller,
     bool isEnabled,
+    List<Map<String, dynamic>> parentData,
   ) {
     return FDropDownSearchEntity(
+      parentData: parentData,
       label: label,
       itemAsString: (id, label) => '$id - $label',
       entityField: this,
@@ -336,10 +338,14 @@ class EntityField extends HiveObject {
     );
   }
 
-  Widget buildForm(DataAction action, TextEditingController controller) {
+  Widget buildForm(
+    DataAction action,
+    TextEditingController controller,
+    List<Map<String, dynamic>> parentData,
+  ) {
     final isEnabled = _enabled(action);
     if (optionsSource != null) {
-      return buildFieldDropDown(action, controller, isEnabled);
+      return buildFieldDropDown(action, controller, isEnabled, parentData);
     } else if (isDateTime) {
       return buildFieldDateTime(action, controller, isEnabled);
     } else if (isBool) {

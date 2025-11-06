@@ -17,17 +17,20 @@ class MenuDataTableCustom extends StatefulWidget {
     required this.embedded,
     required this.initialFilters,
     required this.bypassPermission,
+    required this.parentData,
   });
 
   static Widget prepare({
     required bool embedded,
     required EntityCustom entity,
     required bool bypassPermission,
+    required List<Map<String, dynamic>> parentData,
     List<Filter> initialFilters = const [],
   }) {
     return BlocProvider(
       create: (_) => EntityCustomQueryBloc(),
       child: MenuDataTableCustom._(
+        parentData: parentData,
         bypassPermission: bypassPermission,
         entity: entity,
         embedded: embedded,
@@ -40,6 +43,7 @@ class MenuDataTableCustom extends StatefulWidget {
   final bool embedded;
   final List<Filter> initialFilters;
   final bool bypassPermission;
+  final List<Map<String, dynamic>> parentData;
 
   @override
   State<MenuDataTableCustom> createState() => _MenuDataTableCustomState();
@@ -88,6 +92,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 ),
               ),
               sm: _buildListView(
+                parentData: widget.parentData,
                 status: state.maybeWhen(
                   loading: (_) => Status.progress,
                   orElse: () => Status.error,
@@ -109,6 +114,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   Widget _buildListView({
     required Status status,
     required PageOptions<Map<String, dynamic>> pageOptions,
+    required List<Map<String, dynamic>> parentData,
   }) {
     return DataListView(
       actionLeft: _buildActionLeft(),
@@ -128,6 +134,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             Navigator.push(
               context,
               EntityViewPage.route(
+                parentData: parentData,
                 embedded: true,
                 entity: widget.entity,
                 data: data,
@@ -196,6 +203,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                             await Navigator.push(
                               context,
                               EntityViewPage.route(
+                                parentData: widget.parentData,
                                 embedded: widget.embedded,
                                 entity: widget.entity,
                                 data: entity,
@@ -217,6 +225,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 children: [
                   ActionsButton(
                     children: EntityViewPage.actionsLarge(
+                      parentData: widget.parentData,
                       context: context,
                       data: data,
                       filters: _filters.toMap(),
@@ -260,6 +269,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                   _fetch();
                 },
                 embedded: false,
+                parentData: widget.parentData,
                 filters: {},
               ),
             );
@@ -285,6 +295,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       refreshButton,
       if (widget.entity.allowCreate)
         EntityCreateButton(
+          parentData: widget.parentData,
           layoutForm: widget.entity.layoutForm.getByType(FormType.create),
           embedded: widget.embedded,
           entity: widget.entity,

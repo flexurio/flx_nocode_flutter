@@ -1,4 +1,3 @@
-import 'package:flx_nocode_flutter/features/entity/models/group_layout.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
@@ -13,10 +12,12 @@ class EntityViewPage extends StatelessWidget {
     required this.data,
     required this.embedded,
     required this.dummy,
+    required this.parentData,
     this.filters = const {},
   });
   final EntityCustom entity;
   final Map<String, dynamic> data;
+  final List<Map<String, dynamic>> parentData;
   final Map<String, dynamic> filters;
   final bool dummy;
   final bool embedded;
@@ -26,6 +27,7 @@ class EntityViewPage extends StatelessWidget {
     required Map<String, dynamic> data,
     required bool embedded,
     required bool dummy,
+    required List<Map<String, dynamic>> parentData,
   }) {
     return MultiBlocProvider(
       providers: [BlocProvider(create: (_) => EntityCustomQueryBloc())],
@@ -34,6 +36,7 @@ class EntityViewPage extends StatelessWidget {
         data: data,
         embedded: embedded,
         dummy: dummy,
+        parentData: parentData,
       ),
     );
   }
@@ -41,6 +44,7 @@ class EntityViewPage extends StatelessWidget {
   static Route<void> route({
     required EntityCustom entity,
     required Map<String, dynamic> data,
+    required List<Map<String, dynamic>> parentData,
     required Map<String, dynamic> filters,
     required bool embedded,
   }) {
@@ -48,6 +52,7 @@ class EntityViewPage extends StatelessWidget {
       builder: (_) => MultiBlocProvider(
         providers: [BlocProvider(create: (_) => EntityCustomQueryBloc())],
         child: EntityViewPage._(
+          parentData: parentData,
           entity: entity,
           data: data,
           filters: filters,
@@ -68,6 +73,7 @@ class EntityViewPage extends StatelessWidget {
       floatingActionButton: ActionButtonX(
         items: EntityViewPage.actions(
           context,
+          parentData,
           data,
           filters,
           entity,
@@ -118,6 +124,7 @@ class EntityViewPage extends StatelessWidget {
 
   static List<ActionButtonItem> actions(
     BuildContext context,
+    List<Map<String, dynamic>> parentData,
     Map<String, dynamic> data,
     Map<String, dynamic> filters,
     EntityCustom entity,
@@ -130,15 +137,17 @@ class EntityViewPage extends StatelessWidget {
       data,
       filters,
       onRefresh,
+      parentData,
       embedded,
     );
-    return entity.buttonViews(context, data, entity, embedded)
+    return entity.buttonViews(context, data, entity, embedded, parentData)
       ..addAll(modifyActions);
   }
 
   static List<Widget> actionsLarge({
     required BuildContext context,
     required Map<String, dynamic> data,
+    required List<Map<String, dynamic>> parentData,
     required Map<String, dynamic> filters,
     required EntityCustom entity,
     required void Function(BuildContext) onRefresh,
@@ -151,8 +160,10 @@ class EntityViewPage extends StatelessWidget {
       filters: filters,
       onRefresh: onRefresh,
       bypassPermission: bypassPermission,
+      parentData: parentData,
     );
-    return entity.buttonViewsLarge(context, data)..addAll(modifyActions);
+    return entity.buttonViewsLarge(context, data, parentData)
+      ..addAll(modifyActions);
   }
 
   static List<Widget> _buildEntityCustomActionsLarge({
@@ -162,6 +173,7 @@ class EntityViewPage extends StatelessWidget {
     required Map<String, dynamic> filters,
     required void Function(BuildContext context) onRefresh,
     required bool bypassPermission,
+    required List<Map<String, dynamic>> parentData,
   }) {
     return [
       ...entity.exports.buildSingleButtons(data),
@@ -175,6 +187,7 @@ class EntityViewPage extends StatelessWidget {
               Navigator.push(
                 context,
                 EntityCreatePage.route(
+                  parentData: parentData,
                   layoutForm: e,
                   filters: filters,
                   embedded: false,
@@ -202,6 +215,7 @@ class EntityViewPage extends StatelessWidget {
     Map<String, dynamic> data,
     Map<String, dynamic> filters,
     void Function(BuildContext context) onRefresh,
+    List<Map<String, dynamic>> parentData,
     bool embedded,
   ) {
     final actions = [
@@ -215,6 +229,7 @@ class EntityViewPage extends StatelessWidget {
               Navigator.push(
                 context,
                 EntityCreatePage.route(
+                  parentData: parentData,
                   layoutForm: e,
                   embedded: embedded,
                   entity: entity,

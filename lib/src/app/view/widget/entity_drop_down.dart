@@ -16,6 +16,7 @@ class FDropDownSearchEntity extends StatefulWidget
     this.items,
     required this.itemAsString,
     required this.entityField,
+    required this.parentData,
   });
 
   @override
@@ -39,6 +40,8 @@ class FDropDownSearchEntity extends StatefulWidget
 
   final String Function(dynamic id, dynamic label) itemAsString;
 
+  final List<Map<String, dynamic>> parentData;
+
   @override
   State<FDropDownSearchEntity> createState() => _FDropDownSearchEntityState();
 }
@@ -55,7 +58,7 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
       try {
         _options =
             await OptionsSource(optionsSource: widget.entityField.optionsSource)
-                .options();
+                .options(parentData: widget.parentData);
         _loading = false;
         print('[FDropDownSearchEntity] newValue');
         setState(() {});

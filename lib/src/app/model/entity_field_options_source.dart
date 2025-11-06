@@ -17,7 +17,9 @@ class OptionsSource {
   /// backend.bank_type({id}:{name})
   /// backend.bank_type({id}:{name})?active=true&nip=123
   /// ```
-  Future<Map<dynamic, dynamic>> options() async {
+  Future<Map<dynamic, dynamic>> options({
+    required List<Map<String, dynamic>> parentData,
+  }) async {
     if (optionsSource == null || optionsSource!.isEmpty) {
       print('[OptionsSource] optionsSource is empty');
       return {};
@@ -31,7 +33,7 @@ class OptionsSource {
 
     if (optionsSource!.startsWith('backend.')) {
       print('[OptionsSource] optionsSource is backend.');
-      final backend = await extractBackend();
+      final backend = await extractBackend(parentData: parentData);
       return backend;
     }
 
@@ -72,9 +74,11 @@ class OptionsSource {
   /// backend.bank_type({id}:{name})
   /// backend.bank_type({id}:{name})?active=true&nip=123
   /// ```
-  Future<Map<dynamic, dynamic>> extractBackend() async {
+  Future<Map<dynamic, dynamic>> extractBackend({
+    required List<Map<String, dynamic>> parentData,
+  }) async {
     try {
-      final backend = backendSource;
+      final backend = backendSource(parentData: parentData);
       final entity = (await EntityCustom.getEntity(backend.entity));
       final options = <dynamic, dynamic>{};
       if (entity != null) {
@@ -145,7 +149,11 @@ class OptionsSource {
   ///   queryParams: {"active": "true", "nip": "123"}
   /// )
   /// ```
-  BackendSource get backendSource {
+  BackendSource backendSource({
+    required List<Map<String, dynamic>> parentData,
+  }) {
+    print('[OptionsSource] backendSource parentData: $parentData');
+
     if (optionsSource == null) {
       throw ArgumentError('optionsSource is null');
     }

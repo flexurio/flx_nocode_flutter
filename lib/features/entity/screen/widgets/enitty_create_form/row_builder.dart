@@ -13,6 +13,7 @@ class RowBuilder extends StatelessWidget {
     required this.dataAction,
     required this.controllers,
     required this.formState,
+    required this.parentData,
   });
 
   final RowLayout row;
@@ -20,6 +21,7 @@ class RowBuilder extends StatelessWidget {
   final DataAction dataAction;
   final Map<String, TextEditingController> controllers;
   final FormStateController formState;
+  final List<Map<String, dynamic>> parentData;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,8 @@ class RowBuilder extends StatelessWidget {
           final controller = controllers[key];
 
           if (field != null && controller != null) {
-            fieldWidgets.add(field.buildForm(dataAction, controller));
+            fieldWidgets
+                .add(field.buildForm(dataAction, controller, parentData));
           } else if (field == null) {
             fieldWidgets.add(Text('Error: field "$key" not found'));
           } else {

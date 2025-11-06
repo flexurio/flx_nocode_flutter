@@ -165,7 +165,8 @@ class Configuration extends HiveObject {
                         .map(
                           (e) => core.Menu3(
                             label: e.label,
-                            home: MenuCustom.fromId(entityId: e.entity),
+                            home: MenuCustom.fromId(
+                                entityId: e.entity, parentData: []),
                             permissions: [],
                             permission: e.entity + '_read',
                           ),
