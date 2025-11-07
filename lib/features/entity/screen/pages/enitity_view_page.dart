@@ -1,3 +1,4 @@
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
@@ -153,6 +154,7 @@ class EntityViewPage extends StatelessWidget {
     required void Function(BuildContext) onRefresh,
     required bool bypassPermission,
   }) {
+    final actions = entity.actions.toButtonList(context, data, parentData);
     final modifyActions = _buildEntityCustomActionsLarge(
       entity: entity,
       context: context,
@@ -162,8 +164,11 @@ class EntityViewPage extends StatelessWidget {
       bypassPermission: bypassPermission,
       parentData: parentData,
     );
-    return entity.buttonViewsLarge(context, data, parentData)
-      ..addAll(modifyActions);
+    return [
+      ...entity.buttonViewsLarge(context, data, parentData),
+      ...modifyActions,
+      ...actions,
+    ];
   }
 
   static List<Widget> _buildEntityCustomActionsLarge({
