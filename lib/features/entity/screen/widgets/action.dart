@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
+import 'package:flx_nocode_flutter/src/app/util/string.dart';
 
 extension ActionListExtenstion on List<ActionD> {
   List<Widget> toButtonList(
@@ -14,7 +15,8 @@ extension ActionListExtenstion on List<ActionD> {
 }
 
 extension ActionExtenstion on ActionD {
-  Future<void> executeHttp(BuildContext context) async {
+  Future<void> executeHttp(
+      BuildContext context, Map<String, dynamic> data) async {
     if (http == null) {
       Toast(context).fail('No http data found');
       return;
@@ -23,21 +25,38 @@ extension ActionExtenstion on ActionD {
     final dio = Dio();
 
     try {
+      final url = http!.url.replaceStringWithValues(data, urlEncode: true);
+      final headers = http!.headersReplaceStringWithValues(data);
+
       // Setup headers
       final options = Options(
         method: http!.method.toUpperCase(),
-        headers: http!.headers,
+        headers: headers,
       );
 
       // Request body (POST/PUT/PATCH)
       final body = http!.body.isNotEmpty ? http!.body : null;
 
+      // 🔍 DEBUG PRINT
+      print('================ HTTP REQUEST ================');
+      print('→ Method : ${http!.method.toUpperCase()}');
+      print('→ URL    : ${url}');
+      print('→ Headers: ${headers}');
+      print('→ Body   : ${body ?? '{}'}');
+      print('==============================================');
+
       // Execute request
       final response = await dio.request(
-        http!.url,
+        url,
         data: body,
         options: options,
       );
+
+      // 🔍 RESPONSE DEBUG
+      print('================ HTTP RESPONSE ================');
+      print('← Status : ${response.statusCode}');
+      print('← Data   : ${response.data}');
+      print('==============================================');
 
       // Handle success
       if (response.statusCode != null &&
@@ -51,12 +70,20 @@ extension ActionExtenstion on ActionD {
         );
       }
     } on DioException catch (e) {
-      // Handle Dio-specific error
+      // 🔍 ERROR DEBUG
+      print('================ HTTP ERROR ==================');
+      print('❌ Type     : ${e.type}');
+      print('❌ Message  : ${e.message}');
+      print('❌ Response : ${e.response?.data}');
+      print('==============================================');
+
       final message =
           e.response?.data?['message'] ?? e.message ?? 'Unknown error occurred';
       Toast(context).fail('HTTP Error: $message');
     } catch (e) {
-      // Handle generic error
+      print('================ UNEXPECTED ERROR =============');
+      print('❌ $e');
+      print('==============================================');
       Toast(context).fail('Unexpected error: $e');
     }
   }
@@ -106,11 +133,10 @@ extension ActionExtenstion on ActionD {
           context: context,
           barrierDismissible: false,
           builder: (dialogCtx) {
-            bool isProgress = false; // start false; akan dinamis di onConfirm
+            bool isProgress = false;
             return StatefulBuilder(
               builder: (ctx, setState) {
                 return CardConfirmation.action(
-                  // atur dinamis: pakai nilai runtime
                   isProgress: isProgress,
                   action: act,
                   data: Entity.assetType,
@@ -120,15 +146,10 @@ extension ActionExtenstion on ActionD {
                     setState(() => isProgress = true);
 
                     try {
-                      // jalankan HTTP via Dio (pakai extension yang sudah dibuat)
-                      await executeHttp(ctx);
-                      // jika perlu: tutup dialog setelah sukses
-                      Navigator.of(ctx)
-                          .pop(); // comment kalau ingin tetap di dialog
+                      await executeHttp(ctx, data);
+                      Navigator.of(ctx).pop();
                     } catch (e) {
-                      // error sudah di-toast di executeHttp; tetap di dialog
                     } finally {
-                      // stop loading (kalau dialog belum tertutup)
                       if (Navigator.of(ctx).canPop()) {
                         setState(() => isProgress = false);
                       }
