@@ -16,9 +16,12 @@ extension ActionListExtenstion on List<ActionD> {
 
 extension ActionExtenstion on ActionD {
   Future<void> executeHttp(
-      BuildContext context, Map<String, dynamic> data) async {
+    BuildContext context,
+    Map<String, dynamic> data,
+  ) async {
     if (http == null) {
       Toast(context).fail('No http data found');
+      _handleOnFailure(context, 'No http data found', raw: null);
       return;
     }
 
@@ -27,64 +30,78 @@ extension ActionExtenstion on ActionD {
     try {
       final url = http!.url.replaceStringWithValues(data, urlEncode: true);
       final headers = http!.headersReplaceStringWithValues(data);
+      final method = http!.method.toUpperCase();
 
-      // Setup headers
       final options = Options(
-        method: http!.method.toUpperCase(),
+        method: method,
         headers: headers,
       );
 
-      // Request body (POST/PUT/PATCH)
-      final body = http!.body.isNotEmpty ? http!.body : null;
+      final hasBody = ['POST', 'PUT', 'PATCH'].contains(method);
+      dynamic body;
 
-      // 🔍 DEBUG PRINT
+      if (hasBody && http!.body.isNotEmpty) {
+        final replacedBody = http!.bodyReplaceStringWithValues(data);
+        if (http!.useFormData) {
+          body = FormData.fromMap(replacedBody);
+        } else {
+          body = replacedBody;
+        }
+      }
+
       print('================ HTTP REQUEST ================');
-      print('→ Method : ${http!.method.toUpperCase()}');
-      print('→ URL    : ${url}');
-      print('→ Headers: ${headers}');
+      print('→ Method : $method');
+      print('→ URL    : $url');
+      print('→ Headers: $headers');
       print('→ Body   : ${body ?? '{}'}');
+      print('→ AsFormData: ${http!.useFormData}');
       print('==============================================');
 
-      // Execute request
       final response = await dio.request(
         url,
         data: body,
         options: options,
       );
 
-      // 🔍 RESPONSE DEBUG
       print('================ HTTP RESPONSE ================');
       print('← Status : ${response.statusCode}');
       print('← Data   : ${response.data}');
       print('==============================================');
 
-      // Handle success
       if (response.statusCode != null &&
           response.statusCode! >= 200 &&
           response.statusCode! < 300) {
         Toast(context).success('Request success');
         _handleOnSuccess(context, response.data);
       } else {
-        Toast(context).fail(
-          'Request failed: ${response.statusCode} - ${response.statusMessage}',
+        final message = _extractErrorMessage(
+          response.data,
+          fallback:
+              'Request failed: ${response.statusCode} - ${response.statusMessage}',
         );
+        Toast(context).fail(message);
+        _handleOnFailure(context, message, raw: response.data);
       }
     } on DioException catch (e) {
-      // 🔍 ERROR DEBUG
       print('================ HTTP ERROR ==================');
       print('❌ Type     : ${e.type}');
       print('❌ Message  : ${e.message}');
       print('❌ Response : ${e.response?.data}');
       print('==============================================');
 
-      final message =
-          e.response?.data?['message'] ?? e.message ?? 'Unknown error occurred';
+      final message = _extractErrorMessage(
+        e.response?.data,
+        fallback: e.message ?? 'Unknown error occurred',
+      );
       Toast(context).fail('HTTP Error: $message');
+      _handleOnFailure(context, message, raw: e.response?.data);
     } catch (e) {
       print('================ UNEXPECTED ERROR =============');
       print('❌ $e');
       print('==============================================');
-      Toast(context).fail('Unexpected error: $e');
+      final message = 'Unexpected error: $e';
+      Toast(context).fail(message);
+      _handleOnFailure(context, message, raw: null);
     }
   }
 
@@ -92,7 +109,6 @@ extension ActionExtenstion on ActionD {
     switch (onSuccess) {
       case 'refresh':
         Toast(context).notify('Refreshing data...');
-        // Contoh: context.read<MyBloc>().add(MyRefreshEvent());
         break;
       case 'navigate_home':
         Navigator.of(context).pushReplacementNamed('/home');
@@ -106,10 +122,67 @@ extension ActionExtenstion on ActionD {
           ),
         );
         break;
+      case 'toast':
+        Toast(context).success('Action completed successfully');
+        break;
       default:
-        // Do nothing or show a message
-        Toast(context).notify('Action completed successfully');
+        break;
     }
+  }
+
+  void _handleOnFailure(
+    BuildContext context,
+    String message, {
+    dynamic raw,
+  }) {
+    switch (onFailure) {
+      case 'show_error_dialog':
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('Failed'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+        break;
+      case 'toast':
+        Toast(context).fail(message);
+        break;
+      case 'navigate_back':
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        } else {
+          Toast(context).notify('Cannot navigate back');
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  String _extractErrorMessage(
+    dynamic responseData, {
+    String fallback = 'Request failed',
+  }) {
+    if (responseData == null) return fallback;
+    if (responseData is String && responseData.trim().isNotEmpty) {
+      return responseData;
+    }
+    if (responseData is Map) {
+      final msg = responseData['message'] ??
+          responseData['error'] ??
+          responseData['detail'];
+      if (msg is String && msg.trim().isNotEmpty) return msg;
+      final errors = responseData['errors'];
+      if (errors != null) return errors.toString();
+    }
+    return fallback;
   }
 
   Widget button(
@@ -118,7 +191,6 @@ extension ActionExtenstion on ActionD {
     List<Map<String, dynamic>> parentData,
   ) {
     final act = DataAction.print;
-    // final id = data['id'].toString();
 
     return LightButton(
       title: name,
@@ -126,6 +198,7 @@ extension ActionExtenstion on ActionD {
       onPressed: () async {
         if (http == null) {
           Toast(context).fail('No http data found');
+          _handleOnFailure(context, 'No http data found');
           return;
         }
 
@@ -142,13 +215,10 @@ extension ActionExtenstion on ActionD {
                   data: Entity.assetType,
                   label: name,
                   onConfirm: () async {
-                    // mulai loading
                     setState(() => isProgress = true);
-
                     try {
                       await executeHttp(ctx, data);
                       Navigator.of(ctx).pop();
-                    } catch (e) {
                     } finally {
                       if (Navigator.of(ctx).canPop()) {
                         setState(() => isProgress = false);
