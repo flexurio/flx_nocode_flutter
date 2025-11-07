@@ -2,20 +2,25 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
+import 'package:flx_nocode_flutter/features/export/screen/widgets/export_to_pdf.dart';
+import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/src/app/util/string.dart';
 
 extension ActionListExtenstion on List<ActionD> {
   List<Widget> toButtonList(
+    EntityCustom entity,
     BuildContext context,
     Map<String, dynamic> data,
     List<Map<String, dynamic>> parentData,
   ) {
-    return map((e) => e.button(context, data, parentData)).toList();
+    return map((e) => e.button(entity, context, data, parentData)).toList();
   }
 }
 
 extension ActionExtenstion on ActionD {
   Future<void> executeHttp(
+    EntityCustom entity,
     BuildContext context,
     Map<String, dynamic> data,
   ) async {
@@ -72,7 +77,12 @@ extension ActionExtenstion on ActionD {
           response.statusCode! >= 200 &&
           response.statusCode! < 300) {
         Toast(context).success('Request success');
-        _handleOnSuccess(context, response.data);
+        _handleOnSuccess(
+          data: data,
+          entity: entity,
+          context: context,
+          responseData: response.data,
+        );
       } else {
         final message = _extractErrorMessage(
           response.data,
@@ -105,29 +115,51 @@ extension ActionExtenstion on ActionD {
     }
   }
 
-  void _handleOnSuccess(BuildContext context, dynamic responseData) {
-    switch (onSuccess) {
-      case 'refresh':
-        Toast(context).notify('Refreshing data...');
-        break;
-      case 'navigate_home':
-        Navigator.of(context).pushReplacementNamed('/home');
-        break;
-      case 'show_dialog':
-        showDialog(
-          context: context,
-          builder: (_) => AlertDialog(
-            title: const Text('Success'),
-            content: Text('Response: $responseData'),
-          ),
+  void _handleOnSuccess({
+    required EntityCustom entity,
+    required BuildContext context,
+    required dynamic responseData,
+    required Map<String, dynamic> data,
+  }) {
+    final regex = RegExp(r'^exports\.([0-9a-fA-F\-]{36})$');
+    final match =
+        regex.firstMatch('exports.a12b34cd-56ef-78ab-90cd-ef1234567890');
+    if (match != null) {
+      final id = match.group(1);
+      final index = entity.exports.indexWhere((e) => e.uuid == id);
+      if (index != -1) {
+        final export = entity.exports[index];
+        exportToPdf(
+          export,
+          data: data,
+          headerProvider: () async => {
+            'Authorization': 'Bearer ${UserRepositoryApp.instance.token}',
+          },
         );
-        break;
-      case 'toast':
-        Toast(context).success('Action completed successfully');
-        break;
-      default:
-        break;
+      }
     }
+    // switch (onSuccess) {
+    //   case 'refresh':
+    //     Toast(context).notify('Refreshing data...');
+    //     break;
+    //   case 'navigate_home':
+    //     Navigator.of(context).pushReplacementNamed('/home');
+    //     break;
+    //   case 'show_dialog':
+    //     showDialog(
+    //       context: context,
+    //       builder: (_) => AlertDialog(
+    //         title: const Text('Success'),
+    //         content: Text('Response: $responseData'),
+    //       ),
+    //     );
+    //     break;
+    //   case 'toast':
+    //     Toast(context).success('Action completed successfully');
+    //     break;
+    //   default:
+    //     break;
+    // }
   }
 
   void _handleOnFailure(
@@ -186,6 +218,7 @@ extension ActionExtenstion on ActionD {
   }
 
   Widget button(
+    EntityCustom entity,
     BuildContext context,
     Map<String, dynamic> data,
     List<Map<String, dynamic>> parentData,
@@ -217,7 +250,7 @@ extension ActionExtenstion on ActionD {
                   onConfirm: () async {
                     setState(() => isProgress = true);
                     try {
-                      await executeHttp(ctx, data);
+                      await executeHttp(entity, ctx, data);
                       Navigator.of(ctx).pop();
                     } finally {
                       if (Navigator.of(ctx).canPop()) {

@@ -154,7 +154,8 @@ class EntityViewPage extends StatelessWidget {
     required void Function(BuildContext) onRefresh,
     required bool bypassPermission,
   }) {
-    final actions = entity.actions.toButtonList(context, data, parentData);
+    final actions =
+        entity.actions.toButtonList(entity, context, data, parentData);
     final modifyActions = _buildEntityCustomActionsLarge(
       entity: entity,
       context: context,
