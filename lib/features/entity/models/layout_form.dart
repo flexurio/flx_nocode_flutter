@@ -192,8 +192,8 @@ class LayoutForm extends HiveObject {
     // 1) Require unique group IDs (if provided)
     final seen = <String>{};
     for (final g in groups) {
-      final id = g.id?.trim();
-      if (id == null || id.isEmpty) {
+      final id = g.id.trim();
+      if (id.isEmpty) {
         throw const FormatException('Each group must have a non-empty "id".');
       }
       if (!seen.add(id)) {
