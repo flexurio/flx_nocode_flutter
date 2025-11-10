@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 
 extension StringReplaceExtension on String {
   String renderWithData(Map<String, dynamic> data) {
@@ -16,6 +17,10 @@ extension StringReplaceExtension on String {
           urlEncode
               ? Uri.encodeComponent(data[key].toString())
               : data[key].toString());
+      url = url.replaceAll(
+        '{user.token}',
+        UserRepositoryApp.instance.token ?? '',
+      );
     }
     return url;
   }

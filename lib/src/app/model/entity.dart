@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
@@ -18,9 +19,11 @@ class EntityCustom extends HiveObject {
   final Backend backend;
   final List<LayoutForm> layoutForm;
   final LayoutListTile? layoutListTile;
+  final List<ActionD> actions;
   Map<String, int> layoutTable;
 
   EntityCustom({
+    required this.actions,
     required this.id,
     required this.label,
     required this.description,
@@ -199,8 +202,20 @@ class EntityCustom extends HiveObject {
 
       final layoutTable = parseLayoutTable('layout_table');
 
+      final actions = parseListOptional<ActionD>(
+        'actions',
+        (raw, i) {
+          if (raw is! Map<String, dynamic>) {
+            throw FormatException(
+                "expected Map for 'actions'[$i], got ${raw.runtimeType}");
+          }
+          return ActionD.fromJson(raw);
+        },
+      );
+
       return EntityCustom(
         id: id,
+        actions: actions,
         label: label,
         description: description,
         fields: fields,
@@ -226,6 +241,7 @@ class EntityCustom extends HiveObject {
         backend = Backend(others: []),
         layoutForm = [],
         layoutListTile = null,
+        actions = [],
         layoutTable = {},
         exports = [];
 
@@ -240,9 +256,11 @@ class EntityCustom extends HiveObject {
     LayoutListTile? layoutListTile,
     Map<String, int>? layoutTable,
     List<Export>? exports,
+    List<ActionD>? actions,
   }) {
     return EntityCustom(
       id: id ?? this.id,
+      actions: actions ?? this.actions,
       label: label ?? this.label,
       description: description ?? this.description,
       fields: fields ?? this.fields,

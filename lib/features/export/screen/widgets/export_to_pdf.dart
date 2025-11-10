@@ -49,7 +49,7 @@ Future<void> exportToPdf(
       print('[ExportPDF] → Fields: ${section.fields}');
       print('[ExportPDF] → Columns: ${section.columns}');
       try {
-        final rows = await _fetchTableData(
+        final rows = await fetchTableData(
           section,
           data: data,
           headerProvider: headerProvider,
@@ -71,7 +71,7 @@ Future<void> exportToPdf(
     pageFormat: a5Format.copyWith(
       marginLeft: 10,
       marginRight: 10,
-      marginTop: 18, // sedikit lebih besar untuk header
+      marginTop: 18,
       marginBottom: 12,
     ),
   );
@@ -82,16 +82,25 @@ Future<void> exportToPdf(
         child: child,
       );
 
+  // 🔹 Tambahkan tanggal print
+  final now = DateTime.now();
+  final formattedDate =
+      '${now.day.toString().padLeft(2, '0')}-${now.month.toString().padLeft(2, '0')}-${now.year} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+
   pdf.addPage(
     pw.MultiPage(
       pageTheme: pageTheme,
-
-      // ============= HEADER (pindahan "Hal. x/y" ke sini) =============
+      // ============= HEADER (dengan tanggal print dan penomoran halaman) =============
       header: (context) => pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
         children: [
           pw.Row(
-            mainAxisAlignment: pw.MainAxisAlignment.end,
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
+              pw.Text(
+                'Dicetak: $formattedDate',
+                style: const pw.TextStyle(fontSize: 8),
+              ),
               pw.Text(
                 'Hal. ${context.pageNumber}/${context.pagesCount}',
                 style: const pw.TextStyle(fontSize: 8),
@@ -102,34 +111,27 @@ Future<void> exportToPdf(
         ],
       ),
       // ============================ FOOTER ============================
-      // kosong agar penomoran hanya muncul di header
       footer: (context) => pw.SizedBox(height: 0),
 
-      // kecilkan default font agar konten lebih padat
       build: (context) => [
-        // judul diperkecil dan tanpa jarak berlebihan
         pw.Center(
           child: pw.Text(
             template.title,
             textAlign: pw.TextAlign.center,
             style: pw.TextStyle(
-              fontSize: 14, // sebelumnya 18
+              fontSize: 14,
               fontWeight: pw.FontWeight.bold,
             ),
           ),
         ),
-        pw.SizedBox(height: 8), // sebelumnya 20
-
-        // default text style lebih kecil untuk seluruh halaman
+        pw.SizedBox(height: 8),
         pw.DefaultTextStyle.merge(
-          style: const pw.TextStyle(fontSize: 9), // compact baseline
+          style: const pw.TextStyle(fontSize: 9),
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.stretch,
             children: [
               ...template.sections.map((section) {
                 print('[ExportPDF] 🧩 Rendering section: ${section.type}');
-
-                // jarak antar section dipersempit
                 final sectionGap = pw.SizedBox(height: 6);
 
                 if (section is ExportFieldSection) {
@@ -138,7 +140,6 @@ Future<void> exportToPdf(
                   return pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                     children: [
-                      // kecilkan internal font untuk field jika diperlukan
                       pw.DefaultTextStyle.merge(
                         style: const pw.TextStyle(fontSize: 9),
                         child: section.toPdfWidget(data),
@@ -152,7 +153,6 @@ Future<void> exportToPdf(
                   return pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                     children: [
-                      // scale down tabel agar muat lebih banyak kolom/baris di A5
                       _compactTable(
                         section.toPdfWidget(
                           data: rows,
@@ -188,7 +188,6 @@ Future<void> exportToPdf(
   );
 
   print('[ExportPDF] 💾 Saving PDF file...');
-
   try {
     final filename = '${export.name}.pdf';
     print('[ExportPDF] 🖨 Opening file...');
@@ -201,7 +200,7 @@ Future<void> exportToPdf(
   print('==============================');
 }
 
-Future<List<List<String>>> _fetchTableData(
+Future<List<List<String>>> fetchTableData(
   ExportTableSection section, {
   required Map<String, dynamic> data,
   HeaderProvider? headerProvider,
@@ -274,7 +273,7 @@ Future<List<List<String>>> _fetchTableData(
         return '${value ?? ''}';
       }).toList();
     }
-    return List.generate(fields.length, (_) => '');
+    return List.generate(fields.length, (index) => '');
   }).toList();
 
   if (rows.isNotEmpty) {
