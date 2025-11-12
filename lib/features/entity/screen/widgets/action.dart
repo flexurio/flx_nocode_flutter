@@ -251,9 +251,7 @@ extension ActionExtenstion on ActionD {
   }) {
     // Contoh rule export: "exports.<uuid-v4>"
     final RegExp regex = RegExp(r'^exports\.([0-9a-fA-F\-]{36})$');
-    // NOTE: ganti string di bawah dengan key yang sebenarnya (misal dari 'onSuccess' action)
-    final RegExpMatch? match =
-        regex.firstMatch('exports.a12b34cd-56ef-78ab-90cd-ef1234567890');
+    final RegExpMatch? match = regex.firstMatch(onSuccess);
     if (match != null) {
       final String id = match.group(1) ?? '';
       final int index = entity.exports.indexWhere((e) => e.uuid == id);
