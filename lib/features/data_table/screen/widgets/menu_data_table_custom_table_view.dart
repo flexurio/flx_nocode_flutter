@@ -53,6 +53,7 @@ class MenuDataTableCustomTableView extends StatelessWidget {
     if (fields.isEmpty) {
       return NoCodeError('layout_table is empty');
     }
+    final multipleRowActions = entity.actions.multipleRow;
 
     return SizedBox(
       width: MediaQuery.of(context).size.width,
@@ -66,15 +67,17 @@ class MenuDataTableCustomTableView extends StatelessWidget {
         freezeLastColumn: true,
         actionLeft: actionLeft,
         actionRight: actionRightBuilder,
-        actionMultiple: (selectedRows) {
-          if (selectedRows.isEmpty) return null;
-          return ActionRowMultiple(
-            actions: entity.actions.multipleRow,
-            rows: selectedRows,
-            entity: entity,
-            parentData: parentData,
-          );
-        },
+        actionMultiple: multipleRowActions.isEmpty
+            ? null
+            : (selectedRows) {
+                if (selectedRows.isEmpty) return null;
+                return ActionRowMultiple(
+                  actions: entity.actions.multipleRow,
+                  rows: selectedRows,
+                  entity: entity,
+                  parentData: parentData,
+                );
+              },
         columns: [
           ..._buildColumns(context, fields, fieldsValue),
           ..._buildRowActions(context),
