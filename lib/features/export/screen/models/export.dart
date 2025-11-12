@@ -68,27 +68,25 @@ class Export extends HiveObject {
 
 extension ExportList on List<Export> {
   List<Widget> buildSingleButtons(Map<String, dynamic> data) {
-    // final buttons = <Widget>[];
-    // for (final e in this) {
-    //   if (!e.isSingle || e.template == null) continue;
-    //   final button = LightButton(
-    //     action: DataAction.exportPdf,
-    //     title: e.name,
-    //     onPressed: () async {
-    //       await exportToPdf(
-    //         e,
-    //         data: data,
-    //         headerProvider: () async => {
-    //           'Authorization': 'Bearer ${UserRepositoryApp.instance.token}',
-    //         },
-    //       );
-    //     },
-    //     permission: null,
-    //   );
-    //   buttons.add(button);
-    // }
-    // return buttons;
-
-    return [];
+    final buttons = <Widget>[];
+    for (final e in this) {
+      if (!e.isSingle || e.template == null) continue;
+      final button = LightButton(
+        action: DataAction.exportPdf,
+        title: e.name,
+        onPressed: () async {
+          await exportToPdf(
+            e,
+            data: data,
+            headerProvider: () async => {
+              'Authorization': 'Bearer ${UserRepositoryApp.instance.token}',
+            },
+          );
+        },
+        permission: null,
+      );
+      buttons.add(button);
+    }
+    return buttons;
   }
 }

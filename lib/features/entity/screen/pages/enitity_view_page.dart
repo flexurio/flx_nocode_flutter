@@ -165,6 +165,7 @@ class EntityViewPage extends StatelessWidget {
       bypassPermission: bypassPermission,
       parentData: parentData,
     );
+
     return [
       ...entity.buttonViewsLarge(context, data, parentData),
       ...modifyActions,
