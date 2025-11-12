@@ -15,6 +15,8 @@ class Export extends HiveObject {
   final String? typeMode; // single | all
   final List<String> fields;
   final ExportTemplate? template;
+  final String paperSize;
+  final String orientation;
   static List<String> allowedTypes = ['pdf', 'xlsx'];
 
   Export({
@@ -25,6 +27,8 @@ class Export extends HiveObject {
     this.typeMode,
     this.fields = const [],
     this.template,
+    this.paperSize = 'A4',
+    this.orientation = 'portrait',
   });
 
   factory Export.fromJson(Map<String, dynamic> json) {
@@ -43,6 +47,8 @@ class Export extends HiveObject {
       template: json['template'] != null
           ? ExportTemplate.fromJson(json['template'])
           : null,
+      paperSize: json['paper_size'] ?? 'A4',
+      orientation: json['orientation'] ?? 'portrait',
     );
   }
 
@@ -52,6 +58,8 @@ class Export extends HiveObject {
         'backend': backend,
         'type': type,
         'fields': fields,
+        'paper_size': paperSize,
+        'orientation': orientation,
         if (typeMode != null) 'type_mode': typeMode,
         if (template != null) 'template': template!.toJson(),
       };
