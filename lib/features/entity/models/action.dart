@@ -1,3 +1,4 @@
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action.dart';
 import 'package:flx_nocode_flutter/src/app/util/string.dart';
 import 'package:hive/hive.dart';
 
@@ -165,6 +166,15 @@ extension HttpDataExtension on HttpData {
     return body.map((key, value) {
       if (value is String) {
         return MapEntry(key, value.replaceStringWithValues(data));
+      }
+      return MapEntry(key, value);
+    });
+  }
+
+  Map<String, dynamic> bodyReplaceStringWithValuesMultiple(JsonList data) {
+    return body.map((key, value) {
+      if (value is String) {
+        return MapEntry(key, value.replaceStringWithValuesMultiple(data));
       }
       return MapEntry(key, value);
     });

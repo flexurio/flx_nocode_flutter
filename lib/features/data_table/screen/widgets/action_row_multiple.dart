@@ -8,7 +8,6 @@ class ActionRowMultiple extends StatelessWidget {
     super.key,
     required this.rows,
     required this.entity,
-    required this.data,
     required this.parentData,
     required this.actions,
   });
@@ -16,7 +15,6 @@ class ActionRowMultiple extends StatelessWidget {
   final List<Map<String, dynamic>> rows;
   final List<ActionD> actions;
   final EntityCustom entity;
-  final Map<String, dynamic> data;
   final List<Map<String, dynamic>> parentData;
 
   @override
@@ -26,10 +24,10 @@ class ActionRowMultiple extends StatelessWidget {
       children: [
         Text('${rows.length} data selected'),
         Column(
-          children: actions.buildButtons(
+          children: actions.buildButtonsMultiple(
             entity: entity,
             context: context,
-            data: data,
+            data: rows,
             parentData: parentData,
           ),
         ),

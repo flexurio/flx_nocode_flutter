@@ -72,7 +72,6 @@ class MenuDataTableCustomTableView extends StatelessWidget {
             actions: entity.actions.multipleRow,
             rows: selectedRows,
             entity: entity,
-            data: {},
             parentData: parentData,
           );
         },
