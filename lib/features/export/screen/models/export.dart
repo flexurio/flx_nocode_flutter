@@ -52,7 +52,15 @@ class Export extends HiveObject {
     this.template,
     this.paperSize = 'A4',
     this.orientation = 'portrait',
-  });
+  })  : assert(uuid.isNotEmpty, 'uuid cannot be empty'),
+        assert(name.isNotEmpty, 'name cannot be empty'),
+        assert(backend.isNotEmpty, 'backend cannot be empty'),
+        assert(allowedTypes.contains(type), 'type must be one of $allowedTypes'),
+        assert(typeMode == null || typeMode == 'single' || typeMode == 'all',
+            'typeMode must be null, "single", or "all"'),
+        assert(paperSize.isNotEmpty, 'paperSize cannot be empty'),
+        assert(orientation == 'portrait' || orientation == 'landscape',
+            'orientation must be "portrait" or "landscape"');
 
   /// Creates an [Export] instance from a JSON object.
   ///
