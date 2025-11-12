@@ -12,3 +12,4 @@ export 'src/app/model/backend_other.dart';
 export 'src/app/model/backend.dart';
 export 'src/app/view/page/entity_create/entity_create_page.dart';
 export 'features/entity/screen/pages/enitity_view_page.dart';
+export 'features/data_table/screen/widgets/entity_data_table.dart';

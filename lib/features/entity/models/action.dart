@@ -36,7 +36,10 @@ class ActionD extends HiveObject {
   /// - "none" → do nothing
   final String onFailure;
 
+  final bool isMultiple;
+
   ActionD({
+    required this.isMultiple,
     required this.onSuccess,
     required this.onFailure,
     required this.id,
@@ -53,8 +56,10 @@ class ActionD extends HiveObject {
     HttpData? http,
     String? onSuccess,
     String? onFailure,
+    bool? isMultiple,
   }) {
     return ActionD(
+      isMultiple: isMultiple ?? this.isMultiple,
       id: id ?? this.id,
       type: type ?? this.type,
       name: name ?? this.name,
@@ -67,6 +72,7 @@ class ActionD extends HiveObject {
   /// Factory constructor for parsing from a JSON map.
   factory ActionD.fromJson(Map<String, dynamic> json) {
     return ActionD(
+      isMultiple: json['is_multiple'] ?? false,
       id: json['id'],
       type: json['type'],
       name: json['name'],
@@ -171,4 +177,11 @@ extension HttpDataExtension on HttpData {
       return MapEntry(key, value.replaceStringWithValues(data));
     });
   }
+}
+
+extension ActionDListExtension on List<ActionD> {
+  List<ActionD> get multipleRow =>
+      where((element) => element.isMultiple).toList();
+  List<ActionD> get singleRow =>
+      where((element) => !element.isMultiple).toList();
 }

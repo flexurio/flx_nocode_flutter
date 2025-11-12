@@ -1,3 +1,4 @@
+import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
@@ -154,8 +155,12 @@ class EntityViewPage extends StatelessWidget {
     required void Function(BuildContext) onRefresh,
     required bool bypassPermission,
   }) {
-    final actions =
-        entity.actions.toButtonList(entity, context, data, parentData);
+    final actions = entity.actions.singleRow.buildButtons(
+      entity: entity,
+      context: context,
+      data: data,
+      parentData: parentData,
+    );
     final modifyActions = _buildEntityCustomActionsLarge(
       entity: entity,
       context: context,

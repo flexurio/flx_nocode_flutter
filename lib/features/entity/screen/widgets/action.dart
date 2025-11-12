@@ -8,12 +8,12 @@ import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/src/app/util/string.dart';
 
 extension ActionListExtenstion on List<ActionD> {
-  List<Widget> toButtonList(
-    EntityCustom entity,
-    BuildContext context,
-    Map<String, dynamic> data,
-    List<Map<String, dynamic>> parentData,
-  ) {
+  List<Widget> buildButtons({
+    required EntityCustom entity,
+    required BuildContext context,
+    required Map<String, dynamic> data,
+    required List<Map<String, dynamic>> parentData,
+  }) {
     return map((e) => e.button(entity, context, data, parentData)).toList();
   }
 }
