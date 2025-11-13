@@ -206,7 +206,7 @@ class EntityCustom extends HiveObject {
           },
         );
       } catch (e) {
-        print('[EntityCustom] layout_form - error :$e');
+        print('[EntityCustom] 🔴 layout_form - error :$e');
         layoutForm = <LayoutForm>[];
       }
 

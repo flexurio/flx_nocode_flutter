@@ -30,7 +30,6 @@ class LayoutForm extends HiveObject {
     List<ButtonAction>? buttons,
   })  : assert(label.trim().isNotEmpty, 'label is required'),
         assert(type.trim().isNotEmpty, 'type is required'),
-        assert(groups.isNotEmpty, 'groups must not be empty'),
         groups = List<GroupLayout>.unmodifiable(groups),
         buttons = List<ButtonAction>.unmodifiable(buttons ?? const []);
 
@@ -45,9 +44,6 @@ class LayoutForm extends HiveObject {
     final rawGroups = map['groups'];
     if (rawGroups is! List) {
       throw const FormatException('"groups" must be an array');
-    }
-    if (rawGroups.isEmpty) {
-      throw const FormatException('"groups" must not be empty');
     }
 
     final groups = rawGroups.map((e) {
@@ -97,15 +93,9 @@ class LayoutForm extends HiveObject {
       }).toList(growable: false);
     }
 
-    final rawComponents = map['components'];
-    if (rawComponents is! List) {
-      throw const FormatException('"components" must be an array');
-    }
-    if (rawComponents.isEmpty) {
-      throw const FormatException('"components" must not be empty');
-    }
+    final rawComponents = map['components'] as List?;
 
-    final components = rawComponents.map((e) {
+    final components = rawComponents?.map((e) {
       if (e is! Map) {
         throw const FormatException('Each component must be an object');
       }
@@ -113,7 +103,7 @@ class LayoutForm extends HiveObject {
     }).toList(growable: false);
 
     return LayoutForm(
-      components: components,
+      components: components ?? const [],
       label: map['label'].toString().trim(),
       type: map['type'].toString().trim(),
       groups: groups,

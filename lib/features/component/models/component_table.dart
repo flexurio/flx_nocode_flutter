@@ -9,7 +9,7 @@ class ComponentTable extends Component {
     required this.http,
   }) : super(type: 'table');
 
-  static String get compomentId => 'table';
+  static String get componentId => 'table';
 
   final HttpData http;
   final List<TColumn> columns;

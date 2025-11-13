@@ -3,7 +3,10 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component.d
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 extension LayoutFormWidget on LayoutForm {
-  Widget toWidget(JsonMap data) => Column(
-        children: this.components.map((e) => e.toWidget(data)).toList(),
-      );
+  Widget toWidget(JsonMap data) {
+    print('[LayoutFormWidget] toWidget');
+    return Column(
+      children: this.components.map((e) => e.toWidget(data)).toList(),
+    );
+  }
 }
