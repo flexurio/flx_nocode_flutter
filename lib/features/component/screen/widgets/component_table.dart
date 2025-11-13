@@ -6,18 +6,19 @@ import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 
 extension ComponentTableWidgets on ComponentTable {
-  Widget toWidget() {
-    return _ComponentTableHttpWidget(component: this);
+  Widget toWidget(JsonMap data) {
+    return _ComponentTableHttpWidget(component: this, data: data);
   }
 }
 
 class _ComponentTableHttpWidget extends StatefulWidget {
   const _ComponentTableHttpWidget({
-    super.key,
     required this.component,
+    required this.data,
   });
 
   final ComponentTable component;
+  final JsonMap data;
 
   @override
   State<_ComponentTableHttpWidget> createState() =>

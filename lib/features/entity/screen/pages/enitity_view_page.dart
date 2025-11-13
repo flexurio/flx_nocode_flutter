@@ -1,8 +1,9 @@
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_display.dart';
-import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_list_extensions.dart';
+import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
+import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/layout_form.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_view/widget/delete_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 
 class EntityViewPage extends StatelessWidget {
   const EntityViewPage._({
@@ -110,7 +112,10 @@ class EntityViewPage extends StatelessWidget {
                 action: DataAction.view,
                 entity: entity.coreEntity,
                 size: SingleFormPanelSize.large,
-                children: [_buildData(data)],
+                children: [
+                  entity.layoutForm.getByType(FormType.view)?.toWidget(data) ??
+                      NoCodeError('Layout not found'),
+                ],
               );
             },
           );

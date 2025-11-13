@@ -45,6 +45,8 @@ abstract class Component {
 // ─────────────────────────────────────────────
 
 class ComponentText extends Component {
+  static String get compomentId => 'text';
+
   ComponentText({
     required super.id,
   }) : super(type: 'text');

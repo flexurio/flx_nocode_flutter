@@ -1,5 +1,6 @@
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
 
 extension LayoutFormListExtension on List<LayoutForm> {
   List<LayoutForm> get updateForms {

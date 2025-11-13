@@ -1,29 +1,8 @@
 import 'dart:collection';
 
-import 'package:flx_nocode_flutter/features/entity/models/group_layout.dart';
-import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-
-enum FormType {
-  home,
-  view,
-  create,
-  update;
-
-  factory FormType.fromString(String? s) {
-    if (s == null) return FormType.create;
-    try {
-      return FormType.values.byName(s);
-    } catch (_) {
-      throw ArgumentError('Invalid FormType: $s');
-    }
-  }
-}
-
-extension FormTypeExtension on FormType {
-  bool get isHome => this == FormType.home;
-}
+import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
 
 extension LayoutFormDomainX on LayoutForm {
   FormType get formType => FormType.fromString(type);
