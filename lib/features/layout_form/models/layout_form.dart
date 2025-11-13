@@ -1,3 +1,4 @@
+import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:hive/hive.dart';
 
 import 'package:flx_nocode_flutter/features/entity/models/group_layout.dart';
@@ -17,6 +18,7 @@ class LayoutForm extends HiveObject {
   final String type; // "create" | "update" | "view" | "home"
   final List<GroupLayout> groups;
   final Rule? visibleIf;
+  final List<Component> components;
   final List<ButtonAction> buttons;
 
   LayoutForm({
@@ -24,6 +26,7 @@ class LayoutForm extends HiveObject {
     required this.type,
     required List<GroupLayout> groups,
     this.visibleIf,
+    required this.components,
     List<ButtonAction>? buttons,
   })  : assert(label.trim().isNotEmpty, 'label is required'),
         assert(type.trim().isNotEmpty, 'type is required'),
@@ -94,7 +97,23 @@ class LayoutForm extends HiveObject {
       }).toList(growable: false);
     }
 
+    final rawComponents = map['components'];
+    if (rawComponents is! List) {
+      throw const FormatException('"components" must be an array');
+    }
+    if (rawComponents.isEmpty) {
+      throw const FormatException('"components" must not be empty');
+    }
+
+    final components = rawComponents.map((e) {
+      if (e is! Map) {
+        throw const FormatException('Each component must be an object');
+      }
+      return Component.fromMap(e.cast<String, dynamic>());
+    }).toList(growable: false);
+
     return LayoutForm(
+      components: components,
       label: map['label'].toString().trim(),
       type: map['type'].toString().trim(),
       groups: groups,
@@ -128,8 +147,10 @@ class LayoutForm extends HiveObject {
     List<GroupLayout>? groups,
     Rule? visibleIf,
     List<ButtonAction>? buttons,
+    List<Component>? components,
   }) {
     return LayoutForm(
+      components: components ?? this.components,
       label: label ?? this.label,
       type: type ?? this.type,
       groups: groups ?? this.groups,
