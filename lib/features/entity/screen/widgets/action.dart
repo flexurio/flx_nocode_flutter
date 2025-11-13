@@ -5,7 +5,6 @@ import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/export/screen/widgets/export_to_pdf.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
-import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/src/app/util/string.dart';
 
@@ -52,9 +51,6 @@ extension ActionExtenstion on ActionD {
   ) =>
       executeHttpMultiple(entity, context, data);
 
-  // Singleton executor
-  HttpRequestExecutor get _http => HttpRequestExecutor();
-
   // ------------------------------------------------------
   //                 SINGLE HTTP EXECUTION
   // ------------------------------------------------------
@@ -69,40 +65,53 @@ extension ActionExtenstion on ActionD {
       return;
     }
 
-    final url = http!.url.replaceStringWithValues(data, urlEncode: true);
-    final headers = http!.headersReplaceStringWithValues(data);
-    final method = http!.method.toUpperCase();
+    try {
+      final raw = http!;
 
-    final bool hasBody = <String>{'POST', 'PUT', 'PATCH'}.contains(method);
-    Object? body;
+      final method = raw.method.toUpperCase();
+      final bool hasBody = <String>{'POST', 'PUT', 'PATCH'}.contains(method);
 
-    if (hasBody && http!.body.isNotEmpty) {
-      final replaced = http!.bodyReplaceStringWithValues(data);
-      body = http!.useFormData ? FormData.fromMap(replaced) : replaced;
-    }
+      // replace url & headers
+      final url = raw.url.replaceStringWithValues(data, urlEncode: true);
+      final headers = raw.headersReplaceStringWithValues(data);
 
-    final result = await _http.execute(
-      HttpRequestConfig(
-        method: method,
+      // replace body jika perlu
+      Map<String, dynamic> replacedBody = {};
+      if (hasBody && raw.body.isNotEmpty) {
+        replacedBody = raw.bodyReplaceStringWithValues(data);
+      }
+
+      final execHttp = raw.copyWith(
         url: url,
         headers: headers,
-        body: body,
-        asFormData: http!.useFormData,
-      ),
-    );
-
-    if (result.isSuccess) {
-      Toast(context).success('Request success');
-      _handleOnSuccessSingle(
-        entity: entity,
-        context: context,
-        responseData: result.data,
-        data: data,
+        body: replacedBody,
       );
-    } else {
-      final message = result.message ?? 'Request failed';
+
+      final response = await execHttp.execute();
+      final statusCode = response.statusCode ?? 0;
+      final isSuccess = statusCode >= 200 && statusCode < 300;
+
+      if (isSuccess) {
+        Toast(context).success('Request success');
+        _handleOnSuccessSingle(
+          entity: entity,
+          context: context,
+          responseData: response.data,
+          data: data,
+        );
+      } else {
+        final message = _extractErrorMessage(response) ?? 'Request failed';
+        Toast(context).fail(message);
+        _handleOnFailure(context, message, raw: response);
+      }
+    } on DioException catch (e) {
+      final message = e.message ?? 'Request failed';
       Toast(context).fail(message);
-      _handleOnFailure(context, message, raw: result.raw);
+      _handleOnFailure(context, message, raw: e);
+    } catch (e) {
+      const message = 'Unexpected error';
+      Toast(context).fail(message);
+      _handleOnFailure(context, message, raw: e);
     }
   }
 
@@ -122,43 +131,64 @@ extension ActionExtenstion on ActionD {
       return;
     }
 
-    final first = data.first;
+    try {
+      final first = data.first;
+      final raw = http!;
 
-    final url = http!.url.replaceStringWithValues(first, urlEncode: true);
-    final headers = http!.headersReplaceStringWithValues(first);
-    final method = http!.method.toUpperCase();
+      final method = raw.method.toUpperCase();
+      final bool hasBody = <String>{'POST', 'PUT', 'PATCH'}.contains(method);
 
-    final bool hasBody = <String>{'POST', 'PUT', 'PATCH'}.contains(method);
+      // replace url & headers dengan data pertama
+      final url = raw.url.replaceStringWithValues(first, urlEncode: true);
+      final headers = raw.headersReplaceStringWithValues(first);
 
-    Object? body;
-    if (hasBody && http!.body.isNotEmpty) {
-      final replaced = http!.bodyReplaceStringWithValuesMultiple(data);
-      body = http!.useFormData ? FormData.fromMap(replaced) : replaced;
-    }
+      // body multiple
+      Map<String, dynamic> replacedBody = {};
+      if (hasBody && raw.body.isNotEmpty) {
+        replacedBody = raw.bodyReplaceStringWithValuesMultiple(data);
+      }
 
-    final result = await _http.execute(
-      HttpRequestConfig(
-        method: method,
+      final execHttp = raw.copyWith(
         url: url,
         headers: headers,
-        body: body,
-        asFormData: http!.useFormData,
-      ),
-    );
-
-    if (result.isSuccess) {
-      Toast(context).success('Request success');
-      _handleOnSuccessMultiple(
-        entity: entity,
-        context: context,
-        responseData: result.data,
-        data: data,
+        body: replacedBody,
       );
-    } else {
-      final message = result.message ?? 'Request failed';
+
+      final response = await execHttp.execute();
+      final statusCode = response.statusCode ?? 0;
+      final isSuccess = statusCode >= 200 && statusCode < 300;
+
+      if (isSuccess) {
+        Toast(context).success('Request success');
+        _handleOnSuccessMultiple(
+          entity: entity,
+          context: context,
+          responseData: response.data,
+          data: data,
+        );
+      } else {
+        final message = _extractErrorMessage(response) ?? 'Request failed';
+        Toast(context).fail(message);
+        _handleOnFailure(context, message, raw: response);
+      }
+    } on DioException catch (e) {
+      final message = e.message ?? 'Request failed';
       Toast(context).fail(message);
-      _handleOnFailure(context, message, raw: result.raw);
+      _handleOnFailure(context, message, raw: e);
+    } catch (e) {
+      const message = 'Unexpected error';
+      Toast(context).fail(message);
+      _handleOnFailure(context, message, raw: e);
     }
+  }
+
+  String? _extractErrorMessage(Response response) {
+    final data = response.data;
+    if (data is Map<String, dynamic>) {
+      if (data['message'] is String) return data['message'] as String;
+      if (data['error'] is String) return data['error'] as String;
+    }
+    return response.statusMessage;
   }
 
   // ------------------------------------------------------

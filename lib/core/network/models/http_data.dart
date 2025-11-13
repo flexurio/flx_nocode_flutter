@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:hive/hive.dart';
 import 'package:flx_nocode_flutter/src/app/util/string.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action.dart'; // untuk JsonList
@@ -68,6 +69,42 @@ class HttpData extends HiveObject {
 }
 
 extension HttpDataExtension on HttpData {
+  Future<Response> execute() async {
+    final dio = Dio();
+
+    final methodUpper = method.toUpperCase();
+
+    // Menyamakan behaviour dengan ActionExtension:
+    // body hanya dikirim untuk POST, PUT, PATCH
+    const methodsWithBody = {'POST', 'PUT', 'PATCH'};
+    final bool hasBody = methodsWithBody.contains(methodUpper);
+
+    Object? dataBody;
+    Map<String, dynamic>? queryParameters;
+
+    if (body.isNotEmpty) {
+      if (hasBody) {
+        // Kirim sebagai body
+        dataBody = useFormData ? FormData.fromMap(body) : body;
+      } else {
+        // Kalau method tidak pakai body (GET, DELETE, dll) jadikan query param
+        queryParameters = body;
+      }
+    }
+
+    final response = await dio.request(
+      url,
+      data: dataBody,
+      queryParameters: queryParameters,
+      options: Options(
+        method: methodUpper,
+        headers: headers,
+      ),
+    );
+
+    return response;
+  }
+
   Map<String, dynamic> bodyReplaceStringWithValues(
     Map<String, dynamic> data,
   ) {
