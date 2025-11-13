@@ -27,6 +27,7 @@ class EntityFieldDisplay {
     );
 
     late Widget widget;
+
     if (field.isDateTime) {
       try {
         final date = DateTime.tryParse(value.toString()) ??
@@ -69,10 +70,21 @@ class EntityFieldDisplay {
       widget = Text(LayoutListTile.getValue(value));
     }
 
-    if (widget is Text && onTap != null) {
-      // return widget.canCopy(onTap: onTap);
-      return widget.canCopy();
+    // Gunakan extension yang sudah ada: canCopy / clickable
+    if (widget is Text) {
+      final text = widget;
+
+      // Prioritas: kalau field copyable → pakai canCopy
+      if (field.isCopyable == true) {
+        return text.canCopy(onTap: onTap);
+      }
+
+      // Kalau tidak copyable tapi ada onTap → pakai clickable (link biru + underline)
+      if (onTap != null) {
+        return text.clickable(onTap: onTap);
+      }
     }
+
     return widget;
   }
 }

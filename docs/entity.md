@@ -11,7 +11,7 @@ The root of the JSON file is a single object that contains all the properties fo
 | `id` | String | Yes | The unique identifier for the entity (e.g., "products", "customers"). |
 | `label` | String | Yes | The human-readable name for the entity, used in UI elements like titles and labels. |
 | `description` | String | Yes | A brief summary of the entity's purpose. |
-| `fields` | Array<Object> | Yes | An array of objects defining the data schema for the entity. See [Field Object](#field-object). |
+| `fields` | Array<Object> | Yes | An array of objects defining the data schema for the entity. See the [Field Documentation](./field.md) for more details. |
 | `backend` | Object | Yes | Defines the API endpoints for CRUD operations. See [Backend Object](#backend-object). |
 | `layout_form` | Array<Object> | No | An array of objects that define the layout of the entity's creation and editing form. See [Layout Form Object](#layout-form-object). |
 | `layout_list_tile`| Object | No | Defines the layout for displaying a single entity instance in a list. See [Layout List Tile Object](#layout-list-tile-object). |
@@ -26,18 +26,25 @@ The root of the JSON file is a single object that contains all the properties fo
 
 ### Field Object
 
-Defines a single data field within the entity's schema.
+Defines a single data field within the entity's schema. For a more detailed explanation, see the [Field Documentation](./field.md).
 
 | Key | Type | Required | Description |
 | --- | --- | --- | --- |
-| `reference` | String | Yes | The unique name for the field, used as the key in data objects. |
-| `label` | String | Yes | The display name for the field in UI forms and tables. |
-| `type` | String | Yes | The data type of the field (e.g., "String", "Int", "Double", "Bool", "DateTime", "Reference"). |
-| `description` | String | No | A tooltip or help text for the field. |
-| `is_required` | Boolean | No | Whether the field must have a value. Defaults to `false`. |
-| `is_unique` | Boolean | No | Whether the field's value must be unique across all instances of the entity. Defaults to `false`. |
-| `default_value` | Any | No | A default value for the field when creating a new entity instance. |
-| `relation` | Object | No | Defines a relationship to another entity (for "Reference" type fields). See [Relation Object](#relation-object). |
+| `label` | String | Yes | Human-readable label to display in UI. |
+| `reference` | String | Yes | Unique reference/key for the field. |
+| `type` | String | Yes | The data type of the field. See [Supported Field Types](./field.md#supported-field-types) for a list of available types. |
+| `column_width` | Number | No | Optional width of the column when rendered in tables/grids. |
+| `auto_generated` | Boolean | No | Whether the field value is automatically generated. |
+| `required` | Boolean | No | Whether the field value is required. Defaults to `false`. |
+| `pattern` | String | No | Regex pattern for validating the field. |
+| `pattern_error` | String | No | Error message shown if `pattern` does not match. |
+| `options_source` | String | No | Source identifier for option-based fields. |
+| `min_length` | Integer | No | Minimum text length for this field. |
+| `max_length` | Integer | No | Maximum text length for this field. |
+| `allow_create` | Boolean | No | Whether this field is allowed to be set on create. |
+| `allow_update` | Boolean | No | Whether this field can be updated after creation. |
+| `is_copyable` | Boolean | No | Whether the field value can be copied from UI. |
+| `options` | Object | No | Additional options for dropdown/lookup type fields. See [Field Options Object](#field-options-object). |
 
 ### Backend Object
 
@@ -81,15 +88,15 @@ Defines the fields to be displayed in a list item view of the entity.
 | `leading` | String | No | The field `reference` to use for a leading element (e.g., an avatar or icon). |
 | `trailing`| String | No | The field `reference` to use for a trailing element (e.g., a status indicator). |
 
-### Relation Object
+### Field Options Object
 
-Defines a relationship for a "Reference" type field.
+Defines the options for a dropdown or lookup field.
 
 | Key | Type | Required | Description |
 | --- | --- | --- | --- |
-| `entity` | String | Yes | The `id` of the entity being referenced. |
-| `key` | String | Yes | The field in the referenced entity to use as the value. |
-| `display` | String | Yes | The field in the referenced entity to display in the UI. |
+| `source` | String | Yes | The source of the data (e.g., an API endpoint or a Hive box name). |
+| `label_field` | String | Yes | The field from the source data to use as the display label. |
+| `value_field` | String | Yes | The field from the source data to use as the selected value. |
 
 ### View, Export, and Action Objects
 
@@ -108,32 +115,32 @@ These objects define custom behaviors. Their structure can vary. Please refer to
     {
       "reference": "product_name",
       "label": "Product Name",
-      "type": "String",
-      "is_required": true,
-      "is_unique": true
+      "type": "text",
+      "required": true,
+      "allow_update": true,
+      "is_copyable": true
     },
     {
       "reference": "category_id",
       "label": "Category",
-      "type": "Reference",
-      "is_required": true,
-      "relation": {
-        "entity": "categories",
-        "key": "id",
-        "display": "category_name"
+      "type": "select",
+      "required": true,
+      "options": {
+        "source": "categories",
+        "value_field": "id",
+        "label_field": "category_name"
       }
     },
     {
       "reference": "price",
       "label": "Price",
-      "type": "Double",
-      "is_required": true
+      "type": "number",
+      "required": true
     },
     {
       "reference": "in_stock",
       "label": "In Stock",
-      "type": "Bool",
-      "default_value": true
+      "type": "boolean"
     }
   ],
   "backend": {
