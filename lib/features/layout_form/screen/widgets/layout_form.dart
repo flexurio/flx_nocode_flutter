@@ -6,7 +6,7 @@ extension LayoutFormWidget on LayoutForm {
   Widget toWidget(JsonMap data) {
     print('[LayoutFormWidget] toWidget');
     return Column(
-      children: this.components.map((e) => e.toWidget(data)).toList(),
+      children: this.components.map((e) => e.convertToWidget(data)).toList(),
     );
   }
 }
