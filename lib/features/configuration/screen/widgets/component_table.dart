@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 
 extension ComponentTableWidgets on ComponentTable {

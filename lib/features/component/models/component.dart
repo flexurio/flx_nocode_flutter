@@ -1,4 +1,5 @@
 import 'package:flx_nocode_flutter/features/component/models/component_field_display.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 abstract class Component {
@@ -37,30 +38,6 @@ abstract class Component {
   }
 
   JsonMap toMap();
-}
-
-// ─────────────────────────────────────────────
-// Component: TABLE
-// ─────────────────────────────────────────────
-
-class ComponentTable extends Component {
-  ComponentTable({
-    required super.id,
-  }) : super(type: 'table');
-
-  factory ComponentTable.fromMap(Map<String, dynamic> map) {
-    final id = map['id']?.toString().trim();
-    if (id == null || id.isEmpty) {
-      throw const FormatException('Component "id" is required');
-    }
-    return ComponentTable(id: id);
-  }
-
-  @override
-  JsonMap toMap() => {
-        'id': id,
-        'type': type,
-      };
 }
 
 // ─────────────────────────────────────────────
