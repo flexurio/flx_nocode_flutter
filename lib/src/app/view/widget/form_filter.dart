@@ -1,5 +1,5 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
+import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/filter_field.dart';
 import 'package:flutter/material.dart';

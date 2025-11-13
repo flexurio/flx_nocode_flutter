@@ -1,5 +1,6 @@
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action.dart';
+import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_display.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
@@ -308,7 +309,7 @@ class EntityViewPage extends StatelessWidget {
           final fields = chunk.map<Widget>((field) {
             return TileDataVertical(
               label: entity.getField(field)?.label ?? field,
-              child: EntityField.buildDisplay(
+              child: EntityFieldDisplay.build(
                 entity,
                 field,
                 data[field],

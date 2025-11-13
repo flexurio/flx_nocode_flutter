@@ -1,6 +1,8 @@
+import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
+import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_field_form_controllers.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart';
-import 'package:flx_nocode_flutter/src/app/model/entity_field.dart';
+import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';

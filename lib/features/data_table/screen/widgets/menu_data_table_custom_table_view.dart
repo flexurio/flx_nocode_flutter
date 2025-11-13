@@ -4,6 +4,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/data_table/screen/widgets/action_row_multiple.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
+import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
+import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_display.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
@@ -110,11 +112,11 @@ class MenuDataTableCustomTableView extends StatelessWidget {
           numeric: (field.isNumber) && index != 0,
         ),
         body: (row) => DataCell(
-          EntityField.buildDisplay(
+          EntityFieldDisplay.build(
             entity,
             field.reference,
             row[field.reference],
-            index != 0
+            onTap: index != 0
                 ? null
                 : () async {
                     await Navigator.push(

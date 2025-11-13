@@ -3,7 +3,7 @@ export 'src/app/model/no_code.dart';
 export 'src/app/view/widget/entity_home.dart';
 export 'src/app/model/entity.dart';
 export 'src/app/model/theme.dart';
-export 'src/app/model/entity_field.dart';
+export 'features/field/models/field.dart';
 export 'src/app/model/layout_list_tile.dart';
 export 'features/export/screen/models/export.dart';
 export 'features/entity/models/layout_form.dart';
