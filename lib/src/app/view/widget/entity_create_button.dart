@@ -1,4 +1,4 @@
-import 'package:flx_nocode_flutter/features/entity/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity.dart' as configuration;
 import 'package:flx_nocode_flutter/src/app/view/page/entity_create/entity_create_page.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
