@@ -13,7 +13,7 @@ The root of the JSON file is a single object that contains all the properties fo
 | `description` | String | Yes | A brief summary of the entity's purpose. |
 | `fields` | Array<Object> | Yes | An array of objects defining the data schema for the entity. See the [Field Documentation](./field.md) for more details. |
 | `backend` | Object | Yes | Defines the API endpoints for CRUD operations. See [Backend Object](#backend-object). |
-| `layout_form` | Array<Object> | No | An array of objects that define the layout of the entity's creation and editing form. See [Layout Form Object](#layout-form-object). |
+| `layout_form` | Array<Object> | No | An array of objects that define the layout of the entity's creation and editing form. See the [Layout Form Documentation](./layout_form.md) for details. |
 | `layout_list_tile`| Object | No | Defines the layout for displaying a single entity instance in a list. See [Layout List Tile Object](#layout-list-tile-object). |
 | `layout_table` | Object | No | A map defining the columns and their flex-based widths in a data table view. The key is the field reference, and the value is an integer flex factor. |
 | `views` | Array<Object> | No | A list of custom view configurations for displaying entity data in different ways. See [View Object](#view-object). |
@@ -70,12 +70,7 @@ Defines the properties of a single API endpoint.
 
 ### Layout Form Object
 
-Defines a component (often a single field) in the entity's form layout.
-
-| Key | Type | Required | Description |
-| --- | --- | --- | --- |
-| `widget` | String | Yes | The type of form widget to use (e.g., "Text", "Dropdown", "CheckBox"). |
-| `reference` | String | Yes | The field `reference` that this form component is bound to. |
+Defines the layout of the entity's creation and editing forms. For a more detailed explanation, see the [Layout Form Documentation](./layout_form.md).
 
 ### Layout List Tile Object
 
