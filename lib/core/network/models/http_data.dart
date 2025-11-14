@@ -1,6 +1,6 @@
-// core/network/models/http_data.dart
-
 import 'package:dio/dio.dart';
+import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 import 'package:hive/hive.dart';
 import 'package:flx_nocode_flutter/src/app/util/string.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action.dart'; // untuk JsonList
@@ -149,71 +149,30 @@ class HttpData extends HiveObject {
   }
 }
 
-/// Extension methods that provide runtime behaviors for [HttpData].
-///
-/// This includes:
-/// - Executing HTTP request via Dio
-/// - Replacing template placeholders in body and headers
 extension HttpDataExtension on HttpData {
-  /// Executes the HTTP request described by this [HttpData].
-  ///
-  /// Behavior:
-  /// - HTTP method is converted to uppercase.
-  /// - Body will only be sent for `POST`, `PUT`, `PATCH`.
-  /// - For methods that typically don't send a body (`GET`, `DELETE`, etc.),
-  ///   [body] is converted into query parameters instead.
-  /// - When [useFormData] is `true`, body is wrapped with [FormData.fromMap].
-  ///
-  /// This method does **not** perform any string templating by itself.
-  /// Use [bodyReplaceStringWithValues] / [headersReplaceStringWithValues]
-  /// beforehand if you want to resolve `\${...}` placeholders.
-  Future<Response> execute() async {
-    final dio = Dio();
-
-    final methodUpper = method.toUpperCase();
-
-    // Menyamakan behaviour dengan ActionExtension:
-    // body hanya dikirim untuk POST, PUT, PATCH
-    const methodsWithBody = {'POST', 'PUT', 'PATCH'};
-    final bool hasBody = methodsWithBody.contains(methodUpper);
-
-    Object? dataBody;
-    Map<String, dynamic>? queryParameters;
-
-    if (body.isNotEmpty) {
-      if (hasBody) {
-        // Kirim sebagai body
-        dataBody = useFormData ? FormData.fromMap(body) : body;
-      } else {
-        // Kalau method tidak pakai body (GET, DELETE, dll) jadikan query param
-        queryParameters = body;
-      }
-    }
-
-    final response = await dio.request(
-      url,
-      data: dataBody,
-      queryParameters: queryParameters,
-      options: Options(
-        method: methodUpper,
-        headers: headers,
-      ),
+  /// Build HttpRequestConfig dari HttpData.
+  HttpRequestConfig toRequestConfig(JsonMap data) {
+    return HttpRequestConfig(
+      method: method.toUpperCase(),
+      url: url,
+      headers: headersReplaceStringWithValues(data),
+      body: bodyReplaceStringWithValues(data),
+      asFormData: useFormData,
     );
-
-    return response;
   }
 
-  /// Returns a new body map where all `String` values have had
-  /// their template placeholders replaced using [replaceStringWithValues].
+  /// Eksekusi tanpa parameter.
   ///
-  /// Example:
+  /// Contoh penggunaan:
   /// ```dart
-  /// final result = httpData.bodyReplaceStringWithValues({
-  ///   'id': 10,
-  ///   'name': 'John',
-  /// });
-  /// // if body contains "user/\${id}" -> "user/10"
+  /// final result = await httpData.execute();
   /// ```
+  Future<HttpRequestResult> execute(JsonMap data) async {
+    final executor = HttpRequestExecutor();
+    final config = toRequestConfig(data);
+    return executor.execute(config);
+  }
+
   Map<String, dynamic> bodyReplaceStringWithValues(
     Map<String, dynamic> data,
   ) {
@@ -225,11 +184,6 @@ extension HttpDataExtension on HttpData {
     });
   }
 
-  /// Similar to [bodyReplaceStringWithValues], but supports replacing
-  /// placeholders using multiple maps ([JsonList]).
-  ///
-  /// This is useful untuk kasus seperti repeat/loop di mana satu string
-  /// mungkin mengambil nilai dari beberapa sumber data.
   Map<String, dynamic> bodyReplaceStringWithValuesMultiple(JsonList data) {
     return body.map((key, value) {
       if (value is String) {
@@ -239,16 +193,6 @@ extension HttpDataExtension on HttpData {
     });
   }
 
-  /// Returns a new headers map with all `String` values processed by
-  /// [replaceStringWithValues].
-  ///
-  /// Contoh:
-  /// ```dart
-  /// final headers = httpData.headersReplaceStringWithValues({
-  ///   'token': 'abc123',
-  /// });
-  /// // "Bearer \${token}" -> "Bearer abc123"
-  /// ```
   Map<String, String> headersReplaceStringWithValues(
     Map<String, dynamic> data,
   ) {

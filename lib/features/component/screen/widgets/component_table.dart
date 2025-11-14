@@ -1,9 +1,9 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' hide TColumn;
+import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
-import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
+import 'package:flx_nocode_flutter/src/app/util/string.dart';
 
 extension ComponentTableWidgets on ComponentTable {
   Widget toWidget(JsonMap data) {
@@ -27,37 +27,16 @@ class _ComponentTableHttpWidget extends StatefulWidget {
 
 class _ComponentTableHttpWidgetState extends State<_ComponentTableHttpWidget> {
   late Future<List<JsonMap>> _future;
-  final HttpRequestExecutor _http = HttpRequestExecutor();
 
   @override
   void initState() {
     super.initState();
-    _future = _loadData();
+    _future = _loadData(widget.data);
   }
 
-  Future<List<JsonMap>> _loadData() async {
+  Future<List<JsonMap>> _loadData(JsonMap item) async {
     final httpData = widget.component.http;
-
-    final method = httpData.method.toUpperCase();
-    const methodsWithBody = {'POST', 'PUT', 'PATCH'};
-    final hasBody = methodsWithBody.contains(method);
-
-    Object? body;
-    if (hasBody && httpData.body.isNotEmpty) {
-      body = httpData.useFormData
-          ? FormData.fromMap(httpData.body)
-          : httpData.body;
-    }
-
-    final result = await _http.execute(
-      HttpRequestConfig(
-        method: method,
-        url: httpData.url,
-        headers: httpData.headers,
-        body: body,
-        asFormData: httpData.useFormData,
-      ),
-    );
+    final result = await httpData.execute(item);
 
     if (!result.isSuccess) {
       throw Exception(result.message ?? 'Request failed');
@@ -65,7 +44,6 @@ class _ComponentTableHttpWidgetState extends State<_ComponentTableHttpWidget> {
 
     final data = result.data;
 
-    // Bentuk umum: List atau { "data": List }
     if (data is List) {
       return data
           .where((e) => e is Map)
@@ -126,7 +104,14 @@ class _ComponentTableHttpWidgetState extends State<_ComponentTableHttpWidget> {
               title: c.header,
               builder: (row, index) {
                 final text = _buildCellText(row, c);
-                return Text(text);
+                return Text(
+                  text.interpolateJavascript(
+                    {
+                      "current": widget.data,
+                      "row": row,
+                    },
+                  ),
+                );
               },
             );
           }).toList(),

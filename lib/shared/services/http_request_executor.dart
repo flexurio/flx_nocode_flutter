@@ -1,3 +1,5 @@
+// core/network/http_request_executor.dart
+
 import 'package:dio/dio.dart';
 
 typedef Json = Map<String, dynamic>;
@@ -6,7 +8,16 @@ class HttpRequestConfig {
   final String method;
   final String url;
   final Map<String, String> headers;
+
+  /// Bisa Map<String, dynamic> (JSON), FormData, String, dll.
+  ///
+  /// - Untuk GET/DELETE, kalau berupa Map<String, dynamic> akan
+  ///   dikonversi menjadi queryParameters.
+  /// - Untuk POST/PUT/PATCH, akan dikirim sebagai body.
   final Object? body;
+
+  /// Jika true dan [body] berupa Map<String, dynamic>,
+  /// akan dikonversi ke [FormData.fromMap].
   final bool asFormData;
 
   const HttpRequestConfig({
@@ -65,13 +76,41 @@ class HttpRequestExecutor {
   final Dio _dio;
 
   Future<HttpRequestResult> execute(HttpRequestConfig config) async {
+    final String methodUpper = config.method.toUpperCase();
+
+    // Menyamakan behaviour lama:
+    // body hanya dikirim untuk POST, PUT, PATCH
+    const methodsWithBody = {'POST', 'PUT', 'PATCH'};
+    final bool hasBody = methodsWithBody.contains(methodUpper);
+
+    Object? dataBody;
+    Map<String, dynamic>? queryParameters;
+
+    if (config.body != null) {
+      if (hasBody) {
+        if (config.asFormData && config.body is Map<String, dynamic>) {
+          dataBody = FormData.fromMap(config.body as Map<String, dynamic>);
+        } else {
+          dataBody = config.body;
+        }
+      } else if (config.body is Map<String, dynamic>) {
+        // Untuk GET/DELETE dkk, kalau body Map -> jadi queryParameters
+        queryParameters = Map<String, dynamic>.from(
+          config.body as Map<String, dynamic>,
+        );
+      } else {
+        // Fallback: kirim sebagai body juga
+        dataBody = config.body;
+      }
+    }
+
     final options = Options(
-      method: config.method,
+      method: methodUpper,
       headers: config.headers,
     );
 
     _logHttpRequest(
-      method: config.method,
+      method: methodUpper,
       url: config.url,
       headers: config.headers,
       body: config.body,
@@ -81,7 +120,8 @@ class HttpRequestExecutor {
     try {
       final Response<Object?> response = await _dio.request<Object?>(
         config.url,
-        data: config.body,
+        data: dataBody,
+        queryParameters: queryParameters,
         options: options,
       );
 
@@ -184,13 +224,16 @@ class HttpRequestExecutor {
     String fallback = 'Request failed',
   }) {
     if (responseData == null) return fallback;
+
     if (responseData is String && responseData.trim().isNotEmpty) {
       return responseData;
     }
-    if (responseData is Map<Object?, Object?>) {
+
+    if (responseData is Map) {
       final Object? messageField = responseData['message'] ??
           responseData['error'] ??
           responseData['detail'];
+
       if (messageField is String && messageField.trim().isNotEmpty) {
         return messageField;
       }
@@ -198,6 +241,7 @@ class HttpRequestExecutor {
       final Object? errors = responseData['errors'];
       if (errors != null) return errors.toString();
     }
+
     return fallback;
   }
 }

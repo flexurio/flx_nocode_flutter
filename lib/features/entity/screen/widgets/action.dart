@@ -66,28 +66,7 @@ extension ActionExtenstion on ActionD {
     }
 
     try {
-      final raw = http!;
-
-      final method = raw.method.toUpperCase();
-      final bool hasBody = <String>{'POST', 'PUT', 'PATCH'}.contains(method);
-
-      // replace url & headers
-      final url = raw.url.replaceStringWithValues(data, urlEncode: true);
-      final headers = raw.headersReplaceStringWithValues(data);
-
-      // replace body jika perlu
-      Map<String, dynamic> replacedBody = {};
-      if (hasBody && raw.body.isNotEmpty) {
-        replacedBody = raw.bodyReplaceStringWithValues(data);
-      }
-
-      final execHttp = raw.copyWith(
-        url: url,
-        headers: headers,
-        body: replacedBody,
-      );
-
-      final response = await execHttp.execute();
+      final response = await http!.execute(data);
       final statusCode = response.statusCode ?? 0;
       final isSuccess = statusCode >= 200 && statusCode < 300;
 
@@ -100,7 +79,7 @@ extension ActionExtenstion on ActionD {
           data: data,
         );
       } else {
-        final message = _extractErrorMessage(response) ?? 'Request failed';
+        final message = response.message ?? 'Request failed';
         Toast(context).fail(message);
         _handleOnFailure(context, message, raw: response);
       }
@@ -133,28 +112,7 @@ extension ActionExtenstion on ActionD {
 
     try {
       final first = data.first;
-      final raw = http!;
-
-      final method = raw.method.toUpperCase();
-      final bool hasBody = <String>{'POST', 'PUT', 'PATCH'}.contains(method);
-
-      // replace url & headers dengan data pertama
-      final url = raw.url.replaceStringWithValues(first, urlEncode: true);
-      final headers = raw.headersReplaceStringWithValues(first);
-
-      // body multiple
-      Map<String, dynamic> replacedBody = {};
-      if (hasBody && raw.body.isNotEmpty) {
-        replacedBody = raw.bodyReplaceStringWithValuesMultiple(data);
-      }
-
-      final execHttp = raw.copyWith(
-        url: url,
-        headers: headers,
-        body: replacedBody,
-      );
-
-      final response = await execHttp.execute();
+      final response = await http!.execute(first);
       final statusCode = response.statusCode ?? 0;
       final isSuccess = statusCode >= 200 && statusCode < 300;
 
@@ -167,7 +125,7 @@ extension ActionExtenstion on ActionD {
           data: data,
         );
       } else {
-        final message = _extractErrorMessage(response) ?? 'Request failed';
+        final message = response.message ?? 'Request failed';
         Toast(context).fail(message);
         _handleOnFailure(context, message, raw: response);
       }
@@ -180,15 +138,6 @@ extension ActionExtenstion on ActionD {
       Toast(context).fail(message);
       _handleOnFailure(context, message, raw: e);
     }
-  }
-
-  String? _extractErrorMessage(Response response) {
-    final data = response.data;
-    if (data is Map<String, dynamic>) {
-      if (data['message'] is String) return data['message'] as String;
-      if (data['error'] is String) return data['error'] as String;
-    }
-    return response.statusMessage;
   }
 
   // ------------------------------------------------------

@@ -1,7 +1,42 @@
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_js/flutter_js.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 
+final JavascriptRuntime _jsRuntime = getJavascriptRuntime();
+
 extension StringReplaceExtension on String {
+  String interpolateJavascript(Map<String, dynamic> variables) {
+    variables.forEach((key, value) {
+      final jsonValue = jsonEncode(value);
+      _jsRuntime.evaluate("const $key = $jsonValue;");
+    });
+
+    final regex = RegExp(r'\{\{(.*?)\}\}', dotAll: true);
+
+    return replaceAllMapped(regex, (match) {
+      final rawExpr = match.group(1);
+      if (rawExpr == null) return '';
+
+      final expr = rawExpr.trim();
+      if (expr.isEmpty) return '';
+
+      try {
+        final result = _jsRuntime.evaluate(expr);
+        final value = result.stringResult;
+
+        if (value == 'undefined') {
+          return match.group(0) ?? '';
+        }
+
+        return value;
+      } catch (e) {
+        return match.group(0) ?? '';
+      }
+    });
+  }
+
   String renderWithData(Map<String, dynamic> data) {
     return replaceStringWithValues(data)
         .functionDatetimeFormat
