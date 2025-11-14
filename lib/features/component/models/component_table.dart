@@ -73,14 +73,13 @@ class ComponentTable extends Component {
   /// ### Throws
   /// - [FormatException] if `id` is missing or empty.
   factory ComponentTable.fromMap(Map<String, dynamic> map) {
+    print('[ComponentTable] fromMap');
     final id = map['id']?.toString().trim();
     if (id == null || id.isEmpty) {
       throw const FormatException('Component "id" is required');
     }
 
-    // Parse columns list
-    final List<Map<String, dynamic>> columnsMap =
-        map['columns'] as List<Map<String, dynamic>>? ?? [];
+    final List columnsMap = map['columns'] as List? ?? [];
 
     final columns = columnsMap.map((e) => TColumn.fromJson(e)).toList();
 

@@ -174,10 +174,6 @@ class EntityCustom extends HiveObject {
       final fields = parseListRequired<EntityField>(
         'fields',
         (raw, i) {
-          if (raw is! Map<String, dynamic>) {
-            throw FormatException(
-                "expected Map for 'fields'[$i], got ${raw.runtimeType}");
-          }
           return EntityField.fromJson(raw);
         },
       );
@@ -198,11 +194,10 @@ class EntityCustom extends HiveObject {
         layoutForm = parseListOptional<LayoutForm>(
           'layout_form',
           (raw, i) {
-            if (raw is! Map<String, dynamic>) {
-              throw FormatException(
-                  "expected Map for 'layout_form'[$i], got ${raw.runtimeType}");
-            }
-            return LayoutForm.fromMap(raw);
+            print('[EntityCustom] layout_form - parsing data');
+            final result = LayoutForm.fromMap(raw);
+            print('[EntityCustom] layout_form - parsed data');
+            return result;
           },
         );
       } catch (e, st) {

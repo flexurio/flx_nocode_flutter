@@ -34,6 +34,7 @@ class LayoutForm extends HiveObject {
         buttons = List<ButtonAction>.unmodifiable(buttons ?? const []);
 
   factory LayoutForm.fromMap(JsonMap map) {
+    print('[LayoutForm] fromMap - parsing data');
     if (map['type'] == null || map['type'].toString().trim().isEmpty) {
       throw const FormatException('Action "type" is required');
     }
@@ -93,14 +94,15 @@ class LayoutForm extends HiveObject {
       }).toList(growable: false);
     }
 
+    print('[LayoutForm] fromMap - parsing components');
     final rawComponents = map['components'] as List?;
-
     final components = rawComponents?.map((e) {
       if (e is! Map) {
         throw const FormatException('Each component must be an object');
       }
-      return Component.fromMap(e.cast<String, dynamic>());
+      return Component.fromMap(Map<String, dynamic>.from(e));
     }).toList(growable: false);
+    print('[LayoutForm] fromMap - parsed components');
 
     return LayoutForm(
       components: components ?? const [],
