@@ -1,5 +1,5 @@
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/export/screen/models/export_table_section.dart';
-import 'package:flx_nocode_flutter/src/app/util/string.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -148,7 +148,9 @@ extension ExportFieldSectionPdf on ExportFieldSection {
                 style: pw.TextStyle(fontWeight: labelWeight),
               ),
             ),
-            pw.Expanded(child: pw.Text((value ?? '').renderWithData(data))),
+            pw.Expanded(
+                child: pw.Text(
+                    (value ?? '').interpolateJavascript({"current": data}))),
           ],
         ),
       ),
