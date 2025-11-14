@@ -1,9 +1,7 @@
-import 'dart:js_interop';
+import 'dart:js_util' as js_util;
 
-@JS('eval')
-external Object _eval(String code);
-
+/// JS eval implementation for Flutter Web using window.eval().
 String internalEvalJs(String code) {
-  final result = _eval(code);
-  return result.toString();
+  final result = js_util.callMethod(js_util.globalThis, 'eval', [code]);
+  return result?.toString() ?? '';
 }
