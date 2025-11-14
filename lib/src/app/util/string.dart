@@ -1,55 +1,19 @@
 import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_js/flutter_js.dart';
+import 'package:flx_nocode_flutter/core/utils/js/js_eval.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 
 extension StringReplaceExtension on String {
+  /// Replaces all `{{ ... }}` with evaluated JavaScript expressions.
+  ///
+  /// - Variables in [variables] are injected as `const` inside a local scope.
+  /// - `now(format)` is available for date formatting:
+  ///   - now()                    → Date.toString()
+  ///   - now("YYYY-MM-DD")
+  ///   - now("DD MMM YYYY")
+  ///   - now("DD MMMM YYYY HH:mm")
   String interpolateJavascript(Map<String, dynamic> variables) {
-    final js = getJavascriptRuntime();
-
-    // Inject JS formatter + now()
-    js.evaluate(r"""
-      function pad(n) { return n < 10 ? '0' + n : n; }
-
-      const MONTH_NAMES = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-      ];
-
-      const MONTH_NAMES_SHORT = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-      ];
-
-      function formatDate(date, fmt) {
-        if (!fmt) return date.toString();
-
-        return fmt
-          .replace("YYYY", date.getFullYear())
-          .replace("MMMM", MONTH_NAMES[date.getMonth()])
-          .replace("MMM", MONTH_NAMES_SHORT[date.getMonth()])
-          .replace("MM", pad(date.getMonth() + 1))
-          .replace("DD", pad(date.getDate()))
-          .replace("HH", pad(date.getHours()))
-          .replace("mm", pad(date.getMinutes()))
-          .replace("ss", pad(date.getSeconds()));
-      }
-
-      // now("YYYY-MM-DD")
-      // now("DD MMMM YYYY")
-      function now(fmt) {
-        var d = new Date();
-        return formatDate(d, fmt);
-      }
-    """);
-
-    // Inject variables
-    variables.forEach((key, value) {
-      final jsonValue = jsonEncode(value);
-      js.evaluate("const $key = $jsonValue;");
-    });
-
     final regex = RegExp(r'\{\{(.*?)\}\}', dotAll: true);
 
     return replaceAllMapped(regex, (match) {
@@ -59,16 +23,19 @@ extension StringReplaceExtension on String {
       final expr = rawExpr.trim();
       if (expr.isEmpty) return '';
 
-      try {
-        final result = js.evaluate(expr);
-        final value = result.stringResult;
+      final script = _buildJsScript(expr, variables);
 
-        if (value == 'undefined') {
+      try {
+        final value = evalJs(script);
+
+        if (value.isEmpty || value == 'undefined' || value == 'null') {
+          // fall back to original {{ ... }} on weird result
           return match.group(0) ?? '';
         }
 
         return value;
       } catch (_) {
+        // On error, keep the original placeholder
         return match.group(0) ?? '';
       }
     });
@@ -204,4 +171,60 @@ extension StringReplaceExtension on String {
 
     return result;
   }
+}
+
+/// Builds a self-contained JS snippet:
+/// (function() {
+///   // helpers
+///   // injected vars
+///   return <expr>;
+/// })()
+String _buildJsScript(
+  String expr,
+  Map<String, dynamic> variables,
+) {
+  final buffer = StringBuffer();
+
+  buffer.writeln('(function(){');
+
+  // Helpers
+  buffer.writeln('function pad(n){return n<10?"0"+n:n;}');
+
+  buffer.writeln('const MONTH_NAMES=['
+      '"January","February","March","April","May","June",'
+      '"July","August","September","October","November","December"];');
+
+  buffer.writeln('const MONTH_NAMES_SHORT=['
+      '"Jan","Feb","Mar","Apr","May","Jun",'
+      '"Jul","Aug","Sep","Oct","Nov","Dec"];');
+
+  buffer.writeln('function formatDate(date,fmt){'
+      'if(!fmt) return date.toString();'
+      'return fmt'
+      '.replace("YYYY",date.getFullYear())'
+      '.replace("MMMM",MONTH_NAMES[date.getMonth()])'
+      '.replace("MMM",MONTH_NAMES_SHORT[date.getMonth()])'
+      '.replace("MM",pad(date.getMonth()+1))'
+      '.replace("DD",pad(date.getDate()))'
+      '.replace("HH",pad(date.getHours()))'
+      '.replace("mm",pad(date.getMinutes()))'
+      '.replace("ss",pad(date.getSeconds()));'
+      '}');
+
+  buffer.writeln('function now(fmt){'
+      'var d=new Date();'
+      'return formatDate(d,fmt);'
+      '}');
+
+  // Inject variables as const (local to this IIFE)
+  variables.forEach((key, value) {
+    final jsonValue = jsonEncode(value);
+    // Assumes `key` is a valid JS identifier.
+    buffer.writeln('const $key = $jsonValue;');
+  });
+
+  buffer.writeln('return ($expr);');
+  buffer.writeln('})()');
+
+  return buffer.toString();
 }
