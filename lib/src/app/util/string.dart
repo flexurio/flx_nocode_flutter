@@ -4,13 +4,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 
-final JavascriptRuntime _jsRuntime = getJavascriptRuntime();
-
 extension StringReplaceExtension on String {
   String interpolateJavascript(Map<String, dynamic> variables) {
+    // Always create a fresh runtime → clean environment
+    final js = getJavascriptRuntime();
+
+    // Inject variables
     variables.forEach((key, value) {
       final jsonValue = jsonEncode(value);
-      _jsRuntime.evaluate("const $key = $jsonValue;");
+      js.evaluate("const $key = $jsonValue;");
     });
 
     final regex = RegExp(r'\{\{(.*?)\}\}', dotAll: true);
@@ -23,7 +25,7 @@ extension StringReplaceExtension on String {
       if (expr.isEmpty) return '';
 
       try {
-        final result = _jsRuntime.evaluate(expr);
+        final result = js.evaluate(expr);
         final value = result.stringResult;
 
         if (value == 'undefined') {
