@@ -6,8 +6,43 @@ import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 
 extension StringReplaceExtension on String {
   String interpolateJavascript(Map<String, dynamic> variables) {
-    // Always create a fresh runtime → clean environment
     final js = getJavascriptRuntime();
+
+    // Inject JS formatter + now()
+    js.evaluate(r"""
+      function pad(n) { return n < 10 ? '0' + n : n; }
+
+      const MONTH_NAMES = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+
+      const MONTH_NAMES_SHORT = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+      ];
+
+      function formatDate(date, fmt) {
+        if (!fmt) return date.toString();
+
+        return fmt
+          .replace("YYYY", date.getFullYear())
+          .replace("MMMM", MONTH_NAMES[date.getMonth()])
+          .replace("MMM", MONTH_NAMES_SHORT[date.getMonth()])
+          .replace("MM", pad(date.getMonth() + 1))
+          .replace("DD", pad(date.getDate()))
+          .replace("HH", pad(date.getHours()))
+          .replace("mm", pad(date.getMinutes()))
+          .replace("ss", pad(date.getSeconds()));
+      }
+
+      // now("YYYY-MM-DD")
+      // now("DD MMMM YYYY")
+      function now(fmt) {
+        var d = new Date();
+        return formatDate(d, fmt);
+      }
+    """);
 
     // Inject variables
     variables.forEach((key, value) {
@@ -33,7 +68,7 @@ extension StringReplaceExtension on String {
         }
 
         return value;
-      } catch (e) {
+      } catch (_) {
         return match.group(0) ?? '';
       }
     });

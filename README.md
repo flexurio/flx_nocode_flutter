@@ -23,6 +23,7 @@ The heart of this framework is the `configuration.json` file, which must be loca
 A detailed guide to the structure of this file, including all available fields and a complete example, can be found in our documentation.
 
 **[➡️ Read the Configuration JSON Documentation](./docs/configuration_docs.md)**
+
 **[➡️ Read the Entity JSON Documentation](./docs/entity.md)**
 
 ## Getting Started
