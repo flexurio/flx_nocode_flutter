@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 import 'package:hive/hive.dart';
@@ -154,7 +155,9 @@ extension HttpDataExtension on HttpData {
   HttpRequestConfig toRequestConfig(JsonMap data) {
     return HttpRequestConfig(
       method: method.toUpperCase(),
-      url: url,
+      url: url.interpolateJavascript({
+        "current": data,
+      }),
       headers: headersReplaceStringWithValues(data),
       body: bodyReplaceStringWithValues(data),
       asFormData: useFormData,

@@ -90,35 +90,45 @@ class EntityViewPage extends StatelessWidget {
       ),
       body: BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
         builder: (context, state) {
-          if (dummy) {
-            return SingleFormPanel(
-              hideHeader: embedded ? true : false,
-              action: DataAction.view,
-              entity: entity.coreEntity,
-              size: SingleFormPanelSize.large,
-              children: [
-                _buildData(data),
-              ],
-            );
-          }
-
-          return state.maybeWhen(
-            orElse: SomethingWrong.new,
-            loading: (_) => const ProgressingIndicator(),
-            loaded: (pageOptions) {
-              final data = pageOptions.data.first;
-              return SingleFormPanel(
-                hideHeader: embedded ? true : false,
-                action: DataAction.view,
-                entity: entity.coreEntity,
-                size: SingleFormPanelSize.large,
-                children: [
-                  entity.layoutForm.getByType(FormType.view)?.toWidget(data) ??
-                      NoCodeError('Layout not found'),
-                ],
-              );
-            },
+          return SingleFormPanel(
+            hideHeader: embedded ? true : false,
+            action: DataAction.view,
+            entity: entity.coreEntity,
+            size: SingleFormPanelSize.large,
+            children: [
+              entity.layoutForm.getByType(FormType.view)?.toWidget(data) ??
+                  NoCodeError('Layout not found'),
+            ],
           );
+          // if (dummy) {
+          //   return SingleFormPanel(
+          //     hideHeader: embedded ? true : false,
+          //     action: DataAction.view,
+          //     entity: entity.coreEntity,
+          //     size: SingleFormPanelSize.large,
+          //     children: [
+          //       _buildData(data),
+          //     ],
+          //   );
+          // }
+
+          // return state.maybeWhen(
+          //   orElse: SomethingWrong.new,
+          //   loading: (_) => const ProgressingIndicator(),
+          //   loaded: (pageOptions) {
+          //     final data = pageOptions.data.first;
+          //     return SingleFormPanel(
+          //       hideHeader: embedded ? true : false,
+          //       action: DataAction.view,
+          //       entity: entity.coreEntity,
+          //       size: SingleFormPanelSize.large,
+          //       children: [
+          //         entity.layoutForm.getByType(FormType.view)?.toWidget(data) ??
+          //             NoCodeError('Layout not found'),
+          //       ],
+          //     );
+          //   },
+          // );
         },
       ),
     );
