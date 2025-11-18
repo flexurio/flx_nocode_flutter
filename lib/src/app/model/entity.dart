@@ -194,9 +194,7 @@ class EntityCustom extends HiveObject {
         layoutForm = parseListOptional<LayoutForm>(
           'layout_form',
           (raw, i) {
-            print('[EntityCustom] layout_form - parsing data');
             final result = LayoutForm.fromMap(raw);
-            print('[EntityCustom] layout_form - parsed data');
             return result;
           },
         );
@@ -204,6 +202,7 @@ class EntityCustom extends HiveObject {
         print('[EntityCustom] 🔴 layout_form - error :$e,\n$st');
         layoutForm = <LayoutForm>[];
       }
+      print('[EntityCustom] layout_form - length: ${layoutForm.length}');
 
       final backendRaw = requireKey<Map<String, dynamic>>('backend');
       final backend = Backend.fromJson(backendRaw);
@@ -409,8 +408,11 @@ class EntityCustom extends HiveObject {
     BuildContext context,
     Map<String, dynamic> data,
     List<Map<String, dynamic>> parentData,
+    bool bypassPermission,
   ) {
-    return views.map((e) => e.buttonLarge(context, data, parentData)).toList();
+    return views
+        .map((e) => e.buttonLarge(context, data, parentData, bypassPermission))
+        .toList();
   }
 }
 

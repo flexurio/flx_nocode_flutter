@@ -116,7 +116,7 @@ class DView extends HiveObject {
   }
 
   Widget buttonLarge(BuildContext context, Map<String, dynamic> data,
-      List<Map<String, dynamic>> parentData) {
+      List<Map<String, dynamic>> parentData, bool bypassPermission) {
     return FutureBuilder<EntityCustom?>(
       future: EntityCustom.getEntity(entity),
       builder: (context, snapshot) {
@@ -137,6 +137,7 @@ class DView extends HiveObject {
                         breadcrumbList: [entity.label],
                         entityId: this.entity,
                         initialFilters: _filters(entity, data),
+                        bypassPermission: bypassPermission,
                       ),
                     ),
                   );

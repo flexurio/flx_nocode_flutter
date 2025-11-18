@@ -190,7 +190,7 @@ class EntityViewPage extends StatelessWidget {
     );
 
     return [
-      ...entity.buttonViewsLarge(context, data, parentData),
+      ...entity.buttonViewsLarge(context, data, parentData, bypassPermission),
       ...modifyActions,
       ...actions,
     ];
