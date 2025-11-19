@@ -11,12 +11,10 @@ import 'package:http/http.dart' as http;
 
 typedef HeaderProvider = Future<Map<String, String>> Function();
 
-/// 🔹 Versi compact untuk ukuran A5
 Future<void> exportToPdf(
   Export export, {
   required Map<String, dynamic> data,
   HeaderProvider? headerProvider,
-  bool landscape = true, // set true jika ingin A5 landscape
 }) async {
   print('==============================');
   print('[ExportPDF] 🚀 Starting exportToPdf()');
@@ -62,13 +60,13 @@ Future<void> exportToPdf(
     }
   }
 
-  print('[ExportPDF] 🏗 Building PDF layout (A5, compact)...');
+  print(
+      '[ExportPDF] 🏗 Building PDF layout (${export.paperSize}, ${export.orientation})...');
 
-  // 🔹 A5 + margin kecil
-  final a5Format = landscape ? PdfPageFormat.a5.landscape : PdfPageFormat.a5;
+  final pageFormat = _getPageFormat(export.paperSize, export.orientation);
 
   final pageTheme = pw.PageTheme(
-    pageFormat: a5Format.copyWith(
+    pageFormat: pageFormat.copyWith(
       marginLeft: 10,
       marginRight: 10,
       marginTop: 18,
@@ -283,4 +281,21 @@ Future<List<List<String>>> fetchTableData(
   }
 
   return rows;
+}
+
+PdfPageFormat _getPageFormat(String paperSize, String orientation) {
+  final bool isLandscape = orientation.toLowerCase() == 'landscape';
+
+  final Map<String, PdfPageFormat> paperFormats = {
+    'a3': PdfPageFormat.a3,
+    'a4': PdfPageFormat.a4,
+    'a5': PdfPageFormat.a5,
+    'a6': PdfPageFormat.a6,
+    'letter': PdfPageFormat.letter,
+    'legal': PdfPageFormat.legal,
+  };
+
+  final format = paperFormats[paperSize.toLowerCase()] ?? PdfPageFormat.a4;
+
+  return isLandscape ? format.landscape : format;
 }

@@ -11,17 +11,51 @@ extension StringReplaceExtension on String {
   String replaceStringWithValues(Map<String, dynamic> data,
       {bool urlEncode = false}) {
     var url = this;
-    for (var key in data.keys) {
+
+    // {user.token}
+    url = url.replaceAll(
+      '{user.token}',
+      UserRepositoryApp.instance.token ?? '',
+    );
+
+    // {key}
+    for (final key in data.keys) {
+      final value = data[key];
+      final str = value?.toString() ?? '';
       url = url.replaceAll(
-          '{$key}',
-          urlEncode
-              ? Uri.encodeComponent(data[key].toString())
-              : data[key].toString());
-      url = url.replaceAll(
-        '{user.token}',
-        UserRepositoryApp.instance.token ?? '',
+        '{$key}',
+        urlEncode ? Uri.encodeComponent(str) : str,
       );
     }
+    return url;
+  }
+
+  String replaceStringWithValuesMultiple(List<Map<String, dynamic>> data,
+      {bool urlEncode = false}) {
+    var url = this;
+
+    // {user.token}
+    url = url.replaceAll(
+      '{user.token}',
+      UserRepositoryApp.instance.token ?? '',
+    );
+
+    // {selected.<field>} -> gabungan nilai dari setiap item data untuk field tsb, dipisah koma
+    final selectedFieldRegex = RegExp(r'\{selected\.([a-zA-Z0-9_]+)\}');
+    url = url.replaceAllMapped(selectedFieldRegex, (match) {
+      final field = match.group(1)!;
+      final parts = <String>[];
+
+      for (final row in data) {
+        final value = row[field];
+        if (value == null) continue;
+        parts.add(value.toString());
+      }
+
+      final joined = parts.join(',');
+      return urlEncode ? Uri.encodeComponent(joined) : joined;
+    });
+
     return url;
   }
 
@@ -53,8 +87,8 @@ extension StringReplaceExtension on String {
         final dt = DateFormat(inputFormat).parse(input, true);
         final formatted = DateFormat(outputFormat).format(dt);
         result = result.replaceFirst(match.group(0)!, formatted);
-      } catch (e) {
-        // fallback: leave original
+      } catch (_) {
+        // fallback: biarkan input apa adanya
         result = result.replaceFirst(match.group(0)!, input);
       }
     }
@@ -91,7 +125,7 @@ extension StringReplaceExtension on String {
 
         final formatted = formatter.format(number);
         result = result.replaceFirst(match.group(0)!, formatted);
-      } catch (e) {
+      } catch (_) {
         result = result.replaceFirst(match.group(0)!, rawValue);
       }
     }

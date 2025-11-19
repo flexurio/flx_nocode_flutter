@@ -2,7 +2,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
-import 'package:flx_nocode_flutter/src/app/view/widget/entity_data_table.dart';
+import 'package:flx_nocode_flutter/features/data_table/screen/widgets/entity_data_table.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 

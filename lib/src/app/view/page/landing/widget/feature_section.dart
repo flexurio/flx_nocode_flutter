@@ -3,7 +3,7 @@ import 'package:flx_nocode_flutter/src/app/model/entity.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/landing/widget/responsive_container.dart';
 
 import '../../../../model/landing_page/landing_page.dart';
-import '../../../widget/entity_data_table.dart';
+import '../../../../../../features/data_table/screen/widgets/entity_data_table.dart';
 import '../landing_page.dart';
 
 class FeatureSection extends StatefulWidget {

@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
+import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_list_extensions.dart';
+import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_field_dummy_value.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
@@ -9,19 +11,47 @@ import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+/// Represents a dynamically configured entity.
+///
+/// An `EntityCustom` object defines the structure, behavior, and layout
+/// of a data model, typically loaded from a JSON configuration file. It includes
+/// everything from data fields and backend endpoints to UI layouts for forms and lists.
 class EntityCustom extends HiveObject {
+  /// The unique identifier for the entity.
   final String id;
+
+  /// The human-readable name of the entity, used for display purposes.
   final String label;
+
+  /// A brief description of the entity's purpose.
   final String description;
+
+  /// A list of [EntityField] objects that define the data schema of the entity.
   final List<EntityField> fields;
+
+  /// A list of custom [view.DView] configurations for displaying entity data.
   final List<view.DView> views;
+
+  /// A list of [Export] configurations for exporting entity data.
   final List<Export> exports;
+
+  /// The [Backend] configuration, defining API endpoints for CRUD operations.
   final Backend backend;
+
+  /// The layout definition for creating and editing forms.
   final List<LayoutForm> layoutForm;
+
+  /// The layout definition for displaying a single entity instance in a list.
   final LayoutListTile? layoutListTile;
+
+  /// A list of custom [ActionD] definitions that can be performed on the entity.
   final List<ActionD> actions;
+
+  /// A map defining the layout of columns in a data table view.
+  /// The key is the field reference, and the value is typically a flex factor.
   Map<String, int> layoutTable;
 
+  /// Creates a new instance of [EntityCustom].
   EntityCustom({
     required this.actions,
     required this.id,
@@ -36,6 +66,11 @@ class EntityCustom extends HiveObject {
     required this.exports,
   });
 
+  /// Creates an [EntityCustom] instance from a JSON map.
+  ///
+  /// This factory parses a [Map<String, dynamic>] (typically from a JSON file)
+  /// and constructs an [EntityCustom] object, validating required keys and
+  /// handling nested object parsing.
   factory EntityCustom.fromJson(Map<String, dynamic> json) {
     print("==================================== Parse Entity");
     print('[EntityCustom] - ID: ${json['id']}');
@@ -139,10 +174,6 @@ class EntityCustom extends HiveObject {
       final fields = parseListRequired<EntityField>(
         'fields',
         (raw, i) {
-          if (raw is! Map<String, dynamic>) {
-            throw FormatException(
-                "expected Map for 'fields'[$i], got ${raw.runtimeType}");
-          }
           return EntityField.fromJson(raw);
         },
       );
@@ -163,15 +194,14 @@ class EntityCustom extends HiveObject {
         layoutForm = parseListOptional<LayoutForm>(
           'layout_form',
           (raw, i) {
-            if (raw is! Map<String, dynamic>) {
-              throw FormatException(
-                  "expected Map for 'layout_form'[$i], got ${raw.runtimeType}");
-            }
-            return LayoutForm.fromMap(raw);
+            print('[EntityCustom] layout_form - parsing data');
+            final result = LayoutForm.fromMap(raw);
+            print('[EntityCustom] layout_form - parsed data');
+            return result;
           },
         );
-      } catch (e) {
-        print('[EntityCustom] layout_form - error :$e');
+      } catch (e, st) {
+        print('[EntityCustom] 🔴 layout_form - error :$e,\n$st');
         layoutForm = <LayoutForm>[];
       }
 
@@ -232,6 +262,7 @@ class EntityCustom extends HiveObject {
     }
   }
 
+  /// Creates an empty, uninitialized [EntityCustom] instance.
   EntityCustom.empty()
       : id = '',
         label = '',
@@ -245,6 +276,7 @@ class EntityCustom extends HiveObject {
         layoutTable = {},
         exports = [];
 
+  /// Creates a copy of this [EntityCustom] instance with the given fields replaced.
   EntityCustom copyWith({
     String? id,
     String? label,
@@ -273,6 +305,9 @@ class EntityCustom extends HiveObject {
     );
   }
 
+  /// Generates a map of dummy data based on the entity's fields.
+  ///
+  /// This is useful for testing or populating forms with placeholder values.
   Map<String, dynamic> dummy() {
     final data = <String, dynamic>{};
     for (var field in fields) {
@@ -281,6 +316,10 @@ class EntityCustom extends HiveObject {
     return data;
   }
 
+  /// Loads and parses an entity definition from a JSON asset file.
+  ///
+  /// The [id] corresponds to the filename (e.g., 'my_entity.json').
+  /// Returns `null` if the asset cannot be found or parsed.
   static Future<EntityCustom?> getEntity(String id) async {
     try {
       print('[EntityCustom] getEntity "$id"');
@@ -295,16 +334,21 @@ class EntityCustom extends HiveObject {
     }
   }
 
+  /// Retrieves a specific [EntityField] by its [reference] name.
+  ///
+  /// Returns `null` if no field with the given reference is found.
   EntityField? getField(String reference) {
     final field = fields.where((e) => e.reference == reference);
     if (field.isEmpty) return null;
     return field.first;
   }
 
+  /// Reorders the [layoutTable] map based on old and new indices.
   void layoutTableReorder(oldIndex, newIndex) {
     layoutTable = reorderMap(layoutTable, oldIndex, newIndex);
   }
 
+  /// Serializes this [EntityCustom] instance to a JSON map.
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -320,17 +364,26 @@ class EntityCustom extends HiveObject {
     };
   }
 
+  /// Converts this [EntityCustom] to a generic [core.Entity] for core UI components.
   core.Entity get coreEntity => core.Entity(
         titleX: label,
         iconPath: 'bill',
         subtitleX: description,
       );
 
+  /// Whether the entity configuration allows creating new instances.
   bool get allowCreate => backend.create != null;
+
+  /// Whether the entity configuration allows updating existing instances.
   bool get allowUpdate => backend.update != null;
+
+  /// Whether the entity configuration allows deleting existing instances.
   bool get allowDelete => backend.deleteX != null;
+
+  /// Whether the entity is a protected system entity that cannot be modified.
   bool get isProtected => ['flx_roles', 'flx_users'].contains(id);
 
+  /// Builds a list of [ActionButtonItem] widgets for the entity's custom views.
   List<ActionButtonItem> buttonViews(
     BuildContext context,
     Map<String, dynamic> data,
@@ -351,6 +404,7 @@ class EntityCustom extends HiveObject {
         .toList();
   }
 
+  /// Builds a list of large [Widget] buttons for the entity's custom views.
   List<Widget> buttonViewsLarge(
     BuildContext context,
     Map<String, dynamic> data,
@@ -360,7 +414,11 @@ class EntityCustom extends HiveObject {
   }
 }
 
+/// An extension on a list of [EntityCustom] objects to provide helper methods.
 extension EntitiesExtenstion on List<EntityCustom> {
+  /// Finds an [EntityCustom] in the list by its [id].
+  ///
+  /// Returns `null` if no matching entity is found.
   EntityCustom? findById(String id) {
     for (var entity in this) {
       if (entity.id == id) return entity;
@@ -368,6 +426,9 @@ extension EntitiesExtenstion on List<EntityCustom> {
     return null;
   }
 
+  /// Finds the index of a field within a specific entity in the list.
+  ///
+  /// Returns -1 if the entity or field is not found.
   int findIndexField(String entityId, String reference) {
     final entity = findById(entityId);
     if (entity != null) {
@@ -377,6 +438,9 @@ extension EntitiesExtenstion on List<EntityCustom> {
   }
 }
 
+/// A utility function to reorder a map's entries.
+///
+/// Creates a new map with the entry at [oldIndex] moved to [newIndex].
 Map<K, V> reorderMap<K, V>(
   Map<K, V> map,
   int oldIndex,

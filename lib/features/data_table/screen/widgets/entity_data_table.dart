@@ -1,15 +1,18 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
+import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_list_extensions.dart';
+import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_create_button.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/filter.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_identifier/screen_identifier.dart';
 
-import 'error.dart';
+import '../../../../src/app/view/widget/error.dart';
+import 'menu_data_table_custom_table_view.dart';
 
 class MenuDataTableCustom extends StatefulWidget {
   const MenuDataTableCustom._({
@@ -78,31 +81,36 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       builder: (context, state) {
         return ScreenIdentifierBuilder(
           builder: (context, screenIdentifier) {
+            final status = state.maybeWhen(
+              loading: (_) => Status.progress,
+              loaded: (_) => Status.loaded,
+              orElse: () => Status.error,
+            );
+
+            final pageOptions = state.maybeWhen(
+              loaded: (data) => data,
+              loading: (data) => data,
+              orElse: PageOptions<Map<String, dynamic>>.empty,
+            );
+
             return screenIdentifier.conditions(
-              md: _buildTableView(
-                status: state.maybeWhen(
-                  loading: (_) => Status.progress,
-                  orElse: () => Status.error,
-                  loaded: (materials) => Status.loaded,
-                ),
-                pageOptions: state.maybeWhen(
-                  loaded: (data) => data,
-                  loading: (data) => data,
-                  orElse: PageOptions.empty,
-                ),
+              md: MenuDataTableCustomTableView(
+                entity: widget.entity,
+                status: status,
+                pageOptions: pageOptions,
+                embedded: widget.embedded,
+                parentData: widget.parentData,
+                bypassPermission: widget.bypassPermission,
+                filtersMap: _filters.toMap(),
+                actionLeft: _buildActionLeft(),
+                actionRightBuilder: _buildActionRight,
+                onChanged: _fetch,
+                onRefresh: _fetch,
               ),
               sm: _buildListView(
                 parentData: widget.parentData,
-                status: state.maybeWhen(
-                  loading: (_) => Status.progress,
-                  orElse: () => Status.error,
-                  loaded: (materials) => Status.loaded,
-                ),
-                pageOptions: state.maybeWhen(
-                  loaded: (data) => data,
-                  loading: (data) => data,
-                  orElse: PageOptions.empty,
-                ),
+                status: status,
+                pageOptions: pageOptions,
               ),
             );
           },
@@ -138,108 +146,14 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 embedded: true,
                 entity: widget.entity,
                 data: data,
-                filters: Map.fromEntries(_filters
-                    .map((e) => MapEntry(e.reference, e.value))
-                    .toList()),
+                filters: Map.fromEntries(
+                  _filters.map((e) => MapEntry(e.reference, e.value)).toList(),
+                ),
               ),
             ).then((value) => _fetch());
           },
         );
       },
-    );
-  }
-
-  Widget _buildTableView({
-    required Status status,
-    required PageOptions<Map<String, dynamic>> pageOptions,
-  }) {
-    final fields = widget.entity.layoutTable.keys.toList();
-    final fieldsValue = widget.entity.layoutTable.values.toList();
-    if (fields.isEmpty) {
-      return NoCodeError('layout_table is empty');
-    }
-
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      child: DataTableBackend<Map<String, dynamic>>(
-        freezeFirstColumn: true,
-        freezeLastColumn: true,
-        key: ValueKey(pageOptions.hashCode),
-        status: status,
-        pageOptions: pageOptions,
-        onChanged: _fetch,
-        onRefresh: _fetch,
-        actionLeft: _buildActionLeft(),
-        actionRight: _buildActionRight,
-        columns: [
-          ...List.generate(
-            fields.length,
-            (index) {
-              final field = widget.entity.getField(fields[index]);
-              if (field == null) {
-                return DTColumn(
-                  widthFlex: 1,
-                  head: DTHead(label: '<Unknown>', backendKeySort: ''),
-                  body: (data) => DataCell(Text('<Unknown>')),
-                );
-              }
-
-              final width = fieldsValue[index] as int?;
-              return DTColumn(
-                widthFlex: (width ?? 1).toDouble(),
-                head: DTHead(
-                  backendKeySort: field.reference,
-                  label: field.label,
-                  numeric: (field.isNumber) && index != 0,
-                ),
-                body: (entity) => DataCell(
-                  EntityField.buildDisplay(
-                    widget.entity,
-                    field.reference,
-                    entity[field.reference],
-                    index != 0
-                        ? null
-                        : () async {
-                            await Navigator.push(
-                              context,
-                              EntityViewPage.route(
-                                parentData: widget.parentData,
-                                embedded: widget.embedded,
-                                entity: widget.entity,
-                                data: entity,
-                                filters: _filters.toMap(),
-                              ),
-                            );
-                            _fetch();
-                          },
-                  ),
-                ),
-              );
-            },
-          ),
-          DTColumn(
-            widthFlex: 4,
-            head: DTHead(label: 'actions'.tr(), backendKeySort: null),
-            body: (data) => DataCell(
-              Row(
-                children: [
-                  ActionsButton(
-                    children: EntityViewPage.actionsLarge(
-                      parentData: widget.parentData,
-                      context: context,
-                      data: data,
-                      filters: _filters.toMap(),
-                      entity: widget.entity,
-                      onRefresh: (context) => _fetch(),
-                      bypassPermission: widget.bypassPermission,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -265,9 +179,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
               EntityCreatePage.route(
                 layoutForm: action,
                 entity: widget.entity,
-                onSuccess: () {
-                  _fetch();
-                },
+                onSuccess: () => _fetch(),
                 embedded: false,
                 parentData: widget.parentData,
                 filters: {},
@@ -301,9 +213,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           entity: widget.entity,
           filters: _filters.toMap(),
           bypassPermission: widget.bypassPermission,
-          onSuccess: () {
-            _fetch();
-          },
+          onSuccess: () => _fetch(),
         ),
     ];
   }

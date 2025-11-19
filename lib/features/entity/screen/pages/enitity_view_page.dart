@@ -1,4 +1,9 @@
+import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action.dart';
+import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_display.dart';
+import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_list_extensions.dart';
+import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
+import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/layout_form.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
@@ -6,6 +11,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_view/widget/delete_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 
 class EntityViewPage extends StatelessWidget {
   const EntityViewPage._({
@@ -84,32 +90,45 @@ class EntityViewPage extends StatelessWidget {
       ),
       body: BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
         builder: (context, state) {
-          if (dummy) {
-            return SingleFormPanel(
-              hideHeader: embedded ? true : false,
-              action: DataAction.view,
-              entity: entity.coreEntity,
-              size: SingleFormPanelSize.large,
-              children: [
-                _buildData(data),
-              ],
-            );
-          }
-
-          return state.maybeWhen(
-            orElse: SomethingWrong.new,
-            loading: (_) => const ProgressingIndicator(),
-            loaded: (pageOptions) {
-              final data = pageOptions.data.first;
-              return SingleFormPanel(
-                hideHeader: embedded ? true : false,
-                action: DataAction.view,
-                entity: entity.coreEntity,
-                size: SingleFormPanelSize.large,
-                children: [_buildData(data)],
-              );
-            },
+          return SingleFormPanel(
+            hideHeader: embedded ? true : false,
+            action: DataAction.view,
+            entity: entity.coreEntity,
+            size: SingleFormPanelSize.large,
+            children: [
+              entity.layoutForm.getByType(FormType.view)?.toWidget(data) ??
+                  NoCodeError('Layout not found'),
+            ],
           );
+          // if (dummy) {
+          //   return SingleFormPanel(
+          //     hideHeader: embedded ? true : false,
+          //     action: DataAction.view,
+          //     entity: entity.coreEntity,
+          //     size: SingleFormPanelSize.large,
+          //     children: [
+          //       _buildData(data),
+          //     ],
+          //   );
+          // }
+
+          // return state.maybeWhen(
+          //   orElse: SomethingWrong.new,
+          //   loading: (_) => const ProgressingIndicator(),
+          //   loaded: (pageOptions) {
+          //     final data = pageOptions.data.first;
+          //     return SingleFormPanel(
+          //       hideHeader: embedded ? true : false,
+          //       action: DataAction.view,
+          //       entity: entity.coreEntity,
+          //       size: SingleFormPanelSize.large,
+          //       children: [
+          //         entity.layoutForm.getByType(FormType.view)?.toWidget(data) ??
+          //             NoCodeError('Layout not found'),
+          //       ],
+          //     );
+          //   },
+          // );
         },
       ),
     );
@@ -154,8 +173,12 @@ class EntityViewPage extends StatelessWidget {
     required void Function(BuildContext) onRefresh,
     required bool bypassPermission,
   }) {
-    final actions =
-        entity.actions.toButtonList(entity, context, data, parentData);
+    final actions = entity.actions.singleRow.buildButtonsSingle(
+      entity: entity,
+      context: context,
+      data: data,
+      parentData: parentData,
+    );
     final modifyActions = _buildEntityCustomActionsLarge(
       entity: entity,
       context: context,
@@ -303,7 +326,7 @@ class EntityViewPage extends StatelessWidget {
           final fields = chunk.map<Widget>((field) {
             return TileDataVertical(
               label: entity.getField(field)?.label ?? field,
-              child: EntityField.buildDisplay(
+              child: EntityFieldDisplay.build(
                 entity,
                 field,
                 data[field],

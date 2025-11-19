@@ -1,4 +1,4 @@
-import 'package:flx_nocode_flutter/features/entity/models/layout_form.dart'; // provides JsonMap, Rule
+import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'; // provides JsonMap, Rule
 import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';

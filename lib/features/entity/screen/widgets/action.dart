@@ -1,134 +1,164 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/export/screen/widgets/export_to_pdf.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/src/app/util/string.dart';
 
+typedef Json = Map<String, dynamic>;
+typedef JsonList = List<Map<String, dynamic>>;
+
 extension ActionListExtenstion on List<ActionD> {
-  List<Widget> toButtonList(
-    EntityCustom entity,
-    BuildContext context,
-    Map<String, dynamic> data,
-    List<Map<String, dynamic>> parentData,
-  ) {
-    return map((e) => e.button(entity, context, data, parentData)).toList();
+  List<Widget> buildButtonsSingle({
+    required EntityCustom entity,
+    required BuildContext context,
+    required Json data,
+    required JsonList parentData,
+  }) {
+    return map(
+      (e) => e.buttonSingle(entity, context, data, parentData),
+    ).toList();
+  }
+
+  List<Widget> buildButtonsMultiple({
+    required EntityCustom entity,
+    required BuildContext context,
+    required JsonList data,
+    required JsonList parentData,
+  }) {
+    return map(
+      (e) => e.buttonMultiple(entity, context, data, parentData),
+    ).toList();
   }
 }
 
 extension ActionExtenstion on ActionD {
+  // Public API Alias
   Future<void> executeHttp(
     EntityCustom entity,
     BuildContext context,
-    Map<String, dynamic> data,
+    Json data,
+  ) =>
+      executeHttpSingle(entity, context, data);
+
+  Future<void> executeHttpList(
+    EntityCustom entity,
+    BuildContext context,
+    JsonList data,
+  ) =>
+      executeHttpMultiple(entity, context, data);
+
+  // ------------------------------------------------------
+  //                 SINGLE HTTP EXECUTION
+  // ------------------------------------------------------
+  Future<void> executeHttpSingle(
+    EntityCustom entity,
+    BuildContext context,
+    Json data,
   ) async {
     if (http == null) {
       Toast(context).fail('No http data found');
-      _handleOnFailure(context, 'No http data found', raw: null);
+      _handleOnFailure(context, 'No http data found');
       return;
     }
 
-    final dio = Dio();
-
     try {
-      final url = http!.url.replaceStringWithValues(data, urlEncode: true);
-      final headers = http!.headersReplaceStringWithValues(data);
-      final method = http!.method.toUpperCase();
+      final response = await http!.execute(data);
+      final statusCode = response.statusCode ?? 0;
+      final isSuccess = statusCode >= 200 && statusCode < 300;
 
-      final options = Options(
-        method: method,
-        headers: headers,
-      );
-
-      final hasBody = ['POST', 'PUT', 'PATCH'].contains(method);
-      dynamic body;
-
-      if (hasBody && http!.body.isNotEmpty) {
-        final replacedBody = http!.bodyReplaceStringWithValues(data);
-        if (http!.useFormData) {
-          body = FormData.fromMap(replacedBody);
-        } else {
-          body = replacedBody;
-        }
-      }
-
-      print('================ HTTP REQUEST ================');
-      print('→ Method : $method');
-      print('→ URL    : $url');
-      print('→ Headers: $headers');
-      print('→ Body   : ${body ?? '{}'}');
-      print('→ AsFormData: ${http!.useFormData}');
-      print('==============================================');
-
-      final response = await dio.request(
-        url,
-        data: body,
-        options: options,
-      );
-
-      print('================ HTTP RESPONSE ================');
-      print('← Status : ${response.statusCode}');
-      print('← Data   : ${response.data}');
-      print('==============================================');
-
-      if (response.statusCode != null &&
-          response.statusCode! >= 200 &&
-          response.statusCode! < 300) {
+      if (isSuccess) {
         Toast(context).success('Request success');
-        _handleOnSuccess(
-          data: data,
+        _handleOnSuccessSingle(
           entity: entity,
           context: context,
           responseData: response.data,
+          data: data,
         );
       } else {
-        final message = _extractErrorMessage(
-          response.data,
-          fallback:
-              'Request failed: ${response.statusCode} - ${response.statusMessage}',
-        );
+        final message = response.message ?? 'Request failed';
         Toast(context).fail(message);
-        _handleOnFailure(context, message, raw: response.data);
+        _handleOnFailure(context, message, raw: response);
       }
     } on DioException catch (e) {
-      print('================ HTTP ERROR ==================');
-      print('❌ Type     : ${e.type}');
-      print('❌ Message  : ${e.message}');
-      print('❌ Response : ${e.response?.data}');
-      print('==============================================');
-
-      final message = _extractErrorMessage(
-        e.response?.data,
-        fallback: e.message ?? 'Unknown error occurred',
-      );
-      Toast(context).fail('HTTP Error: $message');
-      _handleOnFailure(context, message, raw: e.response?.data);
-    } catch (e) {
-      print('================ UNEXPECTED ERROR =============');
-      print('❌ $e');
-      print('==============================================');
-      final message = 'Unexpected error: $e';
+      final message = e.message ?? 'Request failed';
       Toast(context).fail(message);
-      _handleOnFailure(context, message, raw: null);
+      _handleOnFailure(context, message, raw: e);
+    } catch (e) {
+      const message = 'Unexpected error';
+      Toast(context).fail(message);
+      _handleOnFailure(context, message, raw: e);
     }
   }
 
-  void _handleOnSuccess({
+  // ------------------------------------------------------
+  //                MULTIPLE HTTP EXECUTION
+  // ------------------------------------------------------
+  Future<void> executeHttpMultiple(
+    EntityCustom entity,
+    BuildContext context,
+    JsonList data,
+  ) async {
+    if (data.isEmpty) return;
+
+    if (http == null) {
+      Toast(context).fail('No http data found');
+      _handleOnFailure(context, 'No http data found');
+      return;
+    }
+
+    try {
+      final first = data.first;
+      final response = await http!.execute(first);
+      final statusCode = response.statusCode ?? 0;
+      final isSuccess = statusCode >= 200 && statusCode < 300;
+
+      if (isSuccess) {
+        Toast(context).success('Request success');
+        _handleOnSuccessMultiple(
+          entity: entity,
+          context: context,
+          responseData: response.data,
+          data: data,
+        );
+      } else {
+        final message = response.message ?? 'Request failed';
+        Toast(context).fail(message);
+        _handleOnFailure(context, message, raw: response);
+      }
+    } on DioException catch (e) {
+      final message = e.message ?? 'Request failed';
+      Toast(context).fail(message);
+      _handleOnFailure(context, message, raw: e);
+    } catch (e) {
+      const message = 'Unexpected error';
+      Toast(context).fail(message);
+      _handleOnFailure(context, message, raw: e);
+    }
+  }
+
+  // ------------------------------------------------------
+  //                    SUCCESS HANDLERS
+  // ------------------------------------------------------
+  void _handleOnSuccessSingle({
     required EntityCustom entity,
     required BuildContext context,
-    required dynamic responseData,
-    required Map<String, dynamic> data,
+    required Object? responseData,
+    required Json data,
   }) {
     final regex = RegExp(r'^exports\.([0-9a-fA-F\-]{36})$');
-    final match =
-        regex.firstMatch('exports.a12b34cd-56ef-78ab-90cd-ef1234567890');
+    final match = regex.firstMatch(onSuccess);
+
     if (match != null) {
-      final id = match.group(1);
-      final index = entity.exports.indexWhere((e) => e.uuid == id);
+      final exportId = match.group(1) ?? '';
+
+      final index = entity.exports.indexWhere((e) => e.uuid == exportId);
       if (index != -1) {
         final export = entity.exports[index];
+
         exportToPdf(
           export,
           data: data,
@@ -138,34 +168,31 @@ extension ActionExtenstion on ActionD {
         );
       }
     }
-    // switch (onSuccess) {
-    //   case 'refresh':
-    //     Toast(context).notify('Refreshing data...');
-    //     break;
-    //   case 'navigate_home':
-    //     Navigator.of(context).pushReplacementNamed('/home');
-    //     break;
-    //   case 'show_dialog':
-    //     showDialog(
-    //       context: context,
-    //       builder: (_) => AlertDialog(
-    //         title: const Text('Success'),
-    //         content: Text('Response: $responseData'),
-    //       ),
-    //     );
-    //     break;
-    //   case 'toast':
-    //     Toast(context).success('Action completed successfully');
-    //     break;
-    //   default:
-    //     break;
-    // }
   }
 
+  void _handleOnSuccessMultiple({
+    required EntityCustom entity,
+    required BuildContext context,
+    required Object? responseData,
+    required JsonList data,
+  }) {
+    if (data.isNotEmpty) {
+      _handleOnSuccessSingle(
+        entity: entity,
+        context: context,
+        responseData: responseData,
+        data: data.first,
+      );
+    }
+  }
+
+  // ------------------------------------------------------
+  //                       FAILURE HANDLER
+  // ------------------------------------------------------
   void _handleOnFailure(
     BuildContext context,
     String message, {
-    dynamic raw,
+    Object? raw,
   }) {
     switch (onFailure) {
       case 'show_error_dialog':
@@ -183,9 +210,11 @@ extension ActionExtenstion on ActionD {
           ),
         );
         break;
+
       case 'toast':
         Toast(context).fail(message);
         break;
+
       case 'navigate_back':
         if (Navigator.of(context).canPop()) {
           Navigator.of(context).pop();
@@ -193,78 +222,105 @@ extension ActionExtenstion on ActionD {
           Toast(context).notify('Cannot navigate back');
         }
         break;
+
       default:
         break;
     }
   }
 
-  String _extractErrorMessage(
-    dynamic responseData, {
-    String fallback = 'Request failed',
-  }) {
-    if (responseData == null) return fallback;
-    if (responseData is String && responseData.trim().isNotEmpty) {
-      return responseData;
-    }
-    if (responseData is Map) {
-      final msg = responseData['message'] ??
-          responseData['error'] ??
-          responseData['detail'];
-      if (msg is String && msg.trim().isNotEmpty) return msg;
-      final errors = responseData['errors'];
-      if (errors != null) return errors.toString();
-    }
-    return fallback;
+  // ------------------------------------------------------
+  //                        UI HELPERS
+  // ------------------------------------------------------
+  Future<void> _showConfirmDialog<T>({
+    required BuildContext context,
+    required DataAction action,
+    required String label,
+    required Future<void> Function(BuildContext ctx) onConfirm,
+  }) async {
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) {
+        bool isProgress = false;
+        return StatefulBuilder(builder: (ctx, setState) {
+          return CardConfirmation.action(
+            isProgress: isProgress,
+            action: action,
+            data: Entity.assetType,
+            label: label,
+            onConfirm: () async {
+              setState(() => isProgress = true);
+              try {
+                await onConfirm(ctx);
+                Navigator.of(ctx).pop();
+              } finally {
+                if (Navigator.of(ctx).canPop()) {
+                  setState(() => isProgress = false);
+                }
+              }
+            },
+          );
+        });
+      },
+    );
   }
 
-  Widget button(
+  // ------------------------------------------------------
+  //                      BUTTONS
+  // ------------------------------------------------------
+  Widget buttonSingle(
     EntityCustom entity,
     BuildContext context,
-    Map<String, dynamic> data,
-    List<Map<String, dynamic>> parentData,
+    Json data,
+    JsonList parentData,
   ) {
-    final act = DataAction.print;
+    const action = DataAction.print;
 
     return LightButton(
       title: name,
       permission: null,
+      action: action,
       onPressed: () async {
         if (http == null) {
           Toast(context).fail('No http data found');
           _handleOnFailure(context, 'No http data found');
           return;
         }
-
-        await showDialog(
+        await _showConfirmDialog(
           context: context,
-          barrierDismissible: false,
-          builder: (dialogCtx) {
-            bool isProgress = false;
-            return StatefulBuilder(
-              builder: (ctx, setState) {
-                return CardConfirmation.action(
-                  isProgress: isProgress,
-                  action: act,
-                  data: Entity.assetType,
-                  label: name,
-                  onConfirm: () async {
-                    setState(() => isProgress = true);
-                    try {
-                      await executeHttp(entity, ctx, data);
-                      Navigator.of(ctx).pop();
-                    } finally {
-                      if (Navigator.of(ctx).canPop()) {
-                        setState(() => isProgress = false);
-                      }
-                    }
-                  },
-                );
-              },
-            );
-          },
+          action: action,
+          label: name,
+          onConfirm: (ctx) => executeHttp(entity, ctx, data),
         );
       },
-      action: act,
+    );
+  }
+
+  Widget buttonMultiple(
+    EntityCustom entity,
+    BuildContext context,
+    JsonList data,
+    JsonList parentData,
+  ) {
+    const action = DataAction.print;
+
+    return LightButton(
+      title: name,
+      permission: null,
+      action: action,
+      onPressed: () async {
+        if (http == null) {
+          Toast(context).fail('No http data found');
+          _handleOnFailure(context, 'No http data found');
+          return;
+        }
+        await _showConfirmDialog(
+          context: context,
+          action: action,
+          label: name,
+          onConfirm: (ctx) => executeHttpMultiple(entity, ctx, data),
+        );
+      },
     );
   }
 }
