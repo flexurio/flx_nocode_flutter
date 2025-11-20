@@ -452,5 +452,8 @@ Map<K, V> reorderMap<K, V>(
     newIndex -= 1;
   }
   entries.insert(newIndex, entry);
-  return Map<K, V>.fromEntries(entries);
+  final data = Map<K, V>.fromEntries(entries);
+
+  print('[EntityCustom] reorderMap, fields: ${data.keys}');
+  return data;
 }
