@@ -5,7 +5,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_table.dar
 import 'package:flx_nocode_flutter/features/component/models/component_text.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
-abstract class Component {
+class Component {
   final String id;
   final String type;
 
@@ -40,5 +40,5 @@ abstract class Component {
     }
   }
 
-  JsonMap toMap();
+  JsonMap toMap() => {'id': id, 'type': type};
 }

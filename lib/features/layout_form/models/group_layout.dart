@@ -19,7 +19,6 @@ class GroupLayout extends HiveObject {
     this.visibleIf,
   })  : assert(id.trim().isNotEmpty, 'Group "id" is required'),
         assert(title.trim().isNotEmpty, 'Group "title" is required'),
-        assert(rows.isNotEmpty, 'Group "rows" must not be empty'),
         rows = List<RowLayout>.unmodifiable(rows);
 
   factory GroupLayout.empty() =>
