@@ -36,6 +36,9 @@ class ActionD extends HiveObject {
   /// - "none" → do nothing
   final String onFailure;
 
+  // for type listJsonViewAsTable
+  final String? reference;
+
   final bool isMultiple;
 
   ActionD({
@@ -44,6 +47,7 @@ class ActionD extends HiveObject {
     required this.onFailure,
     required this.id,
     this.http,
+    this.reference,
     required this.type,
     required this.name,
   });
@@ -57,6 +61,7 @@ class ActionD extends HiveObject {
     String? onSuccess,
     String? onFailure,
     bool? isMultiple,
+    String? reference,
   }) {
     return ActionD(
       isMultiple: isMultiple ?? this.isMultiple,
@@ -79,6 +84,7 @@ class ActionD extends HiveObject {
       http: json['http'] != null ? HttpData.fromJson(json['http']) : null,
       onSuccess: json['on_success'] ?? 'toast',
       onFailure: json['on_failure'] ?? 'toast',
+      reference: json['reference'],
     );
   }
 
@@ -90,6 +96,8 @@ class ActionD extends HiveObject {
       'name': name,
       'on_success': onSuccess,
       'on_failure': onFailure,
+      'is_multiple': isMultiple,
+      'reference': reference,
       if (http != null) 'http': http!.toJson(),
     };
   }
@@ -101,4 +109,9 @@ extension ActionDListExtension on List<ActionD> {
 
   List<ActionD> get singleRow =>
       where((element) => !element.isMultiple).toList();
+}
+
+class ActionType {
+  static const String print = 'print';
+  static const String listJsonViewAsTable = 'list_json_view_as_table';
 }

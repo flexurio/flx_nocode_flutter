@@ -173,7 +173,7 @@ class EntityViewPage extends StatelessWidget {
     required void Function(BuildContext) onRefresh,
     required bool bypassPermission,
   }) {
-    final actions = entity.actions.singleRow.buildButtonsSingle(
+    final actions = entity.actions.singleRow.buildButtonsSingleRow(
       entity: entity,
       context: context,
       data: data,

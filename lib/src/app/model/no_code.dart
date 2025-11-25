@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
-import 'package:flx_nocode_flutter/src/app/model/entity.dart';
+import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
 import 'package:flutter/material.dart';

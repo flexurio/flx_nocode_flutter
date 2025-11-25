@@ -10,7 +10,7 @@ export 'features/layout_form/models/type.dart';
 export 'src/app/model/backend_other.dart';
 export 'src/app/model/backend.dart';
 export 'src/app/model/configuration.dart';
-export 'src/app/model/entity.dart';
+export 'features/entity/models/entity.dart';
 export 'src/app/model/layout_list_tile.dart';
 export 'src/app/model/no_code.dart';
 export 'src/app/model/theme.dart';
