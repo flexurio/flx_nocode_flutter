@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
@@ -11,32 +10,10 @@ import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 typedef Json = Map<String, dynamic>;
 typedef JsonList = List<Map<String, dynamic>>;
 
-extension ActionListExtenstion on List<ActionD> {
-  List<Widget> buildButtonsSingleRow({
-    required EntityCustom entity,
-    required BuildContext context,
-    required Json data,
-    required JsonList parentData,
-  }) {
-    return map(
-      (e) => e.buttonSingle(entity, context, data, parentData, e),
-    ).toList();
-  }
-
-  List<Widget> buildButtonsMultiple({
-    required EntityCustom entity,
-    required BuildContext context,
-    required JsonList data,
-    required JsonList parentData,
-  }) {
-    return map(
-      (e) => e.buttonMultiple(entity, context, data, parentData),
-    ).toList();
-  }
-}
-
-extension ActionExtenstion on ActionD {
-  // Public API Alias
+extension ActionLogicExtension on ActionD {
+  // ------------------------------------------------------
+  //                PUBLIC API ALIAS
+  // ------------------------------------------------------
   Future<void> executeHttp(
     EntityCustom entity,
     BuildContext context,
@@ -52,7 +29,7 @@ extension ActionExtenstion on ActionD {
       executeHttpMultiple(entity, context, data);
 
   // ------------------------------------------------------
-  //                 SINGLE HTTP EXECUTION
+  //                SINGLE HTTP EXECUTION
   // ------------------------------------------------------
   Future<void> executeHttpSingle(
     EntityCustom entity,
@@ -141,7 +118,7 @@ extension ActionExtenstion on ActionD {
   }
 
   // ------------------------------------------------------
-  //                    SUCCESS HANDLERS
+  //                   SUCCESS HANDLERS
   // ------------------------------------------------------
   void _handleOnSuccessSingle({
     required EntityCustom entity,
@@ -187,7 +164,7 @@ extension ActionExtenstion on ActionD {
   }
 
   // ------------------------------------------------------
-  //                       FAILURE HANDLER
+  //                     FAILURE HANDLER
   // ------------------------------------------------------
   void _handleOnFailure(
     BuildContext context,
@@ -229,9 +206,9 @@ extension ActionExtenstion on ActionD {
   }
 
   // ------------------------------------------------------
-  //                        UI HELPERS
+  //                     UI HELPER (DIALOG)
   // ------------------------------------------------------
-  Future<void> _showConfirmDialog<T>({
+  Future<void> showConfirmDialog<T>({
     required BuildContext context,
     required DataAction action,
     required String label,
@@ -261,212 +238,6 @@ extension ActionExtenstion on ActionD {
             },
           );
         });
-      },
-    );
-  }
-
-  // ------------------------------------------------------
-  //                      BUTTONS
-  // ------------------------------------------------------
-  Widget buttonSingle(
-    EntityCustom entity,
-    BuildContext context,
-    Json data,
-    JsonList parentData,
-    ActionD action,
-  ) {
-    switch (action.type) {
-      case ActionType.listJsonViewAsTable:
-        return _buildButtonListJsonViewAsTable(
-          entity: entity,
-          context: context,
-          data: data,
-          reference: action.reference,
-        );
-      case ActionType.print:
-        return _buildButtonPrint(
-          entity: entity,
-          context: context,
-          data: data,
-        );
-      default:
-        return Text('Unknown action type: ${action.type}');
-    }
-  }
-
-  Widget _buildButtonPrint({
-    required EntityCustom entity,
-    required BuildContext context,
-    required Json data,
-  }) {
-    const action = DataAction.print;
-
-    return LightButton(
-      title: name,
-      permission: null,
-      action: action,
-      onPressed: () async {
-        if (http == null) {
-          Toast(context).fail('No http data found');
-          _handleOnFailure(context, 'No http data found');
-          return;
-        }
-        await _showConfirmDialog(
-          context: context,
-          action: action,
-          label: name,
-          onConfirm: (ctx) => executeHttp(entity, ctx, data),
-        );
-      },
-    );
-  }
-
-  Widget _buildButtonListJsonViewAsTable({
-    required EntityCustom entity,
-    required BuildContext context,
-    required Json data,
-    required String? reference,
-  }) {
-    const action = DataAction.print;
-
-    return LightButton(
-      title: name,
-      permission: null,
-      action: action,
-      onPressed: () async {
-        if (reference == null) {
-          Toast(context).fail('No reference found');
-          _handleOnFailure(context, 'No reference found');
-          return;
-        }
-
-        final jsonData = jsonDecode(data[reference]);
-        if (jsonData == null) {
-          await showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: const Text('Error'),
-              content: const Text('JSON tidak valid.'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
-          return;
-        }
-
-        await _showJsonAsTableDialog(context, jsonData);
-      },
-    );
-  }
-
-  Future<void> _showJsonAsTableDialog(
-    BuildContext context,
-    dynamic jsonData,
-  ) async {
-    return showDialog(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          contentPadding: EdgeInsets.zero,
-          content: SizedBox(
-            width: 600,
-            height: 400,
-            child: _buildJsonTable(jsonData),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildJsonTable(dynamic jsonData) {
-    // Normalisasi: jadikan List<Map<String, dynamic>>
-    List<Map<String, dynamic>> rows = [];
-
-    if (jsonData is List) {
-      rows = jsonData
-          .whereType<Map>() // cuma Map
-          .map((e) => e.map((k, v) => MapEntry(k.toString(), v)))
-          .toList();
-    } else if (jsonData is Map) {
-      rows = [
-        jsonData.map((k, v) => MapEntry(k.toString(), v)),
-      ];
-    } else {
-      return const Center(
-        child: Text('Format JSON tidak dikenali'),
-      );
-    }
-
-    if (rows.isEmpty) {
-      return const Center(
-        child: Text('Data kosong'),
-      );
-    }
-
-    // Ambil semua key (kolom)
-    final Set<String> allKeys = {};
-    for (final row in rows) {
-      allKeys.addAll(row.keys);
-    }
-    final columns = allKeys.toList();
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: SingleChildScrollView(
-        child: DataTable(
-          columns: [
-            for (final col in columns) DataColumn(label: Text(col)),
-          ],
-          rows: [
-            for (final row in rows)
-              DataRow(
-                cells: [
-                  for (final col in columns)
-                    DataCell(
-                      Text('${row[col] ?? ''}'),
-                    ),
-                ],
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buttonMultiple(
-    EntityCustom entity,
-    BuildContext context,
-    JsonList data,
-    JsonList parentData,
-  ) {
-    const action = DataAction.print;
-
-    return LightButton(
-      title: name,
-      permission: null,
-      action: action,
-      onPressed: () async {
-        if (http == null) {
-          Toast(context).fail('No http data found');
-          _handleOnFailure(context, 'No http data found');
-          return;
-        }
-        await _showConfirmDialog(
-          context: context,
-          action: action,
-          label: name,
-          onConfirm: (ctx) => executeHttpMultiple(entity, ctx, data),
-        );
       },
     );
   }

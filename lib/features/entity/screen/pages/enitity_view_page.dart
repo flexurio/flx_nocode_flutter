@@ -1,5 +1,6 @@
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
-import 'package:flx_nocode_flutter/features/entity/screen/widgets/action.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_widget_extension.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_display.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_list_extensions.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
