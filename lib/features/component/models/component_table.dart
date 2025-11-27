@@ -45,6 +45,7 @@ class ComponentTable extends Component {
     required this.columns,
     required super.id,
     required this.http,
+    required this.width,
   }) : super(type: 'table');
 
   /// Static component type identifier.
@@ -56,6 +57,8 @@ class ComponentTable extends Component {
   ///
   /// See [HttpData] for execution rules, supported methods, templating, etc.
   final HttpData http;
+
+  final double? width;
 
   /// List of table columns.
   ///
@@ -86,7 +89,10 @@ class ComponentTable extends Component {
     return ComponentTable(
       id: id,
       columns: columns,
-      http: HttpData.fromJson(map['http'] as Map<String, dynamic>),
+      http: HttpData.fromJson(
+        map['http'] as Map<String, dynamic>,
+      ),
+      width: (map['width'] as num?)?.toDouble(),
     );
   }
 
@@ -138,10 +144,9 @@ class TColumn {
   /// Key or expression used to extract value for each table cell.
   final String body;
 
-  TColumn({
-    required this.header,
-    required this.body,
-  });
+  final double? width;
+
+  TColumn({required this.header, required this.body, this.width});
 
   /// Creates a [TColumn] from a JSON-compatible map.
   ///
@@ -150,6 +155,7 @@ class TColumn {
     return TColumn(
       header: json['header']?.toString().trim() ?? '',
       body: json['body']?.toString().trim() ?? '',
+      width: json['width']?.toDouble(),
     );
   }
 }

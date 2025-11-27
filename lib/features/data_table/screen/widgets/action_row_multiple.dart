@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
-import 'package:flx_nocode_flutter/features/entity/screen/widgets/action.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_widget_extension.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 
 class ActionRowMultiple extends StatelessWidget {

@@ -95,7 +95,7 @@ Defines the options for a dropdown or lookup field.
 
 ### View, Export, and Action Objects
 
-These objects define custom behaviors. Their structure can vary. Please refer to the source code for `DView`, `Export`, and `ActionD` for detailed implementation.
+These objects define custom behaviors. Their structure can vary. Please refer to the source code for `DView` and `Export` for detailed implementation. For the `Action` object, see the [Action Documentation](./actions.md).
 
 ---
 

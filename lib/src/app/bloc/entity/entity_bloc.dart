@@ -4,7 +4,8 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flx_nocode_flutter/src/app/model/entity.dart' as configuration;
+import 'package:flx_nocode_flutter/features/entity/models/entity.dart'
+    as configuration;
 
 part 'entity_bloc.freezed.dart';
 

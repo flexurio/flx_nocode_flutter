@@ -15,8 +15,6 @@ class GroupLayout extends HiveObject {
     required List<RowLayout> rows,
     this.visibleIf,
   })  : assert(id.trim().isNotEmpty, 'Group "id" is required'),
-        assert(title.trim().isNotEmpty, 'Group "title" is required'),
-        assert(rows.isNotEmpty, 'Group "rows" must not be empty'),
         rows = List<RowLayout>.unmodifiable(rows);
 
   factory GroupLayout.empty() =>
@@ -110,7 +108,6 @@ class RowLayout extends HiveObject {
     required List<String> fields,
     this.visibleIf,
   })  : assert(columns >= 1, '"columns" must be >= 1'),
-        assert(fields.isNotEmpty, '"fields" must not be empty'),
         fields = List<String>.unmodifiable(fields);
 
   factory RowLayout.fromMap(JsonMap map) {
@@ -127,9 +124,7 @@ class RowLayout extends HiveObject {
     if (f is! List) {
       throw const FormatException('"fields" must be an array of strings');
     }
-    if (f.isEmpty) {
-      throw const FormatException('"fields" must not be empty');
-    }
+
     final fields = f.map((e) => e.toString()).toList(growable: false);
 
     return RowLayout(

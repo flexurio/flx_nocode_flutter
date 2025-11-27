@@ -35,6 +35,7 @@ class LayoutForm extends HiveObject {
 
   factory LayoutForm.fromMap(JsonMap map) {
     print('[LayoutForm] fromMap - parsing data');
+
     if (map['type'] == null || map['type'].toString().trim().isEmpty) {
       throw const FormatException('Action "type" is required');
     }

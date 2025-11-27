@@ -6,37 +6,14 @@ import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/export/screen/widgets/export_to_pdf.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
-import 'package:flx_nocode_flutter/src/app/util/string.dart';
 
 typedef Json = Map<String, dynamic>;
 typedef JsonList = List<Map<String, dynamic>>;
 
-extension ActionListExtenstion on List<ActionD> {
-  List<Widget> buildButtonsSingle({
-    required EntityCustom entity,
-    required BuildContext context,
-    required Json data,
-    required JsonList parentData,
-  }) {
-    return map(
-      (e) => e.buttonSingle(entity, context, data, parentData),
-    ).toList();
-  }
-
-  List<Widget> buildButtonsMultiple({
-    required EntityCustom entity,
-    required BuildContext context,
-    required JsonList data,
-    required JsonList parentData,
-  }) {
-    return map(
-      (e) => e.buttonMultiple(entity, context, data, parentData),
-    ).toList();
-  }
-}
-
-extension ActionExtenstion on ActionD {
-  // Public API Alias
+extension ActionLogicExtension on ActionD {
+  // ------------------------------------------------------
+  //                PUBLIC API ALIAS
+  // ------------------------------------------------------
   Future<void> executeHttp(
     EntityCustom entity,
     BuildContext context,
@@ -52,7 +29,7 @@ extension ActionExtenstion on ActionD {
       executeHttpMultiple(entity, context, data);
 
   // ------------------------------------------------------
-  //                 SINGLE HTTP EXECUTION
+  //                SINGLE HTTP EXECUTION
   // ------------------------------------------------------
   Future<void> executeHttpSingle(
     EntityCustom entity,
@@ -141,7 +118,7 @@ extension ActionExtenstion on ActionD {
   }
 
   // ------------------------------------------------------
-  //                    SUCCESS HANDLERS
+  //                   SUCCESS HANDLERS
   // ------------------------------------------------------
   void _handleOnSuccessSingle({
     required EntityCustom entity,
@@ -187,7 +164,7 @@ extension ActionExtenstion on ActionD {
   }
 
   // ------------------------------------------------------
-  //                       FAILURE HANDLER
+  //                     FAILURE HANDLER
   // ------------------------------------------------------
   void _handleOnFailure(
     BuildContext context,
@@ -229,9 +206,9 @@ extension ActionExtenstion on ActionD {
   }
 
   // ------------------------------------------------------
-  //                        UI HELPERS
+  //                     UI HELPER (DIALOG)
   // ------------------------------------------------------
-  Future<void> _showConfirmDialog<T>({
+  Future<void> showConfirmDialog<T>({
     required BuildContext context,
     required DataAction action,
     required String label,
@@ -261,65 +238,6 @@ extension ActionExtenstion on ActionD {
             },
           );
         });
-      },
-    );
-  }
-
-  // ------------------------------------------------------
-  //                      BUTTONS
-  // ------------------------------------------------------
-  Widget buttonSingle(
-    EntityCustom entity,
-    BuildContext context,
-    Json data,
-    JsonList parentData,
-  ) {
-    const action = DataAction.print;
-
-    return LightButton(
-      title: name,
-      permission: null,
-      action: action,
-      onPressed: () async {
-        if (http == null) {
-          Toast(context).fail('No http data found');
-          _handleOnFailure(context, 'No http data found');
-          return;
-        }
-        await _showConfirmDialog(
-          context: context,
-          action: action,
-          label: name,
-          onConfirm: (ctx) => executeHttp(entity, ctx, data),
-        );
-      },
-    );
-  }
-
-  Widget buttonMultiple(
-    EntityCustom entity,
-    BuildContext context,
-    JsonList data,
-    JsonList parentData,
-  ) {
-    const action = DataAction.print;
-
-    return LightButton(
-      title: name,
-      permission: null,
-      action: action,
-      onPressed: () async {
-        if (http == null) {
-          Toast(context).fail('No http data found');
-          _handleOnFailure(context, 'No http data found');
-          return;
-        }
-        await _showConfirmDialog(
-          context: context,
-          action: action,
-          label: name,
-          onConfirm: (ctx) => executeHttpMultiple(entity, ctx, data),
-        );
       },
     );
   }

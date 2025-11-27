@@ -98,10 +98,12 @@ class _ComponentTableHttpWidgetState extends State<_ComponentTableHttpWidget> {
         final rows = snapshot.data ?? const <JsonMap>[];
 
         return YuhuTable<JsonMap>(
+          width: widget.component.width,
           data: rows,
           columns: widget.component.columns.map((c) {
             return TableColumn<JsonMap>(
               title: c.header,
+              width: c.width,
               builder: (row, index) {
                 final text = _buildCellText(row, c);
                 return Text(

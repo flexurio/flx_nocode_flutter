@@ -4,7 +4,7 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 import 'package:hive/hive.dart';
 import 'package:flx_nocode_flutter/src/app/util/string.dart';
-import 'package:flx_nocode_flutter/features/entity/screen/widgets/action.dart'; // untuk JsonList
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart'; // untuk JsonList
 
 /// Represents HTTP request configuration data used by actions.
 ///

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flx_nocode_flutter/src/app/model/entity.dart';
+import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/landing/widget/responsive_container.dart';
 
 import '../../../../model/landing_page/landing_page.dart';
