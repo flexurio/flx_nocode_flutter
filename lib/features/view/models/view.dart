@@ -57,7 +57,7 @@ class DView extends HiveObject {
     };
   }
 
-  List<Filter> _filters(EntityCustom entity, Map<String, dynamic> data) {
+  List<Filter> filters(EntityCustom entity, Map<String, dynamic> data) {
     final filters = <Filter>[];
     for (final key in filter.keys) {
       final value = data[filter[key]];
@@ -95,7 +95,7 @@ class DView extends HiveObject {
                   parentData: parentData,
                   embedded: true,
                   entityId: this.entity,
-                  initialFilters: _filters(entity, data),
+                  initialFilters: filters(entity, data),
                 ),
               ),
             );
@@ -106,50 +106,12 @@ class DView extends HiveObject {
               home: MenuCustom.fromId(
                 parentData: parentData,
                 entityId: entity.id,
-                initialFilters: _filters(entity, data),
+                initialFilters: filters(entity, data),
               ),
               label: entity.label,
             ),
           );
         }
-      },
-    );
-  }
-
-  Widget buttonLarge(
-    BuildContext context,
-    Map<String, dynamic> data,
-    List<Map<String, dynamic>> parentData,
-    bool bypassPermission,
-  ) {
-    return FutureBuilder<EntityCustom?>(
-      future: EntityCustom.getEntity(entity),
-      builder: (context, snapshot) {
-        final e = snapshot.data;
-
-        if (e == null) {
-          return NoCodeError('Entity not found! Id: $entity');
-        }
-
-        return LightButton(
-          action: DataAction.view,
-          title: label,
-          permission: null,
-          onPressed: () async {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MenuCustom.fromId(
-                  parentData: List.from(parentData)..add(data),
-                  breadcrumbList: [e.label],
-                  entityId: this.entity,
-                  initialFilters: _filters(e, data),
-                  bypassPermission: bypassPermission,
-                ),
-              ),
-            );
-          },
-        );
       },
     );
   }
