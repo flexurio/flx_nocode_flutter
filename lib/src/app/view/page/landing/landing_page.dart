@@ -48,9 +48,10 @@ class _LandingPageState extends State<LandingPage>
     });
   }
 
-  Future<void> _loadContent() async {
+  Future<void> _loadContent({String? basePath}) async {
+    final p = basePath ?? 'asset';
     final jsonString =
-        await rootBundle.loadString('asset/configuration/landing_page.json');
+        await rootBundle.loadString('$p/configuration/landing_page.json');
     landingPageData = LandingPageData.fromRawJson(jsonString);
     contentData = json.decode(jsonString);
     themeData = contentData['theme'];

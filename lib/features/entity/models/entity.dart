@@ -319,10 +319,12 @@ class EntityCustom extends HiveObject {
   ///
   /// The [id] corresponds to the filename (e.g., 'my_entity.json').
   /// Returns `null` if the asset cannot be found or parsed.
-  static Future<EntityCustom?> getEntity(String id) async {
+  static Future<EntityCustom?> getEntity(String id, {String? basePath}) async {
     try {
       print('[EntityCustom] getEntity "$id"');
-      final path = 'asset/configuration/entity/$id.json';
+
+      final p = basePath ?? 'asset';
+      final path = '$p/configuration/entity/$id.json';
       final data = await rootBundle.loadString(path);
       return EntityCustom.fromJson(json.decode(data));
     } on Exception {

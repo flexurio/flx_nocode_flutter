@@ -125,9 +125,11 @@ class Configuration extends HiveObject {
 
   static late Configuration instance;
 
-  static load() async {
+  static load({String? basePath}) async {
     try {
-      final path = 'asset/configuration/configuration.json';
+      final p = basePath ?? 'asset';
+
+      final path = '$p/configuration/configuration.json';
       final data = await rootBundle.loadString(path);
       Configuration.instance = Configuration.fromJson(json.decode(data));
     } catch (e) {

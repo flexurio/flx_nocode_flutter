@@ -213,6 +213,7 @@ class NoCodePageLoader extends StatefulWidget {
   final String Function()? getAccess;
   final Configuration Function()? getConfiguration;
   final bool bypassPermission;
+  final String? basePath;
 
   const NoCodePageLoader({
     super.key,
@@ -223,6 +224,7 @@ class NoCodePageLoader extends StatefulWidget {
     this.breadcrumbList = const [],
     this.initialFilters = const [],
     this.getConfiguration,
+    this.basePath,
     required this.bypassPermission,
   });
 
@@ -242,7 +244,8 @@ class _NoCodePageLoaderState extends State<NoCodePageLoader> {
     if (widget.getConfiguration != null) {
       Configuration.instance = widget.getConfiguration!();
     }
-    _future = EntityCustom.getEntity(widget.entityId);
+    _future =
+        EntityCustom.getEntity(widget.entityId, basePath: widget.basePath);
   }
 
   @override
