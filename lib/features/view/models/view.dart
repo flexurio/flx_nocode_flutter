@@ -1,3 +1,4 @@
+import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
@@ -115,33 +116,39 @@ class DView extends HiveObject {
     );
   }
 
-  Widget buttonLarge(BuildContext context, Map<String, dynamic> data,
-      List<Map<String, dynamic>> parentData, bool bypassPermission) {
+  Widget buttonLarge(
+    BuildContext context,
+    Map<String, dynamic> data,
+    List<Map<String, dynamic>> parentData,
+    bool bypassPermission,
+  ) {
     return FutureBuilder<EntityCustom?>(
       future: EntityCustom.getEntity(entity),
       builder: (context, snapshot) {
-        final entity = snapshot.data;
+        final e = snapshot.data;
+
+        if (e == null) {
+          return NoCodeError('Entity not found! Id: $entity');
+        }
 
         return LightButton(
           action: DataAction.view,
           title: label,
           permission: null,
-          onPressed: entity == null
-              ? null
-              : () async {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MenuCustom.fromId(
-                        parentData: List.from(parentData)..add(data),
-                        breadcrumbList: [entity.label],
-                        entityId: this.entity,
-                        initialFilters: _filters(entity, data),
-                        bypassPermission: bypassPermission,
-                      ),
-                    ),
-                  );
-                },
+          onPressed: () async {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MenuCustom.fromId(
+                  parentData: List.from(parentData)..add(data),
+                  breadcrumbList: [e.label],
+                  entityId: this.entity,
+                  initialFilters: _filters(e, data),
+                  bypassPermission: bypassPermission,
+                ),
+              ),
+            );
+          },
         );
       },
     );

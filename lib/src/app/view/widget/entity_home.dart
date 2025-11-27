@@ -2,7 +2,6 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
-import 'package:flx_nocode_flutter/features/data_table/screen/widgets/entity_data_table.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -244,8 +243,8 @@ class _NoCodePageLoaderState extends State<NoCodePageLoader> {
     if (widget.getConfiguration != null) {
       Configuration.instance = widget.getConfiguration!();
     }
-    _future =
-        EntityCustom.getEntity(widget.entityId, basePath: widget.basePath);
+    if (widget.basePath != null) EntityCustom.assetBasePath = widget.basePath!;
+    _future = EntityCustom.getEntity(widget.entityId);
   }
 
   @override

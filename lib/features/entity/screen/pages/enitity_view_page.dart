@@ -1,10 +1,8 @@
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
-import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_widget_extension.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_display.dart';
-import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_list_extensions.dart';
-import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/layout_form.dart';
+import 'package:flx_nocode_flutter/features/view/screen/widgets/view.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
@@ -191,7 +189,12 @@ class EntityViewPage extends StatelessWidget {
     );
 
     return [
-      ...entity.buttonViewsLarge(context, data, parentData, bypassPermission),
+      ...entity.views.buildButtons(
+        context,
+        data,
+        parentData,
+        bypassPermission,
+      ),
       ...modifyActions,
       ...actions,
     ];

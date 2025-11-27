@@ -6,7 +6,7 @@ import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_fiel
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/src/app/model/view.dart' as view;
+import 'package:flx_nocode_flutter/features/view/models/view.dart' as view;
 import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -65,6 +65,8 @@ class EntityCustom extends HiveObject {
     required this.layoutTable,
     required this.exports,
   });
+
+  static String assetBasePath = 'assets/';
 
   /// Creates an [EntityCustom] instance from a JSON map.
   ///
@@ -319,12 +321,11 @@ class EntityCustom extends HiveObject {
   ///
   /// The [id] corresponds to the filename (e.g., 'my_entity.json').
   /// Returns `null` if the asset cannot be found or parsed.
-  static Future<EntityCustom?> getEntity(String id, {String? basePath}) async {
+  static Future<EntityCustom?> getEntity(String id) async {
     try {
       print('[EntityCustom] getEntity "$id"');
-
-      final p = basePath ?? 'asset';
-      final path = '$p/configuration/entity/$id.json';
+      final path =
+          '${EntityCustom.assetBasePath}/configuration/entity/$id.json';
       final data = await rootBundle.loadString(path);
       return EntityCustom.fromJson(json.decode(data));
     } on Exception {
@@ -402,18 +403,6 @@ class EntityCustom extends HiveObject {
             embedded,
           ),
         )
-        .toList();
-  }
-
-  /// Builds a list of large [Widget] buttons for the entity's custom views.
-  List<Widget> buttonViewsLarge(
-    BuildContext context,
-    Map<String, dynamic> data,
-    List<Map<String, dynamic>> parentData,
-    bool bypassPermission,
-  ) {
-    return views
-        .map((e) => e.buttonLarge(context, data, parentData, bypassPermission))
         .toList();
   }
 }
