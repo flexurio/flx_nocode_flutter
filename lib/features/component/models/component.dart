@@ -40,6 +40,24 @@ class Component {
     }
   }
 
+  /// Creates an empty component instance based on the type.
+  factory Component.empty(String type) {
+    switch (type) {
+      case ComponentType.table:
+        return ComponentTable.empty();
+      case ComponentType.text:
+        return ComponentText.empty();
+      case ComponentType.column:
+        return ComponentColumn.empty();
+      case ComponentType.row:
+        return ComponentRow.empty();
+      case ComponentType.fieldDisplay:
+        return ComponentFieldDisplay.empty();
+      default:
+        throw FormatException('Unknown component type "$type"');
+    }
+  }
+
   JsonMap toMap() => {'id': id, 'type': type};
 }
 

@@ -1,5 +1,6 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:uuid/uuid.dart';
 
 /// A horizontal container component that renders its children inside a row.
 ///
@@ -51,6 +52,16 @@ class ComponentRow extends Component {
     this.xAlign = 'left',
     this.yAlign = 'top',
   }) : super(type: 'row');
+
+  /// Creates an empty [ComponentRow] with default values.
+  factory ComponentRow.empty() {
+    return ComponentRow(
+      id: Uuid().v4(),
+      children: const [],
+      xAlign: 'left',
+      yAlign: 'top',
+    );
+  }
 
   factory ComponentRow.fromMap(Map<String, dynamic> map) {
     final id = map['id']?.toString().trim();
