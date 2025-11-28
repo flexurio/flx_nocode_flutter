@@ -145,8 +145,7 @@ class ConfigurationErrorPage extends StatelessWidget {
                       const _SolutionItem(
                         number: '1',
                         title: 'Verify the configuration file exists',
-                        description:
-                            'Check: asset/configuration/configuration.json',
+                        description: 'Check: configuration/configuration.json',
                       ),
                       const SizedBox(height: 12),
                       const _SolutionItem(

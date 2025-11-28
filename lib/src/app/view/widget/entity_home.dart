@@ -2,7 +2,6 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
-import 'package:flx_nocode_flutter/features/data_table/screen/widgets/entity_data_table.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -213,6 +212,7 @@ class NoCodePageLoader extends StatefulWidget {
   final String Function()? getAccess;
   final Configuration Function()? getConfiguration;
   final bool bypassPermission;
+  final String? basePath;
 
   const NoCodePageLoader({
     super.key,
@@ -223,6 +223,7 @@ class NoCodePageLoader extends StatefulWidget {
     this.breadcrumbList = const [],
     this.initialFilters = const [],
     this.getConfiguration,
+    this.basePath,
     required this.bypassPermission,
   });
 
@@ -242,6 +243,7 @@ class _NoCodePageLoaderState extends State<NoCodePageLoader> {
     if (widget.getConfiguration != null) {
       Configuration.instance = widget.getConfiguration!();
     }
+    if (widget.basePath != null) EntityCustom.assetBasePath = widget.basePath!;
     _future = EntityCustom.getEntity(widget.entityId);
   }
 
