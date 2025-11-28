@@ -89,35 +89,60 @@ class _ComponentTableHttpWidgetState extends State<_ComponentTableHttpWidget> {
           );
         }
 
+        final rows = snapshot.data ?? const <JsonMap>[];
+
+        var tableColumns = widget.component.columns.map((c) {
+          return TableColumn<JsonMap>(
+            title: c.header,
+            width: c.width,
+            builder: (row, index) {
+              final text = _buildCellText(row, c);
+              return Text(
+                text.interpolateJavascript(
+                  {
+                    "current": widget.data,
+                    "row": row,
+                  },
+                ),
+              );
+            },
+          );
+        }).toList();
+
+        if (tableColumns.isEmpty) {
+          tableColumns = [
+            TableColumn<JsonMap>(
+              title: 'No Columns',
+              width: 200,
+              builder: (_, __) => const Text('-'),
+            ),
+          ];
+        }
+
+        final table = YuhuTable<JsonMap>(
+          width: widget.component.width,
+          data: rows,
+          columns: tableColumns,
+        );
+
         if (snapshot.hasError) {
-          return Center(
-            child: Text('Failed to load data: ${snapshot.error}'),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Failed to load data: ${snapshot.error}',
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ),
+              table,
+            ],
           );
         }
 
-        final rows = snapshot.data ?? const <JsonMap>[];
-
-        return YuhuTable<JsonMap>(
-          width: widget.component.width,
-          data: rows,
-          columns: widget.component.columns.map((c) {
-            return TableColumn<JsonMap>(
-              title: c.header,
-              width: c.width,
-              builder: (row, index) {
-                final text = _buildCellText(row, c);
-                return Text(
-                  text.interpolateJavascript(
-                    {
-                      "current": widget.data,
-                      "row": row,
-                    },
-                  ),
-                );
-              },
-            );
-          }).toList(),
-        );
+        return table;
       },
     );
   }
