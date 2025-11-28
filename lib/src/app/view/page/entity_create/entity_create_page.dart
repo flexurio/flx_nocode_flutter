@@ -4,7 +4,6 @@ import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout
 import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
-import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';

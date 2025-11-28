@@ -77,16 +77,15 @@ extension EntityFieldFormWidgetsX on EntityField {
     bool isEnabled,
   ) {
     final value = controller.text;
-    controller.text = '';
     DateTime? initialDate;
     try {
-      if (value != 'null') {
+      if (value != 'null' && value.isNotEmpty) {
         initialDate = action.isEdit
             ? (DateTime.tryParse(value) ?? DateFormat.yMMMMd().parse(value))
             : null;
       }
     } catch (e) {
-      // debugPrint('[EntityField] error $e');
+      debugPrint('[EntityField] error $e');
     }
     return FieldDatePicker(
       labelText: label,
