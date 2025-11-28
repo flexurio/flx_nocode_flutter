@@ -25,15 +25,15 @@ class Component {
     final type = map['type'].toString().trim().toLowerCase();
 
     switch (type) {
-      case 'table':
+      case ComponentType.table:
         return ComponentTable.fromMap(map);
-      case 'text':
+      case ComponentType.text:
         return ComponentText.fromMap(map);
-      case 'column':
+      case ComponentType.column:
         return ComponentColumn.fromMap(map);
-      case 'row':
+      case ComponentType.row:
         return ComponentRow.fromMap(map);
-      case 'field_display':
+      case ComponentType.fieldDisplay:
         return ComponentFieldDisplay.fromMap(map);
       default:
         throw FormatException('Unknown component type "$type"');
@@ -41,4 +41,12 @@ class Component {
   }
 
   JsonMap toMap() => {'id': id, 'type': type};
+}
+
+class ComponentType {
+  static const String table = 'table';
+  static const String text = 'text';
+  static const String column = 'column';
+  static const String row = 'row';
+  static const String fieldDisplay = 'field_display';
 }
