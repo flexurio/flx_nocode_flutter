@@ -55,15 +55,8 @@ class ComponentFieldDisplay extends Component {
       throw const FormatException('Component "id" is required');
     }
 
-    final label = map['label']?.toString().trim();
-    if (label == null || label.isEmpty) {
-      throw const FormatException('ComponentFieldDisplay "label" is required');
-    }
-
-    final value = map['value']?.toString().trim();
-    if (value == null || value.isEmpty) {
-      throw const FormatException('ComponentFieldDisplay "value" is required');
-    }
+    final label = map['label']?.toString().trim() ?? '';
+    final value = map['value']?.toString().trim() ?? '';
 
     return ComponentFieldDisplay(
       id: id,

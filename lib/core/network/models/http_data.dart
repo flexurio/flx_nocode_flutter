@@ -123,6 +123,14 @@ class HttpData extends HiveObject {
     );
   }
 
+  factory HttpData.empty() => HttpData(
+        method: 'GET',
+        url: '',
+        headers: {},
+        body: {},
+        useFormData: false,
+      );
+
   /// Converts this [HttpData] instance into a JSON-compatible map.
   ///
   /// Example output:

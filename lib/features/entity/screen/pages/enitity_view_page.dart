@@ -99,35 +99,6 @@ class EntityViewPage extends StatelessWidget {
                   NoCodeError('Layout not found'),
             ],
           );
-          // if (dummy) {
-          //   return SingleFormPanel(
-          //     hideHeader: embedded ? true : false,
-          //     action: DataAction.view,
-          //     entity: entity.coreEntity,
-          //     size: SingleFormPanelSize.large,
-          //     children: [
-          //       _buildData(data),
-          //     ],
-          //   );
-          // }
-
-          // return state.maybeWhen(
-          //   orElse: SomethingWrong.new,
-          //   loading: (_) => const ProgressingIndicator(),
-          //   loaded: (pageOptions) {
-          //     final data = pageOptions.data.first;
-          //     return SingleFormPanel(
-          //       hideHeader: embedded ? true : false,
-          //       action: DataAction.view,
-          //       entity: entity.coreEntity,
-          //       size: SingleFormPanelSize.large,
-          //       children: [
-          //         entity.layoutForm.getByType(FormType.view)?.toWidget(data) ??
-          //             NoCodeError('Layout not found'),
-          //       ],
-          //     );
-          //   },
-          // );
         },
       ),
     );
@@ -302,7 +273,7 @@ class EntityViewPage extends StatelessWidget {
   }
 
   void _fetch(BuildContext context) {
-    if (entity.backend.readAll == null) return;
+    if (entity.backend.read == null) return;
     context.read<EntityCustomQueryBloc>().add(
           EntityCustomQueryEvent.fetchById(
             id: data['id'].toString(),
