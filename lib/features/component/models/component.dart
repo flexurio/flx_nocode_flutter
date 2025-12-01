@@ -3,6 +3,8 @@ import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_field_display.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_text.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_button.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 class Component {
@@ -29,6 +31,10 @@ class Component {
         return ComponentTable.fromMap(map);
       case ComponentType.text:
         return ComponentText.fromMap(map);
+      case ComponentType.textField:
+        return ComponentTextField.fromMap(map);
+      case ComponentType.button:
+        return ComponentButton.fromMap(map);
       case ComponentType.column:
         return ComponentColumn.fromMap(map);
       case ComponentType.row:
@@ -47,6 +53,10 @@ class Component {
         return ComponentTable.empty();
       case ComponentType.text:
         return ComponentText.empty();
+      case ComponentType.textField:
+        return ComponentTextField.empty();
+      case ComponentType.button:
+        return ComponentButton.empty();
       case ComponentType.column:
         return ComponentColumn.empty();
       case ComponentType.row:
@@ -64,6 +74,8 @@ class Component {
 class ComponentType {
   static const String table = 'table';
   static const String text = 'text';
+  static const String textField = 'text_field';
+  static const String button = 'button';
   static const String column = 'column';
   static const String row = 'row';
   static const String fieldDisplay = 'field_display';
