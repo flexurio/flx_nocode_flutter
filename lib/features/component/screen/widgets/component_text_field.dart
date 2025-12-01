@@ -10,6 +10,8 @@ extension ComponentTextFieldWidgets on ComponentTextField {
       maxLength: maxLength,
       maxLines: maxLines,
       labelText: label,
+      enabled: enabled,
+      hintText: initialValue.isEmpty ? null : initialValue,
     );
   }
 }
