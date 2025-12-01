@@ -77,7 +77,10 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
         },
         create: (data, filters) async {
           emit(const _Loading());
-          print('[EntityBloc] Edit - data $data');
+          print('[EntityBloc] Create - data:');
+          data.forEach((key, value) {
+            print('  $key: $value');
+          });
           try {
             if (!data.containsKey('id')) {
               emit(_Error(
