@@ -67,7 +67,7 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
               entity: widget.entity,
               dataAction: widget.dataAction,
               controllers: widget.controllers,
-              formState: _formState, // pass down for reactive rows
+              formState: _formState,
             ),
           );
           if (i < visibleGroups.length - 1) children.add(const Gap(24));
