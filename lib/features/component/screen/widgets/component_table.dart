@@ -132,9 +132,12 @@ class _ComponentTableHttpWidgetState extends State<_ComponentTableHttpWidget> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Failed to load data: ${snapshot.error}',
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                child: Tooltip(
+                  message: 'Failed to load data: ${snapshot.error}',
+                  child: Icon(
+                    Icons.error,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
                 ),
               ),
               table,
