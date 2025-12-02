@@ -4,6 +4,7 @@ import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_create/entity_create_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'package:page_transition/page_transition.dart';
 
 class EntityCreatePage extends StatelessWidget {
@@ -42,7 +43,15 @@ class EntityCreatePage extends StatelessWidget {
     required List<Map<String, dynamic>> parentData,
     required VoidCallback onSuccess,
   }) {
-    if (layoutForm == null) return const SizedBox.shrink();
+    if (layoutForm == null) {
+      return NoCodeError(
+        'Missing Layout Form',
+        description:
+            'A layout form is required to render the entity creation page.',
+        suggestion: 'Please provide a valid LayoutForm object.',
+        debugInfo: 'layoutForm was null in EntityCreatePage.prepare',
+      );
+    }
 
     return MultiBlocProvider(
       providers: [BlocProvider(create: (context) => EntityBloc(entity))],
