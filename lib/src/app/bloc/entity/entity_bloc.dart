@@ -77,10 +77,6 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
         },
         create: (data, filters) async {
           emit(const _Loading());
-          print('[EntityBloc] Create - data:');
-          data.forEach((key, value) {
-            print('  $key: $value');
-          });
           try {
             if (!data.containsKey('id')) {
               emit(_Error(
@@ -96,6 +92,8 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
                 ..addAll(entity.backend.create!.body(filters: filters)),
             );
             emit(_Success(response));
+          } on FormatException catch (error) {
+            emit(_Error(error.message));
           } catch (error) {
             print('[EntityBloc] Create - error $error');
             emit(_Error(errorMessage(error)));

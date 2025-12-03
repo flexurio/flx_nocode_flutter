@@ -155,6 +155,18 @@ Map<String, dynamic> mapAddPageData({
     }
     newData[key] = value;
   }
+
+  for (var key in newData.keys) {
+    final value = newData[key];
+    if (value is String) {
+      final regex = RegExp(r'\{[^}]+\}');
+      if (regex.hasMatch(value)) {
+        throw FormatException(
+            'Unreplaced placeholder found in key "$key": "$value"');
+      }
+    }
+  }
+
   return newData;
 }
 

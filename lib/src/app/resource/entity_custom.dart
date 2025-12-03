@@ -153,6 +153,13 @@ class EntityCustomRepository extends Repository {
     Map<String, dynamic>? data,
   }) async {
     try {
+      if (data != null) {
+        print('[EntityCustomRepository] body:');
+        for (final entry in data.entries) {
+          print('  ${entry.key}: ${entry.value}');
+        }
+      }
+
       final response = await _request<Map<String, dynamic>>(
         accessToken: accessToken,
         path: path,
