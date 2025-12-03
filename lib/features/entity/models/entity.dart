@@ -363,6 +363,7 @@ class EntityCustom extends HiveObject {
       'layout_form': layoutForm.map((e) => e.toMap()).toList(),
       'layout_list_tile': layoutListTile?.toJson(),
       'layout_table': layoutTable,
+      'actions': actions.map((e) => e.toJson()).toList(),
     };
   }
 

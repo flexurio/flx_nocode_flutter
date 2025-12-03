@@ -18,4 +18,5 @@ export 'features/view/models/view.dart';
 export 'src/app/view/page/entity_create/entity_create_page.dart';
 export 'src/app/view/widget/entity_home.dart';
 export 'features/field/models/type.dart';
-export 'features/component/models/component.dart';
+export 'features/component/models/component_button.dart';
+export 'features/component/models/component_text_field.dart';
