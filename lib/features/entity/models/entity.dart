@@ -66,7 +66,7 @@ class EntityCustom extends HiveObject {
     required this.exports,
   });
 
-  static String assetBasePath = 'assets/';
+  static String assetBasePath = 'asset';
 
   /// Creates an [EntityCustom] instance from a JSON map.
   ///

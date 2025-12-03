@@ -47,7 +47,14 @@ class MenuCustom extends StatelessWidget {
           final entity = snapshot.data;
           if (entity == null) {
             return Center(
-              child: NoCodeError('Entity not found! Id: $entityId'),
+              child: NoCodeError(
+                'Entity not found! Id: $entityId',
+                description:
+                    'The requested entity with the ID "$entityId" could not be found. This might be due to an incorrect ID, or the entity may have been deleted.',
+                suggestion:
+                    'Please verify the entity ID. If the ID is correct, ensure the entity exists and you have the necessary permissions to access it.',
+                debugInfo: 'Entity ID: $entityId',
+              ),
             );
           }
           return MenuCustom(

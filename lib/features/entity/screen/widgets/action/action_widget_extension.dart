@@ -4,6 +4,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'json_table_viewer.dart';
 
 typedef Json = Map<String, dynamic>;
@@ -61,7 +62,15 @@ extension ActionWidgetExtension on ActionD {
           data: data,
         );
       default:
-        return Text('Unknown action type: $type');
+        return NoCodeError(
+          'Unhandled ActionType: $type',
+          debugInfo:
+              'ActionType "$type" is not handled in ActionWidgetExtension.buttonSingle.',
+          description:
+              'The action type "$type" is not implemented in ActionWidgetExtension.buttonMultiple. This indicates a missing UI component for this action.',
+          suggestion:
+              'Please ensure all ActionType enum values are handled in the switch statement within ActionWidgetExtension.buttonMultiple.',
+        );
     }
   }
 
