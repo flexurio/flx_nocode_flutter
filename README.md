@@ -53,6 +53,24 @@ To get a local copy up and running, follow these simple steps.
     flutter run
     ```
 
+## Loading configuration from filesystem
+
+By default the app reads configs/entities from bundled assets under `asset/configuration`. You can point the app to a filesystem path at runtime (useful on macOS dev builds) by setting `CONFIGURATION_FS_BASE_PATH`:
+
+```sh
+# During development
+CONFIGURATION_FS_BASE_PATH=/absolute/path/to/frontend flutter run -d macos
+
+# Running a built .app
+CONFIGURATION_FS_BASE_PATH=/absolute/path/to/frontend /path/to/YourApp.app/Contents/MacOS/YourApp
+```
+
+Expected layout inside that folder:
+- `configuration/configuration.json`
+- `configuration/entity/*.json`
+
+If the path is not set or inaccessible, the app falls back to the bundled assets.
+
 ## License
 
 Distributed under the AGPL License. See `LICENSE-AGPL` for more information.
