@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
+import 'package:flx_nocode_flutter/src/app/util/resource_loader.dart';
 import 'theme.dart' as t;
 
 class Configuration extends HiveObject {
@@ -125,15 +125,24 @@ class Configuration extends HiveObject {
 
   static late Configuration instance;
 
-  static load({String? basePath}) async {
-    try {
-      final p = basePath ?? 'asset';
+  static String assetBasePath = 'asset';
+  static String fileSystemBasePath = '.';
+  static bool preferFileSystem = false;
 
-      final path = '$p/configuration/configuration.json';
-      final data = await rootBundle.loadString(path);
+  static load({String? basePath, bool useFileSystem = false}) async {
+    try {
+      final data = await loadFromAssetOrFile(
+        relativePath: 'configuration/configuration.json',
+        assetBasePath: assetBasePath,
+        fileSystemBasePath: fileSystemBasePath,
+        preferFileSystem: preferFileSystem,
+        useFileSystem: useFileSystem,
+        overrideBasePath: basePath,
+      );
       Configuration.instance = Configuration.fromJson(json.decode(data));
+      print('[Configuration] Configuration found');
     } catch (e) {
-      print('Error loading configuration: $e');
+      print('[Configuration] Error loading configuration: $e');
       throw Exception('Failed to parse configuration: $e');
     }
   }

@@ -9,7 +9,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/view/models/view.dart' as view;
 import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flx_nocode_flutter/src/app/util/resource_loader.dart';
 
 /// Represents a dynamically configured entity.
 ///
@@ -67,6 +67,8 @@ class EntityCustom extends HiveObject {
   });
 
   static String assetBasePath = 'asset';
+  static String fileSystemBasePath = '.';
+  static bool preferFileSystem = false;
 
   /// Creates an [EntityCustom] instance from a JSON map.
   ///
@@ -321,12 +323,21 @@ class EntityCustom extends HiveObject {
   ///
   /// The [id] corresponds to the filename (e.g., 'my_entity.json').
   /// Returns `null` if the asset cannot be found or parsed.
-  static Future<EntityCustom?> getEntity(String id) async {
+  static Future<EntityCustom?> getEntity(
+    String id, {
+    bool useFileSystem = false,
+    String? basePath,
+  }) async {
     try {
       print('[EntityCustom] getEntity "$id"');
-      final path =
-          '${EntityCustom.assetBasePath}/configuration/entity/$id.json';
-      final data = await rootBundle.loadString(path);
+      final data = await loadFromAssetOrFile(
+        relativePath: 'configuration/entity/$id.json',
+        assetBasePath: assetBasePath,
+        fileSystemBasePath: fileSystemBasePath,
+        preferFileSystem: preferFileSystem,
+        useFileSystem: useFileSystem,
+        overrideBasePath: basePath,
+      );
       return EntityCustom.fromJson(json.decode(data));
     } on Exception {
       rethrow;

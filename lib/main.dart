@@ -9,9 +9,21 @@ import 'package:go_router/go_router.dart';
 import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
+const _cliConfigurationFileSystemBasePath =
+    String.fromEnvironment('CONFIGURATION_FS_BASE_PATH', defaultValue: '');
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+
+  if (_cliConfigurationFileSystemBasePath.isNotEmpty) {
+    Configuration.fileSystemBasePath = _cliConfigurationFileSystemBasePath;
+    Configuration.preferFileSystem = true;
+    EntityCustom.fileSystemBasePath = _cliConfigurationFileSystemBasePath;
+    EntityCustom.preferFileSystem = true;
+    print(
+        '[main] CONFIGURATION_FS_BASE_PATH set, using filesystem configuration at "$_cliConfigurationFileSystemBasePath"');
+  }
 
   try {
     print('[main] loading configuration');
