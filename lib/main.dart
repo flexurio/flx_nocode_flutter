@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flx_nocode_flutter/features/configuration/screen/pages/configuration_error_page.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
@@ -16,13 +18,19 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
 
-  if (_cliConfigurationFileSystemBasePath.isNotEmpty) {
-    Configuration.fileSystemBasePath = _cliConfigurationFileSystemBasePath;
+  final runtimeConfigurationFsBasePath =
+      (Platform.environment['CONFIGURATION_FS_BASE_PATH'] ?? '').trim();
+  final resolvedConfigurationFsBasePath = runtimeConfigurationFsBasePath.isNotEmpty
+      ? runtimeConfigurationFsBasePath
+      : _cliConfigurationFileSystemBasePath;
+
+  if (resolvedConfigurationFsBasePath.isNotEmpty) {
+    Configuration.fileSystemBasePath = resolvedConfigurationFsBasePath;
     Configuration.preferFileSystem = true;
-    EntityCustom.fileSystemBasePath = _cliConfigurationFileSystemBasePath;
+    EntityCustom.fileSystemBasePath = resolvedConfigurationFsBasePath;
     EntityCustom.preferFileSystem = true;
     print(
-        '[main] CONFIGURATION_FS_BASE_PATH set, using filesystem configuration at "$_cliConfigurationFileSystemBasePath"');
+        '[main] CONFIGURATION_FS_BASE_PATH set, using filesystem configuration at "$resolvedConfigurationFsBasePath"');
   }
 
   try {
