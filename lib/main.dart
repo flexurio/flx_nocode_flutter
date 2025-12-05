@@ -47,20 +47,30 @@ Future<void> main() async {
       ({required VoidCallback onSuccess}) => Container();
   final entityRegistration = configuration.entityRegistration;
   if (entityRegistration != null) {
-    final entity = await EntityCustom.getEntity(entityRegistration);
-    if (entity != null) {
-      signUpPage = ({required VoidCallback onSuccess}) {
-        return EntityCreatePage.prepare(
-          parentData: [],
-          layoutForm: entity.layoutForm.getByType(FormType.create),
-          entity: entity,
-          embedded: true,
-          noHeader: true,
-          filters: {},
-          onSuccess: onSuccess,
-          autoBackWhenSuccess: false,
-        );
-      };
+    try {
+      final entity = await EntityCustom.getEntity(entityRegistration);
+      if (entity != null) {
+        signUpPage = ({required VoidCallback onSuccess}) {
+          return EntityCreatePage.prepare(
+            parentData: [],
+            layoutForm: entity.layoutForm.getByType(FormType.create),
+            entity: entity,
+            embedded: true,
+            noHeader: true,
+            filters: {},
+            onSuccess: onSuccess,
+            autoBackWhenSuccess: false,
+          );
+        };
+      }
+    } catch (e) {
+      print('[main] error loading entity registration "$entityRegistration": $e');
+      runApp(
+        MaterialApp(
+          home: ConfigurationErrorPage(error: e),
+        ),
+      );
+      return;
     }
   } else {
     print('[main] entityRegistration is null');
