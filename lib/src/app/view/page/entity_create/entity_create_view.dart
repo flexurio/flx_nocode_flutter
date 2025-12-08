@@ -75,6 +75,7 @@ class _EntityCreateViewState extends State<EntityCreateView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final coreEntity = widget.entity.coreEntity;
+    final headerSuffix = _headerSuffix();
     final form = EntityCreateForm(
       parentData: widget.parentData,
       layoutForm: widget.layoutForm,
@@ -112,16 +113,24 @@ class _EntityCreateViewState extends State<EntityCreateView> {
               action: widget.layoutForm.formType.isHome
                   ? DataAction.reprocess
                   : _action,
+              suffixText: headerSuffix,
             ),
     );
   }
 
   String _buildTitle() {
-    var title = '${_action.title} ${widget.entity.coreEntity.title}';
-    if (widget.layoutForm.formType.isHome) {
-      title = widget.layoutForm.label;
-    }
-    return title;
+    final baseTitle = '${_action.title} ${widget.entity.coreEntity.title}';
+    final label = widget.layoutForm.label.trim();
+    if (label.isNotEmpty) return label;
+    return baseTitle;
+  }
+
+  String _headerSuffix() {
+    final baseTitle = '${_action.title} ${widget.entity.coreEntity.title}';
+    final label = widget.layoutForm.label.trim();
+    if (label.isEmpty) return '';
+    if (label.toLowerCase() == baseTitle.toLowerCase()) return '';
+    return label;
   }
 
   String _dateFormat(EntityField field) {

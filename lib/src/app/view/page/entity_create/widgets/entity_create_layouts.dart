@@ -49,6 +49,7 @@ class EntityCreatePanelLayout extends StatelessWidget {
     required this.coreEntity,
     required this.title,
     required this.action,
+    this.suffixText = '',
   });
 
   final bool embedded;
@@ -59,6 +60,7 @@ class EntityCreatePanelLayout extends StatelessWidget {
   final Entity coreEntity;
   final String title;
   final DataAction action;
+  final String suffixText;
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +71,7 @@ class EntityCreatePanelLayout extends StatelessWidget {
         hideHeader: embedded,
         formKey: formKey,
         action: action,
-        suffixText: title,
+        suffixText: suffixText,
         entity: coreEntity,
         actions: [submitButton],
         children: [form],
