@@ -121,11 +121,12 @@ class _EntityCreateViewState extends State<EntityCreateView> {
   String _buildTitle() {
     final baseTitle = '${_action.title} ${widget.entity.coreEntity.title}';
     final label = widget.layoutForm.label.trim();
-    if (label.isNotEmpty) return label;
+    if (widget.layoutForm.formType.isHome && label.isNotEmpty) return label;
     return baseTitle;
   }
 
   String _headerSuffix() {
+    if (!widget.layoutForm.formType.isHome) return '';
     final baseTitle = '${_action.title} ${widget.entity.coreEntity.title}';
     final label = widget.layoutForm.label.trim();
     if (label.isEmpty) return '';
