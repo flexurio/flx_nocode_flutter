@@ -20,9 +20,9 @@ extension ActionListWidgetExtension on List<ActionD> {
     required Json data,
     required JsonList parentData,
   }) {
-    return map(
-      (e) => e.buttonSingle(entity, context, data, parentData),
-    ).toList();
+    return where((action) => action.isVisibleFor(data))
+        .map((e) => e.buttonSingle(entity, context, data, parentData))
+        .toList();
   }
 
   List<Widget> buildButtonsMultiple({
@@ -31,9 +31,9 @@ extension ActionListWidgetExtension on List<ActionD> {
     required JsonList data,
     required JsonList parentData,
   }) {
-    return map(
-      (e) => e.buttonMultiple(entity, context, data, parentData),
-    ).toList();
+    return where((action) => action.isVisibleForList(data))
+        .map((e) => e.buttonMultiple(entity, context, data, parentData))
+        .toList();
   }
 }
 
@@ -41,6 +41,20 @@ extension ActionListWidgetExtension on List<ActionD> {
 //             EXTENSION ON ACTIOND (WIDGETS)
 // ------------------------------------------------------
 extension ActionWidgetExtension on ActionD {
+  bool isVisibleFor(Json data) {
+    try {
+      return rule?.evaluate(data) ?? true;
+    } catch (e) {
+      debugPrint('Action rule evaluation failed: $e');
+      return true; // Fail open to avoid breaking UI
+    }
+  }
+
+  bool isVisibleForList(JsonList data) {
+    if (data.isEmpty) return isVisibleFor({});
+    return data.every(isVisibleFor);
+  }
+
   Widget buttonSingle(
     EntityCustom entity,
     BuildContext context,

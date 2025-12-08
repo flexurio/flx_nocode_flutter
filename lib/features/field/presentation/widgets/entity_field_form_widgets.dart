@@ -46,7 +46,10 @@ extension EntityFieldFormWidgetsX on EntityField {
     TextEditingController controller,
     bool isEnabled,
   ) {
-    final value = controller.text == '1';
+    final raw = controller.text.trim().toLowerCase();
+    final value = raw == '1' || raw == 'true';
+    // Normalise controller value so unchecked defaults to "0" instead of empty.
+    if (raw.isEmpty) controller.text = '0';
     return AbsorbPointer(
       absorbing: !isEnabled,
       child: FieldCheckBox(
@@ -78,22 +81,28 @@ extension EntityFieldFormWidgetsX on EntityField {
     TextEditingController controller,
     bool isEnabled,
   ) {
+    final fmt = _dateFormatSafe();
     final value = controller.text;
     DateTime? initialDate;
     try {
       if (value != 'null' && value.isNotEmpty) {
-        initialDate = action.isEdit
-            ? (DateTime.tryParse(value) ?? DateFormat.yMMMMd().parse(value))
-            : null;
+        initialDate =
+            DateFormat(fmt).tryParse(value) ?? DateTime.tryParse(value);
+        if (initialDate != null) {
+          // Normalise the controller text to the configured format.
+          controller.text = DateFormat(fmt).format(initialDate);
+        }
       }
     } catch (e) {
-      debugPrint('[EntityField] error $e');
+      debugPrint('[EntityField] datetime parse error for "$value": $e');
     }
+
     return FieldDatePicker(
       enabled: isEnabled,
       labelText: label,
       initialSelectedDate: initialDate,
       controller: controller,
+      onChanged: (date) => controller.text = DateFormat(fmt).format(date),
       validator: requiredObjectValidator.call,
     );
   }
@@ -142,5 +151,15 @@ extension EntityFieldFormWidgetsX on EntityField {
           ),
       ]),
     );
+  }
+
+  /// Returns configured datetime format; falls back to ISO-like default
+  /// to avoid crashes if the type string is malformed.
+  String _dateFormatSafe() {
+    try {
+      return dateTimeFormat;
+    } catch (_) {
+      return 'yyyy-MM-dd HH:mm:ss';
+    }
   }
 }

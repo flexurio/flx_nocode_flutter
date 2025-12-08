@@ -217,6 +217,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
 
   Widget _buildButtonExports() {
     final exportButtons = widget.entity.exports
+        .where((e) => e.visibility)
         .map((e) => e.buildButton(filters: _filters))
         .toList();
     if (exportButtons.isEmpty) return const SizedBox();

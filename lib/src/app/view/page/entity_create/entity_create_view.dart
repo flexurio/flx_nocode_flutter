@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
+import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_field_form_controllers.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
@@ -123,6 +124,32 @@ class _EntityCreateViewState extends State<EntityCreateView> {
     return title;
   }
 
+  String _dateFormat(EntityField field) {
+    try {
+      return field.dateTimeFormat;
+    } catch (_) {
+      return 'yyyy-MM-dd HH:mm:ss';
+    }
+  }
+
+  String _formatDateTimeField(EntityField field, String value) {
+    if (value.isEmpty) return value;
+
+    final fmt = _dateFormat(field);
+    final formatter = DateFormat(fmt);
+
+    // Try parsing with configured format first, then fall back to ISO parsing.
+    DateTime? parsed;
+    try {
+      parsed = formatter.parse(value);
+    } catch (_) {
+      parsed = DateTime.tryParse(value);
+    }
+
+    if (parsed == null) return value;
+    return formatter.format(parsed);
+  }
+
   Map<String, dynamic> get _data {
     final data = <String, dynamic>{};
     for (final field in widget.entity.fields) {
@@ -132,10 +159,7 @@ class _EntityCreateViewState extends State<EntityCreateView> {
 
       var value = _controllers[field.reference]!.text;
       if (field.isDateTime) {
-        print(
-          '[EntityCreatePage] reference: ${field.reference}, value: $value',
-        );
-        value = DateFormat('yMMMMd').parse(value).toUtcIso();
+        value = _formatDateTimeField(field, value);
       }
       data[field.reference] = value;
     }
