@@ -11,7 +11,12 @@ class EntityField extends HiveObject {
   /// Unique reference/key for the field.
   final String reference;
 
-  /// Field type (e.g. "text", "number", "date", "select", etc).
+  /// Field type string.
+  ///
+  /// Supported patterns (see `EntityFieldDomainX` helpers):
+  /// - `text`, `select`, `bool`, `permission`
+  /// - `number` or `number(<decimal>)` → use `decimal` getter
+  /// - `date` or `datetime(<format>)` → use `isDateTime`/`dateTimeFormat`
   final String type;
 
   /// Optional width of the column when rendered in tables/grids.
