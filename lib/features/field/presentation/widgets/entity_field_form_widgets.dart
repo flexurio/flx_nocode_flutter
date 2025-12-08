@@ -46,7 +46,10 @@ extension EntityFieldFormWidgetsX on EntityField {
     TextEditingController controller,
     bool isEnabled,
   ) {
-    final value = controller.text == '1';
+    final raw = controller.text.trim().toLowerCase();
+    final value = raw == '1' || raw == 'true';
+    // Normalise controller value so unchecked defaults to "0" instead of empty.
+    if (raw.isEmpty) controller.text = '0';
     return AbsorbPointer(
       absorbing: !isEnabled,
       child: FieldCheckBox(
