@@ -1,4 +1,5 @@
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
+import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
 import 'package:hive/hive.dart';
 
 /// Represents a dynamic action definition that can be triggered
@@ -39,6 +40,9 @@ class ActionD extends HiveObject {
   // for type listJsonViewAsTable
   final String? reference;
 
+  /// Optional conditional rule to decide when the action is available.
+  final Rule? rule;
+
   final bool isMultiple;
 
   ActionD({
@@ -48,6 +52,7 @@ class ActionD extends HiveObject {
     required this.id,
     this.http,
     this.reference,
+    this.rule,
     required this.type,
     required this.name,
   });
@@ -62,6 +67,7 @@ class ActionD extends HiveObject {
     String? onFailure,
     bool? isMultiple,
     String? reference,
+    Rule? rule,
   }) {
     return ActionD(
       isMultiple: isMultiple ?? this.isMultiple,
@@ -71,6 +77,8 @@ class ActionD extends HiveObject {
       http: http ?? this.http,
       onSuccess: onSuccess ?? this.onSuccess,
       onFailure: onFailure ?? this.onFailure,
+      reference: reference ?? this.reference,
+      rule: rule ?? this.rule,
     );
   }
 
@@ -85,6 +93,11 @@ class ActionD extends HiveObject {
       onSuccess: json['on_success'] ?? 'toast',
       onFailure: json['on_failure'] ?? 'toast',
       reference: json['reference'],
+      rule: json['rule'] == null
+          ? null
+          : Rule.fromMap(
+              Map<String, dynamic>.from(json['rule'] as Map),
+            ),
     );
   }
 
@@ -98,6 +111,7 @@ class ActionD extends HiveObject {
       'on_failure': onFailure,
       'is_multiple': isMultiple,
       'reference': reference,
+      if (rule != null) 'rule': rule!.toMap(),
       if (http != null) 'http': http!.toJson(),
     };
   }

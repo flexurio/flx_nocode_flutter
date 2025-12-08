@@ -1,3 +1,4 @@
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 class Rule {
@@ -110,35 +111,60 @@ class Condition {
 
   bool evaluate(Map<String, dynamic> state) {
     final lhs = state[field];
+    final rhs = _resolveValue(state);
 
     switch (op) {
       case '=':
-        return _equals(lhs, value);
+        return _equals(lhs, rhs);
       case '!=':
-        return !_equals(lhs, value);
+        return !_equals(lhs, rhs);
       case '>':
-        return _compare(lhs, value) > 0;
+        return _compare(lhs, rhs) > 0;
       case '>=':
-        return _compare(lhs, value) >= 0;
+        return _compare(lhs, rhs) >= 0;
       case '<':
-        return _compare(lhs, value) < 0;
+        return _compare(lhs, rhs) < 0;
       case '<=':
-        return _compare(lhs, value) <= 0;
+        return _compare(lhs, rhs) <= 0;
       case 'in':
-        return value is Iterable ? value.contains(lhs) : false;
+        return rhs is Iterable ? rhs.contains(lhs) : false;
       case 'not_in':
-        return value is Iterable ? !value.contains(lhs) : true;
+        return rhs is Iterable ? !rhs.contains(lhs) : true;
       case 'empty':
         return _isEmpty(lhs);
       case 'not_empty':
         return !_isEmpty(lhs);
       case 'contains':
-        if (lhs is Iterable) return lhs.contains(value);
-        if (lhs is String && value is String) return lhs.contains(value);
+        if (lhs is Iterable) return lhs.contains(rhs);
+        if (lhs is String && rhs is String) return lhs.contains(rhs);
         return false;
       default:
         throw FormatException('Unsupported operator "$op" in visible_if');
     }
+  }
+
+  dynamic _resolveValue(Map<String, dynamic> state) {
+    if (value is String && (value as String).contains('{{')) {
+      try {
+        final interpolated = (value as String).interpolateJavascript(state);
+        final lowered = interpolated.toLowerCase();
+        if (lowered == 'true' || lowered == 'false') {
+          return lowered == 'true';
+        }
+        final numVal = num.tryParse(interpolated);
+        if (numVal != null) return numVal;
+        return interpolated;
+      } catch (_) {
+        // Fallback to raw value if interpolation fails
+      }
+    }
+
+    if (value is String) {
+      final numVal = num.tryParse(value as String);
+      if (numVal != null) return numVal;
+    }
+
+    return value;
   }
 
   static bool _equals(dynamic a, dynamic b) {
