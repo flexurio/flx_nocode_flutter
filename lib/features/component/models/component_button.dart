@@ -1,6 +1,5 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:uuid/uuid.dart';
 
 class ComponentButton extends Component {
   final String text;
@@ -14,9 +13,9 @@ class ComponentButton extends Component {
 
   static String get componentId => 'button';
 
-  factory ComponentButton.empty() {
+  factory ComponentButton.empty(String id) {
     return ComponentButton(
-      id: const Uuid().v4(),
+      id: id,
       text: 'Button',
       color: '#2196F3',
     );
@@ -40,4 +39,3 @@ class ComponentButton extends Component {
         'color': color,
       };
 }
-

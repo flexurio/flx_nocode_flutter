@@ -1,6 +1,5 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:uuid/uuid.dart';
 
 class ComponentTextField extends Component {
   final String label;
@@ -20,9 +19,9 @@ class ComponentTextField extends Component {
 
   static String get componentId => 'text_field';
 
-  factory ComponentTextField.empty() {
+  factory ComponentTextField.empty(String id) {
     return ComponentTextField(
-      id: const Uuid().v4(),
+      id: id,
       label: 'Label',
       maxLength: 50,
       maxLines: 1,

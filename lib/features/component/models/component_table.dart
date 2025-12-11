@@ -1,7 +1,6 @@
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:uuid/uuid.dart';
 
 /// A table component that retrieves its data from an HTTP endpoint.
 ///
@@ -52,9 +51,9 @@ class ComponentTable extends Component {
   /// Creates an empty [ComponentTable] with default values.
   ///
   /// Useful for initializing a new table component before configuration.
-  factory ComponentTable.empty() {
+  factory ComponentTable.empty(String id) {
     return ComponentTable(
-      id: Uuid().v4(),
+      id: id,
       columns: [],
       http: HttpData.empty(),
       width: 1000,

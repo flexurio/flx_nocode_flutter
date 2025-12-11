@@ -1,7 +1,6 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart'
     show Component;
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:uuid/uuid.dart';
 
 class ComponentText extends Component {
   static String get componentId => 'text';
@@ -10,9 +9,9 @@ class ComponentText extends Component {
     required super.id,
   }) : super(type: 'text');
 
-  /// Creates an empty [ComponentText] with a generated UUID.
-  factory ComponentText.empty() {
-    return ComponentText(id: Uuid().v4());
+  /// Creates an empty [ComponentText] with a generated ID.
+  factory ComponentText.empty(String id) {
+    return ComponentText(id: id);
   }
 
   factory ComponentText.fromMap(Map<String, dynamic> map) {

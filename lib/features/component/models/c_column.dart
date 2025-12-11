@@ -1,6 +1,5 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:uuid/uuid.dart';
 
 /// A vertical container component that renders its children inside a column.
 ///
@@ -55,9 +54,9 @@ class ComponentColumn extends Component {
   }) : super(type: 'column');
 
   /// Creates an empty [ComponentColumn] with default values.
-  factory ComponentColumn.empty() {
+  factory ComponentColumn.empty(String id) {
     return ComponentColumn(
-      id: Uuid().v4(),
+      id: id,
       children: const [],
       xAlign: 'left',
       yAlign: 'top',

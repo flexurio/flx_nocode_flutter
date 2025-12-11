@@ -1,7 +1,5 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
 
 /// A non-editable field component used to display a read-only value.
 ///
@@ -67,9 +65,9 @@ class ComponentFieldDisplay extends Component {
     );
   }
 
-  factory ComponentFieldDisplay.empty() {
+  factory ComponentFieldDisplay.empty(String id) {
     return ComponentFieldDisplay(
-      id: Uuid().v4(),
+      id: id,
       label: 'Label',
       value: 'Value',
     );

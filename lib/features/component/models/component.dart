@@ -11,6 +11,8 @@ class Component {
   final String id;
   final String type;
 
+  static final Map<String, int> _typeCounters = {};
+
   Component({
     required this.id,
     required this.type,
@@ -50,22 +52,29 @@ class Component {
   factory Component.empty(String type) {
     switch (type) {
       case ComponentType.table:
-        return ComponentTable.empty();
+        return ComponentTable.empty(Component._generateId(type));
       case ComponentType.text:
-        return ComponentText.empty();
+        return ComponentText.empty(Component._generateId(type));
       case ComponentType.textField:
-        return ComponentTextField.empty();
+        return ComponentTextField.empty(Component._generateId(type));
       case ComponentType.button:
-        return ComponentButton.empty();
+        return ComponentButton.empty(Component._generateId(type));
       case ComponentType.column:
-        return ComponentColumn.empty();
+        return ComponentColumn.empty(Component._generateId(type));
       case ComponentType.row:
-        return ComponentRow.empty();
+        return ComponentRow.empty(Component._generateId(type));
       case ComponentType.fieldDisplay:
-        return ComponentFieldDisplay.empty();
+        return ComponentFieldDisplay.empty(Component._generateId(type));
       default:
         throw FormatException('Unknown component type "$type"');
     }
+  }
+
+  static String _generateId(String type) {
+    final key = type.toLowerCase();
+    final next = (_typeCounters[key] ?? 0) + 1;
+    _typeCounters[key] = next;
+    return '${key}_$next';
   }
 
   JsonMap toMap() => {'id': id, 'type': type};
