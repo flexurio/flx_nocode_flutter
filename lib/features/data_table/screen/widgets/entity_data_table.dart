@@ -51,12 +51,17 @@ class MenuDataTableCustom extends StatefulWidget {
 
 class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   var _filters = <Filter>[];
+  late final PageOptions<Map<String, dynamic>> _initialPageOptions;
 
   @override
   void initState() {
     super.initState();
     _filters.addAll(widget.initialFilters);
-    _fetch();
+    _initialPageOptions = PageOptions<Map<String, dynamic>>.empty(
+      sortBy: widget.entity.paginationOption.sortBy,
+      ascending: widget.entity.paginationOption.ascending,
+    );
+    _fetch(_initialPageOptions);
   }
 
   void _fetch([PageOptions<Map<String, dynamic>>? pageOptions]) {

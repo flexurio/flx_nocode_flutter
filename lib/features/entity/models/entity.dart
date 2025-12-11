@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
+import 'package:flx_nocode_flutter/features/entity/models/pagination_option.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_list_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_field_dummy_value.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
@@ -41,6 +42,9 @@ class EntityCustom extends HiveObject {
   /// The layout definition for creating and editing forms.
   final List<LayoutForm> layoutForm;
 
+  /// Options for pagination and default sorting.
+  final PaginationOption paginationOption;
+
   /// The layout definition for displaying a single entity instance in a list.
   final LayoutListTile? layoutListTile;
 
@@ -60,6 +64,7 @@ class EntityCustom extends HiveObject {
     required this.fields,
     required this.views,
     required this.backend,
+    required this.paginationOption,
     required this.layoutForm,
     required this.layoutListTile,
     required this.layoutTable,
@@ -246,6 +251,17 @@ class EntityCustom extends HiveObject {
         },
       );
 
+      PaginationOption paginationOption = const PaginationOption();
+      if (json.containsKey('pagination_option') &&
+          json['pagination_option'] != null) {
+        final raw = json['pagination_option'];
+        if (raw is! Map<String, dynamic>) {
+          throw FormatException(
+              "Invalid type for 'pagination_option': expected Map, got ${raw.runtimeType}.");
+        }
+        paginationOption = PaginationOption.fromJson(raw);
+      }
+
       return EntityCustom(
         id: id,
         actions: actions,
@@ -255,6 +271,7 @@ class EntityCustom extends HiveObject {
         views: views,
         exports: exports,
         backend: backend,
+        paginationOption: paginationOption,
         layoutForm: layoutForm,
         layoutListTile: layoutListTile,
         layoutTable: layoutTable,
@@ -273,6 +290,7 @@ class EntityCustom extends HiveObject {
         fields = [],
         views = [],
         backend = Backend(others: []),
+        paginationOption = const PaginationOption(),
         layoutForm = [],
         layoutListTile = null,
         actions = [],
@@ -287,6 +305,7 @@ class EntityCustom extends HiveObject {
     List<EntityField>? fields,
     List<view.DView>? views,
     Backend? backend,
+    PaginationOption? paginationOption,
     List<LayoutForm>? layoutForm,
     LayoutListTile? layoutListTile,
     Map<String, int>? layoutTable,
@@ -300,6 +319,7 @@ class EntityCustom extends HiveObject {
       description: description ?? this.description,
       fields: fields ?? this.fields,
       backend: backend ?? this.backend,
+      paginationOption: paginationOption ?? this.paginationOption,
       views: views ?? this.views,
       layoutForm: layoutForm ?? this.layoutForm,
       layoutListTile: layoutListTile ?? this.layoutListTile,
@@ -371,6 +391,7 @@ class EntityCustom extends HiveObject {
       'views': views.map((e) => e.toJson()).toList(),
       'exports': exports.map((e) => e.toJson()).toList(),
       'backend': backend.toJson(),
+      'pagination_option': paginationOption.toJson(),
       'layout_form': layoutForm.map((e) => e.toMap()).toList(),
       'layout_list_tile': layoutListTile?.toJson(),
       'layout_table': layoutTable,
