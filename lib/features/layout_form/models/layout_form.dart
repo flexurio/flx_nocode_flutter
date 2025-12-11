@@ -20,6 +20,7 @@ class LayoutForm extends HiveObject {
   final Rule? visibleIf;
   final List<Component> components;
   final List<ButtonAction> buttons;
+  final List<LayoutForm> multiForms;
 
   static const String createType = 'create';
   static const String updateType = 'update';
@@ -32,7 +33,8 @@ class LayoutForm extends HiveObject {
         groups = const [],
         visibleIf = null,
         components = const [],
-        buttons = const [];
+        buttons = const [],
+        multiForms = const [];
 
   LayoutForm({
     required this.label,
@@ -41,12 +43,24 @@ class LayoutForm extends HiveObject {
     this.visibleIf,
     required this.components,
     List<ButtonAction>? buttons,
+    List<LayoutForm>? multiForms,
   })  : assert(label.trim().isNotEmpty, 'label is required'),
         assert(type.trim().isNotEmpty, 'type is required'),
         groups = List<GroupLayout>.unmodifiable(groups),
-        buttons = List<ButtonAction>.unmodifiable(buttons ?? const []);
+        buttons = List<ButtonAction>.unmodifiable(buttons ?? const []),
+        multiForms = List<LayoutForm>.unmodifiable(
+          (multiForms ?? const []).map(
+            (f) => f.multiForms.isEmpty ? f : f.copyWith(multiForms: const []),
+          ),
+        );
 
-  factory LayoutForm.fromMap(JsonMap map) {
+  factory LayoutForm.fromMap(JsonMap map) =>
+      _fromMapInternal(map, allowMultiForms: true);
+
+  static LayoutForm _fromMapInternal(
+    JsonMap map, {
+    required bool allowMultiForms,
+  }) {
     print('[LayoutForm] fromMap - parsing data');
 
     if (map['type'] == null || map['type'].toString().trim().isEmpty) {
@@ -118,6 +132,24 @@ class LayoutForm extends HiveObject {
     }).toList(growable: false);
     print('[LayoutForm] fromMap - parsed components');
 
+    final rawMultiForms = allowMultiForms ? map['multi_forms'] : null;
+    List<LayoutForm> multiForms = const [];
+    if (rawMultiForms != null) {
+      if (rawMultiForms is! List) {
+        throw const FormatException('"multi_forms" must be an array');
+      }
+      multiForms = rawMultiForms.map<LayoutForm>((e) {
+        if (e is! Map) {
+          throw const FormatException(
+              'Each multi_forms item must be an object');
+        }
+        return LayoutForm._fromMapInternal(
+          _coerceJsonMap(e),
+          allowMultiForms: false, // only allow one nesting level
+        );
+      }).toList(growable: false);
+    }
+
     return LayoutForm(
       components: components ?? const [],
       label: map['label'].toString().trim(),
@@ -127,6 +159,7 @@ class LayoutForm extends HiveObject {
           ? null
           : Rule.fromMap(_coerceJsonMap(map['visible_if'])),
       buttons: parsedActions,
+      multiForms: multiForms,
     );
   }
 
@@ -135,6 +168,7 @@ class LayoutForm extends HiveObject {
       'label': label,
       'type': type,
       'groups': groups.map((e) => e.toMap()).toList(growable: false),
+      'components': components.map((e) => e.toMap()).toList(growable: false),
     };
 
     if (visibleIf != null) {
@@ -142,6 +176,10 @@ class LayoutForm extends HiveObject {
     }
     if (buttons.isNotEmpty) {
       m['buttons'] = buttons.map((e) => e.toJson()).toList(growable: false);
+    }
+    if (multiForms.isNotEmpty) {
+      m['multi_forms'] =
+          multiForms.map((e) => e.toMap()).toList(growable: false);
     }
 
     return m;
@@ -154,6 +192,7 @@ class LayoutForm extends HiveObject {
     Rule? visibleIf,
     List<ButtonAction>? buttons,
     List<Component>? components,
+    List<LayoutForm>? multiForms,
   }) {
     return LayoutForm(
       components: components ?? this.components,
@@ -162,6 +201,7 @@ class LayoutForm extends HiveObject {
       groups: groups ?? this.groups,
       visibleIf: visibleIf ?? this.visibleIf,
       buttons: buttons ?? this.buttons,
+      multiForms: multiForms ?? this.multiForms,
     );
   }
 }
