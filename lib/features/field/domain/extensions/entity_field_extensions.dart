@@ -2,6 +2,7 @@ import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/field/models/type.dart';
 
 extension EntityFieldDomainX on EntityField {
+  bool get isText => type == 'text';
   bool get isDateTime => type.contains('datetime');
   bool get isBool => type == 'bool';
   bool get isPermission => type == 'permission';
