@@ -21,6 +21,19 @@ class LayoutForm extends HiveObject {
   final List<Component> components;
   final List<ButtonAction> buttons;
 
+  static const String createType = 'create';
+  static const String updateType = 'update';
+  static const String viewType = 'view';
+  static const String homeType = 'home';
+
+  LayoutForm.empty()
+      : label = '',
+        type = createType,
+        groups = const [],
+        visibleIf = null,
+        components = const [],
+        buttons = const [];
+
   LayoutForm({
     required this.label,
     required this.type,
