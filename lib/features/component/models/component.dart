@@ -118,4 +118,27 @@ class ComponentType {
   static const String column = 'column';
   static const String row = 'row';
   static const String fieldDisplay = 'field_display';
+
+  static const List<ComponentTypeEntry> values = [
+    ComponentTypeEntry(id: table, label: 'Table'),
+    ComponentTypeEntry(id: text, label: 'Text'),
+    ComponentTypeEntry(id: textField, label: 'Text Field'),
+    ComponentTypeEntry(id: button, label: 'Button'),
+    ComponentTypeEntry(id: column, label: 'Column'),
+    ComponentTypeEntry(id: row, label: 'Row'),
+    ComponentTypeEntry(id: fieldDisplay, label: 'Field Display'),
+  ];
+
+  static String labelOf(String type) =>
+      values.firstWhere(
+        (entry) => entry.id == type,
+        orElse: () => ComponentTypeEntry(id: type, label: type),
+      ).label;
+}
+
+class ComponentTypeEntry {
+  final String id;
+  final String label;
+
+  const ComponentTypeEntry({required this.id, required this.label});
 }
