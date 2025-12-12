@@ -21,6 +21,7 @@ class LayoutForm extends HiveObject {
   final List<Component> components;
   final List<ButtonAction> buttons;
   final List<LayoutForm> multiForms;
+  final Map<String, dynamic>? submitWorkflow;
 
   static const String createType = 'create';
   static const String updateType = 'update';
@@ -34,7 +35,8 @@ class LayoutForm extends HiveObject {
         visibleIf = null,
         components = const [],
         buttons = const [],
-        multiForms = const [];
+        multiForms = const [],
+        submitWorkflow = null;
 
   LayoutForm({
     required this.label,
@@ -44,10 +46,13 @@ class LayoutForm extends HiveObject {
     required this.components,
     List<ButtonAction>? buttons,
     List<LayoutForm>? multiForms,
+    Map<String, dynamic>? submitWorkflow,
   })  : assert(label.trim().isNotEmpty, 'label is required'),
         assert(type.trim().isNotEmpty, 'type is required'),
         groups = List<GroupLayout>.unmodifiable(groups),
         buttons = List<ButtonAction>.unmodifiable(buttons ?? const []),
+        submitWorkflow =
+            submitWorkflow == null ? null : Map<String, dynamic>.unmodifiable(submitWorkflow),
         multiForms = List<LayoutForm>.unmodifiable(
           (multiForms ?? const []).map(
             (f) => f.multiForms.isEmpty ? f : f.copyWith(multiForms: const []),
@@ -150,6 +155,15 @@ class LayoutForm extends HiveObject {
       }).toList(growable: false);
     }
 
+    Map<String, dynamic>? submitWorkflow;
+    if (map.containsKey('submit_workflow') && map['submit_workflow'] != null) {
+      final raw = map['submit_workflow'];
+      if (raw is! Map) {
+        throw const FormatException('"submit_workflow" must be an object');
+      }
+      submitWorkflow = Map<String, dynamic>.from(raw);
+    }
+
     return LayoutForm(
       components: components ?? const [],
       label: map['label'].toString().trim(),
@@ -160,6 +174,7 @@ class LayoutForm extends HiveObject {
           : Rule.fromMap(_coerceJsonMap(map['visible_if'])),
       buttons: parsedActions,
       multiForms: multiForms,
+      submitWorkflow: submitWorkflow,
     );
   }
 
@@ -173,6 +188,9 @@ class LayoutForm extends HiveObject {
 
     if (visibleIf != null) {
       m['visible_if'] = visibleIf!.toMap();
+    }
+    if (submitWorkflow != null) {
+      m['submit_workflow'] = submitWorkflow;
     }
     if (buttons.isNotEmpty) {
       m['buttons'] = buttons.map((e) => e.toJson()).toList(growable: false);
@@ -193,6 +211,7 @@ class LayoutForm extends HiveObject {
     List<ButtonAction>? buttons,
     List<Component>? components,
     List<LayoutForm>? multiForms,
+    Map<String, dynamic>? submitWorkflow,
   }) {
     return LayoutForm(
       components: components ?? this.components,
@@ -202,6 +221,7 @@ class LayoutForm extends HiveObject {
       visibleIf: visibleIf ?? this.visibleIf,
       buttons: buttons ?? this.buttons,
       multiForms: multiForms ?? this.multiForms,
+      submitWorkflow: submitWorkflow ?? this.submitWorkflow,
     );
   }
 }
