@@ -28,6 +28,8 @@ class LayoutForm extends HiveObject {
   static const String viewType = 'view';
   static const String homeType = 'home';
 
+  List<String> get componentIds => components.map((e) => e.id).toList();
+
   LayoutForm.empty()
       : label = '',
         type = createType,
@@ -51,8 +53,9 @@ class LayoutForm extends HiveObject {
         assert(type.trim().isNotEmpty, 'type is required'),
         groups = List<GroupLayout>.unmodifiable(groups),
         buttons = List<ButtonAction>.unmodifiable(buttons ?? const []),
-        submitWorkflow =
-            submitWorkflow == null ? null : Map<String, dynamic>.unmodifiable(submitWorkflow),
+        submitWorkflow = submitWorkflow == null
+            ? null
+            : Map<String, dynamic>.unmodifiable(submitWorkflow),
         multiForms = List<LayoutForm>.unmodifiable(
           (multiForms ?? const []).map(
             (f) => f.multiForms.isEmpty ? f : f.copyWith(multiForms: const []),
