@@ -86,6 +86,45 @@ String _buildJsScript(
       'return formatDate(d,fmt);'
       '}');
 
+  // Numeric helpers
+  buffer.writeln('function toNumber(v){'
+      'var n=Number(v);'
+      'return isNaN(n)?0:n;'
+      '}');
+
+  buffer.writeln('function abs(v){return Math.abs(toNumber(v));}');
+
+  buffer.writeln('function length(v){'
+      'if(Array.isArray(v)||typeof v==="string") return v.length;'
+      'if(v && typeof v==="object") return Object.keys(v).length;'
+      'return 0;'
+      '}');
+
+  buffer.writeln('function contains(container,value){'
+      'if(container===null||container===undefined) return false;'
+      'if(Array.isArray(container)) return container.includes(value);'
+      'if(typeof container==="string") return container.includes(String(value));'
+      'if(typeof container==="object") '
+      'return Object.values(container).some(function(v){return v===value;});'
+      'return false;'
+      '}');
+
+  buffer.writeln('function sum(list,formula){'
+      'if(!Array.isArray(list)) return 0;'
+      'if(!formula){'
+      'return list.reduce(function(acc,v){return acc+toNumber(v);},0);'
+      '}'
+      'var expr=String(formula).replace(/\\s+/g,"");'
+      'var parts=expr.split("*");'
+      'if(parts.length!==2) return 0;'
+      'return list.reduce(function(acc,item){'
+      'if(!item||typeof item!=="object") return acc;'
+      'var a=toNumber(item[parts[0]]);'
+      'var b=toNumber(item[parts[1]]);'
+      'return acc+(a*b);'
+      '},0);'
+      '}');
+
   // Inject variables as const (local to this IIFE)
   variables.forEach((key, value) {
     final jsonValue = jsonEncode(value);
