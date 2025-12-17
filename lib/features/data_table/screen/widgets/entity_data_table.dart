@@ -184,7 +184,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 onSuccess: () => _fetch(),
                 embedded: false,
                 parentData: widget.parentData,
-                filters: {},
+                filters: _filters.toMap(),
               ),
             );
           },

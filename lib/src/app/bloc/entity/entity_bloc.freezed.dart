@@ -616,8 +616,8 @@ abstract class _Error implements EntityState {
 mixin _$EntityEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            Map<String, dynamic> data, String method, String url)
+    required TResult Function(Map<String, dynamic> data, String method,
+            String url, Map<String, dynamic> filters)
         execute,
     required TResult Function(
             Map<String, dynamic> data, Map<String, dynamic> filters)
@@ -632,7 +632,8 @@ mixin _$EntityEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> data, String method, String url)?
+    TResult? Function(Map<String, dynamic> data, String method, String url,
+            Map<String, dynamic> filters)?
         execute,
     TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
         create,
@@ -645,7 +646,8 @@ mixin _$EntityEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> data, String method, String url)?
+    TResult Function(Map<String, dynamic> data, String method, String url,
+            Map<String, dynamic> filters)?
         execute,
     TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
         create,
@@ -710,7 +712,11 @@ abstract class _$$ExecuteImplCopyWith<$Res> {
           _$ExecuteImpl value, $Res Function(_$ExecuteImpl) then) =
       __$$ExecuteImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({Map<String, dynamic> data, String method, String url});
+  $Res call(
+      {Map<String, dynamic> data,
+      String method,
+      String url,
+      Map<String, dynamic> filters});
 }
 
 /// @nodoc
@@ -727,6 +733,7 @@ class __$$ExecuteImplCopyWithImpl<$Res>
     Object? data = null,
     Object? method = null,
     Object? url = null,
+    Object? filters = null,
   }) {
     return _then(_$ExecuteImpl(
       data: null == data
@@ -741,6 +748,10 @@ class __$$ExecuteImplCopyWithImpl<$Res>
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String,
+      filters: null == filters
+          ? _value._filters
+          : filters // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
     ));
   }
 }
@@ -751,8 +762,10 @@ class _$ExecuteImpl implements _Execute {
   const _$ExecuteImpl(
       {required final Map<String, dynamic> data,
       required this.method,
-      required this.url})
-      : _data = data;
+      required this.url,
+      required final Map<String, dynamic> filters})
+      : _data = data,
+        _filters = filters;
 
   final Map<String, dynamic> _data;
   @override
@@ -766,10 +779,17 @@ class _$ExecuteImpl implements _Execute {
   final String method;
   @override
   final String url;
+  final Map<String, dynamic> _filters;
+  @override
+  Map<String, dynamic> get filters {
+    if (_filters is EqualUnmodifiableMapView) return _filters;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_filters);
+  }
 
   @override
   String toString() {
-    return 'EntityEvent.execute(data: $data, method: $method, url: $url)';
+    return 'EntityEvent.execute(data: $data, method: $method, url: $url, filters: $filters)';
   }
 
   @override
@@ -779,12 +799,17 @@ class _$ExecuteImpl implements _Execute {
             other is _$ExecuteImpl &&
             const DeepCollectionEquality().equals(other._data, _data) &&
             (identical(other.method, method) || other.method == method) &&
-            (identical(other.url, url) || other.url == url));
+            (identical(other.url, url) || other.url == url) &&
+            const DeepCollectionEquality().equals(other._filters, _filters));
   }
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(_data), method, url);
+      runtimeType,
+      const DeepCollectionEquality().hash(_data),
+      method,
+      url,
+      const DeepCollectionEquality().hash(_filters));
 
   @JsonKey(ignore: true)
   @override
@@ -795,8 +820,8 @@ class _$ExecuteImpl implements _Execute {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            Map<String, dynamic> data, String method, String url)
+    required TResult Function(Map<String, dynamic> data, String method,
+            String url, Map<String, dynamic> filters)
         execute,
     required TResult Function(
             Map<String, dynamic> data, Map<String, dynamic> filters)
@@ -808,13 +833,14 @@ class _$ExecuteImpl implements _Execute {
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
   }) {
-    return execute(data, method, url);
+    return execute(data, method, url, filters);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> data, String method, String url)?
+    TResult? Function(Map<String, dynamic> data, String method, String url,
+            Map<String, dynamic> filters)?
         execute,
     TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
         create,
@@ -824,13 +850,14 @@ class _$ExecuteImpl implements _Execute {
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
   }) {
-    return execute?.call(data, method, url);
+    return execute?.call(data, method, url, filters);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> data, String method, String url)?
+    TResult Function(Map<String, dynamic> data, String method, String url,
+            Map<String, dynamic> filters)?
         execute,
     TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
         create,
@@ -841,7 +868,7 @@ class _$ExecuteImpl implements _Execute {
     required TResult orElse(),
   }) {
     if (execute != null) {
-      return execute(data, method, url);
+      return execute(data, method, url, filters);
     }
     return orElse();
   }
@@ -891,11 +918,13 @@ abstract class _Execute implements EntityEvent {
   const factory _Execute(
       {required final Map<String, dynamic> data,
       required final String method,
-      required final String url}) = _$ExecuteImpl;
+      required final String url,
+      required final Map<String, dynamic> filters}) = _$ExecuteImpl;
 
   Map<String, dynamic> get data;
   String get method;
   String get url;
+  Map<String, dynamic> get filters;
   @JsonKey(ignore: true)
   _$$ExecuteImplCopyWith<_$ExecuteImpl> get copyWith =>
       throw _privateConstructorUsedError;
@@ -991,8 +1020,8 @@ class _$CreateImpl implements _Create {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            Map<String, dynamic> data, String method, String url)
+    required TResult Function(Map<String, dynamic> data, String method,
+            String url, Map<String, dynamic> filters)
         execute,
     required TResult Function(
             Map<String, dynamic> data, Map<String, dynamic> filters)
@@ -1010,7 +1039,8 @@ class _$CreateImpl implements _Create {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> data, String method, String url)?
+    TResult? Function(Map<String, dynamic> data, String method, String url,
+            Map<String, dynamic> filters)?
         execute,
     TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
         create,
@@ -1026,7 +1056,8 @@ class _$CreateImpl implements _Create {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> data, String method, String url)?
+    TResult Function(Map<String, dynamic> data, String method, String url,
+            Map<String, dynamic> filters)?
         execute,
     TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
         create,
@@ -1184,8 +1215,8 @@ class _$EditImpl implements _Edit {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            Map<String, dynamic> data, String method, String url)
+    required TResult Function(Map<String, dynamic> data, String method,
+            String url, Map<String, dynamic> filters)
         execute,
     required TResult Function(
             Map<String, dynamic> data, Map<String, dynamic> filters)
@@ -1203,7 +1234,8 @@ class _$EditImpl implements _Edit {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> data, String method, String url)?
+    TResult? Function(Map<String, dynamic> data, String method, String url,
+            Map<String, dynamic> filters)?
         execute,
     TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
         create,
@@ -1219,7 +1251,8 @@ class _$EditImpl implements _Edit {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> data, String method, String url)?
+    TResult Function(Map<String, dynamic> data, String method, String url,
+            Map<String, dynamic> filters)?
         execute,
     TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
         create,
@@ -1352,8 +1385,8 @@ class _$DeleteImpl implements _Delete {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            Map<String, dynamic> data, String method, String url)
+    required TResult Function(Map<String, dynamic> data, String method,
+            String url, Map<String, dynamic> filters)
         execute,
     required TResult Function(
             Map<String, dynamic> data, Map<String, dynamic> filters)
@@ -1371,7 +1404,8 @@ class _$DeleteImpl implements _Delete {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> data, String method, String url)?
+    TResult? Function(Map<String, dynamic> data, String method, String url,
+            Map<String, dynamic> filters)?
         execute,
     TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
         create,
@@ -1387,7 +1421,8 @@ class _$DeleteImpl implements _Delete {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> data, String method, String url)?
+    TResult Function(Map<String, dynamic> data, String method, String url,
+            Map<String, dynamic> filters)?
         execute,
     TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
         create,
@@ -1534,8 +1569,8 @@ class _$OtherEventImpl implements _OtherEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(
-            Map<String, dynamic> data, String method, String url)
+    required TResult Function(Map<String, dynamic> data, String method,
+            String url, Map<String, dynamic> filters)
         execute,
     required TResult Function(
             Map<String, dynamic> data, Map<String, dynamic> filters)
@@ -1553,7 +1588,8 @@ class _$OtherEventImpl implements _OtherEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(Map<String, dynamic> data, String method, String url)?
+    TResult? Function(Map<String, dynamic> data, String method, String url,
+            Map<String, dynamic> filters)?
         execute,
     TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
         create,
@@ -1569,7 +1605,8 @@ class _$OtherEventImpl implements _OtherEvent {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(Map<String, dynamic> data, String method, String url)?
+    TResult Function(Map<String, dynamic> data, String method, String url,
+            Map<String, dynamic> filters)?
         execute,
     TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
         create,

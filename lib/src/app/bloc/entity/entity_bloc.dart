@@ -26,6 +26,7 @@ class EntityEvent with _$EntityEvent {
     required Map<String, dynamic> data,
     required String method,
     required String url,
+    required Map<String, dynamic> filters,
   }) = _Execute;
   const factory EntityEvent.create({
     required Map<String, dynamic> data,
@@ -46,14 +47,15 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
   EntityBloc(configuration.EntityCustom entity) : super(const _Initial()) {
     on<EntityEvent>((event, emit) async {
       await event.when(
-        execute: (data, method, url) async {
+        execute: (data, method, url, filters) async {
           emit(const _Loading());
           try {
             final response = await EntityCustomRepository.instance.modify(
               accessToken: UserRepositoryApp.instance.token,
               path: url,
               method: method,
-              data: data,
+              data: Map.from(data)
+                ..addAll(entity.backend.create!.body(filters: filters)),
             );
             emit(_Success(response));
           } catch (error) {

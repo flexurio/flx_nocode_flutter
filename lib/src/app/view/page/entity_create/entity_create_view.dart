@@ -202,6 +202,7 @@ class _EntityCreateViewState extends State<EntityCreateView> {
                 data: _data,
                 method: button.method,
                 url: button.url,
+                filters: widget.filters,
               );
 
               context.read<EntityBloc>().add(event);
