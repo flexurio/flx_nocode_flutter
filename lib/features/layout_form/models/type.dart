@@ -16,4 +16,7 @@ enum FormType {
 
 extension FormTypeExtension on FormType {
   bool get isHome => this == FormType.home;
+  bool get isView => this == FormType.view;
+  bool get isCreate => this == FormType.create;
+  bool get isUpdate => this == FormType.update;
 }

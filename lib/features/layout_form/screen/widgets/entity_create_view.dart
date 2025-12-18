@@ -52,15 +52,7 @@ class _CreateFormState extends State<CreateForm> {
 
     _controllers = widget.entity.fields.generateControllers();
 
-    _action = createOrEdit(widget.data);
-    if (_action.isEdit) {
-      for (final field in widget.entity.fields) {
-        _controllers[field.reference]!.text =
-            widget.data![field.reference] is num
-                ? (widget.data![field.reference] as num).toStringAsFixed(0)
-                : widget.data![field.reference].toString();
-      }
-    }
+    _action = widget.layoutForm.action;
   }
 
   @override
@@ -185,10 +177,9 @@ class _CreateFormState extends State<CreateForm> {
           data: _data,
           workflow: widget.layoutForm.submitWorkflow!,
         );
-      } else if (_action.isEdit || widget.layoutForm.formType.isHome) {
-        event = EntityEvent.edit(data: _data, filters: widget.filters);
       } else {
-        event = EntityEvent.create(data: _data, filters: widget.filters);
+        Toast(context).fail('Submit workflow not found');
+        return;
       }
 
       context.read<EntityBloc>().add(event);

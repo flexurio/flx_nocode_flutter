@@ -98,7 +98,7 @@ class CreatePage extends StatelessWidget {
         layoutForm: layoutForm,
         data: data,
         entity: entity,
-        onSuccess: () {}, // Event submit dikosongkan dahulu
+        onSuccess: () {},
         embedded: embedded,
         filters: filters,
         noHeader: noHeader,

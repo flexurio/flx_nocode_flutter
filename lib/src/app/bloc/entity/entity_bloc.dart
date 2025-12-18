@@ -152,6 +152,11 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
         },
         submitWorkflow: (data, workflowJson) async {
           emit(const _Loading());
+          print(
+              '================================================================');
+          print('[EntityBloc] SubmitWorkflow STARTED');
+          print('[EntityBloc] Data: $data');
+          print('[EntityBloc] Workflow: $workflowJson');
           try {
             // Parse workflow
             final definition = WorkflowDefinition.fromJson(workflowJson);
@@ -172,7 +177,13 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
             );
 
             final runner = WorkflowExecutor(definition); // No UI bridge for now
+            print('[EntityBloc] Running workflow...');
             final result = await runner.run(ctx);
+            print('[EntityBloc] Workflow execution completed.');
+            print('[EntityBloc] Result Success: ${result.isSuccess}');
+            if (!result.isSuccess) {
+              print('[EntityBloc] Result Error: ${result.error}');
+            }
 
             if (result.isSuccess) {
               // If success, we assume the last action or some specialized variable holds the result?
@@ -181,11 +192,17 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               // We can try to find if there is a 'result' variable or http response.
               emit(const _Success({})); // Success with empty map for now
             } else {
+              print(
+                  '[EntityBloc] Workflow failed with error: ${result.error?.message}');
               emit(_Error(result.error?.message ?? 'Workflow failed'));
             }
           } catch (error, st) {
-            print('[EntityBloc] SubmitWorkflow - error $error $st');
+            print('[EntityBloc] SubmitWorkflow - FATAL ERROR $error $st');
             emit(_Error(error.toString()));
+          } finally {
+            print('[EntityBloc] SubmitWorkflow ENDED');
+            print(
+                '================================================================');
           }
         },
       );
@@ -199,6 +216,10 @@ class _BlocHttpExecutor implements HttpExecutor {
 
   @override
   Future<HttpResult> execute(HttpData request) async {
+    print('[BlocHttpExecutor] Executing HTTP Request:');
+    print('  Method: ${request.method}');
+    print('  URL: ${request.url}');
+    print('  Body: ${request.body}');
     try {
       final response = await EntityCustomRepository.instance.modify(
         accessToken: token,
@@ -216,6 +237,7 @@ class _BlocHttpExecutor implements HttpExecutor {
         data: response,
       );
     } catch (e) {
+      print('[BlocHttpExecutor] HTTP Error: $e');
       // EntityCustomRepository throws on error.
       // We need to capture status code if possible.
       // For now generic 500

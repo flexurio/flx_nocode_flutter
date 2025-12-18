@@ -581,7 +581,9 @@ class ValidateAction implements WorkflowAction {
     }
 
     try {
+      print('[ValidateAction] Validating scope "$scope"');
       await validator(scope, ctx.form);
+      print('[ValidateAction] Validation passed');
     } catch (e, st) {
       if (e is WorkflowException) rethrow;
       throw WorkflowValidationException(
@@ -608,7 +610,9 @@ class SetVarAction implements WorkflowAction {
 
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
-    ctx.vars[key] = Template.resolve(value, ctx);
+    final val = Template.resolve(value, ctx);
+    print('[SetVarAction] Setting var "$key" = $val');
+    ctx.vars[key] = val;
   }
 }
 
@@ -620,7 +624,9 @@ class AppendVarAction implements WorkflowAction {
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
     final list = (ctx.vars[key] as List?) ?? <dynamic>[];
-    list.add(Template.resolve(value, ctx));
+    final item = Template.resolve(value, ctx);
+    print('[AppendVarAction] Appending to var "$key": $item');
+    list.add(item);
     ctx.vars[key] = list;
   }
 }
@@ -730,6 +736,7 @@ class HttpAction implements WorkflowAction {
         }
         return;
       } catch (e) {
+        print('[HttpAction] Attempt ${attempt + 1} failed: $e');
         attempt++;
         if (retry == null || attempt > retry!.max) {
           if (e is WorkflowException) rethrow;
@@ -738,6 +745,7 @@ class HttpAction implements WorkflowAction {
             cause: e,
           );
         }
+        print('[HttpAction] Retrying in ${retry!.delayMs}ms...');
         await Future.delayed(Duration(milliseconds: retry!.delayMs));
       }
     }
@@ -759,8 +767,11 @@ class ConditionAction implements WorkflowAction {
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
     try {
       final ok = Expr.evalCondition(ifExpr, ctx);
+      print('[ConditionAction] if "$ifExpr" => $ok');
       final branch = ok ? thenActions : elseActions;
 
+      print(
+          '[ConditionAction] Executing ${branch.length} actions in ${ok ? "THEN" : "ELSE"} branch');
       for (final a in branch) {
         if (ctx.stopped) return;
         await a.execute(ctx, ui);
@@ -792,15 +803,24 @@ class LoopAction implements WorkflowAction {
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
     final resolved = Template.resolve(items, ctx);
-    if (resolved == null) return;
+    print('[LoopAction] Resolving items...');
+    if (resolved == null) {
+      print('[LoopAction] Items resolved to null, skipping loop.');
+      return;
+    }
     if (resolved is! List) {
       throw WorkflowExecutionException(
         'Loop items must resolve to a list, got ${resolved.runtimeType}.',
       );
     }
 
+    print('[LoopAction] Starting loop with ${resolved.length} items.');
     for (var i = 0; i < resolved.length; i++) {
-      if (ctx.stopped) return;
+      if (ctx.stopped) {
+        print('[LoopAction] Loop stopped at index $i');
+        return;
+      }
+      print('[LoopAction] Iteration $i / ${resolved.length}');
       ctx.vars[itemVar] = resolved[i];
       if (indexVar != null) ctx.vars[indexVar!] = i;
 
@@ -809,6 +829,7 @@ class LoopAction implements WorkflowAction {
         await a.execute(ctx, ui);
       }
     }
+    print('[LoopAction] Loop completed.');
   }
 }
 
@@ -821,17 +842,23 @@ class TryCatchAction implements WorkflowAction {
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
     try {
+      print('[TryCatchAction] Entering TRY block');
       for (final a in tryActions) {
         if (ctx.stopped) return;
         await a.execute(ctx, ui);
       }
+      print('[TryCatchAction] TRY block completed successfully');
     } catch (e, st) {
+      print('[TryCatchAction] Caught error: $e');
       ctx.vars['last_error'] = e is WorkflowException ? e.message : '$e';
       ctx.vars['last_error_stacktrace'] = st.toString();
+
+      print('[TryCatchAction] Entering CATCH block');
       for (final a in catchActions) {
         if (ctx.stopped) return;
         await a.execute(ctx, ui);
       }
+      print('[TryCatchAction] CATCH block completed');
     }
   }
 }
@@ -1101,19 +1128,28 @@ class WorkflowExecutor {
   });
 
   Future<WorkflowRunResult> run(WorkflowContext ctx) async {
+    print('[WorkflowExecutor] Run STARTED');
     try {
+      print('[WorkflowExecutor] Executing main actions...');
       await _runActions(definition.actions, ctx);
 
+      print(
+          '[WorkflowExecutor] Main actions completed. Stopped: ${ctx.stopped}');
       if (!ctx.stopped) {
+        print('[WorkflowExecutor] Executing onSuccess actions...');
         await _runActions(definition.onSuccess, ctx);
+        print('[WorkflowExecutor] Run SUCCESS');
         return WorkflowRunResult.success();
       }
 
+      print('[WorkflowExecutor] Run STOPPED');
       return WorkflowRunResult.stopped();
     } on WorkflowException catch (e) {
+      print('[WorkflowExecutor] Run FAILED (WorkflowException): $e');
       await _runOnError(ctx);
       return WorkflowRunResult.failure(e);
     } catch (e, st) {
+      print('[WorkflowExecutor] Run FAILED (Unexpected): $e\n$st');
       final err = WorkflowExecutionException(
         'Unexpected workflow error: $e',
         cause: e,
@@ -1121,6 +1157,8 @@ class WorkflowExecutor {
       );
       await _runOnError(ctx);
       return WorkflowRunResult.failure(err);
+    } finally {
+      print('[WorkflowExecutor] Run ENDED');
     }
   }
 
@@ -1128,8 +1166,14 @@ class WorkflowExecutor {
     List<WorkflowAction> actions,
     WorkflowContext ctx,
   ) async {
-    for (final action in actions) {
-      if (ctx.stopped) return;
+    for (var i = 0; i < actions.length; i++) {
+      final action = actions[i];
+      if (ctx.stopped) {
+        print('[WorkflowExecutor] Action loop stopped at index $i');
+        return;
+      }
+      print(
+          '[WorkflowExecutor] Executing Action #${i + 1} (${action.runtimeType})');
       await action.execute(ctx, ui);
     }
   }

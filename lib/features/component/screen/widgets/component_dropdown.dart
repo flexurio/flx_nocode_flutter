@@ -86,7 +86,7 @@ class _AsyncDropdown extends StatefulWidget {
 }
 
 class _AsyncDropdownState extends State<_AsyncDropdown> {
-  List<Map<String, String>> _options = [];
+  List<Map<String, dynamic>> _options = [];
   bool _isLoading = true;
   String? _error;
   String? _value;
@@ -137,7 +137,7 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
                 widget.component.optionLabel!.interpolateJavascript(context);
           }
 
-          return {'key': key, 'label': label};
+          return {'key': key, 'label': label, 'item': item};
         }).toList();
 
         if (mounted) {
@@ -183,7 +183,7 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
           style: const TextStyle(color: Colors.red));
     }
 
-    return FDropDownSearch<Map<String, String>>(
+    return FDropDownSearch<Map<String, dynamic>>(
       items: _options,
       initialValue: _value != null
           ? _options.firstWhere(
@@ -197,9 +197,9 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
         setState(() {
           _value = val?['key'];
         });
-        if (_value != null) {
+        if (_value != null && val != null) {
           _updateController(_value!);
-          _handleActions(_value!);
+          _handleActions(val);
         }
       },
     );
@@ -215,7 +215,9 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
     controller?.text = value;
   }
 
-  void _handleActions(String value) {
+  void _handleActions(Map<String, dynamic> selection) {
+    final value = selection['key']?.toString() ?? '';
+    final item = selection['item'];
     print('AsyncDropdown onChange: $value');
     if (widget.component.onChangeActions.isEmpty) {
       print('No actions configured');
@@ -228,16 +230,46 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
 
     print('Available controllers: ${allControllers.keys.join(', ')}');
 
+    // Prepare context for interpolation
+    // We need to filter requestData again or reuse it?
+    // Easier to just construct it safely.
+    // Actually we can just use the item.
+    // And parent data?
+
+    // Let's reconstruct requestData safe copy
+    final requestData = Map<String, dynamic>.from(widget.data)
+      ..removeWhere((key, value) =>
+          value is TextEditingController ||
+          key == 'controller' ||
+          key == 'allControllers');
+
+    final context = <String, dynamic>{
+      'item': item,
+      'value': value,
+      ...requestData,
+    };
+
     for (final action in widget.component.onChangeActions) {
       print('Processing action: ${action.type}, target: ${action.targetId}');
       if (action.type == 'set_value') {
         final targetId = action.targetId;
         final targetController = allControllers[targetId];
         if (targetController != null) {
-          String newValue = action.value ?? '';
-          // Simple interpolation for {{ value }}
-          newValue = newValue.replaceAll('{{ value }}', value);
-          newValue = newValue.replaceAll('{{value}}', value);
+          String rawValue = action.value ?? '';
+          String newValue = rawValue;
+
+          // Try interpolate with context (supports item.field)
+          try {
+            newValue = rawValue.interpolateJavascript(context);
+          } catch (e) {
+            print('Interpolation failed: $e');
+            // Fallback to simple replacement if needed, but interpolateJavascript usually returns string.
+            // If rawValue didn't have {{}}, it returns rawValue.
+
+            // Backwards compatibility for {{ value }} if interpolateJavascript doesn't handle single simple replacements without structure?
+            // StringJsInterpolation usually expects {{ code }}.
+          }
+
           print('Setting target $targetId to: $newValue');
           targetController.text = newValue;
         } else {

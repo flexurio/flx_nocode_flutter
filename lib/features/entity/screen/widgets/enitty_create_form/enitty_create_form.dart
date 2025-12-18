@@ -4,6 +4,8 @@ import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'package:gap/gap.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/group_builder.dart';
+import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
+import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
 
 import '../../../../../flx_nocode_flutter.dart';
@@ -30,16 +32,46 @@ class EntityCreateForm extends StatefulWidget {
 
 class _EntityCreateFormState extends State<EntityCreateForm> {
   late final FormStateController _formState;
+  final Map<String, TextEditingController> _localControllers = {};
 
   @override
   void initState() {
     super.initState();
-    _formState = FormStateController(widget.controllers);
+    _initializeControllers();
+    _formState = FormStateController({
+      ...widget.controllers,
+      ..._localControllers,
+    });
+  }
+
+  void _initializeControllers() {
+    final ids = <String>{};
+    _collectComponentIds(widget.layoutForm.components, ids);
+
+    for (final id in ids) {
+      if (!widget.controllers.containsKey(id)) {
+        _localControllers[id] = TextEditingController();
+      }
+    }
+  }
+
+  void _collectComponentIds(List<Component> components, Set<String> ids) {
+    for (final c in components) {
+      ids.add(c.id);
+      if (c is ComponentColumn) {
+        _collectComponentIds(c.children, ids);
+      } else if (c is ComponentRow) {
+        _collectComponentIds(c.children, ids);
+      }
+    }
   }
 
   @override
   void dispose() {
     _formState.dispose();
+    for (final controller in _localControllers.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -67,11 +99,16 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
           );
         }
 
+        final allControllers = {
+          ...widget.controllers,
+          ..._localControllers,
+        };
+
         final children = widget.layoutForm.components.map((c) {
-          final ctrl = widget.controllers[c.id];
+          final ctrl = allControllers[c.id];
           return c.convertToWidget({
             'controller': ctrl,
-            'allControllers': widget.controllers,
+            'allControllers': allControllers,
           });
         }).toList();
         return Column(children: children);

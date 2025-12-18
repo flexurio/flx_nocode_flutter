@@ -46,11 +46,16 @@ class ComponentColumn extends Component {
   /// - evenly
   final String yAlign;
 
+  /// Vertical gap between children (in logical pixels).
+  /// Default: 12.0
+  final double gap;
+
   ComponentColumn({
     required super.id,
     this.children = const [],
     this.xAlign = 'left',
     this.yAlign = 'top',
+    this.gap = 12.0,
   }) : super(type: 'column');
 
   /// Creates an empty [ComponentColumn] with default values.
@@ -60,6 +65,7 @@ class ComponentColumn extends Component {
       children: const [],
       xAlign: 'left',
       yAlign: 'top',
+      gap: 12.0,
     );
   }
 
@@ -88,6 +94,7 @@ class ComponentColumn extends Component {
       children: parsedChildren,
       xAlign: (map['x_align']?.toString().trim() ?? 'left'),
       yAlign: (map['y_align']?.toString().trim() ?? 'top'),
+      gap: (map['gap'] is num) ? (map['gap'] as num).toDouble() : 12.0,
     );
   }
 
@@ -97,6 +104,7 @@ class ComponentColumn extends Component {
         'type': type,
         'x_align': xAlign,
         'y_align': yAlign,
+        'gap': gap,
         'children': children.map((e) => e.toMap()).toList(growable: false),
       };
 }

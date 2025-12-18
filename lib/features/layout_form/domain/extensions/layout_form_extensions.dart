@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
@@ -61,5 +62,13 @@ extension LayoutFormDomainX on LayoutForm {
   /// If `visibleIf` is null => visible by default.
   bool isVisible(Map<String, dynamic> formState) {
     return visibleIf?.evaluate(formState) ?? true;
+  }
+
+  DataAction get action {
+    if (formType.isHome) return DataAction.create;
+    if (formType.isUpdate) return DataAction.update;
+    if (formType.isView) return DataAction.view;
+    if (formType.isCreate) return DataAction.create;
+    return DataAction.none;
   }
 }
