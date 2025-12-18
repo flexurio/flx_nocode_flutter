@@ -1,5 +1,6 @@
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_action.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 class ComponentDropdown extends Component {
@@ -9,6 +10,7 @@ class ComponentDropdown extends Component {
   final HttpData? httpData;
   final String? optionKey;
   final String? optionValue;
+  final List<ComponentAction> onChangeActions;
 
   ComponentDropdown({
     required super.id,
@@ -18,6 +20,7 @@ class ComponentDropdown extends Component {
     this.httpData,
     this.optionKey,
     this.optionValue,
+    this.onChangeActions = const [],
   }) : super(type: componentId);
 
   static const String componentId = 'dropdown';
@@ -57,6 +60,16 @@ class ComponentDropdown extends Component {
         ? HttpData.fromJson(Map<String, dynamic>.from(httpDataMap))
         : null;
 
+    final rawActions = map['onChangeActions'];
+    final onChangeActions = <ComponentAction>[];
+    if (rawActions is List) {
+      for (final item in rawActions) {
+        if (item is Map<String, dynamic>) {
+          onChangeActions.add(ComponentAction.fromMap(item));
+        }
+      }
+    }
+
     return ComponentDropdown(
       id: id,
       label: label,
@@ -65,6 +78,7 @@ class ComponentDropdown extends Component {
       httpData: httpData,
       optionKey: map['optionKey']?.toString(),
       optionValue: map['optionValue']?.toString(),
+      onChangeActions: onChangeActions,
     );
   }
 
@@ -78,5 +92,6 @@ class ComponentDropdown extends Component {
         'httpData': httpData?.toJson(),
         'optionKey': optionKey,
         'optionValue': optionValue,
+        'onChangeActions': onChangeActions.map((e) => e.toMap()).toList(),
       };
 }
