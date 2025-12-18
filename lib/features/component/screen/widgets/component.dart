@@ -10,6 +10,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_radio.dar
 import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_button.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_number_field.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/c_column.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/c_row.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_date_picker.dart';
@@ -19,6 +20,7 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_f
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_radio.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_text_field.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_number_field.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_button.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
@@ -48,6 +50,8 @@ extension ComponentWidget on Component {
       return (this as ComponentRadio).toWidget(data);
     } else if (this.type == ComponentButton.componentId) {
       return (this as ComponentButton).toWidget(data);
+    } else if (this.type == ComponentNumberField.componentId) {
+      return (this as ComponentNumberField).toWidget(data);
     }
     return NoCodeError('Unknown component type: ${this.type}');
   }
