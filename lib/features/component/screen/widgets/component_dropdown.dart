@@ -17,13 +17,58 @@ extension ComponentDropdownWidgets on ComponentDropdown {
         ? initialValue
         : (items.isNotEmpty ? items.first : null);
 
+    final controller = data['controller'] as TextEditingController? ??
+        (data['allControllers'] != null
+            ? (data['allControllers'] as Map<String, TextEditingController>)[id]
+            : null);
+
     return FDropDownSearch<String>(
       items: items,
       initialValue: initial,
       itemAsString: (item) => item,
       labelText: label,
-      onChanged: (value) {},
+      onChanged: (value) {
+        if (value != null) {
+          controller?.text = value;
+          _handleActions(data, value);
+        }
+      },
     );
+  }
+
+  void _handleActions(JsonMap data, String value) {
+    try {
+      print('Dropdown onChange: $value');
+      if (onChangeActions.isEmpty) {
+        print('No actions configured');
+        return;
+      }
+
+      final allControllers =
+          data['allControllers'] as Map<String, TextEditingController>? ?? {};
+
+      print('Available controllers: ${allControllers.keys.join(', ')}');
+
+      for (final action in onChangeActions) {
+        print('Processing action: ${action.type}, target: ${action.targetId}');
+        if (action.type == 'set_value') {
+          final targetId = action.targetId;
+          final targetController = allControllers[targetId];
+          if (targetController != null) {
+            String newValue = action.value ?? '';
+            // Simple interpolation for {{ value }}
+            newValue = newValue.replaceAll('{{ value }}', value);
+            newValue = newValue.replaceAll('{{value}}', value);
+            print('Setting target $targetId to: $newValue');
+            targetController.text = newValue;
+          } else {
+            print('Target controller $targetId not found');
+          }
+        }
+      }
+    } catch (e, stack) {
+      print('Error in Dropdown _handleActions: $e\n$stack');
+    }
   }
 }
 
@@ -55,14 +100,20 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
   Future<void> _fetchOptions() async {
     try {
       final httpData = widget.component.httpData!;
-      final result = await httpData.execute(widget.data);
+      // Filter out TextEditingControllers and internal keys to avoid JSON serialization errors
+      final requestData = Map<String, dynamic>.from(widget.data)
+        ..removeWhere((key, value) =>
+            value is TextEditingController ||
+            key == 'controller' ||
+            key == 'allControllers');
+      final result = await httpData.execute(requestData);
       if (result.isSuccess && result.data is Map) {
         final list = (result.data as Map)['data'] as List;
         final mapped = list.map((item) {
           // context for interpolation
           final context = <String, dynamic>{
             'item': item,
-            ...widget.data, // parent data
+            ...requestData, // parent data
           };
 
           // Resolve Label (from optionKey? usually key=value, value=label?
@@ -128,7 +179,8 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
     }
 
     if (_error != null) {
-      return Text('Error: $_error', style: const TextStyle(color: Colors.red));
+      return SelectableText('Error: $_error',
+          style: const TextStyle(color: Colors.red));
     }
 
     return FDropDownSearch<Map<String, String>>(
@@ -145,7 +197,53 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
         setState(() {
           _value = val?['key'];
         });
+        if (_value != null) {
+          _updateController(_value!);
+          _handleActions(_value!);
+        }
       },
     );
+  }
+
+  void _updateController(String value) {
+    final data = widget.data;
+    final controller = data['controller'] as TextEditingController? ??
+        (data['allControllers'] != null
+            ? (data['allControllers']
+                as Map<String, TextEditingController>)[widget.component.id]
+            : null);
+    controller?.text = value;
+  }
+
+  void _handleActions(String value) {
+    print('AsyncDropdown onChange: $value');
+    if (widget.component.onChangeActions.isEmpty) {
+      print('No actions configured');
+      return;
+    }
+
+    final allControllers =
+        widget.data['allControllers'] as Map<String, TextEditingController>? ??
+            {};
+
+    print('Available controllers: ${allControllers.keys.join(', ')}');
+
+    for (final action in widget.component.onChangeActions) {
+      print('Processing action: ${action.type}, target: ${action.targetId}');
+      if (action.type == 'set_value') {
+        final targetId = action.targetId;
+        final targetController = allControllers[targetId];
+        if (targetController != null) {
+          String newValue = action.value ?? '';
+          // Simple interpolation for {{ value }}
+          newValue = newValue.replaceAll('{{ value }}', value);
+          newValue = newValue.replaceAll('{{value}}', value);
+          print('Setting target $targetId to: $newValue');
+          targetController.text = newValue;
+        } else {
+          print('Target controller $targetId not found');
+        }
+      }
+    }
   }
 }
