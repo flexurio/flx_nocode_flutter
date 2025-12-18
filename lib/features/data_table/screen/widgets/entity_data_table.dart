@@ -208,7 +208,15 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       ),
       ..._buildHomeActions(),
       refreshButton,
-      ...widget.entity.actionsHome.map((e) => e.buildButtonRegular()).toList(),
+      ...widget.entity.actionsHome
+          .map((e) => e.buildButtonRegular(
+                context: context,
+                entity: widget.entity,
+                parentData: widget.parentData,
+                filters: _filters.toMap(),
+                onSuccess: () => _fetch(),
+              ))
+          .toList(),
       if (widget.entity.allowCreate)
         EntityCreateButtonOld(
           parentData: widget.parentData,

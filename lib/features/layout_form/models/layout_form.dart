@@ -14,6 +14,7 @@ JsonMap _coerceJsonMap(dynamic v) {
 }
 
 class LayoutForm extends HiveObject {
+  final String id;
   final String label;
   final String type; // "create" | "update" | "view" | "home"
   final List<GroupLayout> groups;
@@ -33,7 +34,8 @@ class LayoutForm extends HiveObject {
   bool get useNewForm => components.isNotEmpty;
 
   LayoutForm.empty()
-      : label = '',
+      : id = '',
+        label = '',
         type = createType,
         groups = const [],
         visibleIf = null,
@@ -44,6 +46,7 @@ class LayoutForm extends HiveObject {
         isPopup = false;
 
   LayoutForm({
+    required this.id,
     required this.label,
     required this.type,
     required List<GroupLayout> groups,
@@ -78,6 +81,9 @@ class LayoutForm extends HiveObject {
     if (map['type'] == null || map['type'].toString().trim().isEmpty) {
       throw const FormatException('Action "type" is required');
     }
+    final type = map['type'].toString().trim();
+    final id = map['id']?.toString().trim() ?? type;
+
     if (map['label'] == null || map['label'].toString().trim().isEmpty) {
       throw const FormatException('Action "label" is required');
     }
@@ -172,9 +178,10 @@ class LayoutForm extends HiveObject {
     }
 
     return LayoutForm(
+      id: id,
       components: components ?? const [],
       label: map['label'].toString().trim(),
-      type: map['type'].toString().trim(),
+      type: type,
       groups: groups,
       visibleIf: map['visible_if'] == null
           ? null
@@ -188,6 +195,7 @@ class LayoutForm extends HiveObject {
 
   JsonMap toMap() {
     final m = <String, dynamic>{
+      'id': id,
       'label': label,
       'type': type,
       'groups': groups.map((e) => e.toMap()).toList(growable: false),
@@ -213,6 +221,7 @@ class LayoutForm extends HiveObject {
   }
 
   LayoutForm copyWith({
+    String? id,
     String? label,
     String? type,
     List<GroupLayout>? groups,
@@ -224,6 +233,7 @@ class LayoutForm extends HiveObject {
     bool? isPopup,
   }) {
     return LayoutForm(
+      id: id ?? this.id,
       components: components ?? this.components,
       label: label ?? this.label,
       type: type ?? this.type,

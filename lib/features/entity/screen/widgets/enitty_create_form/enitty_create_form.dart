@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/controller.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'package:gap/gap.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/group_builder.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
 
 import '../../../../../flx_nocode_flutter.dart';
 
@@ -53,26 +55,22 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
           return const SizedBox.shrink();
         }
 
-        final visibleGroups = widget.layoutForm.groups
-            .where((g) => g.isVisible(state))
-            .toList(growable: false);
-
-        final children = <Widget>[];
-        for (var i = 0; i < visibleGroups.length; i++) {
-          final group = visibleGroups[i];
-          children.add(
-            GroupBuilder(
-              parentData: widget.parentData,
-              group: group,
-              entity: widget.entity,
-              dataAction: widget.dataAction,
-              controllers: widget.controllers,
-              formState: _formState,
-            ),
+        if (widget.layoutForm.components.isEmpty) {
+          return NoCodeError(
+            'Empty Layout Form',
+            debugInfo:
+                'Entity: ${widget.entity.label}, Layout: ${widget.layoutForm.id}',
+            description:
+                'The layout form for this entity does not contain any components to display.',
+            suggestion:
+                'Please add components to the layout form in the entity configuration.',
           );
-          if (i < visibleGroups.length - 1) children.add(const Gap(24));
         }
 
+        final children = widget.layoutForm.components.map((c) {
+          final ctrl = widget.controllers[c.id];
+          return c.convertToWidget({'controller': ctrl});
+        }).toList();
         return Column(children: children);
       },
     );

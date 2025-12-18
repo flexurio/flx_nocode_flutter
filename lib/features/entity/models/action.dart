@@ -1,3 +1,4 @@
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
 import 'package:hive/hive.dart';
@@ -115,6 +116,17 @@ class ActionD extends HiveObject {
       if (http != null) 'http': http!.toJson(),
     };
   }
+
+  DataAction get action {
+    if (type == ActionType.print) {
+      return DataAction.print;
+    } else if (type == ActionType.listJsonViewAsTable) {
+      return DataAction.view;
+    } else if (type == ActionType.create) {
+      return DataAction.create;
+    }
+    return DataAction.none;
+  }
 }
 
 extension ActionDListExtension on List<ActionD> {
@@ -127,5 +139,6 @@ extension ActionDListExtension on List<ActionD> {
 
 class ActionType {
   static const String print = 'print';
+  static const String create = 'create';
   static const String listJsonViewAsTable = 'list_json_view_as_table';
 }

@@ -1,5 +1,5 @@
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
-import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/entity_create_view.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +17,7 @@ class CreatePage extends StatelessWidget {
     required this.autoBackWhenSuccess,
     this.filters = const {},
     required this.noHeader,
-    required this.layoutForm,
+    required this.layoutFormId,
     required this.parentData,
   });
 
@@ -29,7 +29,7 @@ class CreatePage extends StatelessWidget {
   final bool embedded;
   final bool autoBackWhenSuccess;
   final bool noHeader;
-  final LayoutForm layoutForm;
+  final String layoutFormId;
 
   static Widget prepare({
     Key? key,
@@ -39,25 +39,15 @@ class CreatePage extends StatelessWidget {
     Map<String, dynamic>? data,
     required bool embedded,
     required EntityCustom entity,
-    required LayoutForm? layoutForm,
+    required String layoutFormId,
     required List<Map<String, dynamic>> parentData,
     required VoidCallback onSuccess,
   }) {
-    if (layoutForm == null) {
-      return NoCodeError(
-        'Missing Layout Form',
-        description:
-            'A layout form is required to render the entity creation page.',
-        suggestion: 'Please provide a valid LayoutForm object.',
-        debugInfo: 'layoutForm was null in EntityCreatePage.prepare',
-      );
-    }
-
     return MultiBlocProvider(
       providers: [BlocProvider(create: (context) => EntityBloc(entity))],
       child: CreatePage._(
         parentData: parentData,
-        layoutForm: layoutForm,
+        layoutFormId: layoutFormId,
         data: data,
         entity: entity,
         onSuccess: onSuccess,
@@ -71,7 +61,7 @@ class CreatePage extends StatelessWidget {
   }
 
   static Route<bool?> route({
-    required LayoutForm layoutForm,
+    required String layoutFormId,
     required EntityCustom entity,
     Map<String, dynamic>? data,
     required VoidCallback onSuccess,
@@ -85,7 +75,7 @@ class CreatePage extends StatelessWidget {
       type: PageTransitionType.rightToLeft,
       child: CreatePage.prepare(
         parentData: parentData,
-        layoutForm: layoutForm,
+        layoutFormId: layoutFormId,
         data: data,
         entity: entity,
         onSuccess: onSuccess,
@@ -98,16 +88,31 @@ class CreatePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CreateForm(
-      parentData: parentData,
-      layoutForm: layoutForm,
-      data: data,
-      entity: entity,
-      onSuccess: onSuccess,
-      embedded: embedded,
-      filters: filters,
-      noHeader: noHeader,
-      autoBackWhenSuccess: autoBackWhenSuccess,
-    );
+    try {
+      final layoutForm = entity.layoutForm.firstWhere(
+        (e) => e.id == layoutFormId,
+      );
+
+      return CreateForm(
+        parentData: parentData,
+        layoutForm: layoutForm,
+        data: data,
+        entity: entity,
+        onSuccess: () {}, // Event submit dikosongkan dahulu
+        embedded: embedded,
+        filters: filters,
+        noHeader: noHeader,
+        autoBackWhenSuccess: autoBackWhenSuccess,
+      );
+    } catch (e) {
+      return Scaffold(
+        body: NoCodeError(
+          'Layout Form Not Found',
+          description: 'Could not find layout form with id: $layoutFormId',
+          suggestion: 'Check your entity configuration.',
+          debugInfo: 'ID: $layoutFormId',
+        ),
+      );
+    }
   }
 }

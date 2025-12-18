@@ -13,8 +13,8 @@ import 'package:flx_nocode_flutter/src/app/view/page/entity_create/widgets/entit
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class EntityCreateView extends StatefulWidget {
-  const EntityCreateView({
+class CreateForm extends StatefulWidget {
+  const CreateForm({
     super.key,
     required this.data,
     required this.entity,
@@ -38,10 +38,10 @@ class EntityCreateView extends StatefulWidget {
   final LayoutForm layoutForm;
 
   @override
-  State<EntityCreateView> createState() => _EntityCreateViewState();
+  State<CreateForm> createState() => _CreateFormState();
 }
 
-class _EntityCreateViewState extends State<EntityCreateView> {
+class _CreateFormState extends State<CreateForm> {
   final _formKey = GlobalKey<FormState>();
   var _controllers = <String, TextEditingController>{};
   late DataAction _action;

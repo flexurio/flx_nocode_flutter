@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
+import 'package:flx_nocode_flutter/features/layout_form/screen/pages/create_page.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'json_table_viewer.dart';
@@ -55,11 +56,29 @@ extension ActionWidgetExtension on ActionD {
     return data.every(isVisibleFor);
   }
 
-  Widget buildButtonRegular() {
+  Widget buildButtonRegular({
+    required BuildContext context,
+    required EntityCustom entity,
+    required JsonList parentData,
+    required JsonMap filters,
+    required VoidCallback onSuccess,
+  }) {
     return LightButtonSmall(
       title: name,
-      action: DataAction.print,
-      onPressed: () {},
+      action: action,
+      onPressed: () async {
+        await Navigator.push(
+          context,
+          CreatePage.route(
+            entity: entity,
+            onSuccess: onSuccess,
+            embedded: false,
+            parentData: parentData,
+            filters: filters,
+            layoutFormId: id,
+          ),
+        );
+      },
       permissions: null,
     );
   }
