@@ -7,6 +7,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart'
     as configuration;
 
+import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
+import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
+
 part 'entity_bloc.freezed.dart';
 
 @freezed
@@ -41,6 +44,10 @@ class EntityEvent with _$EntityEvent {
     required Map<String, dynamic> data,
     required BackendOther event,
   }) = _OtherEvent;
+  const factory EntityEvent.submitWorkflow({
+    required Map<String, dynamic> data,
+    required Map<String, dynamic> workflow,
+  }) = _SubmitWorkflow;
 }
 
 class EntityBloc extends Bloc<EntityEvent, EntityState> {
@@ -143,7 +150,76 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
             emit(_Error(errorMessage(error)));
           }
         },
+        submitWorkflow: (data, workflowJson) async {
+          emit(const _Loading());
+          try {
+            // Parse workflow
+            final definition = WorkflowDefinition.fromJson(workflowJson);
+
+            // Construct context
+            // We need an HttpExecutor wrapper around EntityCustomRepository
+            final executor = _BlocHttpExecutor(
+              UserRepositoryApp.instance.token!,
+            );
+
+            final ctx = WorkflowContext(
+              form: data,
+              auth: AuthContext(
+                token: UserRepositoryApp.instance.token!,
+                permissions: [], // TODO: Get permissions if needed
+              ),
+              httpExecutor: executor,
+            );
+
+            final runner = WorkflowExecutor(definition); // No UI bridge for now
+            final result = await runner.run(ctx);
+
+            if (result.isSuccess) {
+              // If success, we assume the last action or some specialized variable holds the result?
+              // Or just return null/success map.
+              // Typically create/update returns the object.
+              // We can try to find if there is a 'result' variable or http response.
+              emit(const _Success({})); // Success with empty map for now
+            } else {
+              emit(_Error(result.error?.message ?? 'Workflow failed'));
+            }
+          } catch (error, st) {
+            print('[EntityBloc] SubmitWorkflow - error $error $st');
+            emit(_Error(error.toString()));
+          }
+        },
       );
     });
+  }
+}
+
+class _BlocHttpExecutor implements HttpExecutor {
+  final String token;
+  _BlocHttpExecutor(this.token);
+
+  @override
+  Future<HttpResult> execute(HttpData request) async {
+    try {
+      final response = await EntityCustomRepository.instance.modify(
+        accessToken: token,
+        path: request.url,
+        method: request.method,
+        data: request.body,
+        // headers: request.headers // EntityCustomRepository might not support custom headers directly in modify?
+        // Checking modify signature: (accessToken, path, method, data)
+        // It seems to wrap Dio.
+      );
+      // We assume response is dynamic data (the body).
+      // We need to wrap it in HttpResult
+      return HttpResult(
+        status: 200, // We assume 200 if no exception
+        data: response,
+      );
+    } catch (e) {
+      // EntityCustomRepository throws on error.
+      // We need to capture status code if possible.
+      // For now generic 500
+      throw Exception('HTTP Error: $e');
+    }
   }
 }

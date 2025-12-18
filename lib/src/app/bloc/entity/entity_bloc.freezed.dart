@@ -628,6 +628,9 @@ mixin _$EntityEvent {
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> workflow)
+        submitWorkflow,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -642,6 +645,8 @@ mixin _$EntityEvent {
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+        submitWorkflow,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -655,6 +660,8 @@ mixin _$EntityEvent {
         edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+        submitWorkflow,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -665,6 +672,7 @@ mixin _$EntityEvent {
     required TResult Function(_Edit value) edit,
     required TResult Function(_Delete value) delete,
     required TResult Function(_OtherEvent value) otherEvent,
+    required TResult Function(_SubmitWorkflow value) submitWorkflow,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -674,6 +682,7 @@ mixin _$EntityEvent {
     TResult? Function(_Edit value)? edit,
     TResult? Function(_Delete value)? delete,
     TResult? Function(_OtherEvent value)? otherEvent,
+    TResult? Function(_SubmitWorkflow value)? submitWorkflow,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -683,6 +692,7 @@ mixin _$EntityEvent {
     TResult Function(_Edit value)? edit,
     TResult Function(_Delete value)? delete,
     TResult Function(_OtherEvent value)? otherEvent,
+    TResult Function(_SubmitWorkflow value)? submitWorkflow,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -832,6 +842,9 @@ class _$ExecuteImpl implements _Execute {
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> workflow)
+        submitWorkflow,
   }) {
     return execute(data, method, url, filters);
   }
@@ -849,6 +862,8 @@ class _$ExecuteImpl implements _Execute {
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+        submitWorkflow,
   }) {
     return execute?.call(data, method, url, filters);
   }
@@ -865,6 +880,8 @@ class _$ExecuteImpl implements _Execute {
         edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+        submitWorkflow,
     required TResult orElse(),
   }) {
     if (execute != null) {
@@ -881,6 +898,7 @@ class _$ExecuteImpl implements _Execute {
     required TResult Function(_Edit value) edit,
     required TResult Function(_Delete value) delete,
     required TResult Function(_OtherEvent value) otherEvent,
+    required TResult Function(_SubmitWorkflow value) submitWorkflow,
   }) {
     return execute(this);
   }
@@ -893,6 +911,7 @@ class _$ExecuteImpl implements _Execute {
     TResult? Function(_Edit value)? edit,
     TResult? Function(_Delete value)? delete,
     TResult? Function(_OtherEvent value)? otherEvent,
+    TResult? Function(_SubmitWorkflow value)? submitWorkflow,
   }) {
     return execute?.call(this);
   }
@@ -905,6 +924,7 @@ class _$ExecuteImpl implements _Execute {
     TResult Function(_Edit value)? edit,
     TResult Function(_Delete value)? delete,
     TResult Function(_OtherEvent value)? otherEvent,
+    TResult Function(_SubmitWorkflow value)? submitWorkflow,
     required TResult orElse(),
   }) {
     if (execute != null) {
@@ -1032,6 +1052,9 @@ class _$CreateImpl implements _Create {
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> workflow)
+        submitWorkflow,
   }) {
     return create(data, filters);
   }
@@ -1049,6 +1072,8 @@ class _$CreateImpl implements _Create {
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+        submitWorkflow,
   }) {
     return create?.call(data, filters);
   }
@@ -1065,6 +1090,8 @@ class _$CreateImpl implements _Create {
         edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+        submitWorkflow,
     required TResult orElse(),
   }) {
     if (create != null) {
@@ -1081,6 +1108,7 @@ class _$CreateImpl implements _Create {
     required TResult Function(_Edit value) edit,
     required TResult Function(_Delete value) delete,
     required TResult Function(_OtherEvent value) otherEvent,
+    required TResult Function(_SubmitWorkflow value) submitWorkflow,
   }) {
     return create(this);
   }
@@ -1093,6 +1121,7 @@ class _$CreateImpl implements _Create {
     TResult? Function(_Edit value)? edit,
     TResult? Function(_Delete value)? delete,
     TResult? Function(_OtherEvent value)? otherEvent,
+    TResult? Function(_SubmitWorkflow value)? submitWorkflow,
   }) {
     return create?.call(this);
   }
@@ -1105,6 +1134,7 @@ class _$CreateImpl implements _Create {
     TResult Function(_Edit value)? edit,
     TResult Function(_Delete value)? delete,
     TResult Function(_OtherEvent value)? otherEvent,
+    TResult Function(_SubmitWorkflow value)? submitWorkflow,
     required TResult orElse(),
   }) {
     if (create != null) {
@@ -1227,6 +1257,9 @@ class _$EditImpl implements _Edit {
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> workflow)
+        submitWorkflow,
   }) {
     return edit(data, filters);
   }
@@ -1244,6 +1277,8 @@ class _$EditImpl implements _Edit {
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+        submitWorkflow,
   }) {
     return edit?.call(data, filters);
   }
@@ -1260,6 +1295,8 @@ class _$EditImpl implements _Edit {
         edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+        submitWorkflow,
     required TResult orElse(),
   }) {
     if (edit != null) {
@@ -1276,6 +1313,7 @@ class _$EditImpl implements _Edit {
     required TResult Function(_Edit value) edit,
     required TResult Function(_Delete value) delete,
     required TResult Function(_OtherEvent value) otherEvent,
+    required TResult Function(_SubmitWorkflow value) submitWorkflow,
   }) {
     return edit(this);
   }
@@ -1288,6 +1326,7 @@ class _$EditImpl implements _Edit {
     TResult? Function(_Edit value)? edit,
     TResult? Function(_Delete value)? delete,
     TResult? Function(_OtherEvent value)? otherEvent,
+    TResult? Function(_SubmitWorkflow value)? submitWorkflow,
   }) {
     return edit?.call(this);
   }
@@ -1300,6 +1339,7 @@ class _$EditImpl implements _Edit {
     TResult Function(_Edit value)? edit,
     TResult Function(_Delete value)? delete,
     TResult Function(_OtherEvent value)? otherEvent,
+    TResult Function(_SubmitWorkflow value)? submitWorkflow,
     required TResult orElse(),
   }) {
     if (edit != null) {
@@ -1397,6 +1437,9 @@ class _$DeleteImpl implements _Delete {
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> workflow)
+        submitWorkflow,
   }) {
     return delete(id);
   }
@@ -1414,6 +1457,8 @@ class _$DeleteImpl implements _Delete {
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+        submitWorkflow,
   }) {
     return delete?.call(id);
   }
@@ -1430,6 +1475,8 @@ class _$DeleteImpl implements _Delete {
         edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+        submitWorkflow,
     required TResult orElse(),
   }) {
     if (delete != null) {
@@ -1446,6 +1493,7 @@ class _$DeleteImpl implements _Delete {
     required TResult Function(_Edit value) edit,
     required TResult Function(_Delete value) delete,
     required TResult Function(_OtherEvent value) otherEvent,
+    required TResult Function(_SubmitWorkflow value) submitWorkflow,
   }) {
     return delete(this);
   }
@@ -1458,6 +1506,7 @@ class _$DeleteImpl implements _Delete {
     TResult? Function(_Edit value)? edit,
     TResult? Function(_Delete value)? delete,
     TResult? Function(_OtherEvent value)? otherEvent,
+    TResult? Function(_SubmitWorkflow value)? submitWorkflow,
   }) {
     return delete?.call(this);
   }
@@ -1470,6 +1519,7 @@ class _$DeleteImpl implements _Delete {
     TResult Function(_Edit value)? edit,
     TResult Function(_Delete value)? delete,
     TResult Function(_OtherEvent value)? otherEvent,
+    TResult Function(_SubmitWorkflow value)? submitWorkflow,
     required TResult orElse(),
   }) {
     if (delete != null) {
@@ -1581,6 +1631,9 @@ class _$OtherEventImpl implements _OtherEvent {
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> workflow)
+        submitWorkflow,
   }) {
     return otherEvent(data, event);
   }
@@ -1598,6 +1651,8 @@ class _$OtherEventImpl implements _OtherEvent {
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+        submitWorkflow,
   }) {
     return otherEvent?.call(data, event);
   }
@@ -1614,6 +1669,8 @@ class _$OtherEventImpl implements _OtherEvent {
         edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+        submitWorkflow,
     required TResult orElse(),
   }) {
     if (otherEvent != null) {
@@ -1630,6 +1687,7 @@ class _$OtherEventImpl implements _OtherEvent {
     required TResult Function(_Edit value) edit,
     required TResult Function(_Delete value) delete,
     required TResult Function(_OtherEvent value) otherEvent,
+    required TResult Function(_SubmitWorkflow value) submitWorkflow,
   }) {
     return otherEvent(this);
   }
@@ -1642,6 +1700,7 @@ class _$OtherEventImpl implements _OtherEvent {
     TResult? Function(_Edit value)? edit,
     TResult? Function(_Delete value)? delete,
     TResult? Function(_OtherEvent value)? otherEvent,
+    TResult? Function(_SubmitWorkflow value)? submitWorkflow,
   }) {
     return otherEvent?.call(this);
   }
@@ -1654,6 +1713,7 @@ class _$OtherEventImpl implements _OtherEvent {
     TResult Function(_Edit value)? edit,
     TResult Function(_Delete value)? delete,
     TResult Function(_OtherEvent value)? otherEvent,
+    TResult Function(_SubmitWorkflow value)? submitWorkflow,
     required TResult orElse(),
   }) {
     if (otherEvent != null) {
@@ -1672,5 +1732,212 @@ abstract class _OtherEvent implements EntityEvent {
   BackendOther get event;
   @JsonKey(ignore: true)
   _$$OtherEventImplCopyWith<_$OtherEventImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$SubmitWorkflowImplCopyWith<$Res> {
+  factory _$$SubmitWorkflowImplCopyWith(_$SubmitWorkflowImpl value,
+          $Res Function(_$SubmitWorkflowImpl) then) =
+      __$$SubmitWorkflowImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({Map<String, dynamic> data, Map<String, dynamic> workflow});
+}
+
+/// @nodoc
+class __$$SubmitWorkflowImplCopyWithImpl<$Res>
+    extends _$EntityEventCopyWithImpl<$Res, _$SubmitWorkflowImpl>
+    implements _$$SubmitWorkflowImplCopyWith<$Res> {
+  __$$SubmitWorkflowImplCopyWithImpl(
+      _$SubmitWorkflowImpl _value, $Res Function(_$SubmitWorkflowImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? data = null,
+    Object? workflow = null,
+  }) {
+    return _then(_$SubmitWorkflowImpl(
+      data: null == data
+          ? _value._data
+          : data // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
+      workflow: null == workflow
+          ? _value._workflow
+          : workflow // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$SubmitWorkflowImpl implements _SubmitWorkflow {
+  const _$SubmitWorkflowImpl(
+      {required final Map<String, dynamic> data,
+      required final Map<String, dynamic> workflow})
+      : _data = data,
+        _workflow = workflow;
+
+  final Map<String, dynamic> _data;
+  @override
+  Map<String, dynamic> get data {
+    if (_data is EqualUnmodifiableMapView) return _data;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_data);
+  }
+
+  final Map<String, dynamic> _workflow;
+  @override
+  Map<String, dynamic> get workflow {
+    if (_workflow is EqualUnmodifiableMapView) return _workflow;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_workflow);
+  }
+
+  @override
+  String toString() {
+    return 'EntityEvent.submitWorkflow(data: $data, workflow: $workflow)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SubmitWorkflowImpl &&
+            const DeepCollectionEquality().equals(other._data, _data) &&
+            const DeepCollectionEquality().equals(other._workflow, _workflow));
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_data),
+      const DeepCollectionEquality().hash(_workflow));
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SubmitWorkflowImplCopyWith<_$SubmitWorkflowImpl> get copyWith =>
+      __$$SubmitWorkflowImplCopyWithImpl<_$SubmitWorkflowImpl>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(Map<String, dynamic> data, String method,
+            String url, Map<String, dynamic> filters)
+        execute,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> filters)
+        create,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> filters)
+        edit,
+    required TResult Function(String id) delete,
+    required TResult Function(Map<String, dynamic> data, BackendOther event)
+        otherEvent,
+    required TResult Function(
+            Map<String, dynamic> data, Map<String, dynamic> workflow)
+        submitWorkflow,
+  }) {
+    return submitWorkflow(data, workflow);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(Map<String, dynamic> data, String method, String url,
+            Map<String, dynamic> filters)?
+        execute,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        create,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        edit,
+    TResult? Function(String id)? delete,
+    TResult? Function(Map<String, dynamic> data, BackendOther event)?
+        otherEvent,
+    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+        submitWorkflow,
+  }) {
+    return submitWorkflow?.call(data, workflow);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(Map<String, dynamic> data, String method, String url,
+            Map<String, dynamic> filters)?
+        execute,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        create,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> filters)?
+        edit,
+    TResult Function(String id)? delete,
+    TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
+    TResult Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+        submitWorkflow,
+    required TResult orElse(),
+  }) {
+    if (submitWorkflow != null) {
+      return submitWorkflow(data, workflow);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Execute value) execute,
+    required TResult Function(_Create value) create,
+    required TResult Function(_Edit value) edit,
+    required TResult Function(_Delete value) delete,
+    required TResult Function(_OtherEvent value) otherEvent,
+    required TResult Function(_SubmitWorkflow value) submitWorkflow,
+  }) {
+    return submitWorkflow(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Execute value)? execute,
+    TResult? Function(_Create value)? create,
+    TResult? Function(_Edit value)? edit,
+    TResult? Function(_Delete value)? delete,
+    TResult? Function(_OtherEvent value)? otherEvent,
+    TResult? Function(_SubmitWorkflow value)? submitWorkflow,
+  }) {
+    return submitWorkflow?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Execute value)? execute,
+    TResult Function(_Create value)? create,
+    TResult Function(_Edit value)? edit,
+    TResult Function(_Delete value)? delete,
+    TResult Function(_OtherEvent value)? otherEvent,
+    TResult Function(_SubmitWorkflow value)? submitWorkflow,
+    required TResult orElse(),
+  }) {
+    if (submitWorkflow != null) {
+      return submitWorkflow(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _SubmitWorkflow implements EntityEvent {
+  const factory _SubmitWorkflow(
+      {required final Map<String, dynamic> data,
+      required final Map<String, dynamic> workflow}) = _$SubmitWorkflowImpl;
+
+  Map<String, dynamic> get data;
+  Map<String, dynamic> get workflow;
+  @JsonKey(ignore: true)
+  _$$SubmitWorkflowImplCopyWith<_$SubmitWorkflowImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

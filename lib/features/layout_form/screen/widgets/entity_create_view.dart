@@ -179,7 +179,13 @@ class _CreateFormState extends State<CreateForm> {
   void _submit() {
     if (_formKey.currentState!.validate()) {
       late EntityEvent event;
-      if (_action.isEdit || widget.layoutForm.formType.isHome) {
+      if (widget.layoutForm.submitWorkflow != null &&
+          widget.layoutForm.submitWorkflow!.isNotEmpty) {
+        event = EntityEvent.submitWorkflow(
+          data: _data,
+          workflow: widget.layoutForm.submitWorkflow!,
+        );
+      } else if (_action.isEdit || widget.layoutForm.formType.isHome) {
         event = EntityEvent.edit(data: _data, filters: widget.filters);
       } else {
         event = EntityEvent.create(data: _data, filters: widget.filters);
