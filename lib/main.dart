@@ -20,9 +20,10 @@ Future<void> main() async {
 
   final runtimeConfigurationFsBasePath =
       (Platform.environment['CONFIGURATION_FS_BASE_PATH'] ?? '').trim();
-  final resolvedConfigurationFsBasePath = runtimeConfigurationFsBasePath.isNotEmpty
-      ? runtimeConfigurationFsBasePath
-      : _cliConfigurationFileSystemBasePath;
+  final resolvedConfigurationFsBasePath =
+      runtimeConfigurationFsBasePath.isNotEmpty
+          ? runtimeConfigurationFsBasePath
+          : _cliConfigurationFileSystemBasePath;
 
   if (resolvedConfigurationFsBasePath.isNotEmpty) {
     Configuration.fileSystemBasePath = resolvedConfigurationFsBasePath;
@@ -59,7 +60,7 @@ Future<void> main() async {
       final entity = await EntityCustom.getEntity(entityRegistration);
       if (entity != null) {
         signUpPage = ({required VoidCallback onSuccess}) {
-          return EntityCreatePage.prepare(
+          return EntityCreatePageOld.prepare(
             parentData: [],
             layoutForm: entity.layoutForm.getByType(FormType.create),
             entity: entity,
@@ -72,7 +73,8 @@ Future<void> main() async {
         };
       }
     } catch (e) {
-      print('[main] error loading entity registration "$entityRegistration": $e');
+      print(
+          '[main] error loading entity registration "$entityRegistration": $e');
       runApp(
         MaterialApp(
           home: ConfigurationErrorPage(error: e),

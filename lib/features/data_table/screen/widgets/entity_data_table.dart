@@ -179,7 +179,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           onPressed: () async {
             await Navigator.push(
               context,
-              EntityCreatePage.route(
+              EntityCreatePageOld.route(
                 layoutForm: action,
                 entity: widget.entity,
                 onSuccess: () => _fetch(),

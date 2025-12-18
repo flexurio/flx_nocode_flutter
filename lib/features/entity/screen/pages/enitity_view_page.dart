@@ -191,7 +191,7 @@ class EntityViewPage extends StatelessWidget {
             onPressed: () async {
               Navigator.push(
                 context,
-                EntityCreatePage.route(
+                EntityCreatePageOld.route(
                   parentData: parentData,
                   layoutForm: e,
                   filters: filters,
@@ -233,7 +233,7 @@ class EntityViewPage extends StatelessWidget {
             onPressed: () async {
               Navigator.push(
                 context,
-                EntityCreatePage.route(
+                EntityCreatePageOld.route(
                   parentData: parentData,
                   layoutForm: e,
                   embedded: embedded,

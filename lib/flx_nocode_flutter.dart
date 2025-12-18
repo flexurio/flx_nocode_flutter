@@ -15,7 +15,7 @@ export 'src/app/model/layout_list_tile.dart';
 export 'src/app/model/no_code.dart';
 export 'src/app/model/theme.dart';
 export 'features/view/models/view.dart';
-export 'src/app/view/page/entity_create/entity_create_page.dart';
+export 'src/app/view/page/entity_create/entity_create_page_old.dart';
 export 'src/app/view/widget/entity_home.dart';
 export 'features/field/models/type.dart';
 export 'features/component/models/component_button.dart';

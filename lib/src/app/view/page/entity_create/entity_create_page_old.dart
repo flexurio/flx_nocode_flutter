@@ -7,8 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'package:page_transition/page_transition.dart';
 
-class EntityCreatePage extends StatelessWidget {
-  const EntityCreatePage._({
+class EntityCreatePageOld extends StatelessWidget {
+  const EntityCreatePageOld._({
     super.key,
     required this.data,
     required this.entity,
@@ -55,7 +55,7 @@ class EntityCreatePage extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: [BlocProvider(create: (context) => EntityBloc(entity))],
-      child: EntityCreatePage._(
+      child: EntityCreatePageOld._(
         parentData: parentData,
         layoutForm: layoutForm,
         data: data,
@@ -83,7 +83,7 @@ class EntityCreatePage extends StatelessWidget {
     return PageTransition(
       opaque: true,
       type: PageTransitionType.rightToLeft,
-      child: EntityCreatePage.prepare(
+      child: EntityCreatePageOld.prepare(
         parentData: parentData,
         layoutForm: layoutForm,
         data: data,
