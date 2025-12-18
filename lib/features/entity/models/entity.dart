@@ -51,6 +51,8 @@ class EntityCustom extends HiveObject {
   /// A list of custom [ActionD] definitions that can be performed on the entity.
   final List<ActionD> actions;
 
+  final List<ActionD> actionsHome;
+
   /// A map defining the layout of columns in a data table view.
   /// The key is the field reference, and the value is typically a flex factor.
   Map<String, int> layoutTable;
@@ -58,6 +60,7 @@ class EntityCustom extends HiveObject {
   /// Creates a new instance of [EntityCustom].
   EntityCustom({
     required this.actions,
+    this.actionsHome = const [],
     required this.id,
     required this.label,
     required this.description,
@@ -251,6 +254,17 @@ class EntityCustom extends HiveObject {
         },
       );
 
+      final actionsHome = parseListOptional<ActionD>(
+        'actions_home',
+        (raw, i) {
+          if (raw is! Map<String, dynamic>) {
+            throw FormatException(
+                "expected Map for 'actions_home'[$i], got ${raw.runtimeType}");
+          }
+          return ActionD.fromJson(raw);
+        },
+      );
+
       PaginationOption paginationOption = const PaginationOption();
       if (json.containsKey('pagination_option') &&
           json['pagination_option'] != null) {
@@ -265,6 +279,7 @@ class EntityCustom extends HiveObject {
       return EntityCustom(
         id: id,
         actions: actions,
+        actionsHome: actionsHome,
         label: label,
         description: description,
         fields: fields,
@@ -294,6 +309,7 @@ class EntityCustom extends HiveObject {
         layoutForm = [],
         layoutListTile = null,
         actions = [],
+        actionsHome = [],
         layoutTable = {},
         exports = [];
 
@@ -311,10 +327,12 @@ class EntityCustom extends HiveObject {
     Map<String, int>? layoutTable,
     List<Export>? exports,
     List<ActionD>? actions,
+    List<ActionD>? actionsHome,
   }) {
     return EntityCustom(
       id: id ?? this.id,
       actions: actions ?? this.actions,
+      actionsHome: actionsHome ?? this.actionsHome,
       label: label ?? this.label,
       description: description ?? this.description,
       fields: fields ?? this.fields,
@@ -396,6 +414,7 @@ class EntityCustom extends HiveObject {
       'layout_list_tile': layoutListTile?.toJson(),
       'layout_table': layoutTable,
       'actions': actions.map((e) => e.toJson()).toList(),
+      'actions_home': actionsHome.map((e) => e.toJson()).toList(),
     };
   }
 

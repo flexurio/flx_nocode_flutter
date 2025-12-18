@@ -55,6 +55,15 @@ extension ActionWidgetExtension on ActionD {
     return data.every(isVisibleFor);
   }
 
+  Widget buildButtonRegular() {
+    return LightButtonSmall(
+      title: name,
+      action: DataAction.print,
+      onPressed: () {},
+      permissions: null,
+    );
+  }
+
   Widget buttonSingle(
     EntityCustom entity,
     BuildContext context,

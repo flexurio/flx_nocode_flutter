@@ -30,6 +30,7 @@ class LayoutForm extends HiveObject {
   static const String homeType = 'home';
 
   List<String> get componentIds => components.map((e) => e.id).toList();
+  bool get useNewForm => components.isNotEmpty;
 
   LayoutForm.empty()
       : label = '',

@@ -1,8 +1,9 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_widget_extension.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
-import 'package:flx_nocode_flutter/src/app/view/widget/entity_create_button.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/entity_create_button_old.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/filter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -207,8 +208,9 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       ),
       ..._buildHomeActions(),
       refreshButton,
+      ...widget.entity.actionsHome.map((e) => e.buildButtonRegular()).toList(),
       if (widget.entity.allowCreate)
-        EntityCreateButton(
+        EntityCreateButtonOld(
           parentData: widget.parentData,
           layoutForm: widget.entity.layoutForm.getByType(FormType.create),
           embedded: widget.embedded,

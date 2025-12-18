@@ -5,8 +5,8 @@ import 'package:flx_nocode_flutter/src/app/view/page/entity_create/entity_create
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flutter/material.dart';
 
-class EntityCreateButton extends StatelessWidget {
-  const EntityCreateButton({
+class EntityCreateButtonOld extends StatelessWidget {
+  const EntityCreateButtonOld({
     super.key,
     required this.entity,
     required this.onSuccess,
