@@ -9,7 +9,7 @@ class ComponentDropdown extends Component {
   final String initialValue;
   final HttpData? httpData;
   final String? optionKey;
-  final String? optionValue;
+  final String? optionLabel;
   final List<ComponentAction> onChangeActions;
 
   ComponentDropdown({
@@ -19,7 +19,7 @@ class ComponentDropdown extends Component {
     required this.initialValue,
     this.httpData,
     this.optionKey,
-    this.optionValue,
+    this.optionLabel,
     this.onChangeActions = const [],
   }) : super(type: componentId);
 
@@ -77,7 +77,7 @@ class ComponentDropdown extends Component {
       initialValue: initialValue,
       httpData: httpData,
       optionKey: map['optionKey']?.toString(),
-      optionValue: map['optionValue']?.toString(),
+      optionLabel: map['optionLabel']?.toString(),
       onChangeActions: onChangeActions,
     );
   }
@@ -91,7 +91,7 @@ class ComponentDropdown extends Component {
         'initialValue': initialValue,
         'httpData': httpData?.toJson(),
         'optionKey': optionKey,
-        'optionValue': optionValue,
+        'optionLabel': optionLabel,
         'onChangeActions': onChangeActions.map((e) => e.toMap()).toList(),
       };
 }

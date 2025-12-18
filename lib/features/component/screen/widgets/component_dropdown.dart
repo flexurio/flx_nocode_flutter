@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_dropdown.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
@@ -16,18 +17,12 @@ extension ComponentDropdownWidgets on ComponentDropdown {
         ? initialValue
         : (items.isNotEmpty ? items.first : null);
 
-    return DropdownButtonFormField<String>(
-      value: initial,
-      items: items
-          .map(
-            (opt) => DropdownMenuItem<String>(
-              value: opt,
-              child: Text(opt),
-            ),
-          )
-          .toList(),
-      decoration: InputDecoration(labelText: label),
-      onChanged: (_) {},
+    return FDropDownSearch<String>(
+      items: items,
+      initialValue: initial,
+      itemAsString: (item) => item,
+      labelText: label,
+      onChanged: (value) {},
     );
   }
 }
@@ -61,8 +56,8 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
     try {
       final httpData = widget.component.httpData!;
       final result = await httpData.execute(widget.data);
-      if (result.isSuccess && result.data is List) {
-        final list = result.data as List;
+      if (result.isSuccess && result.data is Map) {
+        final list = (result.data as Map)['data'] as List;
         final mapped = list.map((item) {
           // context for interpolation
           final context = <String, dynamic>{
@@ -85,10 +80,10 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
             key = widget.component.optionKey!.interpolateJavascript(context);
           }
 
-          if (widget.component.optionValue != null &&
-              widget.component.optionValue!.isNotEmpty) {
+          if (widget.component.optionLabel != null &&
+              widget.component.optionLabel!.isNotEmpty) {
             label =
-                widget.component.optionValue!.interpolateJavascript(context);
+                widget.component.optionLabel!.interpolateJavascript(context);
           }
 
           return {'key': key, 'label': label};
@@ -136,20 +131,19 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
       return Text('Error: $_error', style: const TextStyle(color: Colors.red));
     }
 
-    return DropdownButtonFormField<String>(
-      value: _value,
-      items: _options
-          .map(
-            (opt) => DropdownMenuItem<String>(
-              value: opt['key'],
-              child: Text(opt['label'] ?? ''),
-            ),
-          )
-          .toList(),
-      decoration: InputDecoration(labelText: widget.component.label),
+    return FDropDownSearch<Map<String, String>>(
+      items: _options,
+      initialValue: _value != null
+          ? _options.firstWhere(
+              (element) => element['key'] == _value,
+              orElse: () => {},
+            )
+          : null,
+      labelText: widget.component.label,
+      itemAsString: (item) => item['label'] ?? '',
       onChanged: (val) {
         setState(() {
-          _value = val;
+          _value = val?['key'];
         });
       },
     );
