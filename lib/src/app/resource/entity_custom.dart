@@ -21,11 +21,14 @@ class EntityCustomRepository extends Repository {
     required String? accessToken,
     required String path,
     required String method,
+    Map<String, String>? headers,
     Map<String, dynamic>? queryParameters,
     Map<String, dynamic>? body,
-  }) {
-    final headers = {
-      RequestHeader.authorization: 'Bearer $accessToken',
+  }) async {
+    final combinedHeaders = {
+      if (accessToken != null)
+        RequestHeader.authorization: 'Bearer $accessToken',
+      ...?headers,
     };
 
     var url = path.interpolateJavascript();
@@ -33,34 +36,46 @@ class EntityCustomRepository extends Repository {
 
     print('[EntityCustomRepository] $method $url');
 
-    final options = Options(headers: headers);
+    final options = Options(headers: combinedHeaders);
 
-    switch (method.toUpperCase()) {
-      case 'GET':
-        return dio.get<T>(
-          url,
-          queryParameters: queryParameters,
-          options: options,
-        );
-      case 'POST':
-        return dio.post<T>(
-          url,
-          data: body != null ? FormData.fromMap(body) : null,
-          options: options,
-        );
-      case 'PUT':
-        return dio.put<T>(
-          url,
-          data: body != null ? FormData.fromMap(body) : null,
-          options: options,
-        );
-      case 'DELETE':
-        return dio.delete<T>(
-          url,
-          options: options,
-        );
-      default:
-        throw UnsupportedError('Unsupported HTTP method: $method');
+    try {
+      switch (method.toUpperCase()) {
+        case 'GET':
+          return await dio.get<T>(
+            url,
+            queryParameters: queryParameters,
+            options: options,
+          );
+        case 'POST':
+          return await dio.post<T>(
+            url,
+            data: body != null ? FormData.fromMap(body) : null,
+            options: options,
+          );
+        case 'PUT':
+          return await dio.put<T>(
+            url,
+            data: body != null ? FormData.fromMap(body) : null,
+            options: options,
+          );
+        case 'DELETE':
+          return await dio.delete<T>(
+            url,
+            options: options,
+          );
+        default:
+          throw UnsupportedError('Unsupported HTTP method: $method');
+      }
+    } catch (e) {
+      if (e is DioException) {
+        print('[EntityCustomRepository] Request Error: ${e.message}');
+        if (e.response != null) {
+          print(
+              '[EntityCustomRepository] Response Status: ${e.response?.statusCode}');
+          print('[EntityCustomRepository] Response Data: ${e.response?.data}');
+        }
+      }
+      rethrow;
     }
   }
 
@@ -71,6 +86,7 @@ class EntityCustomRepository extends Repository {
     required String path,
     required String method,
     required Map<String, dynamic> filterMap,
+    Map<String, String>? headers,
     int? cachedDurationSeconds,
   }) async {
     try {
@@ -101,6 +117,7 @@ class EntityCustomRepository extends Repository {
         accessToken: accessToken,
         path: path,
         method: method,
+        headers: headers,
         queryParameters: queryParams,
       );
 
@@ -129,12 +146,14 @@ class EntityCustomRepository extends Repository {
     required String path,
     required String method,
     required String id,
+    Map<String, String>? headers,
   }) async {
     try {
       final response = await _request<Map<String, dynamic>>(
         accessToken: accessToken,
         path: path.replaceFirst('{id}', id),
         method: method,
+        headers: headers,
         queryParameters: PageOptions.empty().toUrlQueryMap(),
       );
       return (response.data?['data'] as List)
@@ -151,6 +170,7 @@ class EntityCustomRepository extends Repository {
     required String? accessToken,
     required String path,
     required String method,
+    Map<String, String>? headers,
     Map<String, dynamic>? data,
   }) async {
     try {
@@ -165,6 +185,7 @@ class EntityCustomRepository extends Repository {
         accessToken: accessToken,
         path: path,
         method: method,
+        headers: headers,
         body: data,
       );
       return response.data ?? {};

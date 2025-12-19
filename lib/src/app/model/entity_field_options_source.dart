@@ -157,6 +157,7 @@ class OptionsSource {
         method: entity.backend.readAll!.method,
         path: entity.backend.readAll!.urlWithValues,
         filterMap: resolvedQueryParams,
+        headers: entity.backend.readAll!.headers,
         cachedDurationSeconds: entity.backend.readAll!.cacheDurationSeconds,
       );
 

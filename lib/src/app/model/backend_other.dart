@@ -12,6 +12,7 @@ class BackendOther extends HiveObject {
   final String title;
   final String visible;
   final Color color;
+  final Map<String, String>? headers;
 
   BackendOther({
     required this.method,
@@ -19,6 +20,7 @@ class BackendOther extends HiveObject {
     required this.title,
     required this.visible,
     required this.color,
+    this.headers,
   });
 
   factory BackendOther.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class BackendOther extends HiveObject {
       title: json['title'],
       visible: json['visible'],
       color: core.colorFromHex(json['color']),
+      headers: (json['headers'] as Map?)?.cast<String, String>(),
     );
   }
 

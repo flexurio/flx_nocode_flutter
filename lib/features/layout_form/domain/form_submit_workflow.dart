@@ -266,10 +266,9 @@ class WorkflowInterpolationException extends WorkflowExecutionException {
 /// AUTH CONTEXT
 /// ============================================================================
 class AuthContext {
-  final String token;
   final List<String> permissions;
 
-  const AuthContext({required this.token, required this.permissions});
+  const AuthContext({required this.permissions});
 }
 
 /// ============================================================================
@@ -399,7 +398,6 @@ class _WorkflowScopeBuilder {
       'record': _sanitize(ctx.record),
       'vars': _sanitize(ctx.vars),
       'auth': <String, dynamic>{
-        'token': ctx.auth.token,
         'permissions': ctx.auth.permissions,
       },
       'http': ctx.http.map(

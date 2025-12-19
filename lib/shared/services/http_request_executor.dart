@@ -1,6 +1,7 @@
 // core/network/http_request_executor.dart
 
 import 'package:dio/dio.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
 typedef Json = Map<String, dynamic>;
 
@@ -104,22 +105,28 @@ class HttpRequestExecutor {
       }
     }
 
+    // Support JS interpolation for URL and Headers
+    final processedUrl = config.url.interpolateJavascript();
+    final processedHeaders = config.headers.map((k, v) {
+      return MapEntry(k.interpolateJavascript(), v.interpolateJavascript());
+    });
+
     final options = Options(
       method: methodUpper,
-      headers: config.headers,
+      headers: processedHeaders,
     );
 
     _logHttpRequest(
       method: methodUpper,
-      url: config.url,
-      headers: config.headers,
+      url: processedUrl,
+      headers: processedHeaders,
       body: config.body,
       asFormData: config.asFormData,
     );
 
     try {
       final Response<Object?> response = await _dio.request<Object?>(
-        config.url,
+        processedUrl,
         data: dataBody,
         queryParameters: queryParameters,
         options: options,

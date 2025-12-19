@@ -81,6 +81,7 @@ class BackendEndpoint extends HiveObject {
   final String url;
 
   final Map<String, Object>? data;
+  final Map<String, String>? headers;
 
   /// Whether the response of this endpoint should be cached.
   final bool cached;
@@ -93,6 +94,7 @@ class BackendEndpoint extends HiveObject {
     required this.method,
     required this.url,
     this.data,
+    this.headers,
     this.cached = false,
     this.cacheDuration,
   });
@@ -104,6 +106,7 @@ class BackendEndpoint extends HiveObject {
         method: (json['method'] as String?) ?? '',
         url: (json['url'] as String?) ?? '',
         data: (json['data'] as Map?)?.cast<String, Object>(),
+        headers: (json['headers'] as Map?)?.cast<String, String>(),
         cached: (json['cached'] as bool?) ?? false,
         cacheDuration: json['cache_duration'] as String?,
       );
@@ -121,6 +124,7 @@ class BackendEndpoint extends HiveObject {
       'method': method,
       'url': url,
       'data': data,
+      'headers': headers,
       'cached': cached,
       'cacheDuration': cacheDuration,
     };

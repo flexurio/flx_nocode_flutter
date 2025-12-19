@@ -51,6 +51,7 @@ class EntityCustomQueryBloc
                 id: id,
                 method: method,
                 path: urlWithValuesReplace(url, {}),
+                headers: null,
               );
               emit(_Loaded(_pageOptions.copyWith(data: [data])));
             } catch (error) {
@@ -81,6 +82,7 @@ class EntityCustomQueryBloc
                 method: method,
                 path: urlWithValuesReplace(url, {}),
                 filterMap: filterMap,
+                headers: null,
                 cachedDurationSeconds: cachedDurationSeconds,
               );
 

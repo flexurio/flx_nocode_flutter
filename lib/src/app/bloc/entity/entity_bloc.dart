@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
@@ -61,6 +62,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               accessToken: UserRepositoryApp.instance.token,
               path: url,
               method: method,
+              headers: entity.backend.create?.headers,
               data: Map.from(data)
                 ..addAll(entity.backend.create!.body(filters: filters)),
             );
@@ -74,9 +76,10 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
           emit(const _Loading());
           try {
             final response = await EntityCustomRepository.instance.modify(
-              accessToken: '',
+              accessToken: UserRepositoryApp.instance.token,
               path: urlWithValuesReplace(event.url, data),
               method: event.method,
+              headers: event.headers,
             );
             emit(_Success(response));
           } catch (error) {
@@ -97,6 +100,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               accessToken: UserRepositoryApp.instance.token,
               path: entity.backend.create!.url,
               method: entity.backend.create!.method,
+              headers: entity.backend.create!.headers,
               data: Map.from(data)
                 ..addAll(entity.backend.create!.body(filters: filters)),
             );
@@ -125,6 +129,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
                 Uri.encodeComponent(data['id']),
               ),
               method: entity.backend.update!.method,
+              headers: entity.backend.update!.headers,
               data: Map.from(data)
                 ..addAll(entity.backend.update!.body(filters: filters)),
             );
@@ -144,6 +149,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
                 Uri.encodeComponent(id),
               ),
               method: entity.backend.deleteX!.method,
+              headers: entity.backend.deleteX!.headers,
             );
             emit(const _Success(null));
           } catch (error) {
@@ -163,15 +169,12 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
 
             // Construct context
             // We need an HttpExecutor wrapper around EntityCustomRepository
-            final executor = _BlocHttpExecutor(
-              UserRepositoryApp.instance.token!,
-            );
+            final executor = _BlocHttpExecutor();
 
             final ctx = WorkflowContext(
               form: data,
               auth: AuthContext(
-                token: UserRepositoryApp.instance.token!,
-                permissions: [], // TODO: Get permissions if needed
+                permissions: UserRepositoryApp.instance.permissions,
               ),
               httpExecutor: executor,
             );
@@ -211,8 +214,7 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
 }
 
 class _BlocHttpExecutor implements HttpExecutor {
-  final String token;
-  _BlocHttpExecutor(this.token);
+  _BlocHttpExecutor();
 
   @override
   Future<HttpResult> execute(HttpData request) async {
@@ -222,13 +224,11 @@ class _BlocHttpExecutor implements HttpExecutor {
     print('  Body: ${request.body}');
     try {
       final response = await EntityCustomRepository.instance.modify(
-        accessToken: token,
+        accessToken: UserRepositoryApp.instance.token,
         path: request.url,
         method: request.method,
+        headers: request.headers,
         data: request.body,
-        // headers: request.headers // EntityCustomRepository might not support custom headers directly in modify?
-        // Checking modify signature: (accessToken, path, method, data)
-        // It seems to wrap Dio.
       );
       // We assume response is dynamic data (the body).
       // We need to wrap it in HttpResult
@@ -237,10 +237,15 @@ class _BlocHttpExecutor implements HttpExecutor {
         data: response,
       );
     } catch (e) {
-      print('[BlocHttpExecutor] HTTP Error: $e');
-      // EntityCustomRepository throws on error.
-      // We need to capture status code if possible.
-      // For now generic 500
+      if (e is DioException) {
+        print('[BlocHttpExecutor] HTTP Error: ${e.message}');
+        if (e.response != null) {
+          print('[BlocHttpExecutor] Status Code: ${e.response?.statusCode}');
+          print('[BlocHttpExecutor] Response Data: ${e.response?.data}');
+        }
+      } else {
+        print('[BlocHttpExecutor] Generic Error: $e');
+      }
       throw Exception('HTTP Error: $e');
     }
   }
