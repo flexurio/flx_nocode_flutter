@@ -10,7 +10,6 @@ import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/enitty_create_form.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_create/widgets/entity_create_layouts.dart';
-import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_date_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
