@@ -1,6 +1,7 @@
 // lib/core/utils/js/string_js_interpolation.dart
 
 import 'dart:convert';
+import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'js_eval.dart';
 
 extension StringJsInterpolationExtension on String {
@@ -14,32 +15,45 @@ extension StringJsInterpolationExtension on String {
   ///   - now("YYYY-MM-DD")
   ///   - now("DD MMM YYYY")
   ///   - now("DD MMMM YYYY HH:mm")
-  String interpolateJavascript(Map<String, dynamic> variables) {
-    final regex = RegExp(r'\{\{(.*?)\}\}', dotAll: true);
+  String interpolateJavascript([Map<String, dynamic>? variables]) {
+    final Map<String, dynamic> allVars = {
+      for (final v in Configuration.instance.variables) v.key: v.value,
+    };
+    if (variables != null) {
+      allVars.addAll(variables);
+    }
 
-    return replaceAllMapped(regex, (match) {
+    final regex = RegExp(r'\{\{(.*?)\}\}', dotAll: true);
+    if (!contains(regex)) return this;
+
+    print('[interpolateJavascript] input: $this');
+
+    final result = replaceAllMapped(regex, (match) {
       final rawExpr = match.group(1);
       if (rawExpr == null) return '';
 
       final expr = rawExpr.trim();
       if (expr.isEmpty) return '';
 
-      final script = _buildJsScript(expr, variables);
+      final script = _buildJsScript(expr, allVars);
 
       try {
         final value = evalJs(script);
+        print('  - eval "{{$expr}}" -> "$value"');
 
         if (value.isEmpty || value == 'undefined' || value == 'null') {
-          // Fallback: keep original placeholder if result looks invalid
           return match.group(0) ?? '';
         }
 
         return value;
-      } catch (_) {
-        // On error: keep original `{{ ... }}` to make debugging easier.
+      } catch (e) {
+        print('  - eval ERROR "{{$expr}}": $e');
         return match.group(0) ?? '';
       }
     });
+
+    print('[interpolateJavascript] result: $result');
+    return result;
   }
 }
 

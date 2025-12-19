@@ -17,6 +17,7 @@ class MenuCustom extends StatelessWidget {
     this.initialFilters = const [],
     this.breadcrumbList = const [],
     required this.bypassPermission,
+    this.configuration,
   });
 
   final bool firstPage;
@@ -26,6 +27,7 @@ class MenuCustom extends StatelessWidget {
   final List<String> breadcrumbList;
   final bool bypassPermission;
   final List<Map<String, dynamic>> parentData;
+  final Configuration? configuration;
 
   static Widget fromId({
     required String entityId,
@@ -75,6 +77,9 @@ class MenuCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (configuration != null) {
+      Configuration.instance = configuration!;
+    }
     print(
         '[MenuCustom] level: ${parentData.length + 1}, parentData: ${parentData.length}');
     return Scaffold(

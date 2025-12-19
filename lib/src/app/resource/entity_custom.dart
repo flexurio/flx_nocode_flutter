@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_cache.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
 class EntityCustomRepository extends Repository {
   EntityCustomRepository({
@@ -27,8 +28,8 @@ class EntityCustomRepository extends Repository {
       RequestHeader.authorization: 'Bearer $accessToken',
     };
 
-    final url =
-        path.replaceFirst('{backend_host}', Configuration.instance.backendHost);
+    var url = path.interpolateJavascript();
+    url = url.replaceAll('{backend_host}', Configuration.instance.backendHost);
 
     print('[EntityCustomRepository] $method $url');
 

@@ -4,6 +4,7 @@ import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/entity_cr
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -42,7 +43,9 @@ class CreatePage extends StatelessWidget {
     required String layoutFormId,
     required List<Map<String, dynamic>> parentData,
     required VoidCallback onSuccess,
+    Configuration? configuration,
   }) {
+    if (configuration != null) Configuration.instance = configuration;
     return MultiBlocProvider(
       providers: [BlocProvider(create: (context) => EntityBloc(entity))],
       child: CreatePage._(
