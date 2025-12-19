@@ -19,6 +19,7 @@ class Configuration extends HiveObject {
   final List<String> preload;
   final String? entityRegistration;
   final bool showLandingPage;
+  final List<GlobalVariable> variables;
 
   Configuration({
     required this.menuGroups,
@@ -32,6 +33,7 @@ class Configuration extends HiveObject {
     required this.entityRegistration,
     required this.preload,
     required this.showLandingPage,
+    this.variables = const [],
   });
 
   Configuration copyWith({
@@ -46,8 +48,10 @@ class Configuration extends HiveObject {
     String? entityRegistration,
     List<String>? preload,
     bool? showLandingPage,
+    List<GlobalVariable>? variables,
   }) {
     return Configuration(
+      variables: variables ?? this.variables,
       showLandingPage: showLandingPage ?? this.showLandingPage,
       preload: preload ?? this.preload,
       menuGroups: menuGroups ?? this.menuGroups,
@@ -87,6 +91,10 @@ class Configuration extends HiveObject {
                 ?.map((e) => MenuGroup.fromJson(e))
                 .toList() ??
             (throw Exception("Missing or invalid key: menu_group")),
+        variables: (json['variables'] as List<dynamic>?)
+                ?.map((e) => GlobalVariable.fromJson(e))
+                .toList() ??
+            [],
       );
     } catch (e) {
       throw Exception('Failed to parse configuration: $e');
@@ -159,6 +167,7 @@ class Configuration extends HiveObject {
       'auth_url': authUrl,
       'preload': preload,
       'entity_registration': entityRegistration,
+      'variables': variables.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -370,6 +379,46 @@ class MenuSub extends HiveObject {
     return {
       'label': label,
       'entity': entity,
+    };
+  }
+}
+
+class GlobalVariable extends HiveObject {
+  final String key;
+  final String value;
+  final String description;
+
+  GlobalVariable({
+    required this.key,
+    this.value = '',
+    this.description = '',
+  });
+
+  GlobalVariable copyWith({
+    String? key,
+    String? value,
+    String? description,
+  }) {
+    return GlobalVariable(
+      key: key ?? this.key,
+      value: value ?? this.value,
+      description: description ?? this.description,
+    );
+  }
+
+  factory GlobalVariable.fromJson(Map<String, dynamic> json) {
+    return GlobalVariable(
+      key: json['key'],
+      value: json['value'] ?? '',
+      description: json['description'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'key': key,
+      'value': value,
+      'description': description,
     };
   }
 }
