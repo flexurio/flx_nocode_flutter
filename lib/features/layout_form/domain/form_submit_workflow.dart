@@ -711,6 +711,11 @@ class HttpAction implements WorkflowAction {
           useFormData: http.useFormData,
         );
 
+        print('[HttpAction] Executing "$actionLabel":');
+        print('  > Method: ${resolved.method}');
+        print('  > URL: ${resolved.url}');
+        print('  > Body: ${resolved.body}');
+
         if (resolved.url.isEmpty) {
           throw WorkflowExecutionException(
             'HTTP "$actionLabel" is missing a valid URL.',

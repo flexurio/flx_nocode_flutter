@@ -38,6 +38,11 @@ class EntityCustomRepository extends Repository {
 
     final options = Options(headers: combinedHeaders);
 
+    print('[EntityCustomRepository] Headers: $combinedHeaders');
+    if (queryParameters != null && queryParameters.isNotEmpty) {
+      print('[EntityCustomRepository] Query Parameters: $queryParameters');
+    }
+
     try {
       switch (method.toUpperCase()) {
         case 'GET':

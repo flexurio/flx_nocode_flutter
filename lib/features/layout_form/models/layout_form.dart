@@ -1,4 +1,6 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
+import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
 import 'package:hive/hive.dart';
 
 import 'package:flx_nocode_flutter/features/entity/models/group_layout.dart';
@@ -32,6 +34,28 @@ class LayoutForm extends HiveObject {
 
   List<String> get componentIds => components.map((e) => e.id).toList();
   bool get useNewForm => components.isNotEmpty;
+
+  List<Component> get allComponents {
+    final list = <Component>[];
+    _collectComponents(components, list);
+    for (final mf in multiForms) {
+      _collectComponents(mf.components, list);
+    }
+    return list;
+  }
+
+  void _collectComponents(List<Component> src, List<Component> dest) {
+    for (final c in src) {
+      dest.add(c);
+      // We manually check for known container types to avoid circular dependencies
+      // if possible, but since we are in the same package it should be fine.
+      if (c is ComponentColumn) {
+        _collectComponents(c.children, dest);
+      } else if (c is ComponentRow) {
+        _collectComponents(c.children, dest);
+      }
+    }
+  }
 
   LayoutForm.empty()
       : id = '',

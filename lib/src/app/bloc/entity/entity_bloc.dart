@@ -179,6 +179,10 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               httpExecutor: executor,
             );
 
+            print('[EntityBloc] Context initialized with:');
+            print('  > Form Data keys: ${ctx.form.keys}');
+            print('  > Auth Permissions: ${ctx.auth.permissions}');
+
             final runner = WorkflowExecutor(definition); // No UI bridge for now
             print('[EntityBloc] Running workflow...');
             final result = await runner.run(ctx);
