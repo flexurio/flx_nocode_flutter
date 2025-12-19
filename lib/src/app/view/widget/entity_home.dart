@@ -79,6 +79,7 @@ class MenuCustom extends StatelessWidget {
   Widget build(BuildContext context) {
     if (configuration != null) {
       Configuration.instance = configuration!;
+      flavorConfig = configuration!.flavorConfig;
     }
     print(
         '[MenuCustom] level: ${parentData.length + 1}, parentData: ${parentData.length}');

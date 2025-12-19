@@ -96,6 +96,7 @@ class EntityCustomRepository extends Repository {
   }) async {
     try {
       print('[EntityCustomRepository] fetch $path $method $filterMap');
+      print('[EntityCustomRepository] fetch headers: $headers');
       final cacheKey = EntityCustomCache.buildKey(
         url: path,
         method: method,

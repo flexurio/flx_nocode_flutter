@@ -4,6 +4,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
 import '../backend_other.dart';
 
@@ -44,17 +45,27 @@ class EntityCustomQueryBloc
       (event, emit) async {
         await event.when(
           fetchById: (id, method, url) async {
+            print(
+                'EntityCustomQueryBloc.fetchById: id=$id, method=$method, url=$url');
             emit(_Loading(_pageOptions));
             try {
+              final interpolatedUrl = url.interpolateJavascript();
+              final finalUrl = urlWithValuesReplace(interpolatedUrl, {});
+              final headers =
+                  <String, String>{}; // Currently null/empty in fetchById
+              print(
+                  'EntityCustomQueryBloc.fetchById: calling repository with path: $finalUrl, headers: $headers');
               final data = await EntityCustomRepository.instance.fetchById(
                 accessToken: UserRepositoryApp.instance.token,
                 id: id,
                 method: method,
-                path: urlWithValuesReplace(url, {}),
-                headers: null,
+                path: finalUrl,
+                headers: headers,
               );
+              print('EntityCustomQueryBloc.fetchById: success, data received');
               emit(_Loaded(_pageOptions.copyWith(data: [data])));
             } catch (error) {
+              print('EntityCustomQueryBloc.fetchById: error=$error');
               emit(_Error(errorMessage(error)));
             }
           },
@@ -65,6 +76,8 @@ class EntityCustomQueryBloc
             url,
             cachedDurationSeconds,
           ) async {
+            print(
+                'EntityCustomQueryBloc.fetch: method=$method, url=$url, cachedDurationSeconds=$cachedDurationSeconds');
             emit(_Loading(_pageOptions));
             try {
               if (pageOptions != null) {
@@ -76,18 +89,30 @@ class EntityCustomQueryBloc
                 filterMap[f.getKeyBackend()] = f.value;
               }
 
+              final interpolatedUrl = url.interpolateJavascript();
+              final finalUrl = urlWithValuesReplace(interpolatedUrl, {});
+              final headers = {
+                'Authorization':
+                    'Bearer {{auth_token}}'.interpolateJavascript(),
+              };
+              print(
+                  'EntityCustomQueryBloc.fetch: calling repository with path: $finalUrl, filterMap=$filterMap, headers=$headers');
+
               _pageOptions = await EntityCustomRepository.instance.fetch(
                 accessToken: UserRepositoryApp.instance.token,
                 pageOptions: _pageOptions,
                 method: method,
-                path: urlWithValuesReplace(url, {}),
+                path: finalUrl,
                 filterMap: filterMap,
-                headers: null,
+                headers: headers,
                 cachedDurationSeconds: cachedDurationSeconds,
               );
 
+              print(
+                  'EntityCustomQueryBloc.fetch: success, data count=${_pageOptions.data.length}');
               emit(_Loaded(_pageOptions));
-            } catch (error) {
+            } catch (error, st) {
+              print('EntityCustomQueryBloc.fetch: error=$error\n$st');
               emit(_Error(errorMessage(error)));
             }
           },
