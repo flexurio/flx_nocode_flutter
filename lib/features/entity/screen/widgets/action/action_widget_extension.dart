@@ -80,6 +80,9 @@ extension ActionWidgetExtension on ActionD {
         );
       },
       permissions: null,
+      iconOverride: iconCode != null
+          ? IconData(iconCode!, fontFamily: 'MaterialIcons')
+          : null,
     );
   }
 
@@ -102,6 +105,13 @@ extension ActionWidgetExtension on ActionD {
           entity: entity,
           context: context,
           data: data,
+        );
+      case ActionType.openPage:
+        return _buildButtonOpenPage(
+          entity: entity,
+          context: context,
+          data: data,
+          layoutFormId: layoutFormId,
         );
       default:
         return NoCodeError(
@@ -147,6 +157,9 @@ extension ActionWidgetExtension on ActionD {
           onConfirm: (ctx) => executeHttpMultiple(entity, ctx, data),
         );
       },
+      iconOverride: iconCode != null
+          ? IconData(iconCode!, fontFamily: 'MaterialIcons')
+          : null,
     );
   }
 
@@ -177,6 +190,9 @@ extension ActionWidgetExtension on ActionD {
           onConfirm: (ctx) => executeHttp(entity, ctx, data),
         );
       },
+      iconOverride: iconCode != null
+          ? IconData(iconCode!, fontFamily: 'MaterialIcons')
+          : null,
     );
   }
 
@@ -232,6 +248,45 @@ extension ActionWidgetExtension on ActionD {
         // Memanggil fungsi dari json_table_viewer.dart
         await showJsonAsTableDialog(context, jsonData);
       },
+      iconOverride: iconCode != null
+          ? IconData(iconCode!, fontFamily: 'MaterialIcons')
+          : null,
+    );
+  }
+
+  Widget _buildButtonOpenPage({
+    required EntityCustom entity,
+    required BuildContext context,
+    required Json data,
+    required String? layoutFormId,
+  }) {
+    const actionType = DataAction.print;
+
+    return LightButton(
+      title: name,
+      permission: null,
+      action: actionType,
+      onPressed: () async {
+        if (layoutFormId == null) {
+          Toast(context).fail('No page found');
+          return;
+        }
+
+        await Navigator.push(
+          context,
+          CreatePage.route(
+            entity: entity,
+            embedded: false,
+            layoutFormId: layoutFormId,
+            onSuccess: () {},
+            filters: const <String, dynamic>{},
+            parentData: const <Map<String, dynamic>>[],
+          ),
+        );
+      },
+      iconOverride: iconCode != null
+          ? IconData(iconCode!, fontFamily: 'MaterialIcons')
+          : null,
     );
   }
 }

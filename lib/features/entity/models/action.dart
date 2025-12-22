@@ -41,6 +41,11 @@ class ActionD extends HiveObject {
   // for type listJsonViewAsTable
   final String? reference;
 
+  // for type openPage
+  final String? layoutFormId;
+
+  final int? iconCode;
+
   /// Optional conditional rule to decide when the action is available.
   final Rule? rule;
 
@@ -53,6 +58,8 @@ class ActionD extends HiveObject {
     required this.id,
     this.http,
     this.reference,
+    this.layoutFormId,
+    this.iconCode,
     this.rule,
     required this.type,
     required this.name,
@@ -68,6 +75,7 @@ class ActionD extends HiveObject {
     String? onFailure,
     bool? isMultiple,
     String? reference,
+    String? layoutFormId,
     Rule? rule,
   }) {
     return ActionD(
@@ -79,6 +87,8 @@ class ActionD extends HiveObject {
       onSuccess: onSuccess ?? this.onSuccess,
       onFailure: onFailure ?? this.onFailure,
       reference: reference ?? this.reference,
+      layoutFormId: layoutFormId ?? this.layoutFormId,
+      iconCode: iconCode ?? this.iconCode,
       rule: rule ?? this.rule,
     );
   }
@@ -94,6 +104,8 @@ class ActionD extends HiveObject {
       onSuccess: json['on_success'] ?? 'toast',
       onFailure: json['on_failure'] ?? 'toast',
       reference: json['reference'],
+      layoutFormId: json['layout_form_id'],
+      iconCode: json['icon_code'],
       rule: json['rule'] == null
           ? null
           : Rule.fromMap(
@@ -112,6 +124,8 @@ class ActionD extends HiveObject {
       'on_failure': onFailure,
       'is_multiple': isMultiple,
       'reference': reference,
+      'layout_form_id': layoutFormId,
+      'icon_code': iconCode,
       if (rule != null) 'rule': rule!.toMap(),
       if (http != null) 'http': http!.toJson(),
     };
@@ -140,5 +154,6 @@ extension ActionDListExtension on List<ActionD> {
 class ActionType {
   static const String print = 'print';
   static const String create = 'create';
+  static const String openPage = 'open_page';
   static const String listJsonViewAsTable = 'list_json_view_as_table';
 }

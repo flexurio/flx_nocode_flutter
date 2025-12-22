@@ -43,11 +43,7 @@ dependencies:
   #   path: packages/flx_authentication_flutter
 
   flx_core_flutter:
-    git:
-      url: https://gitlab.com/VNEU/flexurio-erp-core.git
-      ref: main
-  # flx_core_flutter:
-  #   path: packages/flx_core_flutter
+    path: ../flx_core_flutter
 
   hive: any
   uuid: any
