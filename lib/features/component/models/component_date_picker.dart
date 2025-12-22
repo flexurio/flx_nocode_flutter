@@ -4,12 +4,16 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 class ComponentDatePicker extends Component {
   final String label;
   final String initialValue;
+  final String? minDate;
+  final String? maxDate;
   final bool required;
 
   ComponentDatePicker({
     required super.id,
     required this.label,
     required this.initialValue,
+    this.minDate,
+    this.maxDate,
     this.required = false,
   }) : super(type: componentId);
 
@@ -27,15 +31,19 @@ class ComponentDatePicker extends Component {
   factory ComponentDatePicker.fromMap(Map<String, dynamic> map) {
     final id = map['id']?.toString().trim();
     if (id == null || id.isEmpty) {
-      throw const FormatException('Component \"id\" is required');
+      throw const FormatException('Component "id" is required');
     }
     final label = map['label']?.toString().trim() ?? 'Date Picker';
     final initialValue = map['initialValue']?.toString().trim() ?? '';
+    final minDate = map['minDate']?.toString();
+    final maxDate = map['maxDate']?.toString();
     final required = map['required'] == true;
     return ComponentDatePicker(
       id: id,
       label: label,
       initialValue: initialValue,
+      minDate: minDate,
+      maxDate: maxDate,
       required: required,
     );
   }
@@ -46,6 +54,8 @@ class ComponentDatePicker extends Component {
         'type': type,
         'label': label,
         'initialValue': initialValue,
+        'minDate': minDate,
+        'maxDate': maxDate,
         'required': required,
       };
 }

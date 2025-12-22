@@ -105,7 +105,7 @@ class CreatePage extends StatelessWidget {
         layoutForm: layoutForm,
         data: data,
         entity: entity,
-        onSuccess: () {},
+        onSuccess: onSuccess,
         embedded: embedded,
         filters: filters,
         noHeader: noHeader,

@@ -46,6 +46,7 @@ class _CreateFormState extends State<CreateForm> {
   final _formKey = GlobalKey<FormState>();
   var _controllers = <String, TextEditingController>{};
   late DataAction _action;
+  int _formVersion = 0;
 
   @override
   void initState() {
@@ -77,6 +78,7 @@ class _CreateFormState extends State<CreateForm> {
     final coreEntity = widget.entity.coreEntity;
     final headerSuffix = _headerSuffix();
     final form = EntityCreateForm(
+      key: ValueKey(_formVersion),
       parentData: widget.parentData,
       layoutForm: widget.layoutForm,
       entity: widget.entity,
@@ -90,7 +92,11 @@ class _CreateFormState extends State<CreateForm> {
           success: (_) {
             widget.onSuccess();
             Toast(context).dataChanged(_action, coreEntity);
-            if (widget.autoBackWhenSuccess) Navigator.pop(context, true);
+            if (widget.autoBackWhenSuccess) {
+              Navigator.pop(context, true);
+            } else {
+              _clearForm();
+            }
           },
           error: (error) => Toast(context).fail(error),
           orElse: () {},
@@ -202,6 +208,16 @@ class _CreateFormState extends State<CreateForm> {
 
     if (parsed == null) return value;
     return formatter.format(parsed);
+  }
+
+  void _clearForm() {
+    setState(() {
+      for (final controller in _controllers.values) {
+        controller.clear();
+      }
+      _formVersion++;
+    });
+    _formKey.currentState?.reset();
   }
 
   void _submit() {
