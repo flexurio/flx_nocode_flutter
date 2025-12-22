@@ -44,6 +44,8 @@ class ActionD extends HiveObject {
   // for type openPage
   final String? layoutFormId;
 
+  final String? icon;
+
   final int? iconCode;
 
   /// Optional conditional rule to decide when the action is available.
@@ -59,6 +61,7 @@ class ActionD extends HiveObject {
     this.http,
     this.reference,
     this.layoutFormId,
+    this.icon,
     this.iconCode,
     this.rule,
     required this.type,
@@ -76,6 +79,8 @@ class ActionD extends HiveObject {
     bool? isMultiple,
     String? reference,
     String? layoutFormId,
+    String? icon,
+    int? iconCode,
     Rule? rule,
   }) {
     return ActionD(
@@ -88,6 +93,7 @@ class ActionD extends HiveObject {
       onFailure: onFailure ?? this.onFailure,
       reference: reference ?? this.reference,
       layoutFormId: layoutFormId ?? this.layoutFormId,
+      icon: icon ?? this.icon,
       iconCode: iconCode ?? this.iconCode,
       rule: rule ?? this.rule,
     );
@@ -105,6 +111,7 @@ class ActionD extends HiveObject {
       onFailure: json['on_failure'] ?? 'toast',
       reference: json['reference'],
       layoutFormId: json['layout_form_id'],
+      icon: json['icon'],
       iconCode: json['icon_code'],
       rule: json['rule'] == null
           ? null
@@ -125,6 +132,7 @@ class ActionD extends HiveObject {
       'is_multiple': isMultiple,
       'reference': reference,
       'layout_form_id': layoutFormId,
+      'icon': icon,
       'icon_code': iconCode,
       if (rule != null) 'rule': rule!.toMap(),
       if (http != null) 'http': http!.toJson(),
@@ -132,14 +140,18 @@ class ActionD extends HiveObject {
   }
 
   DataAction get action {
-    if (type == ActionType.print) {
-      return DataAction.print;
-    } else if (type == ActionType.listJsonViewAsTable) {
-      return DataAction.view;
-    } else if (type == ActionType.create) {
-      return DataAction.create;
+    switch (type) {
+      case ActionType.print:
+        return DataAction.print;
+      case ActionType.listJsonViewAsTable:
+        return DataAction.view;
+      case ActionType.create:
+        return DataAction.create;
+      case ActionType.openPage:
+        return DataAction.add;
+      default:
+        return DataAction.none;
     }
-    return DataAction.none;
   }
 }
 

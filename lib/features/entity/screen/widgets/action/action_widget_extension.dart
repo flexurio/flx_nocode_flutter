@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
+import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
+import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/pages/create_page.dart';
-import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'json_table_viewer.dart';
 
@@ -80,10 +81,18 @@ extension ActionWidgetExtension on ActionD {
         );
       },
       permissions: null,
-      iconOverride: iconCode != null
-          ? IconData(iconCode!, fontFamily: 'MaterialIcons')
-          : null,
+      iconOverride: actionIcon(this),
     );
+  }
+
+  IconData? actionIcon(ActionD action) {
+    if (action.icon != null) {
+      return getIconByName(action.icon);
+    }
+    if (action.iconCode != null) {
+      return IconData(action.iconCode!, fontFamily: 'MaterialIcons');
+    }
+    return null;
   }
 
   Widget buttonSingle(
@@ -157,9 +166,7 @@ extension ActionWidgetExtension on ActionD {
           onConfirm: (ctx) => executeHttpMultiple(entity, ctx, data),
         );
       },
-      iconOverride: iconCode != null
-          ? IconData(iconCode!, fontFamily: 'MaterialIcons')
-          : null,
+      iconOverride: actionIcon(this),
     );
   }
 
@@ -190,9 +197,7 @@ extension ActionWidgetExtension on ActionD {
           onConfirm: (ctx) => executeHttp(entity, ctx, data),
         );
       },
-      iconOverride: iconCode != null
-          ? IconData(iconCode!, fontFamily: 'MaterialIcons')
-          : null,
+      iconOverride: actionIcon(this),
     );
   }
 
@@ -248,9 +253,7 @@ extension ActionWidgetExtension on ActionD {
         // Memanggil fungsi dari json_table_viewer.dart
         await showJsonAsTableDialog(context, jsonData);
       },
-      iconOverride: iconCode != null
-          ? IconData(iconCode!, fontFamily: 'MaterialIcons')
-          : null,
+      iconOverride: actionIcon(this),
     );
   }
 
@@ -284,9 +287,7 @@ extension ActionWidgetExtension on ActionD {
           ),
         );
       },
-      iconOverride: iconCode != null
-          ? IconData(iconCode!, fontFamily: 'MaterialIcons')
-          : null,
+      iconOverride: actionIcon(this),
     );
   }
 }
