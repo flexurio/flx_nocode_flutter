@@ -5,10 +5,49 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 extension ComponentRadioWidgets on ComponentRadio {
   Widget toWidget(JsonMap data) {
     final items = options.isNotEmpty ? options : const ['Option 1', 'Option 2'];
-    return _RadioGroup(
-      label: label,
-      options: items,
-      initialValue: initialValue,
+    final controller = data['controller'] as TextEditingController? ??
+        (data['allControllers'] != null
+            ? (data['allControllers'] as Map<String, TextEditingController>)[id]
+            : null);
+
+    return FormField<String>(
+      initialValue: initialValue.isNotEmpty && items.contains(initialValue)
+          ? initialValue
+          : (items.isNotEmpty ? items.first : null),
+      validator: this.required
+          ? (value) {
+              if (value == null || value.isEmpty) {
+                return '$label is required';
+              }
+              return null;
+            }
+          : null,
+      builder: (state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _RadioGroup(
+              label: label,
+              options: items,
+              initialValue: state.value ?? '',
+              onChanged: (val) {
+                state.didChange(val);
+                if (val != null) {
+                  controller?.text = val;
+                }
+              },
+            ),
+            if (state.hasError)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, left: 12.0),
+                child: Text(
+                  state.errorText!,
+                  style: const TextStyle(color: Colors.red, fontSize: 12),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }
@@ -18,11 +57,13 @@ class _RadioGroup extends StatefulWidget {
     required this.label,
     required this.options,
     required this.initialValue,
+    required this.onChanged,
   });
 
   final String label;
   final List<String> options;
   final String initialValue;
+  final ValueChanged<String?> onChanged;
 
   @override
   State<_RadioGroup> createState() => _RadioGroupState();
@@ -60,11 +101,15 @@ class _RadioGroupState extends State<_RadioGroup> {
         ...widget.options.map(
           (opt) => RadioListTile<String>(
             dense: true,
+            visualDensity: VisualDensity.compact,
             contentPadding: EdgeInsets.zero,
             title: Text(opt),
             value: opt,
             groupValue: _selected,
-            onChanged: (val) => setState(() => _selected = val),
+            onChanged: (val) {
+              setState(() => _selected = val);
+              widget.onChanged(val);
+            },
           ),
         ),
       ],

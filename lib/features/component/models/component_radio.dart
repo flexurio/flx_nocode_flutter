@@ -5,12 +5,14 @@ class ComponentRadio extends Component {
   final String label;
   final List<String> options;
   final String initialValue;
+  final bool required;
 
   ComponentRadio({
     required super.id,
     required this.label,
     required this.options,
     required this.initialValue,
+    this.required = false,
   }) : super(type: componentId);
 
   static const String componentId = 'radio';
@@ -21,6 +23,7 @@ class ComponentRadio extends Component {
       label: 'Radio',
       options: const ['Option 1', 'Option 2'],
       initialValue: '',
+      required: false,
     );
   }
 
@@ -43,11 +46,13 @@ class ComponentRadio extends Component {
     if (options.isEmpty) {
       options.addAll(['Option 1', 'Option 2']);
     }
+    final required = map['required'] == true;
     return ComponentRadio(
       id: id,
       label: label,
       options: options,
       initialValue: initialValue,
+      required: required,
     );
   }
 
@@ -58,5 +63,6 @@ class ComponentRadio extends Component {
         'label': label,
         'options': options,
         'initialValue': initialValue,
+        'required': required,
       };
 }

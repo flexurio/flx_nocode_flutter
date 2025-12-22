@@ -27,6 +27,14 @@ extension ComponentDropdownWidgets on ComponentDropdown {
       initialValue: initial,
       itemAsString: (item) => item,
       labelText: label,
+      validator: this.required
+          ? (value) {
+              if (value == null || value.isEmpty) {
+                return '$label is required';
+              }
+              return null;
+            }
+          : null,
       onChanged: (value) {
         if (value != null) {
           controller?.text = value;
@@ -192,6 +200,14 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
             )
           : null,
       labelText: widget.component.label,
+      validator: widget.component.required
+          ? (value) {
+              if (value == null || value.isEmpty) {
+                return '${widget.component.label} is required';
+              }
+              return null;
+            }
+          : null,
       itemAsString: (item) => item['label'] ?? '',
       onChanged: (val) {
         setState(() {

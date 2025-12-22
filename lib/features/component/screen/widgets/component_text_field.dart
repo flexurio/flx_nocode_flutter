@@ -13,6 +13,15 @@ extension ComponentTextFieldWidgets on ComponentTextField {
       labelText: label,
       enabled: enabled,
       hintText: initialValue.isEmpty ? null : initialValue,
+      validator: this.required
+          ? (value) {
+              final actualValue = controller?.text ?? value;
+              if (actualValue == null || actualValue.trim().isEmpty) {
+                return '$label is required';
+              }
+              return null;
+            }
+          : null,
     );
   }
 }

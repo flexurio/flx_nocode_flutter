@@ -1,3 +1,4 @@
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/entity_create_view.dart';
@@ -45,7 +46,10 @@ class CreatePage extends StatelessWidget {
     required VoidCallback onSuccess,
     Configuration? configuration,
   }) {
-    if (configuration != null) Configuration.instance = configuration;
+    if (configuration != null) {
+      Configuration.instance = configuration;
+      flavorConfig = configuration.flavorConfig;
+    }
     return MultiBlocProvider(
       providers: [BlocProvider(create: (context) => EntityBloc(entity))],
       child: CreatePage._(

@@ -4,11 +4,13 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 class ComponentDatePicker extends Component {
   final String label;
   final String initialValue;
+  final bool required;
 
   ComponentDatePicker({
     required super.id,
     required this.label,
     required this.initialValue,
+    this.required = false,
   }) : super(type: componentId);
 
   static const String componentId = 'date_picker';
@@ -18,6 +20,7 @@ class ComponentDatePicker extends Component {
       id: id,
       label: 'Date Picker',
       initialValue: '',
+      required: false,
     );
   }
 
@@ -28,10 +31,12 @@ class ComponentDatePicker extends Component {
     }
     final label = map['label']?.toString().trim() ?? 'Date Picker';
     final initialValue = map['initialValue']?.toString().trim() ?? '';
+    final required = map['required'] == true;
     return ComponentDatePicker(
       id: id,
       label: label,
       initialValue: initialValue,
+      required: required,
     );
   }
 
@@ -41,5 +46,6 @@ class ComponentDatePicker extends Component {
         'type': type,
         'label': label,
         'initialValue': initialValue,
+        'required': required,
       };
 }

@@ -7,6 +7,7 @@ class ComponentTextField extends Component {
   final int maxLines;
   final String initialValue;
   final bool enabled;
+  final bool required;
 
   ComponentTextField({
     required super.id,
@@ -15,6 +16,7 @@ class ComponentTextField extends Component {
     required this.maxLines,
     required this.initialValue,
     required this.enabled,
+    this.required = false,
   }) : super(type: 'text_field');
 
   static String get componentId => 'text_field';
@@ -27,6 +29,7 @@ class ComponentTextField extends Component {
       maxLines: 1,
       initialValue: '',
       enabled: true,
+      required: false,
     );
   }
 
@@ -48,6 +51,8 @@ class ComponentTextField extends Component {
       if (str == 'true' || str == '1') return true;
       return true;
     }();
+    final required = map['required'] == true;
+
     return ComponentTextField(
       id: id,
       label: label,
@@ -55,6 +60,7 @@ class ComponentTextField extends Component {
       maxLines: maxLines,
       initialValue: initialValue,
       enabled: enabled,
+      required: required,
     );
   }
 
@@ -67,5 +73,6 @@ class ComponentTextField extends Component {
         'maxLines': maxLines,
         'initialValue': initialValue,
         'enabled': enabled,
+        'required': required,
       };
 }

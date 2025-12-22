@@ -11,6 +11,7 @@ class ComponentDropdown extends Component {
   final String? optionKey;
   final String? optionLabel;
   final List<ComponentAction> onChangeActions;
+  final bool required;
 
   ComponentDropdown({
     required super.id,
@@ -21,6 +22,7 @@ class ComponentDropdown extends Component {
     this.optionKey,
     this.optionLabel,
     this.onChangeActions = const [],
+    this.required = false,
   }) : super(type: componentId);
 
   static const String componentId = 'dropdown';
@@ -32,6 +34,7 @@ class ComponentDropdown extends Component {
       options: const ['Option 1', 'Option 2'],
       initialValue: '',
       httpData: HttpData.empty(),
+      required: false,
     );
   }
 
@@ -70,6 +73,8 @@ class ComponentDropdown extends Component {
       }
     }
 
+    final required = map['required'] == true;
+
     return ComponentDropdown(
       id: id,
       label: label,
@@ -79,6 +84,7 @@ class ComponentDropdown extends Component {
       optionKey: map['optionKey']?.toString(),
       optionLabel: map['optionLabel']?.toString(),
       onChangeActions: onChangeActions,
+      required: required,
     );
   }
 
@@ -93,5 +99,6 @@ class ComponentDropdown extends Component {
         'optionKey': optionKey,
         'optionLabel': optionLabel,
         'onChangeActions': onChangeActions.map((e) => e.toMap()).toList(),
+        'required': required,
       };
 }
