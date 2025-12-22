@@ -77,6 +77,7 @@ class CreatePage extends StatelessWidget {
     required List<Map<String, dynamic>> parentData,
     bool autoBackWhenSuccess = true,
   }) {
+    print('CreatePage.route: layoutFormId: $layoutFormId');
     return PageTransition(
       opaque: true,
       type: PageTransitionType.rightToLeft,

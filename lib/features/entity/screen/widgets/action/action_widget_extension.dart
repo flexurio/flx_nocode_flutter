@@ -75,7 +75,7 @@ extension ActionWidgetExtension on ActionD {
             embedded: false,
             parentData: parentData,
             filters: filters,
-            layoutFormId: id,
+            layoutFormId: layoutFormId ?? '',
           ),
         );
       },
