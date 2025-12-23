@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'js_eval.dart';
 
 extension StringJsInterpolationExtension on String {
@@ -16,6 +17,24 @@ extension StringJsInterpolationExtension on String {
   ///   - now("DD MMM YYYY")
   ///   - now("DD MMMM YYYY HH:mm")
   String interpolateJavascript([Map<String, dynamic>? variables]) {
+    String source = this;
+
+    // Early replacement for auth_token if present
+    if (source.contains('{{auth_token}}')) {
+      final token = UserRepositoryApp.instance.token;
+      if (token != null && token.isNotEmpty) {
+        source = source.replaceAll('{{auth_token}}', token);
+      }
+    }
+
+    // Early replacement for user_id if present
+    if (source.contains('{{user_id}}')) {
+      final userId = UserRepositoryApp.instance.userApp?.id;
+      if (userId != null && userId.toString().isNotEmpty) {
+        source = source.replaceAll('{{user_id}}', userId.toString());
+      }
+    }
+
     final Map<String, dynamic> allVars = {
       for (final v in Configuration.instance.variables) v.key: v.value,
     };
@@ -24,11 +43,11 @@ extension StringJsInterpolationExtension on String {
     }
 
     final regex = RegExp(r'\{\{(.*?)\}\}', dotAll: true);
-    if (!contains(regex)) return this;
+    if (!source.contains(regex)) return source;
 
-    print('[interpolateJavascript] input: $this');
+    print('[interpolateJavascript] input: $source');
 
-    final result = replaceAllMapped(regex, (match) {
+    final result = source.replaceAllMapped(regex, (match) {
       final rawExpr = match.group(1);
       if (rawExpr == null) return '';
 

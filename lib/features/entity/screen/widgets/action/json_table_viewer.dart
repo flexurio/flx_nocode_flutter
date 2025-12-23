@@ -12,11 +12,8 @@ Future<void> showJsonAsTableDialog(
     barrierDismissible: false, // biar nggak ketutup pas lagi drag
     builder: (ctx) {
       return DraggableDialogContainer(
-        child: SizedBox(
-          width: 700,
-          height: 500,
-          child: JsonTableViewer(jsonData: jsonData),
-        ),
+        title: "JSON Data Viewer",
+        child: JsonTableViewer(jsonData: jsonData),
       );
     },
   );
@@ -25,10 +22,12 @@ Future<void> showJsonAsTableDialog(
 /// Container dialog yang bisa digeser (drag) di layar
 class DraggableDialogContainer extends StatefulWidget {
   final Widget child;
+  final String title;
 
   const DraggableDialogContainer({
     super.key,
     required this.child,
+    required this.title,
   });
 
   @override
@@ -37,7 +36,7 @@ class DraggableDialogContainer extends StatefulWidget {
 }
 
 class _DraggableDialogContainerState extends State<DraggableDialogContainer> {
-  Offset position = const Offset(50, 50);
+  Offset position = const Offset(100, 100);
 
   @override
   Widget build(BuildContext context) {
@@ -57,21 +56,59 @@ class _DraggableDialogContainerState extends State<DraggableDialogContainer> {
         Positioned(
           left: position.dx,
           top: position.dy,
-          child: GestureDetector(
-            onPanUpdate: (details) {
-              setState(() {
-                position += details.delta;
-              });
-            },
-            child: Material(
-              elevation: 16,
-              borderRadius: BorderRadius.circular(16),
-              color: Colors.white, // popup putih, bukan pink
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                width: 700,
-                height: 500,
-                child: widget.child,
+          child: Material(
+            elevation: 16,
+            borderRadius: BorderRadius.circular(16),
+            color: Colors.white,
+            clipBehavior: Clip.antiAlias,
+            child: Container(
+              width: 800,
+              height: 600,
+              child: Column(
+                children: [
+                  // Handle Drag (Header Only)
+                  GestureDetector(
+                    onPanUpdate: (details) {
+                      setState(() {
+                        position += details.delta;
+                      });
+                    },
+                    child: Container(
+                      color: Colors.grey.shade100,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.table_chart_outlined, size: 22),
+                          const SizedBox(width: 12),
+                          Text(
+                            widget.title,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            visualDensity: VisualDensity.compact,
+                            onPressed: () => Navigator.of(context).pop(),
+                            icon: const Icon(Icons.close),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  // Content (Not draggable, so scrollbar works)
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: widget.child,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -97,11 +134,20 @@ class JsonTableViewer extends StatefulWidget {
 class _JsonTableViewerState extends State<JsonTableViewer> {
   late List<Map<String, dynamic>> rows;
   String searchQuery = '';
+  final ScrollController _horizontalController = ScrollController();
+  final ScrollController _verticalController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     rows = _normalizeJson(widget.jsonData);
+  }
+
+  @override
+  void dispose() {
+    _horizontalController.dispose();
+    _verticalController.dispose();
+    super.dispose();
   }
 
   List<Map<String, dynamic>> _normalizeJson(dynamic jsonData) {
@@ -144,28 +190,6 @@ class _JsonTableViewerState extends State<JsonTableViewer> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header
-        Row(
-          children: [
-            const Icon(Icons.table_chart_outlined, size: 22),
-            const SizedBox(width: 8),
-            const Text(
-              "JSON Data Viewer",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const Spacer(),
-            IconButton(
-              tooltip: 'Tutup',
-              onPressed: () => Navigator.of(context).pop(),
-              icon: const Icon(Icons.close),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-
         // Search Bar
         TextField(
           decoration: InputDecoration(
@@ -186,44 +210,55 @@ class _JsonTableViewerState extends State<JsonTableViewer> {
         // Table section
         Expanded(
           child: Container(
+            clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.grey.shade300),
             ),
             child: Scrollbar(
+              controller: _verticalController,
               thumbVisibility: true,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+              child: Scrollbar(
+                controller: _horizontalController,
+                thumbVisibility: true,
+                notificationPredicate: (notif) => notif.depth == 1,
                 child: SingleChildScrollView(
-                  child: DataTable(
-                    headingRowHeight: 44,
-                    dataRowMinHeight: 40,
-                    dataRowMaxHeight: 60,
-                    headingTextStyle: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                  controller: _verticalController,
+                  child: SingleChildScrollView(
+                    controller: _horizontalController,
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      headingRowHeight: 44,
+                      dataRowMinHeight: 40,
+                      dataRowMaxHeight: 60,
+                      headingTextStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                      border: TableBorder(
+                        horizontalInside:
+                            BorderSide(color: Colors.grey.shade300),
+                      ),
+                      columns: [
+                        for (final col in columns) DataColumn(label: Text(col)),
+                      ],
+                      rows: [
+                        for (int i = 0; i < filteredRows.length; i++)
+                          DataRow(
+                            color:
+                                MaterialStateProperty.resolveWith<Color?>((_) {
+                              // alternating row color
+                              return i.isEven ? Colors.grey.shade50 : null;
+                            }),
+                            cells: [
+                              for (final col in columns)
+                                DataCell(
+                                  Text('${filteredRows[i][col] ?? ''}'),
+                                ),
+                            ],
+                          ),
+                      ],
                     ),
-                    border: TableBorder(
-                      horizontalInside: BorderSide(color: Colors.grey.shade300),
-                    ),
-                    columns: [
-                      for (final col in columns) DataColumn(label: Text(col)),
-                    ],
-                    rows: [
-                      for (int i = 0; i < filteredRows.length; i++)
-                        DataRow(
-                          color: MaterialStateProperty.resolveWith<Color?>((_) {
-                            // alternating row color
-                            return i.isEven ? Colors.grey.shade50 : null;
-                          }),
-                          cells: [
-                            for (final col in columns)
-                              DataCell(
-                                Text('${filteredRows[i][col] ?? ''}'),
-                              ),
-                          ],
-                        ),
-                    ],
                   ),
                 ),
               ),
@@ -233,7 +268,7 @@ class _JsonTableViewerState extends State<JsonTableViewer> {
 
         const SizedBox(height: 8),
 
-        // Footer info + tombol Close kedua (optional)
+        // Footer info
         Row(
           children: [
             Text(
