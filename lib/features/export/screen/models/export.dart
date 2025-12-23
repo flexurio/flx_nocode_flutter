@@ -76,7 +76,7 @@ class Export extends HiveObject {
     }
 
     return Export(
-      uuid: json['uuid'] ?? '',
+      uuid: json['uuid'] ?? json['name'] ?? '',
       name: json['name'] ?? '',
       backend: json['backend'] ?? '',
       type: type,

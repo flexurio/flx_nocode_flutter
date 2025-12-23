@@ -39,11 +39,9 @@ class LayoutListTile extends HiveObject {
 
   factory LayoutListTile.fromJson(Map<String, dynamic> json) {
     return LayoutListTile(
-      title: json.containsKey('title') ? json['title'] as String : null,
-      subtitle:
-          json.containsKey('subtitle') ? json['subtitle'] as String : null,
-      trailing:
-          json.containsKey('trailing') ? json['trailing'] as String : null,
+      title: json['title']?.toString(),
+      subtitle: json['subtitle']?.toString(),
+      trailing: json['trailing']?.toString(),
     );
   }
 

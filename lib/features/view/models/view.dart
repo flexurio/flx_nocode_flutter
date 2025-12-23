@@ -21,10 +21,12 @@ class DView extends HiveObject {
 
   factory DView.fromJson(Map<String, dynamic> json) {
     return DView(
-      id: json['id'],
-      label: json['label'],
-      entity: json['entity'],
-      filter: Map<String, String>.from(json['filter']),
+      id: json['id'] ?? json['label'] ?? '',
+      label: json['label'] ?? '',
+      entity: json['entity'] ?? '',
+      filter: (json['filter'] as Map?)
+              ?.map((k, v) => MapEntry(k.toString(), v.toString())) ??
+          {},
     );
   }
 

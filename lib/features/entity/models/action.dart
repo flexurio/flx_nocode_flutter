@@ -103,9 +103,9 @@ class ActionD extends HiveObject {
   factory ActionD.fromJson(Map<String, dynamic> json) {
     return ActionD(
       isMultiple: json['is_multiple'] ?? false,
-      id: json['id'],
-      type: json['type'],
-      name: json['name'],
+      id: json['id'] ?? '',
+      type: json['type'] ?? '',
+      name: json['name'] ?? '',
       http: json['http'] != null ? HttpData.fromJson(json['http']) : null,
       onSuccess: json['on_success'] ?? 'toast',
       onFailure: json['on_failure'] ?? 'toast',
