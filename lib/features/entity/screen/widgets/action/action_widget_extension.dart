@@ -89,9 +89,8 @@ extension ActionWidgetExtension on ActionD {
     if (action.icon != null) {
       return getIconByName(action.icon);
     }
-    if (action.iconCode != null) {
-      return IconData(action.iconCode!, fontFamily: 'MaterialIcons');
-    }
+    // Note: iconCode is deprecated for release builds due to tree-shaking limitations.
+    // We prioritize the named 'icon' property which uses a constant mapping.
     return null;
   }
 
