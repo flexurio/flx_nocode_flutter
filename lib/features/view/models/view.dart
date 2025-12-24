@@ -1,4 +1,3 @@
-import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
