@@ -91,12 +91,8 @@ class EntityCustomQueryBloc
 
               final interpolatedUrl = url.interpolateJavascript();
               final finalUrl = urlWithValuesReplace(interpolatedUrl, {});
-              final headers = {
-                'Authorization':
-                    'Bearer {{auth_token}}'.interpolateJavascript(),
-              };
               print(
-                  'EntityCustomQueryBloc.fetch: calling repository with path: $finalUrl, filterMap=$filterMap, headers=$headers');
+                  'EntityCustomQueryBloc.fetch: calling repository with path: $finalUrl, filterMap=$filterMap');
 
               _pageOptions = await EntityCustomRepository.instance.fetch(
                 accessToken: UserRepositoryApp.instance.token,
@@ -104,7 +100,7 @@ class EntityCustomQueryBloc
                 method: method,
                 path: finalUrl,
                 filterMap: filterMap,
-                headers: headers,
+                headers: null,
                 cachedDurationSeconds: cachedDurationSeconds,
               );
 

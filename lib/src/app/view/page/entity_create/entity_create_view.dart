@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/enitty_create_form_old.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_field_form_controllers.dart';
@@ -76,7 +77,7 @@ class _EntityCreateViewState extends State<EntityCreateView> {
     final theme = Theme.of(context);
     final coreEntity = widget.entity.coreEntity;
     final headerSuffix = _headerSuffix();
-    final form = EntityCreateForm(
+    final form = EntityCreateFormOld(
       parentData: widget.parentData,
       layoutForm: widget.layoutForm,
       entity: widget.entity,

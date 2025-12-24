@@ -26,10 +26,15 @@ class EntityCustomRepository extends Repository {
     Map<String, dynamic>? body,
   }) async {
     final combinedHeaders = {
-      if (accessToken != null)
+      if (accessToken != null && accessToken != '')
         RequestHeader.authorization: 'Bearer $accessToken',
       ...?headers,
     };
+
+    if (!combinedHeaders.containsKey(RequestHeader.authorization)) {
+      combinedHeaders[RequestHeader.authorization] =
+          'Bearer {{auth_token}}'.interpolateJavascript();
+    }
 
     var url = path.interpolateJavascript();
     url = url.replaceAll('{backend_host}', Configuration.instance.backendHost);
