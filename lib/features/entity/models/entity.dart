@@ -446,6 +446,7 @@ class EntityCustom extends HiveObject {
     List<Map<String, dynamic>> parentData,
   ) {
     return views
+        .where((e) => e.rule == null || e.rule!.evaluate(data))
         .map(
           (e) => e.button(
             context,
