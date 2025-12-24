@@ -18,8 +18,10 @@ class MenuCustom extends StatelessWidget {
     this.breadcrumbList = const [],
     required this.bypassPermission,
     this.configuration,
+    this.assetBasePath,
   });
 
+  final String? assetBasePath;
   final bool firstPage;
   final bool embedded;
   final EntityCustom entity;
@@ -67,6 +69,7 @@ class MenuCustom extends StatelessWidget {
             firstPage: firstPage,
             initialFilters: initialFilters,
             bypassPermission: bypassPermission,
+            assetBasePath: EntityCustom.assetBasePath,
           );
         } else {
           return const Center(child: CircularProgressIndicator());
@@ -80,6 +83,9 @@ class MenuCustom extends StatelessWidget {
     if (configuration != null) {
       Configuration.instance = configuration!;
       flavorConfig = configuration!.flavorConfig;
+    }
+    if (assetBasePath != null) {
+      EntityCustom.assetBasePath = assetBasePath!;
     }
     print(
         '[MenuCustom] level: ${parentData.length + 1}, parentData: ${parentData.length}');
