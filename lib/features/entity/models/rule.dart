@@ -77,6 +77,23 @@ class Rule {
     }
     return result;
   }
+
+  String get description {
+    final parts = <String>[];
+    if (all.isNotEmpty) {
+      if (parts.isNotEmpty) parts.add('AND');
+      parts.add(all.map((c) => c.description).join(' AND '));
+    }
+    if (any.isNotEmpty) {
+      if (parts.isNotEmpty) parts.add('OR');
+      parts.add('(${any.map((c) => c.description).join(' OR ')})');
+    }
+    if (not != null) {
+      if (parts.isNotEmpty) parts.add('AND');
+      parts.add('NOT (${not!.description})');
+    }
+    return parts.join(' ');
+  }
 }
 
 class Condition {
@@ -203,6 +220,40 @@ class Condition {
     if (v is Iterable) return v.isEmpty;
     if (v is Map) return v.isEmpty;
     return false;
+  }
+
+  String get description {
+    final cleanField = field.replaceAll(RegExp(r'[{}]'), '').trim();
+    switch (op) {
+      case '=':
+        return '$cleanField == $value';
+      case '!=':
+        return '$cleanField != $value';
+      case '>':
+        return '$cleanField > $value';
+      case '>=':
+        return '$cleanField >= $value';
+      case '<':
+        return '$cleanField < $value';
+      case '<=':
+        return '$cleanField <= $value';
+      case 'in':
+        return '$cleanField in $value';
+      case 'not_in':
+        return '$cleanField not in $value';
+      case 'is_empty':
+        return '$cleanField is empty';
+      case 'is_not_empty':
+        return '$cleanField is not empty';
+      case 'is_null':
+        return '$cleanField is null';
+      case 'is_not_null':
+        return '$cleanField is not null';
+      case 'contains':
+        return '$cleanField contains $value';
+      default:
+        return '$cleanField $op $value';
+    }
   }
 }
 
