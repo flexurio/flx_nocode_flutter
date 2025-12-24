@@ -60,7 +60,7 @@ extension StringJsInterpolationExtension on String {
         final value = evalJs(script);
         print('  - eval "{{$expr}}" -> "$value"');
 
-        if (value.isEmpty || value == 'undefined' || value == 'null') {
+        if (value == 'undefined' || value == 'null') {
           return match.group(0) ?? '';
         }
 

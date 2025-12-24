@@ -60,7 +60,29 @@ extension DViewWidget on DView {
 extension ListDViewWidget on List<DView> {
   List<Widget> buildButtons(BuildContext context, Map<String, dynamic> data,
       List<Map<String, dynamic>> parentData, bool bypassPermission) {
-    return this
+    print('\n======================================================');
+    print('[View] buildButtons | Total items: ${this.length}');
+
+    final filtered = this.where((e) {
+      if (e.rule == null) {
+        print('------------------------------------------------------');
+        print('[View] "${e.label}" -> SHOW (No Rule)');
+        return true;
+      }
+
+      print('------------------------------------------------------');
+      print('[View] Checking Rule for "${e.label}"');
+      final result = e.rule!.evaluate(data);
+
+      print('Result    : ${result ? "✅ MATCH" : "❌ NO MATCH"}');
+      print('Rules     : ${e.rule?.toMap()}');
+      print('Data      : $data');
+
+      return result;
+    }).toList();
+    print('======================================================\n');
+
+    return filtered
         .map(
           (e) => e.buttonLarge(
             context,

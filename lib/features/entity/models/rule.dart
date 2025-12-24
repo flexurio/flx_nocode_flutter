@@ -110,7 +110,7 @@ class Condition {
       };
 
   bool evaluate(Map<String, dynamic> state) {
-    final lhs = state[field];
+    final lhs = _resolveLhs(state);
     final rhs = _resolveValue(state);
 
     switch (op) {
@@ -130,10 +130,14 @@ class Condition {
         return rhs is Iterable ? rhs.contains(lhs) : false;
       case 'not_in':
         return rhs is Iterable ? !rhs.contains(lhs) : true;
-      case 'empty':
+      case 'is_empty':
         return _isEmpty(lhs);
-      case 'not_empty':
+      case 'is_not_empty':
         return !_isEmpty(lhs);
+      case 'is_null':
+        return lhs == null;
+      case 'is_not_null':
+        return lhs != null;
       case 'contains':
         if (lhs is Iterable) return lhs.contains(rhs);
         if (lhs is String && rhs is String) return lhs.contains(rhs);
@@ -143,20 +147,16 @@ class Condition {
     }
   }
 
+  dynamic _resolveLhs(Map<String, dynamic> state) {
+    if (field.contains('{{')) {
+      return _resolveStringExpression(field, state);
+    }
+    return state[field];
+  }
+
   dynamic _resolveValue(Map<String, dynamic> state) {
     if (value is String && (value as String).contains('{{')) {
-      try {
-        final interpolated = (value as String).interpolateJavascript(state);
-        final lowered = interpolated.toLowerCase();
-        if (lowered == 'true' || lowered == 'false') {
-          return lowered == 'true';
-        }
-        final numVal = num.tryParse(interpolated);
-        if (numVal != null) return numVal;
-        return interpolated;
-      } catch (_) {
-        // Fallback to raw value if interpolation fails
-      }
+      return _resolveStringExpression(value as String, state);
     }
 
     if (value is String) {
@@ -165,6 +165,22 @@ class Condition {
     }
 
     return value;
+  }
+
+  dynamic _resolveStringExpression(String input, Map<String, dynamic> state) {
+    try {
+      final interpolated = input.interpolateJavascript(state);
+      final lowered = interpolated.toLowerCase();
+      if (lowered == 'true' || lowered == 'false') {
+        return lowered == 'true';
+      }
+      final numVal = num.tryParse(interpolated);
+      if (numVal != null) return numVal;
+      return interpolated;
+    } catch (_) {
+      // Fallback to raw value if interpolation fails
+      return input;
+    }
   }
 
   static bool _equals(dynamic a, dynamic b) {
