@@ -7,6 +7,7 @@ class ComponentDatePicker extends Component {
   final String? minDate;
   final String? maxDate;
   final bool required;
+  final String? dateFormat;
 
   ComponentDatePicker({
     required super.id,
@@ -15,6 +16,7 @@ class ComponentDatePicker extends Component {
     this.minDate,
     this.maxDate,
     this.required = false,
+    this.dateFormat,
   }) : super(type: componentId);
 
   static const String componentId = 'date_picker';
@@ -38,6 +40,7 @@ class ComponentDatePicker extends Component {
     final minDate = map['minDate']?.toString();
     final maxDate = map['maxDate']?.toString();
     final required = map['required'] == true;
+    final dateFormat = map['dateFormat']?.toString();
     return ComponentDatePicker(
       id: id,
       label: label,
@@ -45,6 +48,7 @@ class ComponentDatePicker extends Component {
       minDate: minDate,
       maxDate: maxDate,
       required: required,
+      dateFormat: dateFormat,
     );
   }
 
@@ -57,5 +61,6 @@ class ComponentDatePicker extends Component {
         'minDate': minDate,
         'maxDate': maxDate,
         'required': required,
+        'dateFormat': dateFormat,
       };
 }

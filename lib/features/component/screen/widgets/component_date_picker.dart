@@ -42,6 +42,7 @@ extension ComponentDatePickerWidgets on ComponentDatePicker {
       initialSelectedDate: initialDate,
       minDate: min,
       maxDate: max,
+      dateFormat: dateFormat,
       validator: this.required
           ? (value) {
               if (value == null) {

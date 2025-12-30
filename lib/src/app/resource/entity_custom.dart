@@ -100,8 +100,13 @@ class EntityCustomRepository extends Repository {
     int? cachedDurationSeconds,
   }) async {
     try {
-      print('[EntityCustomRepository] fetch $path $method $filterMap');
-      print('[EntityCustomRepository] fetch headers: $headers');
+      print('──────────────────────────────────────────────────');
+      print('[EntityCustomRepository] 🔍 FETCH REQUEST');
+      print('📂 Path   : $path');
+      print('🛠 Method : $method');
+      if (filterMap.isNotEmpty) print('🔬 Filter : $filterMap');
+      if (headers != null && headers.isNotEmpty) print('📋 Headers: $headers');
+      print('──────────────────────────────────────────────────');
       final cacheKey = EntityCustomCache.buildKey(
         url: path,
         method: method,
@@ -146,7 +151,9 @@ class EntityCustomRepository extends Repository {
       }
       return newPageOptions;
     } catch (error) {
-      print('[EntityCustomRepository] fetch error: $error');
+      print('❌ [EntityCustomRepository] FETCH ERROR');
+      print('   $error');
+      print('──────────────────────────────────────────────────');
       throw checkErrorApi(error);
     }
   }
@@ -171,7 +178,9 @@ class EntityCustomRepository extends Repository {
           .cast<Map<String, dynamic>>()
           .first;
     } catch (error) {
-      print('[EntityCustomRepository] fetchById error: $error');
+      print('❌ [EntityCustomRepository] FETCH BY ID ERROR');
+      print('   $error');
+      print('──────────────────────────────────────────────────');
       throw checkErrorApi(error);
     }
   }
@@ -186,10 +195,15 @@ class EntityCustomRepository extends Repository {
   }) async {
     try {
       if (data != null) {
-        print('[EntityCustomRepository] body:');
-        for (final entry in data.entries) {
-          print('  ${entry.key}: ${entry.value}');
-        }
+        print('──────────────────────────────────────────────────');
+        print('[EntityCustomRepository] 🆕 MODIFY REQUEST');
+        print('📂 Path  : $path');
+        print('🛠 Method: $method');
+        print('📦 Body  :');
+        data.forEach((key, value) {
+          print('   👉 $key: $value');
+        });
+        print('──────────────────────────────────────────────────');
       }
 
       final response = await _request<Map<String, dynamic>>(
@@ -201,7 +215,9 @@ class EntityCustomRepository extends Repository {
       );
       return response.data ?? {};
     } catch (error) {
-      print('[EntityCustomRepository] modify error: $error');
+      print('❌ [EntityCustomRepository] MODIFY ERROR');
+      print('   $error');
+      print('──────────────────────────────────────────────────');
       throw checkErrorApi(error);
     }
   }
