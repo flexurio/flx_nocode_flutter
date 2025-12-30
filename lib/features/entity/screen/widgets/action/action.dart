@@ -126,8 +126,31 @@ extension ActionLogicExtension on ActionD {
     required Object? responseData,
     required Json data,
   }) {
+    switch (onSuccess) {
+      case ActionType.showDialog:
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('Success'),
+            content: const Text('Operation completed successfully.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+        break;
+      case ActionType.toast:
+        Toast(context).success('Request success');
+        break;
+      default:
+        break;
+    }
+
     final regex = RegExp(r'^exports\.([0-9a-fA-F\-]{36})$');
-    final match = regex.firstMatch(onSuccess);
+    final match = regex.firstMatch(onSuccess.id);
 
     if (match != null) {
       final exportId = match.group(1) ?? '';
@@ -172,7 +195,7 @@ extension ActionLogicExtension on ActionD {
     Object? raw,
   }) {
     switch (onFailure) {
-      case 'show_error_dialog':
+      case ActionType.showErrorDialog:
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
@@ -188,11 +211,11 @@ extension ActionLogicExtension on ActionD {
         );
         break;
 
-      case 'toast':
+      case ActionType.toast:
         Toast(context).fail(message);
         break;
 
-      case 'navigate_back':
+      case ActionType.navigateBack:
         if (Navigator.of(context).canPop()) {
           Navigator.of(context).pop();
         } else {

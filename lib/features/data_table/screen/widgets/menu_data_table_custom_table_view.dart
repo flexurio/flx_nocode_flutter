@@ -10,7 +10,6 @@ import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 
-/// Table view terpisah dari MenuDataTableCustom agar lebih modular & mudah diuji.
 class MenuDataTableCustomTableView extends StatelessWidget {
   const MenuDataTableCustomTableView({
     super.key,

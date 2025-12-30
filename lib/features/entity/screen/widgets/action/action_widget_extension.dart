@@ -68,17 +68,41 @@ extension ActionWidgetExtension on ActionD {
       title: name,
       action: action,
       onPressed: () async {
-        await Navigator.push(
-          context,
-          CreatePage.route(
-            entity: entity,
-            onSuccess: onSuccess,
-            embedded: false,
-            parentData: parentData,
-            filters: filters,
-            layoutFormId: layoutFormId ?? '',
-          ),
-        );
+        if (type == ActionType.showDialog) {
+          await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (ctx) {
+              return DraggableDialogContainer(
+                title: name,
+                child: CreatePage.prepare(
+                  embedded: true,
+                  entity: entity,
+                  layoutFormId: layoutFormId ?? '',
+                  parentData: parentData,
+                  filters: filters,
+                  onSuccess: () {
+                    onSuccess();
+                    Navigator.of(ctx).pop();
+                  },
+                ),
+              );
+            },
+          );
+        } else {
+          // Default to openPage
+          await Navigator.push(
+            context,
+            CreatePage.route(
+              entity: entity,
+              onSuccess: onSuccess,
+              embedded: false,
+              parentData: parentData,
+              filters: filters,
+              layoutFormId: layoutFormId ?? '',
+            ),
+          );
+        }
       },
       permissions: null,
       iconOverride: actionIcon(this),
@@ -120,6 +144,20 @@ extension ActionWidgetExtension on ActionD {
           context: context,
           data: data,
           layoutFormId: layoutFormId,
+        );
+      case ActionType.showDialog:
+        return _buildButtonShowDialog(
+          entity: entity,
+          context: context,
+          data: data,
+          layoutFormId: layoutFormId,
+          parentData: parentData,
+        );
+      case ActionType.http:
+        return _buildButtonHttp(
+          entity: entity,
+          context: context,
+          data: data,
         );
       default:
         return NoCodeError(
@@ -285,6 +323,72 @@ extension ActionWidgetExtension on ActionD {
             parentData: const <Map<String, dynamic>>[],
           ),
         );
+      },
+      iconOverride: actionIcon(this),
+    );
+  }
+
+  Widget _buildButtonShowDialog({
+    required EntityCustom entity,
+    required BuildContext context,
+    required Json data,
+    required String? layoutFormId,
+    required JsonList parentData,
+  }) {
+    const actionType = DataAction.add;
+
+    return LightButton(
+      title: name,
+      permission: null,
+      action: actionType,
+      onPressed: () async {
+        if (layoutFormId == null) {
+          Toast(context).fail('No page found');
+          return;
+        }
+
+        await showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) {
+            return DraggableDialogContainer(
+              title: name,
+              child: CreatePage.prepare(
+                embedded: true,
+                entity: entity,
+                layoutFormId: layoutFormId,
+                parentData: parentData,
+                data: data,
+                filters: const {},
+                onSuccess: () {
+                  Navigator.of(ctx).pop();
+                },
+              ),
+            );
+          },
+        );
+      },
+      iconOverride: actionIcon(this),
+    );
+  }
+
+  Widget _buildButtonHttp({
+    required EntityCustom entity,
+    required BuildContext context,
+    required Json data,
+  }) {
+    final actionType = action;
+
+    return LightButton(
+      title: name,
+      permission: null,
+      action: actionType,
+      onPressed: () async {
+        if (http == null) {
+          Toast(context).fail('No http data found');
+          return;
+        }
+        await executeHttp(entity, context, data);
       },
       iconOverride: actionIcon(this),
     );

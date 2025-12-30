@@ -3,6 +3,33 @@ import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
 import 'package:hive/hive.dart';
 
+enum ActionType {
+  print('print', 'Print'),
+  create('create', 'Create'),
+  openPage('open_page', 'Open Page'),
+  listJsonViewAsTable('list_json_view_as_table', 'List View as Table'),
+  http('http', 'HTTP Request'),
+  none('none', 'None'),
+  showDialog('show_dialog', 'Show Dialog'),
+  toast('toast', 'Toast Notification'),
+  refresh('refresh', 'Refresh Data'),
+  navigateHome('navigate_home', 'Navigate Home'),
+  showErrorDialog('show_error_dialog', 'Show Error Dialog'),
+  navigateBack('navigate_back', 'Navigate Back');
+
+  final String id;
+  final String label;
+
+  const ActionType(this.id, this.label);
+
+  static ActionType fromId(String? id) {
+    return ActionType.values.firstWhere(
+      (e) => e.id == id,
+      orElse: () => ActionType.none,
+    );
+  }
+}
+
 /// Represents a dynamic action definition that can be triggered
 /// from the UI (e.g. button press). Each action may optionally
 /// execute an HTTP request defined by [HttpData].
@@ -12,11 +39,8 @@ class ActionD extends HiveObject {
   /// Unique identifier of the action
   final String id;
 
-  /// The type of the action, e.g.:
-  /// - "print"
-  /// - "approve"
-  /// - "reject"
-  final String type;
+  /// The type of the action
+  final ActionType type;
 
   /// Display name shown on UI (e.g. button label)
   final String name;
@@ -24,19 +48,11 @@ class ActionD extends HiveObject {
   /// Optional HTTP configuration for network-based actions
   final HttpData? http;
 
-  /// Defines what happens after success, e.g.:
-  /// - "refresh" → refresh UI or data
-  /// - "navigate_home" → navigate to home screen
-  /// - "show_dialog" → show success dialog
-  /// - "toast" → show success toast
-  final String onSuccess;
+  /// Defines what happens after success
+  final ActionType onSuccess;
 
-  /// Defines what happens on failure, e.g.:
-  /// - "show_error_dialog" → show dialog with error message
-  /// - "toast" → show toast with error
-  /// - "navigate_back" → pop current route
-  /// - "none" → do nothing
-  final String onFailure;
+  /// Defines what happens on failure
+  final ActionType onFailure;
 
   // for type listJsonViewAsTable
   final String? reference;
@@ -71,11 +87,11 @@ class ActionD extends HiveObject {
   /// Creates a copy of this [ActionD] object with optional modifications.
   ActionD copyWith({
     String? id,
-    String? type,
+    ActionType? type,
     String? name,
     HttpData? http,
-    String? onSuccess,
-    String? onFailure,
+    ActionType? onSuccess,
+    ActionType? onFailure,
     bool? isMultiple,
     String? reference,
     String? layoutFormId,
@@ -104,11 +120,11 @@ class ActionD extends HiveObject {
     return ActionD(
       isMultiple: json['is_multiple'] ?? false,
       id: json['id'] ?? '',
-      type: json['type'] ?? '',
+      type: ActionType.fromId(json['type']),
       name: json['name'] ?? '',
       http: json['http'] != null ? HttpData.fromJson(json['http']) : null,
-      onSuccess: json['on_success'] ?? 'toast',
-      onFailure: json['on_failure'] ?? 'toast',
+      onSuccess: ActionType.fromId(json['on_success'] ?? 'toast'),
+      onFailure: ActionType.fromId(json['on_failure'] ?? 'toast'),
       reference: json['reference'],
       layoutFormId: json['layout_form_id'],
       icon: json['icon'],
@@ -125,10 +141,10 @@ class ActionD extends HiveObject {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'type': type,
+      'type': type.id,
       'name': name,
-      'on_success': onSuccess,
-      'on_failure': onFailure,
+      'on_success': onSuccess.id,
+      'on_failure': onFailure.id,
       'is_multiple': isMultiple,
       'reference': reference,
       'layout_form_id': layoutFormId,
@@ -161,11 +177,4 @@ extension ActionDListExtension on List<ActionD> {
 
   List<ActionD> get singleRow =>
       where((element) => !element.isMultiple).toList();
-}
-
-class ActionType {
-  static const String print = 'print';
-  static const String create = 'create';
-  static const String openPage = 'open_page';
-  static const String listJsonViewAsTable = 'list_json_view_as_table';
 }
