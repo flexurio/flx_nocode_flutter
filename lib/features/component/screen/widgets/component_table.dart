@@ -100,7 +100,12 @@ class _ComponentTableHttpWidgetState extends State<_ComponentTableHttpWidget> {
               return Text(
                 text.interpolateJavascript(
                   {
-                    "current": widget.data,
+                    "current": widget.data.map((key, value) {
+                      if (value is TextEditingController) {
+                        return MapEntry(key, value.text);
+                      }
+                      return MapEntry(key, value);
+                    }),
                     "row": row,
                   },
                 ),
