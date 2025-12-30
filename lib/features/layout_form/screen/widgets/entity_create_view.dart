@@ -49,9 +49,11 @@ class CreateForm extends StatefulWidget {
 
 class _CreateFormState extends State<CreateForm> {
   final _formKey = GlobalKey<FormState>();
+  final List<GlobalKey<FormState>> _stepFormKeys = [];
   var _controllers = <String, TextEditingController>{};
   late DataAction _action;
   int _formVersion = 0;
+  int _currentPage = 0;
 
   @override
   void initState() {
@@ -67,6 +69,12 @@ class _CreateFormState extends State<CreateForm> {
     }
 
     _action = widget.layoutForm.action;
+
+    if (widget.layoutForm.multiForms.isNotEmpty) {
+      for (var i = 0; i < widget.layoutForm.multiForms.length; i++) {
+        _stepFormKeys.add(GlobalKey<FormState>());
+      }
+    }
   }
 
   @override
@@ -82,14 +90,7 @@ class _CreateFormState extends State<CreateForm> {
     final theme = Theme.of(context);
     final coreEntity = widget.entity.coreEntity;
     final headerSuffix = _headerSuffix();
-    final form = EntityCreateForm(
-      key: ValueKey(_formVersion),
-      parentData: widget.parentData,
-      layoutForm: widget.layoutForm,
-      entity: widget.entity,
-      dataAction: _action,
-      controllers: _controllers,
-    );
+    // remove `final form = ...` logic from here as it's now in _buildFormContent
 
     return BlocListener<EntityBloc, EntityState>(
       listener: (context, state) {
@@ -127,20 +128,20 @@ class _CreateFormState extends State<CreateForm> {
                   const Gap(10),
                   _buildButtonSubmit(),
                 ],
-                child: form,
+                child: _buildFormContent(),
               ),
             )
           : (widget.noHeader
               ? EntityCreateEmbeddedLayout(
                   formKey: _formKey,
-                  form: form,
+                  form: _buildFormContent(),
                   submitButton: _buildButtonSubmit(),
                 )
               : EntityCreatePanelLayout(
                   embedded: widget.embedded,
                   theme: theme,
                   formKey: _formKey,
-                  form: form,
+                  form: _buildFormContent(),
                   submitButton: _buildButtonSubmit(),
                   coreEntity: coreEntity,
                   title: _buildTitle(),
@@ -149,6 +150,38 @@ class _CreateFormState extends State<CreateForm> {
                       : _action,
                   suffixText: headerSuffix,
                 )),
+    );
+  }
+
+  Widget _buildFormContent() {
+    if (widget.layoutForm.multiForms.isNotEmpty) {
+      return MultiForm(
+        page: _currentPage,
+        titles: widget.layoutForm.multiForms.map((e) => e.label).toList(),
+        children: List.generate(widget.layoutForm.multiForms.length, (index) {
+          final stepForm = widget.layoutForm.multiForms[index];
+          return Form(
+            key: _stepFormKeys[index],
+            child: EntityCreateForm(
+              key: ValueKey('step_$index'),
+              parentData: widget.parentData,
+              layoutForm: stepForm,
+              entity: widget.entity,
+              dataAction: _action,
+              controllers: _controllers,
+            ),
+          );
+        }),
+      );
+    }
+
+    return EntityCreateForm(
+      key: ValueKey(_formVersion),
+      parentData: widget.parentData,
+      layoutForm: widget.layoutForm,
+      entity: widget.entity,
+      dataAction: _action,
+      controllers: _controllers,
     );
   }
 
@@ -250,25 +283,41 @@ class _CreateFormState extends State<CreateForm> {
 
   void _submit() {
     print('[CreateForm] Submitting data: $_data');
-    if (_formKey.currentState!.validate()) {
-      late EntityEvent event;
-      if (widget.layoutForm.submitWorkflow != null &&
-          widget.layoutForm.submitWorkflow!.isNotEmpty) {
-        print('[CreateForm] Triggering submitWorkflow');
-        event = EntityEvent.submitWorkflow(
-          data: _data,
-          workflow: widget.layoutForm.submitWorkflow!,
-        );
-      } else {
-        print('[CreateForm] Submit workflow not found!');
-        Toast(context).fail('Submit workflow not found');
+
+    // For multi-step, validate all steps before submitting
+    if (widget.layoutForm.multiForms.isNotEmpty) {
+      bool allValid = true;
+      for (final key in _stepFormKeys) {
+        if (key.currentState != null && !key.currentState!.validate()) {
+          allValid = false;
+        }
+      }
+      if (!allValid) {
+        print('[CreateForm] Multi-step form validation failed');
         return;
       }
-
-      context.read<EntityBloc>().add(event);
-    } else {
+    } else if (_formKey.currentState != null &&
+        !_formKey.currentState!.validate()) {
       print('[CreateForm] Form validation failed');
+      return;
     }
+
+    // If we are here, validation passed
+    late EntityEvent event;
+    if (widget.layoutForm.submitWorkflow != null &&
+        widget.layoutForm.submitWorkflow!.isNotEmpty) {
+      print('[CreateForm] Triggering submitWorkflow');
+      event = EntityEvent.submitWorkflow(
+        data: _data,
+        workflow: widget.layoutForm.submitWorkflow!,
+      );
+    } else {
+      print('[CreateForm] Submit workflow not found!');
+      Toast(context).fail('Submit workflow not found');
+      return;
+    }
+
+    context.read<EntityBloc>().add(event);
   }
 
   List<Widget> _buildButtonActions(BuildContext context) {
@@ -301,10 +350,41 @@ class _CreateFormState extends State<CreateForm> {
   Widget _buildButtonSubmit() {
     return BlocBuilder<EntityBloc, EntityState>(
       builder: (context, state) {
-        final inProgress = state.maybeWhen(
-          loading: () => true,
-          orElse: () => false,
-        );
+        final inProgress =
+            state.maybeWhen(loading: () => true, orElse: () => false);
+
+        if (widget.layoutForm.multiForms.isNotEmpty) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              if (_currentPage > 0)
+                Button.string(
+                  permission: null,
+                  isInProgress: false,
+                  action: 'Back',
+                  isSecondary: true,
+                  onPressed: _prevStep,
+                ),
+              const Gap(10),
+              if (_currentPage < widget.layoutForm.multiForms.length - 1)
+                Button.string(
+                  permission: null,
+                  isInProgress: false,
+                  action: 'Next',
+                  onPressed: _nextStep,
+                )
+              else
+                Button.action(
+                  permission: null,
+                  isInProgress: inProgress,
+                  onPressed: _submit,
+                  action: widget.layoutForm.formType.isHome
+                      ? DataAction.reprocess
+                      : _action,
+                ),
+            ],
+          );
+        }
 
         if (widget.layoutForm.buttons.isNotEmpty) {
           return Row(
@@ -322,5 +402,21 @@ class _CreateFormState extends State<CreateForm> {
         );
       },
     );
+  }
+
+  void _nextStep() {
+    if (_stepFormKeys[_currentPage].currentState!.validate()) {
+      setState(() {
+        _currentPage++;
+      });
+    }
+  }
+
+  void _prevStep() {
+    if (_currentPage > 0) {
+      setState(() {
+        _currentPage--;
+      });
+    }
   }
 }
