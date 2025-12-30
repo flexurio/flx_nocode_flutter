@@ -13,6 +13,7 @@ import 'package:flx_nocode_flutter/src/app/view/page/entity_create/widgets/entit
 import 'package:flx_nocode_flutter/features/component/models/component_date_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 
 class CreateForm extends StatefulWidget {
   const CreateForm({
@@ -26,6 +27,7 @@ class CreateForm extends StatefulWidget {
     required this.noHeader,
     required this.layoutForm,
     required this.parentData,
+    this.popup = false,
   });
 
   final Map<String, dynamic>? data;
@@ -37,6 +39,7 @@ class CreateForm extends StatefulWidget {
   final bool autoBackWhenSuccess;
   final bool noHeader;
   final LayoutForm layoutForm;
+  final bool popup;
 
   @override
   State<CreateForm> createState() => _CreateFormState();
@@ -102,25 +105,47 @@ class _CreateFormState extends State<CreateForm> {
           orElse: () {},
         );
       },
-      child: widget.noHeader
-          ? EntityCreateEmbeddedLayout(
-              formKey: _formKey,
-              form: form,
-              submitButton: _buildButtonSubmit(),
+      child: widget.popup
+          ? Form(
+              key: _formKey,
+              child: CardForm(
+                popup: true,
+                title: _buildTitle(),
+                icon: widget.layoutForm.formType.isHome
+                    ? Icons.home
+                    : Icons.edit_note,
+                actions: [
+                  Button.action(
+                    permission: null,
+                    isSecondary: true,
+                    onPressed: () => Navigator.pop(context),
+                    action: DataAction.cancel,
+                  ),
+                  const Gap(10),
+                  _buildButtonSubmit(),
+                ],
+                child: form,
+              ),
             )
-          : EntityCreatePanelLayout(
-              embedded: widget.embedded,
-              theme: theme,
-              formKey: _formKey,
-              form: form,
-              submitButton: _buildButtonSubmit(),
-              coreEntity: coreEntity,
-              title: _buildTitle(),
-              action: widget.layoutForm.formType.isHome
-                  ? DataAction.reprocess
-                  : _action,
-              suffixText: headerSuffix,
-            ),
+          : (widget.noHeader
+              ? EntityCreateEmbeddedLayout(
+                  formKey: _formKey,
+                  form: form,
+                  submitButton: _buildButtonSubmit(),
+                )
+              : EntityCreatePanelLayout(
+                  embedded: widget.embedded,
+                  theme: theme,
+                  formKey: _formKey,
+                  form: form,
+                  submitButton: _buildButtonSubmit(),
+                  coreEntity: coreEntity,
+                  title: _buildTitle(),
+                  action: widget.layoutForm.formType.isHome
+                      ? DataAction.reprocess
+                      : _action,
+                  suffixText: headerSuffix,
+                )),
     );
   }
 

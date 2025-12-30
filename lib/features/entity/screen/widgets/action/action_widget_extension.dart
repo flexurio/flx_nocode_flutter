@@ -73,19 +73,17 @@ extension ActionWidgetExtension on ActionD {
             context: context,
             barrierDismissible: false,
             builder: (ctx) {
-              return DraggableDialogContainer(
-                title: name,
-                child: CreatePage.prepare(
-                  embedded: true,
-                  entity: entity,
-                  layoutFormId: layoutFormId ?? '',
-                  parentData: parentData,
-                  filters: filters,
-                  onSuccess: () {
-                    onSuccess();
-                    Navigator.of(ctx).pop();
-                  },
-                ),
+              return CreatePage.prepare(
+                popup: true,
+                embedded: true,
+                entity: entity,
+                layoutFormId: layoutFormId ?? '',
+                parentData: parentData,
+                filters: filters,
+                onSuccess: () {
+                  onSuccess();
+                  Navigator.of(ctx).pop();
+                },
               );
             },
           );
@@ -187,15 +185,9 @@ extension ActionWidgetExtension on ActionD {
       onPressed: () async {
         if (http == null) {
           Toast(context).fail('No http data found');
-          // Menggunakan method dari action_logic_extension.dart
-          // Note: _handleOnFailure di logic extension bersifat private,
-          // tapi karena kita mengimport filenya, kita sebaiknya memanggil executeHttpMultiple
-          // yang sudah menghandle error. Namun jika ingin manual, logic failure harus dipublic-kan.
-          // Di sini saya panggil return saja karena executeHttpMultiple akan handle validasi.
           return;
         }
 
-        // Menggunakan showConfirmDialog dari action_logic_extension.dart
         await showConfirmDialog(
           context: context,
           action: actionType,
@@ -287,7 +279,6 @@ extension ActionWidgetExtension on ActionD {
           return;
         }
 
-        // Memanggil fungsi dari json_table_viewer.dart
         await showJsonAsTableDialog(context, jsonData);
       },
       iconOverride: actionIcon(this),
@@ -351,19 +342,17 @@ extension ActionWidgetExtension on ActionD {
           context: context,
           barrierDismissible: false,
           builder: (ctx) {
-            return DraggableDialogContainer(
-              title: name,
-              child: CreatePage.prepare(
-                embedded: true,
-                entity: entity,
-                layoutFormId: layoutFormId,
-                parentData: parentData,
-                data: data,
-                filters: const {},
-                onSuccess: () {
-                  Navigator.of(ctx).pop();
-                },
-              ),
+            return CreatePage.prepare(
+              popup: true,
+              embedded: true,
+              entity: entity,
+              layoutFormId: layoutFormId,
+              parentData: parentData,
+              data: data,
+              filters: const {},
+              onSuccess: () {
+                Navigator.of(ctx).pop();
+              },
             );
           },
         );
