@@ -25,7 +25,6 @@ class LayoutForm extends HiveObject {
   final List<ButtonAction> buttons;
   final List<LayoutForm> multiForms;
   final Map<String, dynamic>? submitWorkflow;
-  final bool isPopup;
 
   static const String createType = 'create';
   static const String updateType = 'update';
@@ -66,8 +65,7 @@ class LayoutForm extends HiveObject {
         components = const [],
         buttons = const [],
         multiForms = const [],
-        submitWorkflow = null,
-        isPopup = false;
+        submitWorkflow = null;
 
   LayoutForm({
     required this.id,
@@ -79,7 +77,6 @@ class LayoutForm extends HiveObject {
     List<ButtonAction>? buttons,
     List<LayoutForm>? multiForms,
     Map<String, dynamic>? submitWorkflow,
-    this.isPopup = false,
   })  : assert(label.trim().isNotEmpty, 'label is required'),
         assert(type.trim().isNotEmpty, 'type is required'),
         groups = List<GroupLayout>.unmodifiable(groups),
@@ -213,7 +210,6 @@ class LayoutForm extends HiveObject {
       buttons: parsedActions,
       multiForms: multiForms,
       submitWorkflow: submitWorkflow,
-      isPopup: map['is_popup'] == true,
     );
   }
 
@@ -224,7 +220,6 @@ class LayoutForm extends HiveObject {
       'type': type,
       'groups': groups.map((e) => e.toMap()).toList(growable: false),
       'components': components.map((e) => e.toMap()).toList(growable: false),
-      'is_popup': isPopup,
     };
 
     if (visibleIf != null) {
@@ -254,7 +249,6 @@ class LayoutForm extends HiveObject {
     List<Component>? components,
     List<LayoutForm>? multiForms,
     Map<String, dynamic>? submitWorkflow,
-    bool? isPopup,
   }) {
     return LayoutForm(
       id: id ?? this.id,
@@ -266,7 +260,6 @@ class LayoutForm extends HiveObject {
       buttons: buttons ?? this.buttons,
       multiForms: multiForms ?? this.multiForms,
       submitWorkflow: submitWorkflow ?? this.submitWorkflow,
-      isPopup: isPopup ?? this.isPopup,
     );
   }
 }

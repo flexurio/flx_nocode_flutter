@@ -101,9 +101,11 @@ class ComponentTable extends Component {
     return ComponentTable(
       id: id,
       columns: columns,
-      http: HttpData.fromJson(
-        map['http'] as Map<String, dynamic>,
-      ),
+      http: map['http'] == null
+          ? HttpData.empty()
+          : HttpData.fromJson(
+              map['http'] as Map<String, dynamic>,
+            ),
       width: (map['width'] as num?)?.toDouble(),
     );
   }
@@ -124,6 +126,15 @@ class ComponentTable extends Component {
   JsonMap toMap() => {
         'id': id,
         'type': type,
+        'http': http.toJson(),
+        'width': width,
+        'columns': columns
+            .map((e) => {
+                  'header': e.header,
+                  'body': e.body,
+                  'width': e.width,
+                })
+            .toList(),
       };
 }
 
