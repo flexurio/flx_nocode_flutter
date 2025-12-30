@@ -22,6 +22,7 @@ class CreatePage extends StatelessWidget {
     required this.layoutFormId,
     required this.parentData,
     this.popup = false,
+    this.width,
   });
 
   final Map<String, dynamic>? data;
@@ -34,6 +35,7 @@ class CreatePage extends StatelessWidget {
   final bool noHeader;
   final String layoutFormId;
   final bool popup;
+  final double? width;
 
   static Widget prepare({
     Key? key,
@@ -48,6 +50,7 @@ class CreatePage extends StatelessWidget {
     required VoidCallback onSuccess,
     Configuration? configuration,
     bool popup = false,
+    double? width,
   }) {
     if (configuration != null) {
       Configuration.instance = configuration;
@@ -67,6 +70,7 @@ class CreatePage extends StatelessWidget {
         noHeader: noHeader,
         autoBackWhenSuccess: autoBackWhenSuccess,
         popup: popup,
+        width: width,
       ),
     );
   }
@@ -81,6 +85,7 @@ class CreatePage extends StatelessWidget {
     required List<Map<String, dynamic>> parentData,
     bool autoBackWhenSuccess = true,
     bool popup = false,
+    double? width,
   }) {
     print('CreatePage.route: layoutFormId: $layoutFormId');
     return PageTransition(
@@ -96,6 +101,7 @@ class CreatePage extends StatelessWidget {
         filters: filters,
         autoBackWhenSuccess: autoBackWhenSuccess,
         popup: popup,
+        width: width,
       ),
     );
   }
@@ -118,6 +124,7 @@ class CreatePage extends StatelessWidget {
         noHeader: noHeader,
         autoBackWhenSuccess: autoBackWhenSuccess,
         popup: popup,
+        width: width,
       );
     } catch (e) {
       return Scaffold(

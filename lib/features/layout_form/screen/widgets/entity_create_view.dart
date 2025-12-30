@@ -28,6 +28,7 @@ class CreateForm extends StatefulWidget {
     required this.layoutForm,
     required this.parentData,
     this.popup = false,
+    this.width,
   });
 
   final Map<String, dynamic>? data;
@@ -40,6 +41,7 @@ class CreateForm extends StatefulWidget {
   final bool noHeader;
   final LayoutForm layoutForm;
   final bool popup;
+  final double? width;
 
   @override
   State<CreateForm> createState() => _CreateFormState();
@@ -110,6 +112,7 @@ class _CreateFormState extends State<CreateForm> {
               key: _formKey,
               child: CardForm(
                 popup: true,
+                width: widget.width ?? 400,
                 title: _buildTitle(),
                 icon: widget.layoutForm.formType.isHome
                     ? Icons.home

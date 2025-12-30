@@ -68,6 +68,7 @@ class ActionD extends HiveObject {
   final Rule? rule;
 
   final bool isMultiple;
+  final double? width;
 
   ActionD({
     required this.isMultiple,
@@ -82,6 +83,7 @@ class ActionD extends HiveObject {
     this.rule,
     required this.type,
     required this.name,
+    this.width,
   });
 
   /// Creates a copy of this [ActionD] object with optional modifications.
@@ -98,8 +100,10 @@ class ActionD extends HiveObject {
     String? icon,
     int? iconCode,
     Rule? rule,
+    double? width,
   }) {
     return ActionD(
+      width: width ?? this.width,
       isMultiple: isMultiple ?? this.isMultiple,
       id: id ?? this.id,
       type: type ?? this.type,
@@ -134,6 +138,7 @@ class ActionD extends HiveObject {
           : Rule.fromMap(
               Map<String, dynamic>.from(json['rule'] as Map),
             ),
+      width: json['width']?.toDouble(),
     );
   }
 
@@ -152,6 +157,7 @@ class ActionD extends HiveObject {
       'icon_code': iconCode,
       if (rule != null) 'rule': rule!.toMap(),
       if (http != null) 'http': http!.toJson(),
+      'width': width,
     };
   }
 

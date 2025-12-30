@@ -80,6 +80,7 @@ extension ActionWidgetExtension on ActionD {
                 layoutFormId: layoutFormId ?? '',
                 parentData: parentData,
                 filters: filters,
+                width: width,
                 onSuccess: () {
                   onSuccess();
                   Navigator.of(ctx).pop();
@@ -350,6 +351,7 @@ extension ActionWidgetExtension on ActionD {
               parentData: parentData,
               data: data,
               filters: const {},
+              width: width,
               onSuccess: () {
                 Navigator.of(ctx).pop();
               },
