@@ -188,7 +188,11 @@ class CreatePageController extends GetxController {
       final field = fieldMap[component.id];
       if ((field != null && field.isDateTime) ||
           component is ComponentDatePicker) {
-        value = _formatDateTimeField(field, value);
+        String? customFormat;
+        if (component is ComponentDatePicker) {
+          customFormat = component.dateFormat;
+        }
+        value = _formatDateTimeField(field, value, customFormat: customFormat);
       }
 
       data[component.id] = value;
@@ -214,10 +218,13 @@ class CreatePageController extends GetxController {
     return data;
   }
 
-  String _formatDateTimeField(EntityField? field, String value) {
+  String _formatDateTimeField(EntityField? field, String value,
+      {String? customFormat}) {
     if (value.isEmpty) return value;
 
-    final fmt = field != null ? _dateFormat(field) : 'yyyy-MM-dd HH:mm:ss';
+    final fmt = (customFormat != null && customFormat.isNotEmpty)
+        ? customFormat
+        : (field != null ? _dateFormat(field) : 'yyyy-MM-dd HH:mm:ss');
     final formatter = DateFormat(fmt);
 
     // Try parsing with configured format first, then fall back to ISO parsing.
