@@ -86,7 +86,8 @@ class CreatePageController extends GetxController {
         if (component is ComponentTextField) {
           if (component.initialValue.isNotEmpty) {
             final val = component.initialValue.interpolateJavascript({
-              ...data,
+              // ...data,
+              'data': data,
               if (parentData.isNotEmpty) 'parent': parentData.last,
             });
             data[component.id] = val;
