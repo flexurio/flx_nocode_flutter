@@ -12,7 +12,6 @@ extension ComponentTextFieldWidgets on ComponentTextField {
       maxLines: maxLines,
       labelText: label,
       enabled: enabled,
-      hintText: initialValue.isEmpty ? null : initialValue,
       validator: this.required
           ? (value) {
               final actualValue = controller?.text ?? value;

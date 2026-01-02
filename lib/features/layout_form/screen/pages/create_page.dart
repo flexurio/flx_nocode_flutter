@@ -1,5 +1,9 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
+import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
+import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/entity_create_view.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
@@ -113,10 +117,24 @@ class CreatePage extends StatelessWidget {
         (e) => e.id == layoutFormId,
       );
 
+      final initialData = Map<String, dynamic>.from(data ?? {});
+      if (layoutForm.formType.isCreate || layoutForm.formType.isHome) {
+        for (final component in layoutForm.allComponents) {
+          if (component is ComponentTextField &&
+              component.initialValue.isNotEmpty) {
+            final val = component.initialValue.interpolateJavascript({
+              ...initialData,
+              if (parentData.isNotEmpty) 'parent': parentData.last,
+            });
+            initialData[component.id] = val;
+          }
+        }
+      }
+
       return CreateForm(
         parentData: parentData,
         layoutForm: layoutForm,
-        data: data,
+        data: initialData,
         entity: entity,
         onSuccess: onSuccess,
         embedded: embedded,

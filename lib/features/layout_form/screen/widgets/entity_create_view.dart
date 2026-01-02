@@ -68,6 +68,15 @@ class _CreateFormState extends State<CreateForm> {
       }
     }
 
+    if (widget.data != null) {
+      for (final entry in widget.data!.entries) {
+        final ctrl = _controllers[entry.key];
+        if (ctrl != null) {
+          ctrl.text = entry.value?.toString() ?? '';
+        }
+      }
+    }
+
     _action = widget.layoutForm.action;
 
     if (widget.layoutForm.multiForms.isNotEmpty) {
