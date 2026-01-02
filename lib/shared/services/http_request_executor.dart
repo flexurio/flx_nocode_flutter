@@ -70,9 +70,10 @@ class HttpRequestResult {
   }
 }
 
-/// Tanggung jawab: HANYA handle request HTTP (Dio, logging, parsing error).
 class HttpRequestExecutor {
   HttpRequestExecutor({Dio? dio}) : _dio = dio ?? Dio();
+
+  static const bool enableLog = false;
 
   final Dio _dio;
 
@@ -188,23 +189,27 @@ class HttpRequestExecutor {
     required Object? body,
     required bool asFormData,
   }) {
-    print('================ HTTP REQUEST ================');
-    print('→ Method     : $method');
-    print('→ URL        : $url');
-    print('→ Headers    : $headers');
-    print('→ Body       : ${body ?? '{}'}');
-    print('→ AsFormData : $asFormData');
-    print('==============================================');
+    if (enableLog) {
+      print('================ HTTP REQUEST ================');
+      print('→ Method     : $method');
+      print('→ URL        : $url');
+      print('→ Headers    : $headers');
+      print('→ Body       : ${body ?? '{}'}');
+      print('→ AsFormData : $asFormData');
+      print('==============================================');
+    }
   }
 
   void _logHttpResponse({
     required int? statusCode,
     required Object? data,
   }) {
-    print('================ HTTP RESPONSE ===============');
-    print('← Status : $statusCode');
-    print('← Data   : $data');
-    print('==============================================');
+    if (enableLog) {
+      print('================ HTTP RESPONSE ===============');
+      print('← Status : $statusCode');
+      print('← Data   : $data');
+      print('==============================================');
+    }
   }
 
   void _logHttpError({
@@ -212,17 +217,21 @@ class HttpRequestExecutor {
     required String message,
     required Object? response,
   }) {
-    print('================ HTTP ERROR ==================');
-    print('❌ Type     : $type');
-    print('❌ Message  : $message');
-    print('❌ Response : $response');
-    print('==============================================');
+    if (enableLog) {
+      print('================ HTTP ERROR ==================');
+      print('❌ Type     : $type');
+      print('❌ Message  : $message');
+      print('❌ Response : $response');
+      print('==============================================');
+    }
   }
 
   void _logUnexpectedError(Object error) {
-    print('================ UNEXPECTED ERROR ============');
-    print('❌ $error');
-    print('==============================================');
+    if (enableLog) {
+      print('================ UNEXPECTED ERROR ============');
+      print('❌ $error');
+      print('==============================================');
+    }
   }
 
   // ------------------------ ERROR PARSER ------------------------------------

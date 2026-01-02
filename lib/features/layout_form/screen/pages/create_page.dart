@@ -1,10 +1,5 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
-import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
-import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
-import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
-
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/entity_create_view.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'package:page_transition/page_transition.dart';
+
+import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
+import 'package:get/get.dart';
 
 class CreatePage extends StatelessWidget {
   const CreatePage._({
@@ -112,50 +110,41 @@ class CreatePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    try {
-      final layoutForm = entity.layoutForm.firstWhere(
-        (e) => e.id == layoutFormId,
-      );
-
-      final initialData = Map<String, dynamic>.from(data ?? {});
-      if (layoutForm.formType.isCreate || layoutForm.formType.isHome) {
-        for (final component in layoutForm.allComponents) {
-          if (component is ComponentTextField) {
-            if (component.initialValue.isNotEmpty) {
-              final val = component.initialValue.interpolateJavascript({
-                ...initialData,
-                if (parentData.isNotEmpty) 'parent': parentData.last,
-              });
-              initialData[component.id] = val;
-            } else {
-              initialData.remove(component.id);
-            }
-          }
-        }
-      }
-
-      return CreateForm(
-        parentData: parentData,
-        layoutForm: layoutForm,
-        data: initialData,
+    return GetBuilder<CreatePageController>(
+      tag: 'create_page_$layoutFormId',
+      init: CreatePageController(
         entity: entity,
-        onSuccess: onSuccess,
-        embedded: embedded,
+        layoutFormId: layoutFormId,
+        initialDataInput: data,
+        parentData: parentData,
         filters: filters,
-        noHeader: noHeader,
-        autoBackWhenSuccess: autoBackWhenSuccess,
-        popup: popup,
-        width: width,
-      );
-    } catch (e) {
-      return Scaffold(
-        body: NoCodeError(
-          'Layout Form Not Found',
-          description: 'Could not find layout form with id: $layoutFormId',
-          suggestion: 'Check your entity configuration.',
-          debugInfo: 'ID: $layoutFormId',
-        ),
-      );
-    }
+      ),
+      builder: (controller) {
+        if (controller.hasError.value) {
+          return Scaffold(
+            body: NoCodeError(
+              'Layout Form Not Found',
+              description: controller.errorDescription.value,
+              suggestion: 'Check your entity configuration.',
+              debugInfo: 'ID: $layoutFormId',
+            ),
+          );
+        }
+
+        return CreateForm(
+          parentData: parentData,
+          layoutForm: controller.layoutForm,
+          data: controller.initialData,
+          entity: entity,
+          onSuccess: onSuccess,
+          embedded: embedded,
+          filters: filters,
+          noHeader: noHeader,
+          autoBackWhenSuccess: autoBackWhenSuccess,
+          popup: popup,
+          width: width,
+        );
+      },
+    );
   }
 }

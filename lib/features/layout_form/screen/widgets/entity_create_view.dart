@@ -1,21 +1,21 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
-import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
-import 'package:flx_nocode_flutter/features/field/models/field.dart';
-import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_field_form_controllers.dart';
+
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/enitty_create_form.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_create/widgets/entity_create_layouts.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_date_picker.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class CreateForm extends StatefulWidget {
+import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
+import 'package:get/get.dart';
+
+class CreateForm extends StatelessWidget {
   const CreateForm({
     super.key,
     required this.data,
@@ -44,310 +44,118 @@ class CreateForm extends StatefulWidget {
   final double? width;
 
   @override
-  State<CreateForm> createState() => _CreateFormState();
-}
-
-class _CreateFormState extends State<CreateForm> {
-  final _formKey = GlobalKey<FormState>();
-  final List<GlobalKey<FormState>> _stepFormKeys = [];
-  var _controllers = <String, TextEditingController>{};
-  late DataAction _action;
-  int _formVersion = 0;
-  int _currentPage = 0;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controllers = widget.entity.fields.generateControllers();
-
-    // Ensure all components have controllers, even those not strictly bound to fields
-    for (final component in widget.layoutForm.allComponents) {
-      if (!_controllers.containsKey(component.id)) {
-        _controllers[component.id] = TextEditingController();
-      }
-    }
-
-    if (widget.data != null) {
-      for (final entry in widget.data!.entries) {
-        final ctrl = _controllers[entry.key];
-        if (ctrl != null) {
-          ctrl.text = entry.value?.toString() ?? '';
-        }
-      }
-    }
-
-    _action = widget.layoutForm.action;
-
-    if (widget.layoutForm.multiForms.isNotEmpty) {
-      for (var i = 0; i < widget.layoutForm.multiForms.length; i++) {
-        _stepFormKeys.add(GlobalKey<FormState>());
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    for (final c in _controllers.values) {
-      c.dispose();
-    }
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final coreEntity = widget.entity.coreEntity;
-    final headerSuffix = _headerSuffix();
-    // remove `final form = ...` logic from here as it's now in _buildFormContent
+    return GetBuilder<CreatePageController>(
+      tag: 'create_page_${layoutForm.id}',
+      builder: (controller) {
+        final theme = Theme.of(context);
+        final coreEntity = entity.coreEntity;
 
-    return BlocListener<EntityBloc, EntityState>(
-      listener: (context, state) {
-        state.maybeWhen(
-          success: (_) {
-            widget.onSuccess();
-            Toast(context).dataChanged(_action, coreEntity);
-            if (widget.autoBackWhenSuccess) {
-              Navigator.pop(context, true);
-            } else {
-              _clearForm();
-            }
+        return BlocListener<EntityBloc, EntityState>(
+          listener: (context, state) {
+            state.maybeWhen(
+              success: (_) {
+                onSuccess();
+                Toast(context).dataChanged(controller.action, coreEntity);
+                if (autoBackWhenSuccess) {
+                  Navigator.pop(context, true);
+                } else {
+                  controller.clearForm();
+                }
+              },
+              error: (error) => Toast(context).fail(error),
+              orElse: () {},
+            );
           },
-          error: (error) => Toast(context).fail(error),
-          orElse: () {},
+          child: popup
+              ? Form(
+                  key: controller.formKey,
+                  child: CardForm(
+                    popup: true,
+                    width: width ?? 400,
+                    title: controller.title,
+                    icon: layoutForm.formType.isHome
+                        ? Icons.home
+                        : Icons.edit_note,
+                    actions: [
+                      Button.action(
+                        permission: null,
+                        isSecondary: true,
+                        onPressed: () => Navigator.pop(context),
+                        action: DataAction.cancel,
+                      ),
+                      const Gap(10),
+                      _buildButtonSubmit(context, controller),
+                    ],
+                    child: _buildFormContent(controller),
+                  ),
+                )
+              : (noHeader
+                  ? EntityCreateEmbeddedLayout(
+                      formKey: controller.formKey,
+                      form: _buildFormContent(controller),
+                      submitButton: _buildButtonSubmit(context, controller),
+                    )
+                  : EntityCreatePanelLayout(
+                      embedded: embedded,
+                      theme: theme,
+                      formKey: controller.formKey,
+                      form: _buildFormContent(controller),
+                      submitButton: _buildButtonSubmit(context, controller),
+                      coreEntity: coreEntity,
+                      title: controller.title,
+                      action: layoutForm.formType.isHome
+                          ? DataAction.reprocess
+                          : controller.action,
+                      suffixText: controller.headerSuffix,
+                    )),
         );
       },
-      child: widget.popup
-          ? Form(
-              key: _formKey,
-              child: CardForm(
-                popup: true,
-                width: widget.width ?? 400,
-                title: _buildTitle(),
-                icon: widget.layoutForm.formType.isHome
-                    ? Icons.home
-                    : Icons.edit_note,
-                actions: [
-                  Button.action(
-                    permission: null,
-                    isSecondary: true,
-                    onPressed: () => Navigator.pop(context),
-                    action: DataAction.cancel,
-                  ),
-                  const Gap(10),
-                  _buildButtonSubmit(),
-                ],
-                child: _buildFormContent(),
-              ),
-            )
-          : (widget.noHeader
-              ? EntityCreateEmbeddedLayout(
-                  formKey: _formKey,
-                  form: _buildFormContent(),
-                  submitButton: _buildButtonSubmit(),
-                )
-              : EntityCreatePanelLayout(
-                  embedded: widget.embedded,
-                  theme: theme,
-                  formKey: _formKey,
-                  form: _buildFormContent(),
-                  submitButton: _buildButtonSubmit(),
-                  coreEntity: coreEntity,
-                  title: _buildTitle(),
-                  action: widget.layoutForm.formType.isHome
-                      ? DataAction.reprocess
-                      : _action,
-                  suffixText: headerSuffix,
-                )),
     );
   }
 
-  Widget _buildFormContent() {
-    if (widget.layoutForm.multiForms.isNotEmpty) {
-      return MultiForm(
-        page: _currentPage,
-        titles: widget.layoutForm.multiForms.map((e) => e.label).toList(),
-        children: List.generate(widget.layoutForm.multiForms.length, (index) {
-          final stepForm = widget.layoutForm.multiForms[index];
-          return Form(
-            key: _stepFormKeys[index],
-            child: EntityCreateForm(
-              key: ValueKey('step_$index'),
-              parentData: widget.parentData,
-              layoutForm: stepForm,
-              entity: widget.entity,
-              dataAction: _action,
-              controllers: _controllers,
-            ),
-          );
-        }),
-      );
+  Widget _buildFormContent(CreatePageController controller) {
+    if (layoutForm.multiForms.isNotEmpty) {
+      return Obx(() => MultiForm(
+            page: controller.currentPage.value,
+            titles: layoutForm.multiForms.map((e) => e.label).toList(),
+            children: List.generate(layoutForm.multiForms.length, (index) {
+              final stepForm = layoutForm.multiForms[index];
+              return Form(
+                key: controller.stepFormKeys[index],
+                child: EntityCreateForm(
+                  key: ValueKey('step_$index'),
+                  parentData: parentData,
+                  layoutForm: stepForm,
+                  entity: entity,
+                  dataAction: controller.action,
+                  controllers: controller.controllers,
+                ),
+              );
+            }),
+          ));
     }
 
-    return EntityCreateForm(
-      key: ValueKey(_formVersion),
-      parentData: widget.parentData,
-      layoutForm: widget.layoutForm,
-      entity: widget.entity,
-      dataAction: _action,
-      controllers: _controllers,
-    );
+    return Obx(() => EntityCreateForm(
+          key: ValueKey(controller.formVersion.value),
+          parentData: parentData,
+          layoutForm: layoutForm,
+          entity: entity,
+          dataAction: controller.action,
+          controllers: controller.controllers,
+        ));
   }
 
-  String _buildTitle() {
-    final baseTitle = '${_action.title} ${widget.entity.coreEntity.title}';
-    final label = widget.layoutForm.label.trim();
-    if (widget.layoutForm.formType.isHome && label.isNotEmpty) return label;
-    return baseTitle;
-  }
-
-  String _headerSuffix() {
-    if (!widget.layoutForm.formType.isHome) return '';
-    final baseTitle = '${_action.title} ${widget.entity.coreEntity.title}';
-    final label = widget.layoutForm.label.trim();
-    if (label.isEmpty) return '';
-    if (label.toLowerCase() == baseTitle.toLowerCase()) return '';
-    return label;
-  }
-
-  String _dateFormat(EntityField field) {
-    try {
-      return field.dateTimeFormat;
-    } catch (_) {
-      return 'yyyy-MM-dd HH:mm:ss';
-    }
-  }
-
-  Map<String, dynamic> get _data {
-    final data = <String, dynamic>{};
-    final components = widget.layoutForm.allComponents;
-
-    // Create a lookup for fields by reference for easy access to formatting logic
-    final fieldMap = {for (final f in widget.entity.fields) f.reference: f};
-
-    for (final component in components) {
-      final controller = _controllers[component.id];
-      if (controller == null) continue;
-
-      var value = controller.text;
-
-      // Check if this component is bound to a date field or is a date picker component
-      final field = fieldMap[component.id];
-      if ((field != null && field.isDateTime) ||
-          component is ComponentDatePicker) {
-        value = _formatDateTimeField(field, value);
-      }
-
-      data[component.id] = value;
-    }
-
-    // Also include pure field data that might not be in the components list
-    // (e.g. hidden primary keys or auto-generated fields if needed)
-    for (final field in widget.entity.fields) {
-      if (!data.containsKey(field.reference)) {
-        if (field.reference != 'id' && (field.autoGenerated ?? false)) {
-          continue;
-        }
-        final controller = _controllers[field.reference];
-        if (controller != null) {
-          var value = controller.text;
-          if (field.isDateTime) {
-            value = _formatDateTimeField(field, value);
-          }
-          data[field.reference] = value;
-        }
-      }
-    }
-
-    return data;
-  }
-
-  String _formatDateTimeField(EntityField? field, String value) {
-    if (value.isEmpty) return value;
-
-    final fmt = field != null ? _dateFormat(field) : 'yyyy-MM-dd HH:mm:ss';
-    final formatter = DateFormat(fmt);
-
-    // Try parsing with configured format first, then fall back to ISO parsing.
-    DateTime? parsed;
-    try {
-      parsed = formatter.parse(value);
-    } catch (_) {
-      parsed = DateTime.tryParse(value);
-    }
-
-    if (parsed == null) return value;
-    return formatter.format(parsed);
-  }
-
-  void _clearForm() {
-    setState(() {
-      for (final controller in _controllers.values) {
-        controller.clear();
-      }
-      _formVersion++;
-    });
-    _formKey.currentState?.reset();
-  }
-
-  void _submit() {
-    print('[CreateForm] Submitting data: $_data');
-
-    // For multi-step, validate all steps before submitting
-    if (widget.layoutForm.multiForms.isNotEmpty) {
-      bool allValid = true;
-      for (final key in _stepFormKeys) {
-        if (key.currentState != null && !key.currentState!.validate()) {
-          allValid = false;
-        }
-      }
-      if (!allValid) {
-        print('[CreateForm] Multi-step form validation failed');
-        return;
-      }
-    } else if (_formKey.currentState != null &&
-        !_formKey.currentState!.validate()) {
-      print('[CreateForm] Form validation failed');
-      return;
-    }
-
-    // If we are here, validation passed
-    late EntityEvent event;
-    if (widget.layoutForm.submitWorkflow != null &&
-        widget.layoutForm.submitWorkflow!.isNotEmpty) {
-      print('[CreateForm] Triggering submitWorkflow');
-      event = EntityEvent.submitWorkflow(
-        data: _data,
-        workflow: widget.layoutForm.submitWorkflow!,
-      );
-    } else {
-      print('[CreateForm] Submit workflow not found!');
-      Toast(context).fail('Submit workflow not found');
-      return;
-    }
-
-    context.read<EntityBloc>().add(event);
-  }
-
-  List<Widget> _buildButtonActions(BuildContext context) {
+  List<Widget> _buildButtonActions(
+      BuildContext context, CreatePageController controller) {
     final actions = <Widget>[];
-    final buttons = widget.layoutForm.buttons;
+    final buttons = layoutForm.buttons;
     for (final button in buttons) {
       actions.add(
         Button.string(
           permission: null,
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              final event = EntityEvent.execute(
-                data: _data,
-                method: button.method,
-                url: button.url,
-                filters: widget.filters,
-              );
-
-              context.read<EntityBloc>().add(event);
-            }
-          },
+          onPressed: () => controller.executeAction(
+              context, button.method, button.url, button.label),
           action: button.label,
           isInProgress: false,
         ),
@@ -356,76 +164,62 @@ class _CreateFormState extends State<CreateForm> {
     return actions;
   }
 
-  Widget _buildButtonSubmit() {
+  Widget _buildButtonSubmit(
+      BuildContext context, CreatePageController controller) {
     return BlocBuilder<EntityBloc, EntityState>(
       builder: (context, state) {
         final inProgress =
             state.maybeWhen(loading: () => true, orElse: () => false);
 
-        if (widget.layoutForm.multiForms.isNotEmpty) {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (_currentPage > 0)
-                Button.string(
-                  permission: null,
-                  isInProgress: false,
-                  action: 'Back',
-                  isSecondary: true,
-                  onPressed: _prevStep,
-                ),
-              const Gap(10),
-              if (_currentPage < widget.layoutForm.multiForms.length - 1)
-                Button.string(
-                  permission: null,
-                  isInProgress: false,
-                  action: 'Next',
-                  onPressed: _nextStep,
-                )
-              else
-                Button.action(
-                  permission: null,
-                  isInProgress: inProgress,
-                  onPressed: _submit,
-                  action: widget.layoutForm.formType.isHome
-                      ? DataAction.reprocess
-                      : _action,
-                ),
-            ],
-          );
+        if (layoutForm.multiForms.isNotEmpty) {
+          return Obx(() => Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (controller.currentPage.value > 0)
+                    Button.string(
+                      permission: null,
+                      isInProgress: false,
+                      action: 'Back',
+                      isSecondary: true,
+                      onPressed: controller.prevStep,
+                    ),
+                  const Gap(10),
+                  if (controller.currentPage.value <
+                      layoutForm.multiForms.length - 1)
+                    Button.string(
+                      permission: null,
+                      isInProgress: false,
+                      action: 'Next',
+                      onPressed: controller.nextStep,
+                    )
+                  else
+                    Button.action(
+                      permission: null,
+                      isInProgress: inProgress,
+                      onPressed: () => controller.submit(context),
+                      action: layoutForm.formType.isHome
+                          ? DataAction.reprocess
+                          : controller.action,
+                    ),
+                ],
+              ));
         }
 
-        if (widget.layoutForm.buttons.isNotEmpty) {
+        if (layoutForm.buttons.isNotEmpty) {
           return Row(
-            children: _buildButtonActions(context),
+            children: _buildButtonActions(context, controller),
           );
         }
 
         return Button.action(
           permission: null,
           isInProgress: inProgress,
-          onPressed: _submit,
-          action: widget.layoutForm.formType.isHome
+          onPressed: () => controller.submit(context),
+          action: layoutForm.formType.isHome
               ? DataAction.reprocess
-              : _action,
+              : controller.action,
         );
       },
     );
-  }
-
-  void _nextStep() {
-    if (_stepFormKeys[_currentPage].currentState!.validate()) {
-      setState(() {
-        _currentPage++;
-      });
-    }
-  }
-
-  void _prevStep() {
-    if (_currentPage > 0) {
-      setState(() {
-        _currentPage--;
-      });
-    }
   }
 }
