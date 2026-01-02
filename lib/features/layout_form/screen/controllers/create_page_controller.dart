@@ -1,23 +1,28 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_date_picker.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_dropdown.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_number_field.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
-import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
-import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_field_form_controllers.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
-import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
+import 'utils/create_page_controller_utils.dart';
+
+/// A unified controller for managing the state and logic of form creation and editing.
+///
+/// This controller handles layout form loading, initial data preparation via JS interpolation,
+/// form control management (TextEditingControllers), multi-step navigation, and submission.
 class CreatePageController extends GetxController {
+  /// Creates a [CreatePageController] with the required context.
+  ///
+  /// [entity] - The business entity definition.
+  /// [layoutFormId] - The ID of the layout form configuration to load.
+  /// [initialDataInput] - Optional initial data provided by the caller.
+  /// [parentData] - Contextual data from parent components/pages.
+  /// [filters] - Additional filters used for data retrieval or actions.
   CreatePageController({
     required this.entity,
     required this.layoutFormId,
@@ -26,26 +31,50 @@ class CreatePageController extends GetxController {
     this.filters = const {},
   });
 
+  /// The entity template for this form.
   final EntityCustom entity;
+
+  /// Target layout form identifier.
   final String layoutFormId;
+
+  /// Raw initial values input.
   final Map<String, dynamic>? initialDataInput;
+
+  /// Hierarchical context for the form.
   final List<Map<String, dynamic>> parentData;
+
+  /// Global filters for the current context.
   final Map<String, dynamic> filters;
 
+  /// The loaded layout form configuration.
   late LayoutForm layoutForm;
 
-  // State from CreatePageController
+  /// Reactive map containing prepared initial data after JS interpolation.
   final RxMap<String, dynamic> initialData = <String, dynamic>{}.obs;
+
+  /// Indicates if the controller encountered an initialization error.
   final RxBool hasError = false.obs;
+
+  /// Description of the error if [hasError] is true.
   final RxString errorDescription = ''.obs;
 
-  // State from CreateFormController
+  /// Form key for standard (single-page) forms.
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  /// Form keys for multi-step forms, one per step.
   final List<GlobalKey<FormState>> stepFormKeys = [];
+
+  /// Reactive map of field IDs to their respective [TextEditingController]s.
   final RxMap<String, TextEditingController> controllers =
       <String, TextEditingController>{}.obs;
+
+  /// The action type (Create, Update, Home) defined by the layout form.
   late DataAction action;
+
+  /// Version counter used to force UI refreshes when form is cleared.
   final RxInt formVersion = 0.obs;
+
+  /// The current page index for multi-step forms.
   final RxInt currentPage = 0.obs;
 
   @override
@@ -56,20 +85,21 @@ class CreatePageController extends GetxController {
 
   @override
   void onClose() {
+    // Dispose all managed controllers to prevent memory leaks.
     for (final c in controllers.values) {
       c.dispose();
     }
     super.onClose();
   }
 
-  // --- Logic from CreatePageController ---
-
+  /// Finds and loads the layout form from the entity definition.
+  ///
+  /// Triggers initial data preparation and controller initialization.
   void _loadLayoutForm() {
     try {
       layoutForm = entity.layoutForm.firstWhere((e) => e.id == layoutFormId);
       _prepareInitialData();
 
-      // Initialize form logic after layout form is loaded
       action = layoutForm.action;
       _initializeControllers();
       _initializeSteps();
@@ -80,57 +110,35 @@ class CreatePageController extends GetxController {
     }
   }
 
+  /// Prepares the initial values for the form fields.
+  ///
+  /// Delegated to [CreatePageControllerUtils.prepareInitialData] to handle
+  /// JS interpolation and dummy data clearing for empty initial values.
   void _prepareInitialData() {
-    final data = Map<String, dynamic>.from(initialDataInput ?? {});
+    final processedData = CreatePageControllerUtils.prepareInitialData(
+      initialDataInput: initialDataInput ?? {},
+      components: layoutForm.allComponents,
+      parentData: parentData,
+    );
 
-    if (layoutForm.formType.isCreate || layoutForm.formType.isHome) {
-      for (final component in layoutForm.allComponents) {
-        String? initial;
-        if (component is ComponentTextField) {
-          initial = component.initialValue;
-        } else if (component is ComponentDatePicker) {
-          initial = component.initialValue;
-        } else if (component is ComponentNumberField) {
-          initial = component.initialValue;
-        } else if (component is ComponentDropdown) {
-          initial = component.initialValue;
-        }
-
-        if (initial != null) {
-          _processInitialValue(initial, component.id, data);
-        }
-      }
-    }
-    initialData.value = data;
+    initialData.value = processedData;
   }
 
-  void _processInitialValue(
-      String initialValue, String componentId, Map<String, dynamic> data) {
-    if (initialValue.isNotEmpty) {
-      final val = initialValue.interpolateJavascript({
-        'data': data,
-        if (parentData.isNotEmpty) 'parent': parentData.last,
-      });
-      data[componentId] = val;
-    } else {
-      data.remove(componentId);
-    }
-  }
-
-  // --- Logic from CreateFormController ---
-
+  /// Generates and populates [TextEditingController]s for all form fields.
+  ///
+  /// Uses [entity] field definitions to generate base controllers and then
+  /// populates them with the [initialData].
   void _initializeControllers() {
-    // Generate controllers from entity fields
     final ctrls = entity.fields.generateControllers();
 
-    // Ensure all components have controllers
+    // Ensure all UI components have a managed controller.
     for (final component in layoutForm.allComponents) {
       if (!ctrls.containsKey(component.id)) {
         ctrls[component.id] = TextEditingController();
       }
     }
 
-    // Set initial values from the PREPARED initialData
+    // Apply prepared initial values to controllers.
     if (initialData.isNotEmpty) {
       for (final entry in initialData.entries) {
         final ctrl = ctrls[entry.key];
@@ -143,6 +151,7 @@ class CreatePageController extends GetxController {
     controllers.value = ctrls;
   }
 
+  /// Prepares form keys for multi-step layouts.
   void _initializeSteps() {
     if (layoutForm.multiForms.isNotEmpty) {
       for (var i = 0; i < layoutForm.multiForms.length; i++) {
@@ -151,18 +160,21 @@ class CreatePageController extends GetxController {
     }
   }
 
+  /// Navigates to the next form step after validating the current one.
   void nextStep() {
     if (stepFormKeys[currentPage.value].currentState!.validate()) {
       currentPage.value++;
     }
   }
 
+  /// Navigates back to the previous form step.
   void prevStep() {
     if (currentPage.value > 0) {
       currentPage.value--;
     }
   }
 
+  /// Resets the form by clearing all controllers and resetting the validation state.
   void clearForm() {
     for (final controller in controllers.values) {
       controller.clear();
@@ -171,83 +183,21 @@ class CreatePageController extends GetxController {
     formKey.currentState?.reset();
   }
 
+  /// Extracts the current user input as a map, formatted for external consumption.
+  ///
+  /// Delegated to [CreatePageControllerUtils.extractCurrentData].
   Map<String, dynamic> get currentData {
-    final data = <String, dynamic>{};
-    final components = layoutForm.allComponents;
-
-    // Create a lookup for fields by reference for easy access to formatting logic
-    final fieldMap = {for (final f in entity.fields) f.reference: f};
-
-    for (final component in components) {
-      final controller = controllers[component.id];
-      if (controller == null) continue;
-
-      var value = controller.text;
-
-      // Check if this component is bound to a date field or is a date picker component
-      final field = fieldMap[component.id];
-      if (component is ComponentDatePicker &&
-          component.dateFormat != null &&
-          component.dateFormat!.isNotEmpty) {
-        // Use value as is, don't parse to DateTime again
-      } else if ((field != null && field.isDateTime) ||
-          component is ComponentDatePicker) {
-        value = _formatDateTimeField(field, value);
-      }
-
-      data[component.id] = value;
-    }
-
-    // Also include pure field data that might not be in the components list
-    for (final field in entity.fields) {
-      if (!data.containsKey(field.reference)) {
-        if (field.reference != 'id' && (field.autoGenerated ?? false)) {
-          continue;
-        }
-        final controller = controllers[field.reference];
-        if (controller != null) {
-          var value = controller.text;
-          if (field.isDateTime) {
-            value = _formatDateTimeField(field, value);
-          }
-          data[field.reference] = value;
-        }
-      }
-    }
-
-    return data;
+    return CreatePageControllerUtils.extractCurrentData(
+      components: layoutForm.allComponents,
+      fields: entity.fields,
+      controllers: controllers,
+    );
   }
 
-  String _formatDateTimeField(EntityField? field, String value) {
-    if (value.isEmpty) return value;
-
-    final fmt = field != null ? _dateFormat(field) : 'yyyy-MM-dd HH:mm:ss';
-    final formatter = DateFormat(fmt);
-
-    // Try parsing with configured format first, then fall back to ISO parsing.
-    DateTime? parsed;
-    try {
-      parsed = formatter.parse(value);
-    } catch (_) {
-      parsed = DateTime.tryParse(value);
-    }
-
-    if (parsed == null) return value;
-    return formatter.format(parsed);
-  }
-
-  String _dateFormat(EntityField field) {
-    try {
-      return field.dateTimeFormat;
-    } catch (_) {
-      return 'yyyy-MM-dd HH:mm:ss';
-    }
-  }
-
+  /// Validates the form and triggers the submit workflow defined in the layout form.
+  ///
+  /// Supports both standard and multi-step validation.
   void submit(BuildContext context) {
-    print('[CreateForm] Submitting data: $currentData');
-
-    // For multi-step, validate all steps before submitting
     if (layoutForm.multiForms.isNotEmpty) {
       bool allValid = true;
       for (final key in stepFormKeys) {
@@ -255,34 +205,29 @@ class CreatePageController extends GetxController {
           allValid = false;
         }
       }
-      if (!allValid) {
-        print('[CreateForm] Multi-step form validation failed');
-        return;
-      }
+      if (!allValid) return;
     } else if (formKey.currentState != null &&
         !formKey.currentState!.validate()) {
-      print('[CreateForm] Form validation failed');
       return;
     }
 
-    // If we are here, validation passed
-    late EntityEvent event;
     if (layoutForm.submitWorkflow != null &&
         layoutForm.submitWorkflow!.isNotEmpty) {
-      print('[CreateForm] Triggering submitWorkflow');
-      event = EntityEvent.submitWorkflow(
+      final event = EntityEvent.submitWorkflow(
         data: currentData,
         workflow: layoutForm.submitWorkflow!,
       );
+      context.read<EntityBloc>().add(event);
     } else {
-      print('[CreateForm] Submit workflow not found!');
       Toast(context).fail('Submit workflow not found');
-      return;
     }
-
-    context.read<EntityBloc>().add(event);
   }
 
+  /// Executes a custom entity action (e.g., HTTP request) using current form data.
+  ///
+  /// [method] - HTTP method (GET, POST, etc.)
+  /// [url] - Target endpoint.
+  /// [label] - Tracking or UI label for the action.
   void executeAction(
       BuildContext context, String method, String? url, String label) {
     if (formKey.currentState!.validate()) {
@@ -296,6 +241,7 @@ class CreatePageController extends GetxController {
     }
   }
 
+  /// Computes the display title for the page based on the current action and label.
   String get title {
     final baseTitle = '${action.title} ${entity.coreEntity.title}';
     final label = layoutForm.label.trim();
@@ -303,6 +249,7 @@ class CreatePageController extends GetxController {
     return baseTitle;
   }
 
+  /// Computes a suffix for the header, often used for additional context in Home forms.
   String get headerSuffix {
     if (!layoutForm.formType.isHome) return '';
     final baseTitle = '${action.title} ${entity.coreEntity.title}';
