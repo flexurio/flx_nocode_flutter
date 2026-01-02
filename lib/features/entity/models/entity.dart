@@ -84,9 +84,6 @@ class EntityCustom extends HiveObject {
   /// and constructs an [EntityCustom] object, validating required keys and
   /// handling nested object parsing.
   factory EntityCustom.fromJson(Map<String, dynamic> json) {
-    print("==================================== Parse Entity");
-    print('[EntityCustom] - ID: ${json['id']}');
-
     T requireKey<T>(String key) {
       if (!json.containsKey(key) || json[key] == null) {
         throw FormatException("Missing key: '$key' (expected $T).");
@@ -211,10 +208,8 @@ class EntityCustom extends HiveObject {
           },
         );
       } catch (e, st) {
-        print('[EntityCustom] 🔴 layout_form - error :$e,\n$st');
         layoutForm = <LayoutForm>[];
       }
-      print('[EntityCustom] layout_form - length: ${layoutForm.length}');
 
       final backendRaw = requireKey<Map<String, dynamic>>('backend');
       final backend = Backend.fromJson(backendRaw);

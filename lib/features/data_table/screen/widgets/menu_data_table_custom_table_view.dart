@@ -33,17 +33,9 @@ class MenuDataTableCustomTableView extends StatelessWidget {
   final List<Map<String, dynamic>> parentData;
   final bool bypassPermission;
   final Map<String, dynamic> filtersMap;
-
-  /// tombol/komponen sisi kiri di atas tabel (mis. chips filter info)
   final List<Widget> actionLeft;
-
-  /// builder untuk action kanan (menerima refreshButton dari DataTableBackend)
   final List<Widget> Function(Widget refreshButton) actionRightBuilder;
-
-  /// callback ketika pagination/sort/filter berubah
   final void Function(PageOptions<Map<String, dynamic>>?) onChanged;
-
-  /// callback untuk refresh manual (pull-to-refresh / tombol refresh)
   final FutureOr<void> Function([PageOptions<Map<String, dynamic>>?]) onRefresh;
 
   @override
@@ -136,7 +128,6 @@ class MenuDataTableCustomTableView extends StatelessWidget {
     });
   }
 
-  /// builder untuk action kanan (menerima refreshButton dari DataTableBackend)
   List<DTColumn<Map<String, dynamic>>> _buildRowActions(BuildContext context) {
     return [
       DTColumn(

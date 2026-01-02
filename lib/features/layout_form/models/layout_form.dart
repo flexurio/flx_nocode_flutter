@@ -97,8 +97,6 @@ class LayoutForm extends HiveObject {
     JsonMap map, {
     required bool allowMultiForms,
   }) {
-    print('[LayoutForm] fromMap - parsing data');
-
     if (map['type'] == null || map['type'].toString().trim().isEmpty) {
       throw const FormatException('Action "type" is required');
     }
@@ -161,7 +159,6 @@ class LayoutForm extends HiveObject {
       }).toList(growable: false);
     }
 
-    print('[LayoutForm] fromMap - parsing components');
     final rawComponents = map['components'] as List?;
     final components = rawComponents?.map((e) {
       if (e is! Map) {
@@ -169,7 +166,6 @@ class LayoutForm extends HiveObject {
       }
       return Component.fromMap(Map<String, dynamic>.from(e));
     }).toList(growable: false);
-    print('[LayoutForm] fromMap - parsed components');
 
     final rawMultiForms = allowMultiForms ? map['multi_forms'] : null;
     List<LayoutForm> multiForms = const [];
