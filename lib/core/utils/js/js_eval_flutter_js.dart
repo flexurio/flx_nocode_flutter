@@ -1,7 +1,9 @@
 import 'package:flutter_js/flutter_js.dart';
 
+JavascriptRuntime? _jsRuntime;
+
 String internalEvalJs(String code) {
-  final js = getJavascriptRuntime();
-  final result = js.evaluate(code);
+  _jsRuntime ??= getJavascriptRuntime();
+  final result = _jsRuntime!.evaluate(code);
   return result.stringResult;
 }

@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_date_picker.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_dropdown.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_number_field.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
@@ -83,10 +85,19 @@ class CreatePageController extends GetxController {
 
     if (layoutForm.formType.isCreate || layoutForm.formType.isHome) {
       for (final component in layoutForm.allComponents) {
+        String? initial;
         if (component is ComponentTextField) {
-          _processInitialValue(component.initialValue, component.id, data);
+          initial = component.initialValue;
         } else if (component is ComponentDatePicker) {
-          _processInitialValue(component.initialValue, component.id, data);
+          initial = component.initialValue;
+        } else if (component is ComponentNumberField) {
+          initial = component.initialValue;
+        } else if (component is ComponentDropdown) {
+          initial = component.initialValue;
+        }
+
+        if (initial != null) {
+          _processInitialValue(initial, component.id, data);
         }
       }
     }
