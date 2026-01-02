@@ -84,20 +84,26 @@ class CreatePageController extends GetxController {
     if (layoutForm.formType.isCreate || layoutForm.formType.isHome) {
       for (final component in layoutForm.allComponents) {
         if (component is ComponentTextField) {
-          if (component.initialValue.isNotEmpty) {
-            final val = component.initialValue.interpolateJavascript({
-              // ...data,
-              'data': data,
-              if (parentData.isNotEmpty) 'parent': parentData.last,
-            });
-            data[component.id] = val;
-          } else {
-            data.remove(component.id);
-          }
+          _processInitialValue(component.initialValue, component.id, data);
+        } else if (component is ComponentDatePicker) {
+          _processInitialValue(component.initialValue, component.id, data);
         }
       }
     }
     initialData.value = data;
+  }
+
+  void _processInitialValue(
+      String initialValue, String componentId, Map<String, dynamic> data) {
+    if (initialValue.isNotEmpty) {
+      final val = initialValue.interpolateJavascript({
+        'data': data,
+        if (parentData.isNotEmpty) 'parent': parentData.last,
+      });
+      data[componentId] = val;
+    } else {
+      data.remove(componentId);
+    }
   }
 
   // --- Logic from CreateFormController ---
