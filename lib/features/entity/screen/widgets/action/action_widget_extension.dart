@@ -292,12 +292,9 @@ extension ActionWidgetExtension on ActionD {
     required Json data,
     required String? layoutFormId,
   }) {
-    const actionType = DataAction.print;
-
     return LightButton(
       title: name,
       permission: null,
-      action: actionType,
       onPressed: () async {
         if (layoutFormId == null) {
           Toast(context).fail('No page found');
