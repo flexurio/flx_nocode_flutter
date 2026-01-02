@@ -45,8 +45,6 @@ extension StringJsInterpolationExtension on String {
     final regex = RegExp(r'\{\{(.*?)\}\}', dotAll: true);
     if (!source.contains(regex)) return source;
 
-    print('[interpolateJavascript] input: $source');
-
     final result = source.replaceAllMapped(regex, (match) {
       final rawExpr = match.group(1);
       if (rawExpr == null) return '';
@@ -58,7 +56,6 @@ extension StringJsInterpolationExtension on String {
 
       try {
         final value = evalJs(script);
-        print('  - eval "{{$expr}}" -> "$value"');
 
         if (value == 'undefined' || value == 'null') {
           return match.group(0) ?? '';
@@ -66,12 +63,10 @@ extension StringJsInterpolationExtension on String {
 
         return value;
       } catch (e) {
-        print('  - eval ERROR "{{$expr}}": $e');
         return match.group(0) ?? '';
       }
     });
 
-    print('[interpolateJavascript] result: $result');
     return result;
   }
 }

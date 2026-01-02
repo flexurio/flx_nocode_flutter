@@ -120,13 +120,16 @@ class CreatePage extends StatelessWidget {
       final initialData = Map<String, dynamic>.from(data ?? {});
       if (layoutForm.formType.isCreate || layoutForm.formType.isHome) {
         for (final component in layoutForm.allComponents) {
-          if (component is ComponentTextField &&
-              component.initialValue.isNotEmpty) {
-            final val = component.initialValue.interpolateJavascript({
-              ...initialData,
-              if (parentData.isNotEmpty) 'parent': parentData.last,
-            });
-            initialData[component.id] = val;
+          if (component is ComponentTextField) {
+            if (component.initialValue.isNotEmpty) {
+              final val = component.initialValue.interpolateJavascript({
+                ...initialData,
+                if (parentData.isNotEmpty) 'parent': parentData.last,
+              });
+              initialData[component.id] = val;
+            } else {
+              initialData.remove(component.id);
+            }
           }
         }
       }
