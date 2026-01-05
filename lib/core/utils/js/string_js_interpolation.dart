@@ -35,7 +35,18 @@ extension StringJsInterpolationExtension on String {
       }
     }
 
+    // Early replacement for backend_host if present
+    if (source.contains('{{backend_host}}')) {
+      final host = Configuration.instance.backendHost;
+      if (host.isNotEmpty) {
+        source = source.replaceAll('{{backend_host}}', host);
+      }
+    }
+
     final Map<String, dynamic> allVars = {
+      'auth_token': UserRepositoryApp.instance.token ?? '',
+      'user_id': UserRepositoryApp.instance.userApp?.id?.toString() ?? '',
+      'backend_host': Configuration.instance.backendHost,
       for (final v in Configuration.instance.variables) v.key: v.value,
     };
     if (variables != null) {
