@@ -7,7 +7,6 @@ import 'package:flx_nocode_flutter/features/export/screen/widgets/export_to_pdf.
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 
-typedef Json = Map<String, dynamic>;
 typedef JsonList = List<Map<String, dynamic>>;
 
 extension ActionLogicExtension on ActionD {
@@ -17,7 +16,7 @@ extension ActionLogicExtension on ActionD {
   Future<void> executeHttp(
     EntityCustom entity,
     BuildContext context,
-    Json data,
+    JsonMap data,
   ) =>
       executeHttpSingle(entity, context, data);
 
@@ -34,7 +33,7 @@ extension ActionLogicExtension on ActionD {
   Future<void> executeHttpSingle(
     EntityCustom entity,
     BuildContext context,
-    Json data,
+    JsonMap data,
   ) async {
     if (http == null) {
       Toast(context).fail('No http data found');
@@ -124,7 +123,7 @@ extension ActionLogicExtension on ActionD {
     required EntityCustom entity,
     required BuildContext context,
     required Object? responseData,
-    required Json data,
+    required JsonMap data,
   }) {
     switch (onSuccess) {
       case ActionType.showDialog:

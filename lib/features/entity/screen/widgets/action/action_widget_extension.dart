@@ -9,7 +9,6 @@ import 'package:flx_nocode_flutter/features/layout_form/screen/pages/create_page
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'json_table_viewer.dart';
 
-typedef Json = Map<String, dynamic>;
 typedef JsonList = List<Map<String, dynamic>>;
 
 // ------------------------------------------------------
@@ -19,7 +18,7 @@ extension ActionListWidgetExtension on List<ActionD> {
   List<Widget> buildButtonsSingleRow({
     required EntityCustom entity,
     required BuildContext context,
-    required Json data,
+    required JsonMap data,
     required JsonList parentData,
   }) {
     return where((action) => action.isVisibleFor(data))
@@ -43,7 +42,7 @@ extension ActionListWidgetExtension on List<ActionD> {
 //             EXTENSION ON ACTIOND (WIDGETS)
 // ------------------------------------------------------
 extension ActionWidgetExtension on ActionD {
-  bool isVisibleFor(Json data) {
+  bool isVisibleFor(JsonMap data) {
     try {
       return rule?.evaluate(data) ?? true;
     } catch (e) {
@@ -120,7 +119,7 @@ extension ActionWidgetExtension on ActionD {
   Widget buttonSingle(
     EntityCustom entity,
     BuildContext context,
-    Json data,
+    JsonMap data,
     JsonList parentData,
   ) {
     switch (type) {
@@ -207,7 +206,7 @@ extension ActionWidgetExtension on ActionD {
   Widget _buildButtonPrint({
     required EntityCustom entity,
     required BuildContext context,
-    required Json data,
+    required JsonMap data,
   }) {
     const actionType = DataAction.print;
 
@@ -234,7 +233,7 @@ extension ActionWidgetExtension on ActionD {
   Widget _buildButtonListJsonViewAsTable({
     required EntityCustom entity,
     required BuildContext context,
-    required Json data,
+    required JsonMap data,
     required String? reference,
   }) {
     const actionType = DataAction.print;
@@ -289,7 +288,7 @@ extension ActionWidgetExtension on ActionD {
   Widget _buildButtonOpenPage({
     required EntityCustom entity,
     required BuildContext context,
-    required Json data,
+    required JsonMap data,
     required String? layoutFormId,
   }) {
     return LightButton(
@@ -304,6 +303,7 @@ extension ActionWidgetExtension on ActionD {
         await Navigator.push(
           context,
           CreatePage.route(
+            data: data,
             entity: entity,
             embedded: false,
             layoutFormId: layoutFormId,
@@ -320,7 +320,7 @@ extension ActionWidgetExtension on ActionD {
   Widget _buildButtonShowDialog({
     required EntityCustom entity,
     required BuildContext context,
-    required Json data,
+    required JsonMap data,
     required String? layoutFormId,
     required JsonList parentData,
   }) {
@@ -363,7 +363,7 @@ extension ActionWidgetExtension on ActionD {
   Widget _buildButtonHttp({
     required EntityCustom entity,
     required BuildContext context,
-    required Json data,
+    required JsonMap data,
   }) {
     final actionType = action;
 
