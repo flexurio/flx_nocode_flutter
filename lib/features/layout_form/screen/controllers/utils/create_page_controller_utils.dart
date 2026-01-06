@@ -69,12 +69,10 @@ class CreatePageControllerUtils {
       final field = fieldMap[component.id];
 
       // Handle date formatting
-      if (component is ComponentDatePicker &&
-          component.dateFormat != null &&
-          component.dateFormat!.isNotEmpty) {
-        // Keep as string if format is explicitly defined
-      } else if ((field != null && field.isDateTime) ||
-          component is ComponentDatePicker) {
+      if (component is ComponentDatePicker) {
+        value = formatDateTimeField(field, value,
+            customFormat: component.dateFormat);
+      } else if (field != null && field.isDateTime) {
         value = formatDateTimeField(field, value);
       }
 
@@ -104,12 +102,15 @@ class CreatePageControllerUtils {
   /// Formats a string [value] to a standard date/time format.
   ///
   /// Uses the [field]'s configured format or falls back to 'yyyy-MM-dd HH:mm:ss'.
-  static String formatDateTimeField(EntityField? field, String value) {
+  static String formatDateTimeField(EntityField? field, String value,
+      {String? customFormat}) {
     if (value.isEmpty) return value;
 
-    final fmt = (field == null || field.dateTimeFormat.isEmpty)
-        ? 'yyyy-MM-dd HH:mm:ss'
-        : field.dateTimeFormat;
+    final fmt = (customFormat != null && customFormat.isNotEmpty)
+        ? customFormat
+        : (field == null || field.dateTimeFormat.isEmpty)
+            ? 'yyyy-MM-dd HH:mm:ss'
+            : field.dateTimeFormat;
 
     final formatter = DateFormat(fmt);
 

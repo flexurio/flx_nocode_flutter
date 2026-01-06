@@ -57,6 +57,6 @@ extension EntityFieldDomainX on EntityField {
       final fmt = match.group(1);
       if (fmt != null && fmt.isNotEmpty) return fmt;
     }
-    throw Exception('Invalid datetime format: "$type"');
+    return 'yyyy-MM-dd HH:mm:ss';
   }
 }

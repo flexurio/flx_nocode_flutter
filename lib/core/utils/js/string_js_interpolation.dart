@@ -108,12 +108,14 @@ String _buildJsScript(
       '"Jul","Aug","Sep","Oct","Nov","Dec"];');
 
   buffer.writeln('function formatDate(date,fmt){'
-      'if(!fmt) return date.toString();'
-      'return fmt'
+      'var f = fmt || "yyyy-MM-dd HH:mm:ss";'
+      'return f'
+      '.replace("yyyy",date.getFullYear())'
       '.replace("YYYY",date.getFullYear())'
       '.replace("MMMM",MONTH_NAMES[date.getMonth()])'
       '.replace("MMM",MONTH_NAMES_SHORT[date.getMonth()])'
       '.replace("MM",pad(date.getMonth()+1))'
+      '.replace("dd",pad(date.getDate()))'
       '.replace("DD",pad(date.getDate()))'
       '.replace("HH",pad(date.getHours()))'
       '.replace("mm",pad(date.getMinutes()))'

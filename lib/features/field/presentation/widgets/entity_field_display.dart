@@ -29,10 +29,11 @@ class EntityFieldDisplay {
     late Widget widget;
 
     if (field.isDateTime) {
+      final fmt = field.dateTimeFormat;
       try {
         final date = DateTime.tryParse(value.toString()) ??
-            DateFormat(field.dateTimeFormat).parse(value.toString());
-        widget = Text(DateFormat(field.dateTimeFormat).format(date));
+            DateFormat(fmt).parse(value.toString());
+        widget = Text(DateFormat(fmt).format(date));
       } catch (_) {
         widget = Text(value.toString());
       }

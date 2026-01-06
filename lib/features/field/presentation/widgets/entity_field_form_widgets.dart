@@ -155,11 +155,5 @@ extension EntityFieldFormWidgetsX on EntityField {
 
   /// Returns configured datetime format; falls back to ISO-like default
   /// to avoid crashes if the type string is malformed.
-  String _dateFormatSafe() {
-    try {
-      return dateTimeFormat;
-    } catch (_) {
-      return 'yyyy-MM-dd HH:mm:ss';
-    }
-  }
+  String _dateFormatSafe() => dateTimeFormat;
 }

@@ -135,13 +135,7 @@ class _EntityCreateViewState extends State<EntityCreateView> {
     return label;
   }
 
-  String _dateFormat(EntityField field) {
-    try {
-      return field.dateTimeFormat;
-    } catch (_) {
-      return 'yyyy-MM-dd HH:mm:ss';
-    }
-  }
+  String _dateFormat(EntityField field) => field.dateTimeFormat;
 
   String _formatDateTimeField(EntityField field, String value) {
     if (value.isEmpty) return value;
