@@ -10,7 +10,6 @@ String internalEvalJs(String code) {
     final result = _eval(code);
     return result?.toString() ?? '';
   } catch (e) {
-    // In case of JS errors, return empty string or could log it
-    return '';
+    throw Exception(e.toString());
   }
 }

@@ -10,6 +10,7 @@ import 'package:flx_nocode_flutter/features/entity/models/entity.dart'
 
 import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
+import 'package:flutter/foundation.dart';
 
 part 'entity_bloc.freezed.dart';
 
@@ -52,11 +53,18 @@ class EntityEvent with _$EntityEvent {
 }
 
 class EntityBloc extends Bloc<EntityEvent, EntityState> {
+  static const bool enableLog = true;
+
   EntityBloc(configuration.EntityCustom entity) : super(const _Initial()) {
     on<EntityEvent>((event, emit) async {
       await event.when(
         execute: (data, method, url, filters) async {
           emit(const _Loading());
+          _logSection('EXECUTE', '🚀 Starting manual execution');
+          _logKV('URL', url);
+          _logKV('Method', method);
+          _logKV('Payload', data);
+
           try {
             final response = await EntityCustomRepository.instance.modify(
               accessToken: UserRepositoryApp.instance.token,
@@ -66,33 +74,46 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               data: Map.from(data)
                 ..addAll(entity.backend.create!.body(filters: filters)),
             );
+            _logSuccess('EXECUTE', response);
             emit(_Success(response));
           } catch (error) {
-            print('[EntityBloc] Execute - error $error');
+            _logError('EXECUTE', error);
             emit(_Error(errorMessage(error)));
           }
         },
         otherEvent: (data, event) async {
           emit(const _Loading());
+          final resolvedUrl = urlWithValuesReplace(event.url, data);
+          _logSection('OTHER EVENT', '🚀 Starting other event: ${event.title}');
+          _logKV('URL', resolvedUrl);
+
+          _logKV('Method', event.method);
+
           try {
             final response = await EntityCustomRepository.instance.modify(
               accessToken: UserRepositoryApp.instance.token,
-              path: urlWithValuesReplace(event.url, data),
+              path: resolvedUrl,
               method: event.method,
               headers: event.headers,
             );
+            _logSuccess('OTHER EVENT', response);
             emit(_Success(response));
           } catch (error) {
-            print('[EntityBloc] Create - error $error');
+            _logError('OTHER EVENT', error);
             emit(_Error(errorMessage(error)));
           }
         },
         create: (data, filters) async {
           emit(const _Loading());
+          _logSection('CREATE', '🚀 Starting create operation');
+          _logKV('Entity', entity.id);
+
           try {
             if (!data.containsKey('id')) {
-              emit(_Error(
-                  'ID is required to perform the create operation but was not provided in the data map.'));
+              const msg =
+                  'ID is required to perform the create operation but was not provided in the data map.';
+              _logError('CREATE', msg);
+              emit(_Error(msg));
               return;
             }
 
@@ -104,21 +125,28 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               data: Map.from(data)
                 ..addAll(entity.backend.create!.body(filters: filters)),
             );
+            _logSuccess('CREATE', response);
             emit(_Success(response));
           } on FormatException catch (error) {
+            _logError('CREATE', error.message);
             emit(_Error(error.message));
           } catch (error) {
-            print('[EntityBloc] Create - error $error');
+            _logError('CREATE', error);
             emit(_Error(errorMessage(error)));
           }
         },
         edit: (data, filters) async {
           emit(const _Loading());
-          print('[EntityBloc] Edit - data $data');
+          _logSection('EDIT', '🚀 Starting edit operation');
+          _logKV('Entity', entity.id);
+          _logKV('ID', data['id']);
+
           try {
             if (!data.containsKey('id')) {
-              emit(_Error(
-                  'ID is required to perform the edit operation but was not provided in the data map.'));
+              const msg =
+                  'ID is required to perform the edit operation but was not provided in the data map.';
+              _logError('EDIT', msg);
+              emit(_Error(msg));
               return;
             }
 
@@ -133,14 +161,19 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               data: Map.from(data)
                 ..addAll(entity.backend.update!.body(filters: filters)),
             );
+            _logSuccess('EDIT', response);
             emit(_Success(response));
           } catch (error) {
-            print('[EntityBloc] Edit - error $error');
+            _logError('EDIT', error);
             emit(_Error(errorMessage(error)));
           }
         },
         delete: (id) async {
           emit(const _Loading());
+          _logSection('DELETE', '🚀 Starting delete operation');
+          _logKV('Entity', entity.id);
+          _logKV('ID', id);
+
           try {
             await EntityCustomRepository.instance.modify(
               accessToken: UserRepositoryApp.instance.token,
@@ -151,24 +184,20 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               method: entity.backend.deleteX!.method,
               headers: entity.backend.deleteX!.headers,
             );
+            _logSuccess('DELETE', 'Deleted successfully');
             emit(const _Success(null));
           } catch (error) {
+            _logError('DELETE', error);
             emit(_Error(errorMessage(error)));
           }
         },
         submitWorkflow: (data, workflowJson) async {
           emit(const _Loading());
-          print(
-              '================================================================');
-          print('[EntityBloc] SubmitWorkflow STARTED');
-          print('[EntityBloc] Data: $data');
-          print('[EntityBloc] Workflow: $workflowJson');
-          try {
-            // Parse workflow
-            final definition = WorkflowDefinition.fromJson(workflowJson);
+          _logSection('WORKFLOW', '🚀 Starting Workflow Submission');
+          _logKV('Data', data);
 
-            // Construct context
-            // We need an HttpExecutor wrapper around EntityCustomRepository
+          try {
+            final definition = WorkflowDefinition.fromJson(workflowJson);
             final executor = _BlocHttpExecutor();
 
             final ctx = WorkflowContext(
@@ -179,41 +208,60 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
               httpExecutor: executor,
             );
 
-            print('[EntityBloc] Context initialized with:');
-            print('  > Form Data keys: ${ctx.form.keys}');
-            print('  > Auth Permissions: ${ctx.auth.permissions}');
-
-            final runner = WorkflowExecutor(definition); // No UI bridge for now
-            print('[EntityBloc] Running workflow...');
-            final result = await runner.run(ctx);
-            print('[EntityBloc] Workflow execution completed.');
-            print('[EntityBloc] Result Success: ${result.isSuccess}');
-            if (!result.isSuccess) {
-              print('[EntityBloc] Result Error: ${result.error}');
+            if (enableLog) {
+              debugPrint('  [WORKFLOW] Context initialized:');
+              debugPrint('    > Form Keys: ${ctx.form.keys}');
+              debugPrint(
+                  '    > Permissions: ${ctx.auth.permissions.length} items');
             }
 
+            final result = await WorkflowExecutor(definition).run(ctx);
+
             if (result.isSuccess) {
-              // If success, we assume the last action or some specialized variable holds the result?
-              // Or just return null/success map.
-              // Typically create/update returns the object.
-              // We can try to find if there is a 'result' variable or http response.
-              emit(const _Success({})); // Success with empty map for now
+              _logSuccess('WORKFLOW', 'Execution completed successfully');
+              emit(const _Success({}));
             } else {
-              print(
-                  '[EntityBloc] Workflow failed with error: ${result.error?.message}');
+              _logError('WORKFLOW', result.error?.message ?? 'Workflow failed');
               emit(_Error(result.error?.message ?? 'Workflow failed'));
             }
           } catch (error, st) {
-            print('[EntityBloc] SubmitWorkflow - FATAL ERROR $error $st');
+            _logError('WORKFLOW', 'FATAL EXCEPTION: $error\n$st');
             emit(_Error(error.toString()));
           } finally {
-            print('[EntityBloc] SubmitWorkflow ENDED');
-            print(
-                '================================================================');
+            if (enableLog) {
+              debugPrint(
+                  '  [WORKFLOW] 🏁 Loop finished for workflow submission');
+            }
           }
         },
       );
     });
+  }
+
+  void _logSection(String tag, String title) {
+    if (!enableLog) return;
+    debugPrint('\n' + '=' * 50);
+    debugPrint('[$tag] $title');
+    debugPrint('-' * 50);
+  }
+
+  void _logKV(String key, dynamic value) {
+    if (!enableLog) return;
+    debugPrint('  > $key: $value');
+  }
+
+  void _logSuccess(String tag, dynamic response) {
+    if (!enableLog) return;
+    debugPrint('  [SUCCESS] $tag finalized');
+    debugPrint('  [RESULT] $response');
+    debugPrint('=' * 50 + '\n');
+  }
+
+  void _logError(String tag, dynamic error) {
+    if (!enableLog) return;
+    debugPrint('  ❌ [ERROR] $tag failed');
+    debugPrint('  [REASON] $error');
+    debugPrint('=' * 50 + '\n');
   }
 }
 
@@ -222,10 +270,10 @@ class _BlocHttpExecutor implements HttpExecutor {
 
   @override
   Future<HttpResult> execute(HttpData request) async {
-    print('[BlocHttpExecutor] Executing HTTP Request:');
-    print('  Method: ${request.method}');
-    print('  URL: ${request.url}');
-    print('  Body: ${request.body}');
+    if (EntityBloc.enableLog) {
+      debugPrint('    [HTTP] Step execution: ${request.method} ${request.url}');
+    }
+
     try {
       final response = await EntityCustomRepository.instance.modify(
         accessToken: UserRepositoryApp.instance.token,
@@ -234,21 +282,22 @@ class _BlocHttpExecutor implements HttpExecutor {
         headers: request.headers,
         data: request.body,
       );
-      // We assume response is dynamic data (the body).
-      // We need to wrap it in HttpResult
+
+      if (EntityBloc.enableLog) {
+        debugPrint('    [HTTP] ✅ Response received');
+      }
+
       return HttpResult(
-        status: 200, // We assume 200 if no exception
+        status: 200,
         data: response,
       );
     } catch (e) {
-      if (e is DioException) {
-        print('[BlocHttpExecutor] HTTP Error: ${e.message}');
-        if (e.response != null) {
-          print('[BlocHttpExecutor] Status Code: ${e.response?.statusCode}');
-          print('[BlocHttpExecutor] Response Data: ${e.response?.data}');
+      if (EntityBloc.enableLog) {
+        debugPrint('    [HTTP] ❌ Error executing request: $e');
+        if (e is DioException && e.response != null) {
+          debugPrint('    [HTTP] Status: ${e.response?.statusCode}');
+          debugPrint('    [HTTP] Data: ${e.response?.data}');
         }
-      } else {
-        print('[BlocHttpExecutor] Generic Error: $e');
       }
       throw Exception('HTTP Error: $e');
     }

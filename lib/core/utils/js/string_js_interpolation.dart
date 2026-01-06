@@ -40,7 +40,11 @@ extension StringJsInterpolationExtension on String {
             ? (match.group(0) ?? '')
             : value;
       } catch (e) {
-        debugPrint('[JS Interpolation] Error evaluating "$expr": $e');
+        debugPrint('  ❌ [JS Interpolation] Failed to evaluate: {{ $expr }}');
+        debugPrint('     Error: $e');
+        if (allVars.isNotEmpty) {
+          debugPrint('     Available keys: ${allVars.keys.join(", ")}');
+        }
         return match.group(0) ?? '';
       }
     });
@@ -133,12 +137,17 @@ extension StringJsInterpolationExtension on String {
     // Inject variables as const (local to this IIFE)
     variables.forEach((key, value) {
       final jsonValue = jsonEncode(value);
-      // NOTE: assumes `key` is a valid JS identifier.
-      buffer.writeln('const $key = $jsonValue;');
+      // Ensure key is a valid JS identifier (basic check/safe-guard)
+      final safeKey = key.replaceAll(RegExp(r'[^a-zA-Z0-9_$]'), '_');
+      // Skip if key becomes empty after sanitization
+      if (safeKey.isNotEmpty) {
+        buffer.writeln('const $safeKey = $jsonValue;');
+      }
     });
 
-    buffer.writeln('return ($expr);');
-    buffer.writeln('})()');
+    // Simplified return statement for better expression compatibility
+    buffer.writeln('return $expr;');
+    buffer.write('})()');
 
     return buffer.toString();
   }
