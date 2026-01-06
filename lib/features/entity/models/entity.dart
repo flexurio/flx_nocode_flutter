@@ -83,211 +83,52 @@ class EntityCustom extends HiveObject {
   /// This factory parses a [Map<String, dynamic>] (typically from a JSON file)
   /// and constructs an [EntityCustom] object, validating required keys and
   /// handling nested object parsing.
+  /// Creates an [EntityCustom] instance from a JSON map.
+  ///
+  /// This factory parses a [Map<String, dynamic>] (typically from a JSON file)
+  /// and constructs an [EntityCustom] object, validating required keys and
+  /// handling nested object parsing.
   factory EntityCustom.fromJson(Map<String, dynamic> json) {
-    T requireKey<T>(String key) {
-      if (!json.containsKey(key) || json[key] == null) {
-        throw FormatException("Missing key: '$key' (expected $T).");
-      }
-      final v = json[key];
-      if (v is! T) {
-        throw FormatException(
-          "Invalid type for '$key': expected $T, got ${v.runtimeType}. Value: $v",
-        );
-      }
-      return v;
-    }
+    final parser = _EntityCustomJsonParser(json);
+    final id = parser.parseId();
 
-    List<T> parseListRequired<T>(
-      String key,
-      T Function(dynamic raw, int index) mapItem,
-    ) {
-      final raw = requireKey<List<dynamic>>(key);
-      final out = <T>[];
-      for (var i = 0; i < raw.length; i++) {
-        try {
-          out.add(mapItem(raw[i], i));
-        } catch (e) {
-          throw FormatException("Error on '$key'[$i]: $e");
-        }
-      }
-      return out;
-    }
-
-    List<T> parseListOptional<T>(
-      String key,
-      T Function(dynamic raw, int index) mapItem,
-    ) {
-      if (!json.containsKey(key) || json[key] == null) return <T>[];
-      final raw = json[key];
-      if (raw is! List) {
-        throw FormatException(
-          "Invalid type for '$key': expected List, got ${raw.runtimeType}.",
-        );
-      }
-      final out = <T>[];
-      for (var i = 0; i < raw.length; i++) {
-        try {
-          out.add(mapItem(raw[i], i));
-        } catch (e) {
-          throw FormatException("Error on '$key'[$i]: $e");
-        }
-      }
-      return out;
-    }
-
-    Map<String, int> parseLayoutTable(String key) {
-      if (!json.containsKey(key) || json[key] == null) return <String, int>{};
-      final raw = json[key];
-      if (raw is! Map) {
-        throw FormatException(
-          "Invalid type for '$key': expected Map, got ${raw.runtimeType}.",
-        );
-      }
-      final result = <String, int>{};
-      for (final entry in raw.entries) {
-        final k = entry.key;
-        final v = entry.value;
-        if (k is! String) {
-          throw FormatException(
-              "Invalid key type in '$key': expected String, got ${k.runtimeType} (key=$k)");
-        }
-        if (v is int) {
-          result[k] = v;
-        } else if (v is num) {
-          result[k] = v.toInt();
-        } else {
-          throw FormatException(
-              "Invalid value type for '$key[$k]': expected int/num, got ${v.runtimeType}. Value: $v");
-        }
-      }
-      return result;
-    }
-
-    String parseId() {
-      final v = json['id'];
-      if (v == null) {
-        throw FormatException("Missing key: 'id'.");
-      }
-      if (v is! String) {
-        throw FormatException(
-            "Invalid type for 'id': expected String, got ${v.runtimeType}. Value: $v");
-      }
-      return v;
-    }
-
-    final id = parseId();
     try {
-      final label = requireKey<String>('label');
-      final description = requireKey<String>('description');
-
-      final fields = parseListRequired<EntityField>(
-        'fields',
-        (raw, i) {
-          return EntityField.fromJson(raw);
-        },
-      );
-
-      final views = parseListOptional<view.DView>(
-        'views',
-        (raw, i) {
-          if (raw is! Map<String, dynamic>) {
-            throw FormatException(
-                "expected Map for 'views'[$i], got ${raw.runtimeType}");
-          }
-          return view.DView.fromJson(raw);
-        },
-      );
-
-      List<LayoutForm> layoutForm;
-      try {
-        layoutForm = parseListOptional<LayoutForm>(
-          'layout_form',
-          (raw, i) {
-            final result = LayoutForm.fromMap(raw);
-            return result;
-          },
-        );
-      } catch (e, st) {
-        layoutForm = <LayoutForm>[];
-      }
-
-      final backendRaw = requireKey<Map<String, dynamic>>('backend');
-      final backend = Backend.fromJson(backendRaw);
-
-      final exports = parseListOptional<Export>(
-        'exports',
-        (raw, i) {
-          if (raw is! Map<String, dynamic>) {
-            throw FormatException(
-                "expected Map for 'exports'[$i], got ${raw.runtimeType}");
-          }
-          return Export.fromJson(raw);
-        },
-      );
-
-      LayoutListTile? layoutListTile;
-      if (json.containsKey('layout_list_tile') &&
-          json['layout_list_tile'] != null) {
-        final ltRaw = json['layout_list_tile'];
-        if (ltRaw is! Map<String, dynamic>) {
-          throw FormatException(
-              "Invalid type for 'layout_list_tile': expected Map, got ${ltRaw.runtimeType}.");
-        }
-        layoutListTile = LayoutListTile.fromJson(ltRaw);
-      }
-
-      final layoutTable = parseLayoutTable('layout_table');
-
-      final actions = parseListOptional<ActionD>(
-        'actions',
-        (raw, i) {
-          if (raw is! Map<String, dynamic>) {
-            throw FormatException(
-                "expected Map for 'actions'[$i], got ${raw.runtimeType}");
-          }
-          return ActionD.fromJson(raw);
-        },
-      );
-
-      final actionsHome = parseListOptional<ActionD>(
-        'actions_home',
-        (raw, i) {
-          if (raw is! Map<String, dynamic>) {
-            throw FormatException(
-                "expected Map for 'actions_home'[$i], got ${raw.runtimeType}");
-          }
-          return ActionD.fromJson(raw);
-        },
-      );
-
-      PaginationOption paginationOption = const PaginationOption();
-      if (json.containsKey('pagination_option') &&
-          json['pagination_option'] != null) {
-        final raw = json['pagination_option'];
-        if (raw is! Map<String, dynamic>) {
-          throw FormatException(
-              "Invalid type for 'pagination_option': expected Map, got ${raw.runtimeType}.");
-        }
-        paginationOption = PaginationOption.fromJson(raw);
-      }
-
       return EntityCustom(
         id: id,
-        actions: actions,
-        actionsHome: actionsHome,
-        label: label,
-        description: description,
-        fields: fields,
-        views: views,
-        exports: exports,
-        backend: backend,
-        paginationOption: paginationOption,
-        layoutForm: layoutForm,
-        layoutListTile: layoutListTile,
-        layoutTable: layoutTable,
+        label: parser.requireKey<String>('label'),
+        description: parser.requireKey<String>('description'),
+        fields: parser.parseListRequired<EntityField>(
+          'fields',
+          (raw, _) => EntityField.fromJson(raw),
+        ),
+        views: parser.parseListOptional<view.DView>(
+          'views',
+          (raw, _) => view.DView.fromJson(raw),
+        ),
+        layoutForm: parser.parseListOptional<LayoutForm>(
+          'layout_form',
+          (raw, _) => LayoutForm.fromMap(raw),
+        ),
+        backend: Backend.fromJson(
+            parser.requireKey<Map<String, dynamic>>('backend')),
+        exports: parser.parseListOptional<Export>(
+          'exports',
+          (raw, _) => Export.fromJson(raw),
+        ),
+        layoutListTile: parser.parseLayoutListTile(),
+        layoutTable: parser.parseLayoutTable('layout_table'),
+        actions: parser.parseListOptional<ActionD>(
+          'actions',
+          (raw, _) => ActionD.fromJson(raw),
+        ),
+        actionsHome: parser.parseListOptional<ActionD>(
+          'actions_home',
+          (raw, _) => ActionD.fromJson(raw),
+        ),
+        paginationOption: parser.parsePaginationOption(),
       );
     } catch (e) {
-      print("[EntityCustom] Entity: $id fromJson error: $e");
+      debugPrint("[EntityCustom] Entity: $id fromJson error: $e");
       rethrow;
     }
   }
@@ -497,4 +338,125 @@ Map<K, V> reorderMap<K, V>(
 
   print('[EntityCustom] reorderMap, fields: ${data.keys}');
   return data;
+}
+
+/// A private helper class to handle robust JSON parsing for [EntityCustom].
+///
+/// This encapsulates the logic for type validation and nested object creation,
+/// ensuring that malformed JSON results in descriptive [FormatException]s.
+class _EntityCustomJsonParser {
+  final Map<String, dynamic> json;
+
+  _EntityCustomJsonParser(this.json);
+
+  /// Validates that [key] exists and is of type [T].
+  T requireKey<T>(String key) {
+    if (!json.containsKey(key) || json[key] == null) {
+      throw FormatException("Missing key: '$key' (expected $T).");
+    }
+    final v = json[key];
+    if (v is! T) {
+      throw FormatException(
+        "Invalid type for '$key': expected $T, got ${v.runtimeType}. Value: $v",
+      );
+    }
+    return v;
+  }
+
+  /// Parses a required list of items using the provided [mapItem] function.
+  List<T> parseListRequired<T>(
+    String key,
+    T Function(dynamic raw, int index) mapItem,
+  ) {
+    final raw = requireKey<List<dynamic>>(key);
+    return List.generate(raw.length, (i) {
+      try {
+        return mapItem(raw[i], i);
+      } catch (e) {
+        throw FormatException("Error on '$key'[$i]: $e");
+      }
+    });
+  }
+
+  /// Parses an optional list of items, returning an empty list if the key is missing.
+  List<T> parseListOptional<T>(
+    String key,
+    T Function(dynamic raw, int index) mapItem,
+  ) {
+    if (!json.containsKey(key) || json[key] == null) return <T>[];
+    final raw = json[key];
+    if (raw is! List) {
+      throw FormatException(
+        "Invalid type for '$key': expected List, got ${raw.runtimeType}.",
+      );
+    }
+    return List.generate(raw.length, (i) {
+      try {
+        return mapItem(raw[i], i);
+      } catch (e) {
+        // Silently handle errors for specific optional lists if needed,
+        // but here we throw to be explicit about configuration errors.
+        throw FormatException("Error on '$key'[$i]: $e");
+      }
+    });
+  }
+
+  /// Specialized parser for the layout table flex map.
+  Map<String, int> parseLayoutTable(String key) {
+    if (!json.containsKey(key) || json[key] == null) return <String, int>{};
+    final raw = json[key];
+    if (raw is! Map) {
+      throw FormatException(
+        "Invalid type for '$key': expected Map, got ${raw.runtimeType}.",
+      );
+    }
+    return raw.map((k, v) {
+      if (k is! String) {
+        throw FormatException(
+            "Invalid key in '$key': expected String, got ${k.runtimeType}");
+      }
+      final val = (v is num)
+          ? v.toInt()
+          : throw FormatException("Invalid value for '$key[$k]': expected num");
+      return MapEntry(k, val);
+    });
+  }
+
+  /// Extracts and validates the entity ID.
+  String parseId() {
+    final v = json['id'];
+    if (v is! String) {
+      throw FormatException(
+          "Missing or invalid 'id': expected String, got ${v.runtimeType}");
+    }
+    return v;
+  }
+
+  /// Parses the layout list tile configuration if present.
+  LayoutListTile? parseLayoutListTile() {
+    if (!json.containsKey('layout_list_tile') ||
+        json['layout_list_tile'] == null) {
+      return null;
+    }
+    final raw = json['layout_list_tile'];
+    if (raw is! Map<String, dynamic>) {
+      throw FormatException(
+          "Invalid type for 'layout_list_tile': expected Map");
+    }
+    return LayoutListTile.fromJson(raw);
+  }
+
+  /// Parses pagination options with sensible defaults.
+  PaginationOption parsePaginationOption() {
+    if (!json.containsKey('pagination_option') ||
+        json['pagination_option'] == null) {
+      return const PaginationOption();
+    }
+    final raw = json['pagination_option'];
+    if (raw is! Map<String, dynamic>) {
+      throw FormatException(
+          "Invalid type for 'pagination_option': expected Map");
+    }
+    return PaginationOption.fromJson(raw);
+  }
 }
