@@ -13,6 +13,8 @@ extension StringJsInterpolationExtension on String {
   ///   `(function(){ ... return <expr>; })()`
   /// - [variables] are injected as `const` values inside that scope.
   /// - Helper `now(format)` and numeric helpers are available.
+  static const bool enableLog = true;
+
   String interpolateJavascript([Map<String, dynamic>? variables]) {
     final regex = RegExp(r'\{\{(.*?)\}\}', dotAll: true);
     if (!contains(regex)) return this;
@@ -28,9 +30,23 @@ extension StringJsInterpolationExtension on String {
       if (variables != null) ...variables,
     };
 
+    if (enableLog) {
+      const encoder = JsonEncoder.withIndent('  ');
+      try {
+        debugPrint(
+            '  [JS Interpolation] Variables:\n${encoder.convert(allVars)}');
+      } catch (_) {
+        debugPrint('  [JS Interpolation] Variables: $allVars');
+      }
+    }
+
     return replaceAllMapped(regex, (match) {
       final expr = match.group(1)?.trim();
       if (expr == null || expr.isEmpty) return '';
+
+      if (enableLog) {
+        debugPrint('  [JS Interpolation] Evaluating: {{ $expr }}');
+      }
 
       try {
         final script = _buildJsScript(expr, allVars);
@@ -40,10 +56,12 @@ extension StringJsInterpolationExtension on String {
             ? (match.group(0) ?? '')
             : value;
       } catch (e) {
-        debugPrint('  ❌ [JS Interpolation] Failed to evaluate: {{ $expr }}');
-        debugPrint('     Error: $e');
-        if (allVars.isNotEmpty) {
-          debugPrint('     Available keys: ${allVars.keys.join(", ")}');
+        if (enableLog) {
+          debugPrint('  ❌ [JS Interpolation] Failed to evaluate: {{ $expr }}');
+          debugPrint('     Error: $e');
+          if (allVars.isNotEmpty) {
+            debugPrint('     Available keys: ${allVars.keys.join(", ")}');
+          }
         }
         return match.group(0) ?? '';
       }

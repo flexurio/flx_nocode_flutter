@@ -78,7 +78,8 @@ class BackendOther extends HiveObject {
             label: event.title,
             onPressed: () async {
               BackendOther.showConfirmationDialog(
-                event: event,
+                onConfirm: (controller) =>
+                    controller.otherEvent(data: data, event: event),
                 context: context,
                 onSuccess: () => Navigator.pop(context),
                 entity: entity,
@@ -100,9 +101,9 @@ class BackendOther extends HiveObject {
     required EntityCustom entity,
     required Map<String, dynamic> data,
     required String title,
-    required BackendOther event,
+    required Function(EntityController controller) onConfirm,
   }) {
-    final tag = 'other_event_${DateTime.now().millisecondsSinceEpoch}';
+    final tag = 'confirmation_${DateTime.now().millisecondsSinceEpoch}';
     final controller = Get.put(EntityController(entity), tag: tag);
     return showDialog<bool?>(
       barrierDismissible: false,
@@ -139,9 +140,7 @@ class BackendOther extends HiveObject {
             action: title,
             entity: entity.coreEntity,
             label: data['id'].toString(),
-            onConfirm: () {
-              controller.otherEvent(data: data, event: event);
-            },
+            onConfirm: () => onConfirm(controller),
           );
         });
       },

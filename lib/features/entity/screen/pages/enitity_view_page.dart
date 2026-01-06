@@ -4,7 +4,6 @@ import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_fi
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/layout_form.dart';
 import 'package:flx_nocode_flutter/features/view/screen/widgets/view.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
-import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_view/widget/delete_button.dart';
@@ -253,7 +252,8 @@ class EntityViewPage extends StatelessWidget {
             label: DataAction.delete.title,
             onPressed: () async {
               BackendOther.showConfirmationDialog(
-                event: EntityEvent.delete(id: data['id'].toString()),
+                onConfirm: (controller) =>
+                    controller.delete(data['id'].toString()),
                 title: DataAction.delete.title,
                 context: context,
                 onSuccess: () => Navigator.pop(context),
