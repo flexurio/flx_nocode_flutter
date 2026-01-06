@@ -2,9 +2,11 @@ import 'package:hive_ce/hive.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
-import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
+import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
+import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 
 class BackendOther extends HiveObject {
   final String method;
@@ -76,7 +78,7 @@ class BackendOther extends HiveObject {
             label: event.title,
             onPressed: () async {
               BackendOther.showConfirmationDialog(
-                event: EntityEvent.otherEvent(data: data, event: event),
+                event: event,
                 context: context,
                 onSuccess: () => Navigator.pop(context),
                 entity: entity,
@@ -98,46 +100,50 @@ class BackendOther extends HiveObject {
     required EntityCustom entity,
     required Map<String, dynamic> data,
     required String title,
-    required EntityEvent event,
+    required BackendOther event,
   }) {
-    final bloc = EntityBloc(entity);
+    final tag = 'other_event_${DateTime.now().millisecondsSinceEpoch}';
+    final controller = Get.put(EntityController(entity), tag: tag);
     return showDialog<bool?>(
       barrierDismissible: false,
       context: context,
       builder: (context) {
         const action = DataAction.delete;
-        return BlocListener<EntityBloc, EntityState>(
-          bloc: bloc,
-          listener: (context, state) {
-            state.maybeWhen(
-              success: (_) {
-                Toast(context).dataChanged(action, entity.coreEntity);
-                onSuccess();
-                Navigator.pop(context, true);
-              },
-              error: (error) => Toast(context).fail(error),
-              orElse: () {},
-            );
-          },
-          child: BlocBuilder<EntityBloc, EntityState>(
-            bloc: bloc,
-            builder: (context, state) {
-              final isInProgress = state.maybeWhen(
-                loading: () => true,
-                orElse: () => false,
-              );
-              return CardConfirmation.string(
-                isProgress: isInProgress,
-                action: title,
-                entity: entity.coreEntity,
-                label: data['id'].toString(),
-                onConfirm: () {
-                  bloc.add(event);
-                },
-              );
+        return Obx(() {
+          final state = controller.state;
+
+          state.maybeWhen(
+            success: (_) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (controller.state is Success) {
+                  Toast(context).dataChanged(action, entity.coreEntity);
+                  onSuccess();
+                  Navigator.pop(context, true);
+                  Get.delete<EntityController>(tag: tag);
+                }
+              });
             },
-          ),
-        );
+            error: (error) => WidgetsBinding.instance.addPostFrameCallback((_) {
+              Toast(context).fail(error);
+            }),
+            orElse: () {},
+          );
+
+          final isInProgress = state.maybeWhen(
+            loading: () => true,
+            orElse: () => false,
+          );
+
+          return CardConfirmation.string(
+            isProgress: isInProgress,
+            action: title,
+            entity: entity.coreEntity,
+            label: data['id'].toString(),
+            onConfirm: () {
+              controller.otherEvent(data: data, event: event);
+            },
+          );
+        });
       },
     );
   }

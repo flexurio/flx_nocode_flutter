@@ -1,9 +1,9 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/entity_create_view.dart';
-import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
+import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'package:page_transition/page_transition.dart';
@@ -58,22 +58,24 @@ class CreatePage extends StatelessWidget {
       Configuration.instance = configuration;
       flavorConfig = configuration.flavorConfig;
     }
-    return MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => EntityBloc(entity))],
-      child: CreatePage._(
-        parentData: parentData,
-        layoutFormId: layoutFormId,
-        data: data,
-        entity: entity,
-        onSuccess: onSuccess,
-        embedded: embedded,
-        key: key,
-        filters: filters,
-        noHeader: noHeader,
-        autoBackWhenSuccess: autoBackWhenSuccess,
-        popup: popup,
-        width: width,
-      ),
+
+    // Initialize EntityController with tag to avoid conflicts when multiple forms are open
+    Get.lazyPut(() => EntityController(entity),
+        tag: 'entity_ctrl_$layoutFormId');
+
+    return CreatePage._(
+      parentData: parentData,
+      layoutFormId: layoutFormId,
+      data: data,
+      entity: entity,
+      onSuccess: onSuccess,
+      embedded: embedded,
+      key: key,
+      filters: filters,
+      noHeader: noHeader,
+      autoBackWhenSuccess: autoBackWhenSuccess,
+      popup: popup,
+      width: width,
     );
   }
 

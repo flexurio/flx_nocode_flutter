@@ -8,11 +8,10 @@ import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_fiel
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
-import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
-import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/enitty_create_form.dart';
+import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_create/widgets/entity_create_layouts.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 
 class EntityCreateView extends StatefulWidget {
   const EntityCreateView({
@@ -85,38 +84,47 @@ class _EntityCreateViewState extends State<EntityCreateView> {
       controllers: _controllers,
     );
 
-    return BlocListener<EntityBloc, EntityState>(
-      listener: (context, state) {
-        state.maybeWhen(
-          success: (_) {
-            widget.onSuccess();
-            Toast(context).dataChanged(_action, coreEntity);
-            if (widget.autoBackWhenSuccess) Navigator.pop(context, true);
-          },
-          error: (error) => Toast(context).fail(error),
-          orElse: () {},
-        );
-      },
-      child: widget.noHeader
+    final controller = Get.find<EntityController>(
+        tag: 'entity_ctrl_old_${widget.layoutForm.id}');
+
+    return Obx(() {
+      final state = controller.state;
+      state.maybeWhen(
+        success: (_) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (controller.state is Success) {
+              widget.onSuccess();
+              Toast(context).dataChanged(_action, coreEntity);
+              if (widget.autoBackWhenSuccess) Navigator.pop(context, true);
+            }
+          });
+        },
+        error: (error) => WidgetsBinding.instance.addPostFrameCallback((_) {
+          Toast(context).fail(error);
+        }),
+        orElse: () {},
+      );
+
+      return widget.noHeader
           ? EntityCreateEmbeddedLayout(
               formKey: _formKey,
               form: form,
-              submitButton: _buildButtonSubmit(),
+              submitButton: _buildButtonSubmit(controller),
             )
           : EntityCreatePanelLayout(
               embedded: widget.embedded,
               theme: theme,
               formKey: _formKey,
               form: form,
-              submitButton: _buildButtonSubmit(),
+              submitButton: _buildButtonSubmit(controller),
               coreEntity: coreEntity,
               title: _buildTitle(),
               action: widget.layoutForm.formType.isHome
                   ? DataAction.reprocess
                   : _action,
               suffixText: headerSuffix,
-            ),
-    );
+            );
+    });
   }
 
   String _buildTitle() {
@@ -171,20 +179,18 @@ class _EntityCreateViewState extends State<EntityCreateView> {
     return data;
   }
 
-  void _submit() {
+  void _submit(EntityController controller) {
     if (_formKey.currentState!.validate()) {
-      late EntityEvent event;
       if (_action.isEdit || widget.layoutForm.formType.isHome) {
-        event = EntityEvent.edit(data: _data, filters: widget.filters);
+        controller.edit(data: _data, filters: widget.filters);
       } else {
-        event = EntityEvent.create(data: _data, filters: widget.filters);
+        controller.create(data: _data, filters: widget.filters);
       }
-
-      context.read<EntityBloc>().add(event);
     }
   }
 
-  List<Widget> _buildButtonActions(BuildContext context) {
+  List<Widget> _buildButtonActions(
+      BuildContext context, EntityController controller) {
     final actions = <Widget>[];
     final buttons = widget.layoutForm.buttons;
     for (final button in buttons) {
@@ -193,14 +199,12 @@ class _EntityCreateViewState extends State<EntityCreateView> {
           permission: null,
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              final event = EntityEvent.execute(
+              controller.execute(
                 data: _data,
                 method: button.method,
                 url: button.url,
                 filters: widget.filters,
               );
-
-              context.read<EntityBloc>().add(event);
             }
           },
           action: button.label,
@@ -211,29 +215,27 @@ class _EntityCreateViewState extends State<EntityCreateView> {
     return actions;
   }
 
-  Widget _buildButtonSubmit() {
-    return BlocBuilder<EntityBloc, EntityState>(
-      builder: (context, state) {
-        final inProgress = state.maybeWhen(
-          loading: () => true,
-          orElse: () => false,
-        );
+  Widget _buildButtonSubmit(EntityController controller) {
+    return Obx(() {
+      final state = controller.state;
+      final inProgress = state.maybeWhen(
+        loading: () => true,
+        orElse: () => false,
+      );
 
-        if (widget.layoutForm.buttons.isNotEmpty) {
-          return Row(
-            children: _buildButtonActions(context),
-          );
-        }
-
-        return Button.action(
-          permission: null,
-          isInProgress: inProgress,
-          onPressed: _submit,
-          action: widget.layoutForm.formType.isHome
-              ? DataAction.reprocess
-              : _action,
+      if (widget.layoutForm.buttons.isNotEmpty) {
+        return Row(
+          children: _buildButtonActions(context, controller),
         );
-      },
-    );
+      }
+
+      return Button.action(
+        permission: null,
+        isInProgress: inProgress,
+        onPressed: () => _submit(controller),
+        action:
+            widget.layoutForm.formType.isHome ? DataAction.reprocess : _action,
+      );
+    });
   }
 }

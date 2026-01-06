@@ -4,9 +4,8 @@ import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_fiel
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
-import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
+import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 
 import 'utils/create_page_controller_utils.dart';
@@ -213,13 +212,12 @@ class CreatePageController extends GetxController {
 
     if (layoutForm.submitWorkflow != null &&
         layoutForm.submitWorkflow!.isNotEmpty) {
-      final event = EntityEvent.submitWorkflow(
+      Get.find<EntityController>(tag: 'entity_ctrl_$layoutFormId')
+          .submitWorkflow(
         form: currentData,
         data: initialDataInput ?? {},
         workflow: layoutForm.submitWorkflow!,
       );
-
-      context.read<EntityBloc>().add(event);
     } else {
       Toast(context).fail('Submit workflow not found');
     }
@@ -233,13 +231,12 @@ class CreatePageController extends GetxController {
   void executeAction(
       BuildContext context, String method, String? url, String label) {
     if (formKey.currentState!.validate()) {
-      final event = EntityEvent.execute(
+      Get.find<EntityController>(tag: 'entity_ctrl_$layoutFormId').execute(
         data: currentData,
         method: method,
         url: url ?? '',
         filters: filters,
       );
-      context.read<EntityBloc>().add(event);
     }
   }
 

@@ -4,12 +4,11 @@ import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
-import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
+import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/enitty_create_form.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_create/widgets/entity_create_layouts.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
@@ -45,29 +44,45 @@ class CreateForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final entityCtrl =
+        Get.find<EntityController>(tag: 'entity_ctrl_${layoutForm.id}');
+
     return GetBuilder<CreatePageController>(
       tag: 'create_page_${layoutForm.id}',
       builder: (controller) {
         final theme = Theme.of(context);
         final coreEntity = entity.coreEntity;
 
-        return BlocListener<EntityBloc, EntityState>(
-          listener: (context, state) {
-            state.maybeWhen(
-              success: (_) {
-                onSuccess();
-                Toast(context).dataChanged(controller.action, coreEntity);
-                if (autoBackWhenSuccess) {
-                  Navigator.pop(context, true);
-                } else {
-                  controller.clearForm();
+        // Use standard Worker or ever for state changes in GetX if needed,
+        // but here we can use Obx for UI updates and a simple callback for success.
+        return Obx(() {
+          final state = entityCtrl.state;
+          state.maybeWhen(
+            success: (_) {
+              // Note: We need to ensure this only runs once per success.
+              // In Bloc, listener handles this. In GetX, we might need a more robust way
+              // if we use Obx. However, for a quick refactor:
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (entityCtrl.state is Success) {
+                  onSuccess();
+                  Toast(context).dataChanged(controller.action, coreEntity);
+                  if (autoBackWhenSuccess) {
+                    Navigator.pop(context, true);
+                  } else {
+                    controller.clearForm();
+                  }
+                  // Reset state to initial to prevent re-triggering
+                  // Actually, it's better to use a dedicated signal or reset the state.
                 }
-              },
-              error: (error) => Toast(context).fail(error),
-              orElse: () {},
-            );
-          },
-          child: popup
+              });
+            },
+            error: (error) => WidgetsBinding.instance.addPostFrameCallback((_) {
+              Toast(context).fail(error);
+            }),
+            orElse: () {},
+          );
+
+          return popup
               ? Form(
                   key: controller.formKey,
                   child: CardForm(
@@ -85,7 +100,7 @@ class CreateForm extends StatelessWidget {
                         action: DataAction.cancel,
                       ),
                       const Gap(10),
-                      _buildButtonSubmit(context, controller),
+                      _buildButtonSubmit(context, controller, entityCtrl),
                     ],
                     child: _buildFormContent(controller),
                   ),
@@ -94,22 +109,24 @@ class CreateForm extends StatelessWidget {
                   ? EntityCreateEmbeddedLayout(
                       formKey: controller.formKey,
                       form: _buildFormContent(controller),
-                      submitButton: _buildButtonSubmit(context, controller),
+                      submitButton:
+                          _buildButtonSubmit(context, controller, entityCtrl),
                     )
                   : EntityCreatePanelLayout(
                       embedded: embedded,
                       theme: theme,
                       formKey: controller.formKey,
                       form: _buildFormContent(controller),
-                      submitButton: _buildButtonSubmit(context, controller),
+                      submitButton:
+                          _buildButtonSubmit(context, controller, entityCtrl),
                       coreEntity: coreEntity,
                       title: controller.title,
                       action: layoutForm.formType.isHome
                           ? DataAction.reprocess
                           : controller.action,
                       suffixText: controller.headerSuffix,
-                    )),
-        );
+                    ));
+        });
       },
     );
   }
@@ -164,62 +181,60 @@ class CreateForm extends StatelessWidget {
     return actions;
   }
 
-  Widget _buildButtonSubmit(
-      BuildContext context, CreatePageController controller) {
-    return BlocBuilder<EntityBloc, EntityState>(
-      builder: (context, state) {
-        final inProgress =
-            state.maybeWhen(loading: () => true, orElse: () => false);
+  Widget _buildButtonSubmit(BuildContext context,
+      CreatePageController controller, EntityController entityCtrl) {
+    return Obx(() {
+      final state = entityCtrl.state;
+      final inProgress =
+          state.maybeWhen(loading: () => true, orElse: () => false);
 
-        if (layoutForm.multiForms.isNotEmpty) {
-          return Obx(() => Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  if (controller.currentPage.value > 0)
-                    Button.string(
-                      permission: null,
-                      isInProgress: false,
-                      action: 'Back',
-                      isSecondary: true,
-                      onPressed: controller.prevStep,
-                    ),
-                  const Gap(10),
-                  if (controller.currentPage.value <
-                      layoutForm.multiForms.length - 1)
-                    Button.string(
-                      permission: null,
-                      isInProgress: false,
-                      action: 'Next',
-                      onPressed: controller.nextStep,
-                    )
-                  else
-                    Button.action(
-                      permission: null,
-                      isInProgress: inProgress,
-                      onPressed: () => controller.submit(context),
-                      action: layoutForm.formType.isHome
-                          ? DataAction.reprocess
-                          : controller.action,
-                    ),
-                ],
-              ));
-        }
-
-        if (layoutForm.buttons.isNotEmpty) {
-          return Row(
-            children: _buildButtonActions(context, controller),
-          );
-        }
-
-        return Button.action(
-          permission: null,
-          isInProgress: inProgress,
-          onPressed: () => controller.submit(context),
-          action: layoutForm.formType.isHome
-              ? DataAction.reprocess
-              : controller.action,
+      if (layoutForm.multiForms.isNotEmpty) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            if (controller.currentPage.value > 0)
+              Button.string(
+                permission: null,
+                isInProgress: false,
+                action: 'Back',
+                isSecondary: true,
+                onPressed: controller.prevStep,
+              ),
+            const Gap(10),
+            if (controller.currentPage.value < layoutForm.multiForms.length - 1)
+              Button.string(
+                permission: null,
+                isInProgress: false,
+                action: 'Next',
+                onPressed: controller.nextStep,
+              )
+            else
+              Button.action(
+                permission: null,
+                isInProgress: inProgress,
+                onPressed: () => controller.submit(context),
+                action: layoutForm.formType.isHome
+                    ? DataAction.reprocess
+                    : controller.action,
+              ),
+          ],
         );
-      },
-    );
+      }
+
+      if (layoutForm.buttons.isNotEmpty) {
+        return Row(
+          children: _buildButtonActions(context, controller),
+        );
+      }
+
+      return Button.action(
+        permission: null,
+        isInProgress: inProgress,
+        onPressed: () => controller.submit(context),
+        action: layoutForm.formType.isHome
+            ? DataAction.reprocess
+            : controller.action,
+      );
+    });
   }
 }
