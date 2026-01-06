@@ -16,7 +16,7 @@ extension StringJsInterpolationExtension on String {
   static const bool enableLog = true;
 
   String interpolateJavascript([Map<String, dynamic>? variables]) {
-    final regex = RegExp(r'\{\{(.*?)\}\}', dotAll: true);
+    final regex = RegExp(r'\{\{\s*((?:(?!\}\}).)*)\s*\}\}', dotAll: true);
     if (!contains(regex)) return this;
 
     final config = Configuration.instance;

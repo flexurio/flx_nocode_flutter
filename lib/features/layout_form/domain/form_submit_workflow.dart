@@ -354,7 +354,8 @@ class NoopUiBridge implements UiBridge {
 /// - "Hello {{ form.name }}"
 /// - "{{ http.create_order.data.id }}"
 class Template {
-  static final RegExp _singleReg = RegExp(r'^\s*\{\{\s*(.*?)\s*\}\}\s*$');
+  static final RegExp _singleReg =
+      RegExp(r'^\s*\{\{\s*((?:(?!\}\}).)*)\s*\}\}\s*$', dotAll: true);
 
   static dynamic resolve(dynamic input, WorkflowContext ctx) {
     if (input == null) return null;
@@ -452,8 +453,10 @@ class _WorkflowScopeBuilder {
 /// NOTE: This is intentionally minimal. For heavy expressions,
 ///       consider plugging a real parser later.
 class Expr {
-  static final RegExp _wrappedReg = RegExp(r'^\s*\{\{\s*(.*?)\s*\}\}\s*$');
-  static final RegExp _inlineExprReg = RegExp(r'\{\{\s*(.*?)\s*\}\}');
+  static final RegExp _wrappedReg =
+      RegExp(r'^\s*\{\{\s*((?:(?!\}\}).)*)\s*\}\}\s*$', dotAll: true);
+  static final RegExp _inlineExprReg =
+      RegExp(r'\{\{\s*((?:(?!\}\}).)*)\s*\}\}', dotAll: true);
 
   static dynamic eval(String expr, WorkflowContext ctx) {
     final normalized = _normalize(expr);
