@@ -47,6 +47,7 @@ class EntityEvent with _$EntityEvent {
     required BackendOther event,
   }) = _OtherEvent;
   const factory EntityEvent.submitWorkflow({
+    required Map<String, dynamic> form,
     required Map<String, dynamic> data,
     required Map<String, dynamic> workflow,
   }) = _SubmitWorkflow;
@@ -191,17 +192,19 @@ class EntityBloc extends Bloc<EntityEvent, EntityState> {
             emit(_Error(errorMessage(error)));
           }
         },
-        submitWorkflow: (data, workflowJson) async {
+        submitWorkflow: (form, data, workflowJson) async {
           emit(const _Loading());
           _logSection('WORKFLOW', '🚀 Starting Workflow Submission');
-          _logKV('Data', data);
+          _logKV('Form (User Input)', form);
+          _logKV('Data (Record)', data);
 
           try {
             final definition = WorkflowDefinition.fromJson(workflowJson);
             final executor = _BlocHttpExecutor();
 
             final ctx = WorkflowContext(
-              form: data,
+              form: form,
+              data: data,
               auth: AuthContext(
                 permissions: UserRepositoryApp.instance.permissions,
               ),

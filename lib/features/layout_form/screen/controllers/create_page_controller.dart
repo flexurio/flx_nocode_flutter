@@ -214,9 +214,11 @@ class CreatePageController extends GetxController {
     if (layoutForm.submitWorkflow != null &&
         layoutForm.submitWorkflow!.isNotEmpty) {
       final event = EntityEvent.submitWorkflow(
-        data: currentData,
+        form: currentData,
+        data: initialDataInput ?? {},
         workflow: layoutForm.submitWorkflow!,
       );
+
       context.read<EntityBloc>().add(event);
     } else {
       Toast(context).fail('Submit workflow not found');

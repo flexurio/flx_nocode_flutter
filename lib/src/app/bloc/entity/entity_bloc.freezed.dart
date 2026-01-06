@@ -104,12 +104,18 @@ class __$$InitialImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$InitialImpl implements _Initial {
+class _$InitialImpl with DiagnosticableTreeMixin implements _Initial {
   const _$InitialImpl();
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'EntityState.initial()';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty('type', 'EntityState.initial'));
   }
 
   @override
@@ -218,12 +224,18 @@ class __$$LoadingImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$LoadingImpl implements _Loading {
+class _$LoadingImpl with DiagnosticableTreeMixin implements _Loading {
   const _$LoadingImpl();
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'EntityState.loading()';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty('type', 'EntityState.loading'));
   }
 
   @override
@@ -347,7 +359,7 @@ class __$$SuccessImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$SuccessImpl implements _Success {
+class _$SuccessImpl with DiagnosticableTreeMixin implements _Success {
   const _$SuccessImpl(final Map<String, dynamic>? data) : _data = data;
 
   final Map<String, dynamic>? _data;
@@ -361,8 +373,16 @@ class _$SuccessImpl implements _Success {
   }
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'EntityState.success(data: $data)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'EntityState.success'))
+      ..add(DiagnosticsProperty('data', data));
   }
 
   @override
@@ -500,15 +520,23 @@ class __$$ErrorImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ErrorImpl implements _Error {
+class _$ErrorImpl with DiagnosticableTreeMixin implements _Error {
   const _$ErrorImpl(this.error);
 
   @override
   final String error;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'EntityState.error(error: $error)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'EntityState.error'))
+      ..add(DiagnosticsProperty('error', error));
   }
 
   @override
@@ -628,7 +656,7 @@ mixin _$EntityEvent {
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
-    required TResult Function(
+    required TResult Function(Map<String, dynamic> form,
             Map<String, dynamic> data, Map<String, dynamic> workflow)
         submitWorkflow,
   }) =>
@@ -645,7 +673,8 @@ mixin _$EntityEvent {
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
-    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+    TResult? Function(Map<String, dynamic> form, Map<String, dynamic> data,
+            Map<String, dynamic> workflow)?
         submitWorkflow,
   }) =>
       throw _privateConstructorUsedError;
@@ -660,7 +689,8 @@ mixin _$EntityEvent {
         edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
-    TResult Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+    TResult Function(Map<String, dynamic> form, Map<String, dynamic> data,
+            Map<String, dynamic> workflow)?
         submitWorkflow,
     required TResult orElse(),
   }) =>
@@ -768,7 +798,7 @@ class __$$ExecuteImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ExecuteImpl implements _Execute {
+class _$ExecuteImpl with DiagnosticableTreeMixin implements _Execute {
   const _$ExecuteImpl(
       {required final Map<String, dynamic> data,
       required this.method,
@@ -798,8 +828,19 @@ class _$ExecuteImpl implements _Execute {
   }
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'EntityEvent.execute(data: $data, method: $method, url: $url, filters: $filters)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'EntityEvent.execute'))
+      ..add(DiagnosticsProperty('data', data))
+      ..add(DiagnosticsProperty('method', method))
+      ..add(DiagnosticsProperty('url', url))
+      ..add(DiagnosticsProperty('filters', filters));
   }
 
   @override
@@ -842,7 +883,7 @@ class _$ExecuteImpl implements _Execute {
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
-    required TResult Function(
+    required TResult Function(Map<String, dynamic> form,
             Map<String, dynamic> data, Map<String, dynamic> workflow)
         submitWorkflow,
   }) {
@@ -862,7 +903,8 @@ class _$ExecuteImpl implements _Execute {
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
-    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+    TResult? Function(Map<String, dynamic> form, Map<String, dynamic> data,
+            Map<String, dynamic> workflow)?
         submitWorkflow,
   }) {
     return execute?.call(data, method, url, filters);
@@ -880,7 +922,8 @@ class _$ExecuteImpl implements _Execute {
         edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
-    TResult Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+    TResult Function(Map<String, dynamic> form, Map<String, dynamic> data,
+            Map<String, dynamic> workflow)?
         submitWorkflow,
     required TResult orElse(),
   }) {
@@ -988,7 +1031,7 @@ class __$$CreateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$CreateImpl implements _Create {
+class _$CreateImpl with DiagnosticableTreeMixin implements _Create {
   const _$CreateImpl(
       {required final Map<String, dynamic> data,
       required final Map<String, dynamic> filters})
@@ -1012,8 +1055,17 @@ class _$CreateImpl implements _Create {
   }
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'EntityEvent.create(data: $data, filters: $filters)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'EntityEvent.create'))
+      ..add(DiagnosticsProperty('data', data))
+      ..add(DiagnosticsProperty('filters', filters));
   }
 
   @override
@@ -1052,7 +1104,7 @@ class _$CreateImpl implements _Create {
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
-    required TResult Function(
+    required TResult Function(Map<String, dynamic> form,
             Map<String, dynamic> data, Map<String, dynamic> workflow)
         submitWorkflow,
   }) {
@@ -1072,7 +1124,8 @@ class _$CreateImpl implements _Create {
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
-    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+    TResult? Function(Map<String, dynamic> form, Map<String, dynamic> data,
+            Map<String, dynamic> workflow)?
         submitWorkflow,
   }) {
     return create?.call(data, filters);
@@ -1090,7 +1143,8 @@ class _$CreateImpl implements _Create {
         edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
-    TResult Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+    TResult Function(Map<String, dynamic> form, Map<String, dynamic> data,
+            Map<String, dynamic> workflow)?
         submitWorkflow,
     required TResult orElse(),
   }) {
@@ -1193,7 +1247,7 @@ class __$$EditImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$EditImpl implements _Edit {
+class _$EditImpl with DiagnosticableTreeMixin implements _Edit {
   const _$EditImpl(
       {required final Map<String, dynamic> data,
       required final Map<String, dynamic> filters})
@@ -1217,8 +1271,17 @@ class _$EditImpl implements _Edit {
   }
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'EntityEvent.edit(data: $data, filters: $filters)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'EntityEvent.edit'))
+      ..add(DiagnosticsProperty('data', data))
+      ..add(DiagnosticsProperty('filters', filters));
   }
 
   @override
@@ -1257,7 +1320,7 @@ class _$EditImpl implements _Edit {
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
-    required TResult Function(
+    required TResult Function(Map<String, dynamic> form,
             Map<String, dynamic> data, Map<String, dynamic> workflow)
         submitWorkflow,
   }) {
@@ -1277,7 +1340,8 @@ class _$EditImpl implements _Edit {
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
-    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+    TResult? Function(Map<String, dynamic> form, Map<String, dynamic> data,
+            Map<String, dynamic> workflow)?
         submitWorkflow,
   }) {
     return edit?.call(data, filters);
@@ -1295,7 +1359,8 @@ class _$EditImpl implements _Edit {
         edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
-    TResult Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+    TResult Function(Map<String, dynamic> form, Map<String, dynamic> data,
+            Map<String, dynamic> workflow)?
         submitWorkflow,
     required TResult orElse(),
   }) {
@@ -1394,15 +1459,23 @@ class __$$DeleteImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DeleteImpl implements _Delete {
+class _$DeleteImpl with DiagnosticableTreeMixin implements _Delete {
   const _$DeleteImpl({required this.id});
 
   @override
   final String id;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'EntityEvent.delete(id: $id)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'EntityEvent.delete'))
+      ..add(DiagnosticsProperty('id', id));
   }
 
   @override
@@ -1437,7 +1510,7 @@ class _$DeleteImpl implements _Delete {
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
-    required TResult Function(
+    required TResult Function(Map<String, dynamic> form,
             Map<String, dynamic> data, Map<String, dynamic> workflow)
         submitWorkflow,
   }) {
@@ -1457,7 +1530,8 @@ class _$DeleteImpl implements _Delete {
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
-    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+    TResult? Function(Map<String, dynamic> form, Map<String, dynamic> data,
+            Map<String, dynamic> workflow)?
         submitWorkflow,
   }) {
     return delete?.call(id);
@@ -1475,7 +1549,8 @@ class _$DeleteImpl implements _Delete {
         edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
-    TResult Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+    TResult Function(Map<String, dynamic> form, Map<String, dynamic> data,
+            Map<String, dynamic> workflow)?
         submitWorkflow,
     required TResult orElse(),
   }) {
@@ -1576,7 +1651,7 @@ class __$$OtherEventImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$OtherEventImpl implements _OtherEvent {
+class _$OtherEventImpl with DiagnosticableTreeMixin implements _OtherEvent {
   const _$OtherEventImpl(
       {required final Map<String, dynamic> data, required this.event})
       : _data = data;
@@ -1593,8 +1668,17 @@ class _$OtherEventImpl implements _OtherEvent {
   final BackendOther event;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'EntityEvent.otherEvent(data: $data, event: $event)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'EntityEvent.otherEvent'))
+      ..add(DiagnosticsProperty('data', data))
+      ..add(DiagnosticsProperty('event', event));
   }
 
   @override
@@ -1631,7 +1715,7 @@ class _$OtherEventImpl implements _OtherEvent {
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
-    required TResult Function(
+    required TResult Function(Map<String, dynamic> form,
             Map<String, dynamic> data, Map<String, dynamic> workflow)
         submitWorkflow,
   }) {
@@ -1651,7 +1735,8 @@ class _$OtherEventImpl implements _OtherEvent {
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
-    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+    TResult? Function(Map<String, dynamic> form, Map<String, dynamic> data,
+            Map<String, dynamic> workflow)?
         submitWorkflow,
   }) {
     return otherEvent?.call(data, event);
@@ -1669,7 +1754,8 @@ class _$OtherEventImpl implements _OtherEvent {
         edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
-    TResult Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+    TResult Function(Map<String, dynamic> form, Map<String, dynamic> data,
+            Map<String, dynamic> workflow)?
         submitWorkflow,
     required TResult orElse(),
   }) {
@@ -1741,7 +1827,10 @@ abstract class _$$SubmitWorkflowImplCopyWith<$Res> {
           $Res Function(_$SubmitWorkflowImpl) then) =
       __$$SubmitWorkflowImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({Map<String, dynamic> data, Map<String, dynamic> workflow});
+  $Res call(
+      {Map<String, dynamic> form,
+      Map<String, dynamic> data,
+      Map<String, dynamic> workflow});
 }
 
 /// @nodoc
@@ -1755,10 +1844,15 @@ class __$$SubmitWorkflowImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? form = null,
     Object? data = null,
     Object? workflow = null,
   }) {
     return _then(_$SubmitWorkflowImpl(
+      form: null == form
+          ? _value._form
+          : form // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
       data: null == data
           ? _value._data
           : data // ignore: cast_nullable_to_non_nullable
@@ -1773,12 +1867,24 @@ class __$$SubmitWorkflowImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$SubmitWorkflowImpl implements _SubmitWorkflow {
+class _$SubmitWorkflowImpl
+    with DiagnosticableTreeMixin
+    implements _SubmitWorkflow {
   const _$SubmitWorkflowImpl(
-      {required final Map<String, dynamic> data,
+      {required final Map<String, dynamic> form,
+      required final Map<String, dynamic> data,
       required final Map<String, dynamic> workflow})
-      : _data = data,
+      : _form = form,
+        _data = data,
         _workflow = workflow;
+
+  final Map<String, dynamic> _form;
+  @override
+  Map<String, dynamic> get form {
+    if (_form is EqualUnmodifiableMapView) return _form;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_form);
+  }
 
   final Map<String, dynamic> _data;
   @override
@@ -1797,8 +1903,18 @@ class _$SubmitWorkflowImpl implements _SubmitWorkflow {
   }
 
   @override
-  String toString() {
-    return 'EntityEvent.submitWorkflow(data: $data, workflow: $workflow)';
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'EntityEvent.submitWorkflow(form: $form, data: $data, workflow: $workflow)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'EntityEvent.submitWorkflow'))
+      ..add(DiagnosticsProperty('form', form))
+      ..add(DiagnosticsProperty('data', data))
+      ..add(DiagnosticsProperty('workflow', workflow));
   }
 
   @override
@@ -1806,6 +1922,7 @@ class _$SubmitWorkflowImpl implements _SubmitWorkflow {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SubmitWorkflowImpl &&
+            const DeepCollectionEquality().equals(other._form, _form) &&
             const DeepCollectionEquality().equals(other._data, _data) &&
             const DeepCollectionEquality().equals(other._workflow, _workflow));
   }
@@ -1813,6 +1930,7 @@ class _$SubmitWorkflowImpl implements _SubmitWorkflow {
   @override
   int get hashCode => Object.hash(
       runtimeType,
+      const DeepCollectionEquality().hash(_form),
       const DeepCollectionEquality().hash(_data),
       const DeepCollectionEquality().hash(_workflow));
 
@@ -1838,11 +1956,11 @@ class _$SubmitWorkflowImpl implements _SubmitWorkflow {
     required TResult Function(String id) delete,
     required TResult Function(Map<String, dynamic> data, BackendOther event)
         otherEvent,
-    required TResult Function(
+    required TResult Function(Map<String, dynamic> form,
             Map<String, dynamic> data, Map<String, dynamic> workflow)
         submitWorkflow,
   }) {
-    return submitWorkflow(data, workflow);
+    return submitWorkflow(form, data, workflow);
   }
 
   @override
@@ -1858,10 +1976,11 @@ class _$SubmitWorkflowImpl implements _SubmitWorkflow {
     TResult? Function(String id)? delete,
     TResult? Function(Map<String, dynamic> data, BackendOther event)?
         otherEvent,
-    TResult? Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+    TResult? Function(Map<String, dynamic> form, Map<String, dynamic> data,
+            Map<String, dynamic> workflow)?
         submitWorkflow,
   }) {
-    return submitWorkflow?.call(data, workflow);
+    return submitWorkflow?.call(form, data, workflow);
   }
 
   @override
@@ -1876,12 +1995,13 @@ class _$SubmitWorkflowImpl implements _SubmitWorkflow {
         edit,
     TResult Function(String id)? delete,
     TResult Function(Map<String, dynamic> data, BackendOther event)? otherEvent,
-    TResult Function(Map<String, dynamic> data, Map<String, dynamic> workflow)?
+    TResult Function(Map<String, dynamic> form, Map<String, dynamic> data,
+            Map<String, dynamic> workflow)?
         submitWorkflow,
     required TResult orElse(),
   }) {
     if (submitWorkflow != null) {
-      return submitWorkflow(data, workflow);
+      return submitWorkflow(form, data, workflow);
     }
     return orElse();
   }
@@ -1932,9 +2052,11 @@ class _$SubmitWorkflowImpl implements _SubmitWorkflow {
 
 abstract class _SubmitWorkflow implements EntityEvent {
   const factory _SubmitWorkflow(
-      {required final Map<String, dynamic> data,
+      {required final Map<String, dynamic> form,
+      required final Map<String, dynamic> data,
       required final Map<String, dynamic> workflow}) = _$SubmitWorkflowImpl;
 
+  Map<String, dynamic> get form;
   Map<String, dynamic> get data;
   Map<String, dynamic> get workflow;
   @JsonKey(ignore: true)

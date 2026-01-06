@@ -195,6 +195,7 @@ import 'dart:convert';
 
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 
 typedef WorkflowValidator = Future<void> Function(
     String scope, Map<String, dynamic> form);
@@ -301,6 +302,7 @@ abstract class HttpExecutor {
 class WorkflowContext {
   final Map<String, dynamic> form;
   final Map<String, dynamic> record;
+  final Map<String, dynamic> data;
   final Map<String, dynamic> vars;
   final Map<String, HttpResult> http;
 
@@ -313,6 +315,7 @@ class WorkflowContext {
   WorkflowContext({
     required this.form,
     this.record = const {},
+    this.data = const {},
     Map<String, dynamic>? vars,
     Map<String, HttpResult>? http,
     required this.auth,
@@ -396,8 +399,10 @@ class _WorkflowScopeBuilder {
     return <String, dynamic>{
       'form': _sanitize(ctx.form),
       'record': _sanitize(ctx.record),
+      'data': _sanitize(ctx.data),
       'vars': _sanitize(ctx.vars),
       'auth': <String, dynamic>{
+        'token': UserRepositoryApp.instance.token ?? '',
         'permissions': ctx.auth.permissions,
       },
       'http': ctx.http.map(
