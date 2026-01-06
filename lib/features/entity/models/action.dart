@@ -49,10 +49,10 @@ class ActionD extends HiveObject {
   final HttpData? http;
 
   /// Defines what happens after success
-  final ActionType onSuccess;
+  final String onSuccess;
 
   /// Defines what happens on failure
-  final ActionType onFailure;
+  final String onFailure;
 
   // for type listJsonViewAsTable
   final String? reference;
@@ -92,8 +92,8 @@ class ActionD extends HiveObject {
     ActionType? type,
     String? name,
     HttpData? http,
-    ActionType? onSuccess,
-    ActionType? onFailure,
+    String? onSuccess,
+    String? onFailure,
     bool? isMultiple,
     String? reference,
     String? layoutFormId,
@@ -127,8 +127,8 @@ class ActionD extends HiveObject {
       type: ActionType.fromId(json['type']),
       name: json['name'] ?? '',
       http: json['http'] != null ? HttpData.fromJson(json['http']) : null,
-      onSuccess: ActionType.fromId(json['on_success'] ?? 'toast'),
-      onFailure: ActionType.fromId(json['on_failure'] ?? 'toast'),
+      onSuccess: json['on_success'] ?? 'toast',
+      onFailure: json['on_failure'] ?? 'toast',
       reference: json['reference'],
       layoutFormId: json['layout_form_id'],
       icon: json['icon'],
@@ -148,8 +148,8 @@ class ActionD extends HiveObject {
       'id': id,
       'type': type.id,
       'name': name,
-      'on_success': onSuccess.id,
-      'on_failure': onFailure.id,
+      'on_success': onSuccess,
+      'on_failure': onFailure,
       'is_multiple': isMultiple,
       'reference': reference,
       'layout_form_id': layoutFormId,

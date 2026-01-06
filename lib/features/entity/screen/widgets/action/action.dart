@@ -125,7 +125,15 @@ extension ActionLogicExtension on ActionD {
     required Object? responseData,
     required JsonMap data,
   }) {
-    switch (onSuccess) {
+    print('==============================');
+    print('[ActionLogic] 🚀 _handleOnSuccessSingle()');
+    print('[ActionLogic] → Action ID: $id');
+    print('[ActionLogic] → onSuccess value: "$onSuccess"');
+
+    final successType = ActionType.fromId(onSuccess);
+    print('[ActionLogic] → successType: $successType');
+
+    switch (successType) {
       case ActionType.showDialog:
         showDialog(
           context: context,
@@ -145,18 +153,21 @@ extension ActionLogicExtension on ActionD {
         Toast(context).success('Request success');
         break;
       default:
+        print('[ActionLogic] → No standard ActionType matched for onSuccess');
         break;
     }
 
     final regex = RegExp(r'^exports\.([0-9a-fA-F\-]{36})$');
-    final match = regex.firstMatch(onSuccess.id);
+    final match = regex.firstMatch(onSuccess);
 
     if (match != null) {
       final exportId = match.group(1) ?? '';
+      print('[ActionLogic] ✅ Match Export UUID: $exportId');
 
       final index = entity.exports.indexWhere((e) => e.uuid == exportId);
       if (index != -1) {
         final export = entity.exports[index];
+        print('[ActionLogic] 📄 Triggering exportToPdf for: ${export.name}');
 
         exportToPdf(
           export,
@@ -165,8 +176,16 @@ extension ActionLogicExtension on ActionD {
             'Authorization': 'Bearer ${UserRepositoryApp.instance.token}',
           },
         );
+      } else {
+        print(
+            '[ActionLogic] ❌ Export ID $exportId NOT found in entity exports');
+        print(
+            '[ActionLogic] 🔍 Available exports: ${entity.exports.map((e) => e.uuid).toList()}');
       }
+    } else {
+      print('[ActionLogic] ℹ️ onSuccess does not match exports.UUID pattern');
     }
+    print('==============================');
   }
 
   void _handleOnSuccessMultiple({
@@ -193,7 +212,16 @@ extension ActionLogicExtension on ActionD {
     String message, {
     Object? raw,
   }) {
-    switch (onFailure) {
+    print('==============================');
+    print('[ActionLogic] ❌ _handleOnFailure()');
+    print('[ActionLogic] → Action ID: $id');
+    print('[ActionLogic] → onFailure value: "$onFailure"');
+    print('[ActionLogic] → message: $message');
+
+    final failureType = ActionType.fromId(onFailure);
+    print('[ActionLogic] → failureType: $failureType');
+
+    switch (failureType) {
       case ActionType.showErrorDialog:
         showDialog(
           context: context,
@@ -225,6 +253,7 @@ extension ActionLogicExtension on ActionD {
       default:
         break;
     }
+    print('==============================');
   }
 
   // ------------------------------------------------------
