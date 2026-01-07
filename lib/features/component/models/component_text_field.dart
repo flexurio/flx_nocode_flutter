@@ -19,6 +19,8 @@ class ComponentTextField extends Component {
     this.hintText = '',
     required this.enabled,
     this.required = false,
+    super.visibilityCondition,
+    super.events,
   }) : super(type: 'text_field');
 
   static String get componentId => 'text_field';
@@ -56,6 +58,8 @@ class ComponentTextField extends Component {
       return true;
     }();
     final required = map['required'] == true;
+    final visibilityCondition = map['visibilityCondition']?.toString();
+    final events = map['events'] as Map<String, dynamic>? ?? {};
 
     return ComponentTextField(
       id: id,
@@ -66,6 +70,8 @@ class ComponentTextField extends Component {
       hintText: hintText,
       enabled: enabled,
       required: required,
+      visibilityCondition: visibilityCondition,
+      events: events,
     );
   }
 
@@ -80,5 +86,8 @@ class ComponentTextField extends Component {
         'hintText': hintText,
         'enabled': enabled,
         'required': required,
+        if (visibilityCondition != null)
+          'visibilityCondition': visibilityCondition,
+        'events': events,
       };
 }

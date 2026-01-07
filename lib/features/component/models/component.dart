@@ -18,12 +18,16 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 class Component {
   final String id;
   final String type;
+  final String? visibilityCondition;
+  final Map<String, dynamic> events;
 
   static final Map<String, int> _typeCounters = {};
 
   Component({
     required this.id,
     required this.type,
+    this.visibilityCondition,
+    this.events = const {},
   });
 
   factory Component.fromMap(Map<String, dynamic> map) {
@@ -67,6 +71,15 @@ class Component {
         throw FormatException('Unknown component type "$type"');
     }
   }
+
+  @override
+  JsonMap toMap() => {
+        'id': id,
+        'type': type,
+        if (visibilityCondition != null)
+          'visibilityCondition': visibilityCondition,
+        'events': events,
+      };
 
   /// Creates an empty component instance based on the type.
   factory Component.empty(String type) {
@@ -170,8 +183,6 @@ class Component {
       value: '{{${field.reference}}}',
     );
   }
-
-  JsonMap toMap() => {'id': id, 'type': type};
 }
 
 class ComponentType {

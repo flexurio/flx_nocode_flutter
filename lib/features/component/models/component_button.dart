@@ -13,6 +13,8 @@ class ComponentButton extends Component {
     required this.color,
     this.variant = 'primary',
     this.size = 'medium',
+    super.visibilityCondition,
+    super.events,
   }) : super(type: 'button');
 
   static String get componentId => 'button';
@@ -36,12 +38,17 @@ class ComponentButton extends Component {
     final color = map['color']?.toString().trim() ?? '#2196F3';
     final variant = map['variant']?.toString().trim() ?? 'primary';
     final size = map['size']?.toString().trim() ?? 'medium';
+    final visibilityCondition = map['visibilityCondition']?.toString();
+    final events = map['events'] as Map<String, dynamic>? ?? {};
+
     return ComponentButton(
       id: id,
       text: text,
       color: color,
       variant: variant,
       size: size,
+      visibilityCondition: visibilityCondition,
+      events: events,
     );
   }
 
@@ -53,5 +60,8 @@ class ComponentButton extends Component {
         'color': color,
         'variant': variant,
         'size': size,
+        if (visibilityCondition != null)
+          'visibilityCondition': visibilityCondition,
+        'events': events,
       };
 }
