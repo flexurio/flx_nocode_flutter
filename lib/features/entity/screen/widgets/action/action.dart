@@ -16,16 +16,20 @@ extension ActionLogicExtension on ActionD {
   Future<void> executeHttp(
     EntityCustom entity,
     BuildContext context,
-    JsonMap data,
-  ) =>
-      executeHttpSingle(entity, context, data);
+    JsonMap data, {
+    VoidCallback? onSuccessCallback,
+  }) =>
+      executeHttpSingle(entity, context, data,
+          onSuccessCallback: onSuccessCallback);
 
   Future<void> executeHttpList(
     EntityCustom entity,
     BuildContext context,
-    JsonList data,
-  ) =>
-      executeHttpMultiple(entity, context, data);
+    JsonList data, {
+    VoidCallback? onSuccessCallback,
+  }) =>
+      executeHttpMultiple(entity, context, data,
+          onSuccessCallback: onSuccessCallback);
 
   // ------------------------------------------------------
   //                SINGLE HTTP EXECUTION
@@ -33,8 +37,9 @@ extension ActionLogicExtension on ActionD {
   Future<void> executeHttpSingle(
     EntityCustom entity,
     BuildContext context,
-    JsonMap data,
-  ) async {
+    JsonMap data, {
+    VoidCallback? onSuccessCallback,
+  }) async {
     if (http == null) {
       Toast(context).fail('No http data found');
       _handleOnFailure(context, 'No http data found');
@@ -53,6 +58,7 @@ extension ActionLogicExtension on ActionD {
           context: context,
           responseData: response.data,
           data: data,
+          onSuccessCallback: onSuccessCallback,
         );
       } else {
         final message = response.message ?? 'Request failed';
@@ -76,8 +82,9 @@ extension ActionLogicExtension on ActionD {
   Future<void> executeHttpMultiple(
     EntityCustom entity,
     BuildContext context,
-    JsonList data,
-  ) async {
+    JsonList data, {
+    VoidCallback? onSuccessCallback,
+  }) async {
     if (data.isEmpty) return;
 
     if (http == null) {
@@ -99,6 +106,7 @@ extension ActionLogicExtension on ActionD {
           context: context,
           responseData: response.data,
           data: data,
+          onSuccessCallback: onSuccessCallback,
         );
       } else {
         final message = response.message ?? 'Request failed';
@@ -124,6 +132,7 @@ extension ActionLogicExtension on ActionD {
     required BuildContext context,
     required Object? responseData,
     required JsonMap data,
+    VoidCallback? onSuccessCallback,
   }) {
     print('==============================');
     print('[ActionLogic] 🚀 _handleOnSuccessSingle()');
@@ -151,6 +160,10 @@ extension ActionLogicExtension on ActionD {
         break;
       case ActionType.toast:
         Toast(context).success('Request success');
+        break;
+      case ActionType.refresh:
+        print('[ActionLogic] 🔃 Executing onSuccess refresh');
+        onSuccessCallback?.call();
         break;
       default:
         print('[ActionLogic] → No standard ActionType matched for onSuccess');
@@ -193,6 +206,7 @@ extension ActionLogicExtension on ActionD {
     required BuildContext context,
     required Object? responseData,
     required JsonList data,
+    VoidCallback? onSuccessCallback,
   }) {
     if (data.isNotEmpty) {
       _handleOnSuccessSingle(
@@ -200,6 +214,7 @@ extension ActionLogicExtension on ActionD {
         context: context,
         responseData: responseData,
         data: data.first,
+        onSuccessCallback: onSuccessCallback,
       );
     }
   }

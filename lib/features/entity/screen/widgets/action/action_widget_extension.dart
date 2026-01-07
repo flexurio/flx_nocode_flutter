@@ -20,9 +20,11 @@ extension ActionListWidgetExtension on List<ActionD> {
     required BuildContext context,
     required JsonMap data,
     required JsonList parentData,
+    VoidCallback? onSuccessCallback,
   }) {
     return where((action) => action.isVisibleFor(data))
-        .map((e) => e.buttonSingle(entity, context, data, parentData))
+        .map((e) => e.buttonSingle(entity, context, data, parentData,
+            onSuccessCallback: onSuccessCallback))
         .toList();
   }
 
@@ -120,8 +122,9 @@ extension ActionWidgetExtension on ActionD {
     EntityCustom entity,
     BuildContext context,
     JsonMap data,
-    JsonList parentData,
-  ) {
+    JsonList parentData, {
+    VoidCallback? onSuccessCallback,
+  }) {
     switch (type) {
       case ActionType.listJsonViewAsTable:
         return _buildButtonListJsonViewAsTable(
@@ -135,6 +138,7 @@ extension ActionWidgetExtension on ActionD {
           entity: entity,
           context: context,
           data: data,
+          onSuccessCallback: onSuccessCallback,
         );
       case ActionType.openPage:
         return _buildButtonOpenPage(
@@ -142,6 +146,7 @@ extension ActionWidgetExtension on ActionD {
           context: context,
           data: data,
           layoutFormId: layoutFormId,
+          onSuccessCallback: onSuccessCallback,
         );
       case ActionType.showDialog:
         return _buildButtonShowDialog(
@@ -150,12 +155,14 @@ extension ActionWidgetExtension on ActionD {
           data: data,
           layoutFormId: layoutFormId,
           parentData: parentData,
+          onSuccessCallback: onSuccessCallback,
         );
       case ActionType.http:
         return _buildButtonHttp(
           entity: entity,
           context: context,
           data: data,
+          onSuccessCallback: onSuccessCallback,
         );
       default:
         return NoCodeError(
@@ -207,6 +214,7 @@ extension ActionWidgetExtension on ActionD {
     required EntityCustom entity,
     required BuildContext context,
     required JsonMap data,
+    VoidCallback? onSuccessCallback,
   }) {
     const actionType = DataAction.print;
 
@@ -223,7 +231,8 @@ extension ActionWidgetExtension on ActionD {
           context: context,
           action: actionType,
           label: name,
-          onConfirm: (ctx) => executeHttp(entity, ctx, data),
+          onConfirm: (ctx) => executeHttp(entity, ctx, data,
+              onSuccessCallback: onSuccessCallback),
         );
       },
       iconOverride: actionIcon(this),
@@ -290,6 +299,7 @@ extension ActionWidgetExtension on ActionD {
     required BuildContext context,
     required JsonMap data,
     required String? layoutFormId,
+    VoidCallback? onSuccessCallback,
   }) {
     return LightButton(
       title: name,
@@ -307,7 +317,9 @@ extension ActionWidgetExtension on ActionD {
             entity: entity,
             embedded: false,
             layoutFormId: layoutFormId,
-            onSuccess: () {},
+            onSuccess: () {
+              onSuccessCallback?.call();
+            },
             filters: const <String, dynamic>{},
             parentData: const <Map<String, dynamic>>[],
           ),
@@ -323,6 +335,7 @@ extension ActionWidgetExtension on ActionD {
     required JsonMap data,
     required String? layoutFormId,
     required JsonList parentData,
+    VoidCallback? onSuccessCallback,
   }) {
     const actionType = DataAction.add;
 
@@ -350,6 +363,7 @@ extension ActionWidgetExtension on ActionD {
               filters: const {},
               width: width,
               onSuccess: () {
+                onSuccessCallback?.call();
                 Navigator.of(ctx).pop();
               },
             );
@@ -364,6 +378,7 @@ extension ActionWidgetExtension on ActionD {
     required EntityCustom entity,
     required BuildContext context,
     required JsonMap data,
+    VoidCallback? onSuccessCallback,
   }) {
     final actionType = action;
 
@@ -376,7 +391,8 @@ extension ActionWidgetExtension on ActionD {
           Toast(context).fail('No http data found');
           return;
         }
-        await executeHttp(entity, context, data);
+        await executeHttp(entity, context, data,
+            onSuccessCallback: onSuccessCallback);
       },
       iconOverride: actionIcon(this),
     );
