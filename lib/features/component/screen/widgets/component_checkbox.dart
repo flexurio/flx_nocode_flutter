@@ -4,7 +4,10 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 
 extension ComponentCheckboxWidgets on ComponentCheckbox {
   Widget toWidget(JsonMap data) {
-    final controller = data['controller'];
+    final controller = data['controller'] as TextEditingController? ??
+        (data['allControllers'] != null
+            ? (data['allControllers'] as Map<String, TextEditingController>)[id]
+            : null);
     return _CheckboxTile(
       label: label,
       defaultValue: value,

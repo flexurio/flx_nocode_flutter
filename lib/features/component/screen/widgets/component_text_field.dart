@@ -4,7 +4,10 @@ import 'package:flx_nocode_flutter/features/component/models/component_text_fiel
 
 extension ComponentTextFieldWidgets on ComponentTextField {
   Widget toWidget(Map<String, dynamic> data) {
-    final controller = data['controller'] as TextEditingController?;
+    final controller = data['controller'] as TextEditingController? ??
+        (data['allControllers'] != null
+            ? (data['allControllers'] as Map<String, TextEditingController>)[id]
+            : null);
     // Simple text field rendering with label and constraints
     return FTextFormField(
       controller: controller,

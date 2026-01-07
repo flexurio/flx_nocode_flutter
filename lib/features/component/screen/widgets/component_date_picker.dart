@@ -32,6 +32,9 @@ extension ComponentDatePickerWidgets on ComponentDatePicker {
     }
 
     final controller = data['controller'] as TextEditingController? ??
+        (data['allControllers'] != null
+            ? (data['allControllers'] as Map<String, TextEditingController>)[id]
+            : null) ??
         TextEditingController(
           text: initialDate != null ? initialDate.yMMMMd : initialValue,
         );

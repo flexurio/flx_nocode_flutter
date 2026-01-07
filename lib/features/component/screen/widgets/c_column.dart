@@ -9,8 +9,13 @@ import 'package:gap/gap.dart';
 extension ComponentColumnWidgets on ComponentColumn {
   /// Converts this component definition into an actual Flutter [Column] widget.
   Widget toWidget(JsonMap data) {
+    // Create a copy of data and remove 'controller' to ensure children
+    // do not inherit the parent container's controller.
+    final childData = Map<String, dynamic>.from(data);
+    childData.remove('controller');
+
     final widgets = children
-        .map((child) => child.convertToWidget(data))
+        .map((child) => child.convertToWidget(childData))
         .toList(growable: false);
 
     if (widgets.isEmpty) return const SizedBox.shrink();

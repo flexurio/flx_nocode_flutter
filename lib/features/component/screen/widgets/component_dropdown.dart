@@ -37,6 +37,7 @@ extension ComponentDropdownWidgets on ComponentDropdown {
           : null,
       onChanged: (value) {
         if (value != null) {
+          print('Dropdown ($label) onChanged: $value');
           controller?.text = value;
           _handleActions(data, value);
         }
@@ -210,6 +211,7 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
           : null,
       itemAsString: (item) => item['label'] ?? '',
       onChanged: (val) {
+        print('AsyncDropdown (${widget.component.label}) onChanged: $val');
         setState(() {
           _value = val?['key'];
         });

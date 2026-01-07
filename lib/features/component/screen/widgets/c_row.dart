@@ -7,8 +7,13 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 extension ComponentRowWidgets on ComponentRow {
   /// Builds a Flutter [Row] widget based on x_align and y_align.
   Widget toWidget(JsonMap data) {
+    // Create a copy of data and remove 'controller' to ensure children
+    // do not inherit the parent container's controller.
+    final childData = Map<String, dynamic>.from(data);
+    childData.remove('controller');
+
     final widgets = children
-        .map((child) => child.convertToWidget(data))
+        .map((child) => child.convertToWidget(childData))
         .toList(growable: false);
 
     if (widgets.isEmpty) return const SizedBox.shrink();

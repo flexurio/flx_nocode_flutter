@@ -5,7 +5,10 @@ import 'package:flx_nocode_flutter/features/component/models/component_number_fi
 
 extension ComponentNumberFieldWidgets on ComponentNumberField {
   Widget toWidget(Map<String, dynamic> data) {
-    final controller = data['controller'] as TextEditingController?;
+    final controller = data['controller'] as TextEditingController? ??
+        (data['allControllers'] != null
+            ? (data['allControllers'] as Map<String, TextEditingController>)[id]
+            : null);
     return FTextFormField(
       controller: controller,
       labelText: label,
