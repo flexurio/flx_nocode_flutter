@@ -6,6 +6,7 @@ class ComponentTextField extends Component {
   final int maxLength;
   final int maxLines;
   final String initialValue;
+  final String hintText;
   final bool enabled;
   final bool required;
 
@@ -15,6 +16,7 @@ class ComponentTextField extends Component {
     required this.maxLength,
     required this.maxLines,
     required this.initialValue,
+    this.hintText = '',
     required this.enabled,
     this.required = false,
   }) : super(type: 'text_field');
@@ -28,6 +30,7 @@ class ComponentTextField extends Component {
       maxLength: 50,
       maxLines: 1,
       initialValue: '',
+      hintText: '',
       enabled: true,
       required: false,
     );
@@ -42,6 +45,7 @@ class ComponentTextField extends Component {
     final maxLength = int.tryParse(map['maxLength']?.toString() ?? '') ?? 50;
     final maxLines = int.tryParse(map['maxLines']?.toString() ?? '') ?? 1;
     final initialValue = map['initialValue']?.toString() ?? '';
+    final hintText = map['hintText']?.toString() ?? '';
     final enabledRaw = map['enabled'];
     final enabled = () {
       if (enabledRaw == null) return true;
@@ -59,6 +63,7 @@ class ComponentTextField extends Component {
       maxLength: maxLength,
       maxLines: maxLines,
       initialValue: initialValue,
+      hintText: hintText,
       enabled: enabled,
       required: required,
     );
@@ -72,6 +77,7 @@ class ComponentTextField extends Component {
         'maxLength': maxLength,
         'maxLines': maxLines,
         'initialValue': initialValue,
+        'hintText': hintText,
         'enabled': enabled,
         'required': required,
       };

@@ -9,6 +9,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_table.dar
 import 'package:flx_nocode_flutter/features/component/models/component_text.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_button.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_container.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_number_field.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
@@ -60,6 +61,8 @@ class Component {
         return ComponentFieldDisplay.fromMap(map);
       case ComponentType.numberField:
         return ComponentNumberField.fromMap(map);
+      case ComponentType.container:
+        return ComponentContainer.fromMap(map);
       default:
         throw FormatException('Unknown component type "$type"');
     }
@@ -92,6 +95,8 @@ class Component {
         return ComponentFieldDisplay.empty(Component._generateId(type));
       case ComponentType.numberField:
         return ComponentNumberField.empty(Component._generateId(type));
+      case ComponentType.container:
+        return ComponentContainer.empty(Component._generateId(type));
       default:
         throw FormatException('Unknown component type "$type"');
     }
@@ -182,6 +187,7 @@ class ComponentType {
   static const String row = 'row';
   static const String fieldDisplay = 'field_display';
   static const String numberField = 'number_field';
+  static const String container = 'container';
 
   static const List<ComponentTypeEntry> values = [
     ComponentTypeEntry(id: table, label: 'Table'),
@@ -196,6 +202,7 @@ class ComponentType {
     ComponentTypeEntry(id: row, label: 'Row'),
     ComponentTypeEntry(id: fieldDisplay, label: 'Field Display'),
     ComponentTypeEntry(id: numberField, label: 'Number Field'),
+    ComponentTypeEntry(id: container, label: 'Container'),
   ];
 
   static String labelOf(String type) => values
