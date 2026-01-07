@@ -146,6 +146,7 @@ extension ActionWidgetExtension on ActionD {
           context: context,
           data: data,
           layoutFormId: layoutFormId,
+          parentData: parentData,
           onSuccessCallback: onSuccessCallback,
         );
       case ActionType.showDialog:
@@ -299,6 +300,7 @@ extension ActionWidgetExtension on ActionD {
     required BuildContext context,
     required JsonMap data,
     required String? layoutFormId,
+    required JsonList parentData,
     VoidCallback? onSuccessCallback,
   }) {
     return LightButton(
@@ -321,7 +323,7 @@ extension ActionWidgetExtension on ActionD {
               onSuccessCallback?.call();
             },
             filters: const <String, dynamic>{},
-            parentData: const <Map<String, dynamic>>[],
+            parentData: parentData,
           ),
         );
       },
