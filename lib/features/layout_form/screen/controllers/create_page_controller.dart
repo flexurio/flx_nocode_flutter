@@ -80,6 +80,12 @@ class CreatePageController extends GetxController {
   void onInit() {
     super.onInit();
     _loadLayoutForm();
+
+    // Reset EntityController state to initial to prevent auto-triggering success handlers
+    // when reopening a form that previously succeeded.
+    if (Get.isRegistered<EntityController>(tag: 'entity_ctrl_$layoutFormId')) {
+      Get.find<EntityController>(tag: 'entity_ctrl_$layoutFormId').reset();
+    }
   }
 
   @override
@@ -88,6 +94,8 @@ class CreatePageController extends GetxController {
     for (final c in controllers.values) {
       c.dispose();
     }
+    // Clean up EntityController to avoid state leaks between form instances.
+    Get.delete<EntityController>(tag: 'entity_ctrl_$layoutFormId');
     super.onClose();
   }
 

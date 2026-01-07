@@ -31,6 +31,10 @@ class EntityController extends GetxController {
 
   EntityController(this.entity);
 
+  void reset() {
+    _state.value = const EntityState.initial();
+  }
+
   void execute({
     required Map<String, dynamic> data,
     required String method,
