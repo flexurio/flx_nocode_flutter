@@ -72,7 +72,6 @@ class Component {
     }
   }
 
-  @override
   JsonMap toMap() => {
         'id': id,
         'type': type,
@@ -182,6 +181,22 @@ class Component {
       label: label,
       value: '{{${field.reference}}}',
     );
+  }
+
+  /// Get a human-readable label for this component based on its data.
+  String get displayLabel {
+    final comp = this;
+    if (comp is ComponentTextField) return comp.label;
+    if (comp is ComponentNumberField) return comp.label;
+    if (comp is ComponentDatePicker) return comp.label;
+    if (comp is ComponentCheckbox) return comp.label;
+    if (comp is ComponentDropdown) return comp.label;
+    if (comp is ComponentRadio) return comp.label;
+    if (comp is ComponentFieldDisplay) return comp.label;
+    if (comp is ComponentButton) return comp.text;
+    if (comp is ComponentText) return comp.value;
+
+    return id;
   }
 }
 
