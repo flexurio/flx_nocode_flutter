@@ -27,7 +27,10 @@ extension StringJsInterpolationExtension on String {
       'user_id': userRepo.userApp?.id?.toString() ?? '',
       'backend_host': config.backendHost,
       for (final v in config.variables) v.key: v.value,
-      if (variables != null) ...variables,
+      if (variables != null) ...{
+        ...variables,
+        'form': variables,
+      },
     };
 
     if (enableLog) {
