@@ -103,18 +103,78 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
   @override
   void initState() {
     super.initState();
+    _setupListeners();
+    _fetchOptions();
+  }
+
+  @override
+  void dispose() {
+    _removeListeners();
+    super.dispose();
+  }
+
+  void _setupListeners() {
+    if (widget.component.dependsOn.isEmpty) return;
+
+    final allControllers =
+        widget.data['allControllers'] as Map<String, TextEditingController>? ??
+            {};
+
+    for (final depId in widget.component.dependsOn) {
+      final controller = allControllers[depId];
+      if (controller != null) {
+        controller.addListener(_onDependencyChanged);
+      }
+    }
+  }
+
+  void _removeListeners() {
+    if (widget.component.dependsOn.isEmpty) return;
+
+    final allControllers =
+        widget.data['allControllers'] as Map<String, TextEditingController>? ??
+            {};
+
+    for (final depId in widget.component.dependsOn) {
+      final controller = allControllers[depId];
+      if (controller != null) {
+        controller.removeListener(_onDependencyChanged);
+      }
+    }
+  }
+
+  void _onDependencyChanged() {
+    if (!mounted) return;
+    setState(() {
+      _value = null; // Reset value as options might change
+      _isLoading = true;
+      _error = null;
+    });
+    // Clear dependent value
+    _updateController('');
     _fetchOptions();
   }
 
   Future<void> _fetchOptions() async {
     try {
       final httpData = widget.component.httpData!;
+
+      final allControllers = widget.data['allControllers']
+              as Map<String, TextEditingController>? ??
+          {};
+
       // Filter out TextEditingControllers and internal keys to avoid JSON serialization errors
       final requestData = Map<String, dynamic>.from(widget.data)
         ..removeWhere((key, value) =>
             value is TextEditingController ||
             key == 'controller' ||
             key == 'allControllers');
+
+      // Inject current values from controllers explicitly
+      for (final entry in allControllers.entries) {
+        requestData[entry.key] = entry.value.text;
+      }
+
       final result = await httpData.execute(requestData);
       if (result.isSuccess && result.data is Map) {
         final list = (result.data as Map)['data'] as List;
@@ -158,6 +218,11 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
               if (_options
                   .any((o) => o['key'] == widget.component.initialValue)) {
                 _value = widget.component.initialValue;
+              }
+            } else if (_value != null) {
+              // Verify if kept value is still valid
+              if (!_options.any((o) => o['key'] == _value)) {
+                _value = null;
               }
             }
           });
@@ -260,6 +325,11 @@ class _AsyncDropdownState extends State<_AsyncDropdown> {
           value is TextEditingController ||
           key == 'controller' ||
           key == 'allControllers');
+
+    // Inject current values from controllers
+    for (final entry in allControllers.entries) {
+      requestData[entry.key] = entry.value.text;
+    }
 
     final context = <String, dynamic>{
       'item': item,

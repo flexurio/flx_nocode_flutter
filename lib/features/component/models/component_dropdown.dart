@@ -12,6 +12,7 @@ class ComponentDropdown extends Component {
   final String? optionLabel;
   final List<ComponentAction> onChangeActions;
   final bool required;
+  final List<String> dependsOn;
 
   ComponentDropdown({
     required super.id,
@@ -23,6 +24,7 @@ class ComponentDropdown extends Component {
     this.optionLabel,
     this.onChangeActions = const [],
     this.required = false,
+    this.dependsOn = const [],
   }) : super(type: componentId);
 
   static const String componentId = 'dropdown';
@@ -35,13 +37,14 @@ class ComponentDropdown extends Component {
       initialValue: '',
       httpData: HttpData.empty(),
       required: false,
+      dependsOn: const [],
     );
   }
 
   factory ComponentDropdown.fromMap(Map<String, dynamic> map) {
     final id = map['id']?.toString().trim();
     if (id == null || id.isEmpty) {
-      throw const FormatException('Component \"id\" is required');
+      throw const FormatException('Component "id" is required');
     }
     final label = map['label']?.toString().trim() ?? 'Dropdown';
     final initialValue = map['initialValue']?.toString().trim() ?? '';
@@ -75,6 +78,16 @@ class ComponentDropdown extends Component {
 
     final required = map['required'] == true;
 
+    final rawDependsOn = map['dependsOn'];
+    final dependsOn = <String>[];
+    if (rawDependsOn is List) {
+      for (final item in rawDependsOn) {
+        if (item != null) {
+          dependsOn.add(item.toString());
+        }
+      }
+    }
+
     return ComponentDropdown(
       id: id,
       label: label,
@@ -85,6 +98,7 @@ class ComponentDropdown extends Component {
       optionLabel: map['optionLabel']?.toString(),
       onChangeActions: onChangeActions,
       required: required,
+      dependsOn: dependsOn,
     );
   }
 
@@ -100,5 +114,6 @@ class ComponentDropdown extends Component {
         'optionLabel': optionLabel,
         'onChangeActions': onChangeActions.map((e) => e.toMap()).toList(),
         'required': required,
+        'dependsOn': dependsOn,
       };
 }
