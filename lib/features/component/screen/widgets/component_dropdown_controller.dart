@@ -150,14 +150,31 @@ class ComponentDropdownController extends GetxController {
 
   void _setInitialValue() {
     String iv = component.initialValue;
+    final id = component.id;
+
     if (iv.isNotEmpty) {
-      if (iv.contains('{{')) {
-        try {
-          iv = iv.interpolateJavascript(data);
-        } catch (_) {}
+      final before = iv;
+      try {
+        final dataPayload = data['data'];
+        final payloadKeys =
+            dataPayload is Map ? dataPayload.keys.join(', ') : 'None';
+        debugPrint(
+            '  [Dropdown Init: $id] Context keys: ${data.keys.join(", ")}');
+        debugPrint(
+            '  [Dropdown Init: $id] Data fields available: $payloadKeys');
+        iv = iv.interpolateJavascript(data);
+      } catch (e) {
+        debugPrint('  [Dropdown Init: $id] Interpolation failed for "$iv": $e');
       }
 
+      debugPrint(
+          '  [Dropdown Init: $id] Initial Value: "$before" -> Substituted: "$iv"');
+
       final initialOption = options.firstWhereOrNull((o) => o['key'] == iv);
+      debugPrint(
+        '  [Dropdown Init: $id] Searching for "$iv" in ${options.length} options. Match found: ${initialOption != null}',
+      );
+
       if (initialOption != null) {
         selectedValue.value = iv;
         displayedValue.value = initialOption;

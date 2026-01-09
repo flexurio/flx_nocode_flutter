@@ -155,43 +155,41 @@ extension StringJsInterpolationExtension on String {
         '},0);'
         '}');
 
+    dynamic sanitize(dynamic value) {
+      if (value == null || value is num || value is bool || value is String) {
+        return value;
+      }
+      if (value is Map) {
+        final result = <String, dynamic>{};
+        value.forEach((k, v) {
+          if (k == 'form' || k == 'data' || k == 'current') return;
+          result[k.toString()] = sanitize(v);
+        });
+        return result;
+      }
+      if (value is List) {
+        return value.map(sanitize).toList();
+      }
+      return null; // Skip non-JSON-encodable types like Controllers
+    }
+
     // Inject variables as const (local to this IIFE)
     variables.forEach((key, value) {
-      if (key == 'form' || key == 'data' || key == 'current') {
-        // These are aliases to the variables map itself.
-        // To avoid cyclic encoding, we encode a copy of the original variables
-        // without these alias keys.
-        if (value is Map) {
-          final sanitized = Map<String, dynamic>.from(value)
-            ..remove('form')
-            ..remove('data')
-            ..remove('current');
-          try {
-            final jsonValue = jsonEncode(sanitized);
-            buffer.writeln('const $key = $jsonValue;');
-          } catch (e) {
-            debugPrint('Failed to encode alias $key: $e');
-          }
-          return;
-        }
-      }
-
       // Ensure key is a valid JS identifier
       final safeKey = key.replaceAll(RegExp(r'[^a-zA-Z0-9_$]'), '_');
       if (safeKey.isEmpty) return;
 
       try {
-        final jsonValue = jsonEncode(value);
+        final sanitized = sanitize(value);
+        final jsonValue = jsonEncode(sanitized);
         buffer.writeln('const $safeKey = $jsonValue;');
       } catch (e) {
-        // If encoding fails (e.g. TextEditingController), skip or use a placeholder
         if (enableLog) {
-          debugPrint('Skipping non-encodable variable "$key": $e');
+          debugPrint('Skipping variable "$key": $e');
         }
       }
     });
 
-    // Simplified return statement for better expression compatibility
     buffer.writeln('return $expr;');
     buffer.write('})()');
 

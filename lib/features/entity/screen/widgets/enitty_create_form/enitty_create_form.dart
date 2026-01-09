@@ -107,6 +107,10 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
           return c.convertToWidget({
             'controller': ctrl,
             'allControllers': allControllers,
+            'data': state,
+            'form': state,
+            'current': state,
+            if (widget.parentData.isNotEmpty) 'parent': widget.parentData.last,
           });
         }).toList();
         return Column(children: children);
