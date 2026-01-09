@@ -149,11 +149,17 @@ class ComponentDropdownController extends GetxController {
   }
 
   void _setInitialValue() {
-    if (component.initialValue.isNotEmpty) {
-      final initialOption =
-          options.firstWhereOrNull((o) => o['key'] == component.initialValue);
+    String iv = component.initialValue;
+    if (iv.isNotEmpty) {
+      if (iv.contains('{{')) {
+        try {
+          iv = iv.interpolateJavascript(data);
+        } catch (_) {}
+      }
+
+      final initialOption = options.firstWhereOrNull((o) => o['key'] == iv);
       if (initialOption != null) {
-        selectedValue.value = component.initialValue;
+        selectedValue.value = iv;
         displayedValue.value = initialOption;
         _updateTargetController(selectedValue.value!);
       }

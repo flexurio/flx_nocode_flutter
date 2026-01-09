@@ -73,7 +73,7 @@ class HttpRequestResult {
 class HttpRequestExecutor {
   HttpRequestExecutor({Dio? dio}) : _dio = dio ?? Dio();
 
-  static const bool enableLog = true;
+  static const bool enableLog = false;
 
   final Dio _dio;
 

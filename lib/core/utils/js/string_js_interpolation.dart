@@ -29,7 +29,9 @@ extension StringJsInterpolationExtension on String {
       for (final v in config.variables) v.key: v.value,
       if (variables != null) ...{
         ...variables,
-        'form': variables,
+        if (!variables.containsKey('form')) 'form': variables,
+        if (!variables.containsKey('data')) 'data': variables,
+        if (!variables.containsKey('current')) 'current': variables,
       },
     };
 
@@ -155,12 +157,37 @@ extension StringJsInterpolationExtension on String {
 
     // Inject variables as const (local to this IIFE)
     variables.forEach((key, value) {
-      final jsonValue = jsonEncode(value);
-      // Ensure key is a valid JS identifier (basic check/safe-guard)
+      if (key == 'form' || key == 'data' || key == 'current') {
+        // These are aliases to the variables map itself.
+        // To avoid cyclic encoding, we encode a copy of the original variables
+        // without these alias keys.
+        if (value is Map) {
+          final sanitized = Map<String, dynamic>.from(value)
+            ..remove('form')
+            ..remove('data')
+            ..remove('current');
+          try {
+            final jsonValue = jsonEncode(sanitized);
+            buffer.writeln('const $key = $jsonValue;');
+          } catch (e) {
+            debugPrint('Failed to encode alias $key: $e');
+          }
+          return;
+        }
+      }
+
+      // Ensure key is a valid JS identifier
       final safeKey = key.replaceAll(RegExp(r'[^a-zA-Z0-9_$]'), '_');
-      // Skip if key becomes empty after sanitization
-      if (safeKey.isNotEmpty) {
+      if (safeKey.isEmpty) return;
+
+      try {
+        final jsonValue = jsonEncode(value);
         buffer.writeln('const $safeKey = $jsonValue;');
+      } catch (e) {
+        // If encoding fails (e.g. TextEditingController), skip or use a placeholder
+        if (enableLog) {
+          debugPrint('Skipping non-encodable variable "$key": $e');
+        }
       }
     });
 
