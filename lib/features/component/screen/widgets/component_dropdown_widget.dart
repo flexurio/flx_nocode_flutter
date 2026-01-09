@@ -68,7 +68,7 @@ class _ComponentDropdownWidgetState extends State<ComponentDropdownWidget> {
                     return null;
                   }
                 : null,
-            itemAsString: (item) => item['label'] ?? '',
+            itemAsString: (item) => item['label']?.toString() ?? '',
             onChanged: (val) {
               controller.onSelectionChanged(val);
             },

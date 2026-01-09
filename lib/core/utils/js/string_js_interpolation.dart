@@ -55,9 +55,7 @@ extension StringJsInterpolationExtension on String {
         final script = _buildJsScript(expr, allVars);
         final value = evalJs(script);
 
-        return (value == 'undefined' || value == 'null')
-            ? (match.group(0) ?? '')
-            : value;
+        return (value == 'undefined' || value == 'null') ? '' : value;
       } catch (e) {
         if (enableLog) {
           debugPrint('  ❌ [JS Interpolation] Failed to evaluate: {{ $expr }}');
