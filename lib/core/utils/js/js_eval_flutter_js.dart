@@ -10,3 +10,8 @@ String internalEvalJs(String code) {
   }
   return result.stringResult;
 }
+
+void disposeJsRuntime() {
+  _jsRuntime?.dispose();
+  _jsRuntime = null;
+}

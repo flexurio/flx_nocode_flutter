@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_dropdown.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
@@ -7,12 +8,17 @@ import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
 class ComponentDropdownController extends GetxController {
   final ComponentDropdown component;
-  final JsonMap data;
+  JsonMap data;
 
   ComponentDropdownController({
     required this.component,
     required this.data,
   });
+
+  /// Updates the context data from the parent widget.
+  void updateData(JsonMap newData) {
+    data = newData;
+  }
 
   final options = <Map<String, dynamic>>[].obs;
   final isLoading = false.obs;
@@ -20,17 +26,13 @@ class ComponentDropdownController extends GetxController {
   final selectedValue = RxnString();
   final displayedValue = Rxn<Map<String, dynamic>>();
 
-  TextEditingController? get _targetController {
-    return data['controller'] as TextEditingController? ??
-        (data['allControllers'] != null
-            ? (data['allControllers']
-                as Map<String, TextEditingController>)[component.id]
-            : null);
-  }
+  TextEditingController? get _targetController =>
+      data['controller'] as TextEditingController? ??
+      _allControllers[component.id];
 
-  Map<String, TextEditingController> get _allControllers {
-    return data['allControllers'] as Map<String, TextEditingController>? ?? {};
-  }
+  Map<String, TextEditingController> get _allControllers =>
+      (data['allControllers'] as Map?)?.cast<String, TextEditingController>() ??
+      const {};
 
   @override
   void onInit() {
@@ -116,12 +118,14 @@ class ComponentDropdownController extends GetxController {
   }
 
   JsonMap _prepareRequestData() {
-    final requestData = Map<String, dynamic>.from(data)
-      ..removeWhere((key, value) =>
-          value is TextEditingController ||
-          key == 'controller' ||
-          key == 'allControllers');
+    // If 'data' is passed (from state), use it as base.
+    final state = data['data'] as Map?;
+    if (state != null) {
+      return Map<String, dynamic>.from(state);
+    }
 
+    // Fallback: manually extract from controllers if state is missing.
+    final requestData = <String, dynamic>{};
     for (final entry in _allControllers.entries) {
       requestData[entry.key] = entry.value.text;
     }
@@ -156,25 +160,25 @@ class ComponentDropdownController extends GetxController {
       final before = iv;
       try {
         final dataPayload = data['data'];
-        final payloadKeys =
-            dataPayload is Map ? dataPayload.keys.join(', ') : 'None';
-        debugPrint(
-            '  [Dropdown Init: $id] Context keys: ${data.keys.join(", ")}');
-        debugPrint(
-            '  [Dropdown Init: $id] Data fields available: $payloadKeys');
-        iv = iv.interpolateJavascript(data);
+        if (dataPayload is Map && dataPayload.containsKey(id)) {
+          // If the field already has a value in the state, use it as the initial value
+          // This handles the case where the component is rebuilt but should keep its current value
+          final stateValue = dataPayload[id]?.toString();
+          if (stateValue != null && stateValue.isNotEmpty) {
+            iv = stateValue;
+          }
+        }
+
+        if (iv.contains('{{')) {
+          iv = iv.interpolateJavascript(data);
+        }
       } catch (e) {
-        debugPrint('  [Dropdown Init: $id] Interpolation failed for "$iv": $e');
+        debugPrint('[Dropdown Init: $id] Interpolation failed: $e');
       }
 
-      debugPrint(
-          '  [Dropdown Init: $id] Initial Value: "$before" -> Substituted: "$iv"');
+      debugPrint('[Dropdown Init: $id] Initial value: "$before" -> "$iv"');
 
       final initialOption = options.firstWhereOrNull((o) => o['key'] == iv);
-      debugPrint(
-        '  [Dropdown Init: $id] Searching for "$iv" in ${options.length} options. Match found: ${initialOption != null}',
-      );
-
       if (initialOption != null) {
         selectedValue.value = iv;
         displayedValue.value = initialOption;
@@ -217,9 +221,14 @@ class ComponentDropdownController extends GetxController {
   }
 
   void _safeUpdateController(TextEditingController? controller, String value) {
-    if (controller != null && controller.text != value) {
-      // Defer update to avoid "setState() or markNeedsBuild() called during build"
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (controller == null || controller.text == value) return;
+
+    final binding = WidgetsBinding.instance;
+    // If we are not in the middle of a frame, we can update immediately.
+    if (binding.schedulerPhase == SchedulerPhase.idle) {
+      controller.text = value;
+    } else {
+      binding.addPostFrameCallback((_) {
         if (controller.text != value) {
           controller.text = value;
         }
