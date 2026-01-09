@@ -21,14 +21,11 @@ class HttpRequestConfig {
   /// akan dikonversi ke [FormData.fromMap].
   final bool asFormData;
 
-  final Map<String, String> params;
-
   const HttpRequestConfig({
     required this.method,
     required this.url,
     required this.headers,
     this.body,
-    this.params = const {},
     this.asFormData = false,
   });
 }
@@ -109,14 +106,6 @@ class HttpRequestExecutor {
     final processedHeaders = config.headers.map((k, v) {
       return MapEntry(k.interpolateJavascript(), v.interpolateJavascript());
     });
-    final processedParams = config.params.map((k, v) {
-      return MapEntry(k.interpolateJavascript(), v.interpolateJavascript());
-    });
-
-    if (processedParams.isNotEmpty) {
-      queryParameters ??= {};
-      queryParameters.addAll(processedParams);
-    }
 
     final options = Options(
       method: methodUpper,
