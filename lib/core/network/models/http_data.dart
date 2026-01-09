@@ -4,7 +4,6 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 import 'package:hive/hive.dart';
 import 'package:flx_nocode_flutter/src/app/util/string.dart';
-import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart'; // untuk JsonList
 
 /// Represents HTTP request configuration data used by actions.
 ///
@@ -163,13 +162,29 @@ extension HttpDataExtension on HttpData {
   HttpRequestConfig toRequestConfig(JsonMap data) {
     return HttpRequestConfig(
       method: method.toUpperCase(),
-      url: url.interpolateJavascript({
-        "current": data,
-      }),
-      headers: headersReplaceStringWithValues(data),
-      body: bodyReplaceStringWithValues(data),
+      url: url.renderWithData(data).interpolateJavascript(data),
+      headers: _interpolateHeaders(data),
+      body: _interpolateBody(data),
       asFormData: useFormData,
     );
+  }
+
+  Map<String, String> _interpolateHeaders(JsonMap data) {
+    return headers.map((key, value) {
+      final processed = value.renderWithData(data).interpolateJavascript(data);
+      return MapEntry(key, processed);
+    });
+  }
+
+  Map<String, dynamic> _interpolateBody(JsonMap data) {
+    return body.map((key, value) {
+      if (value is String) {
+        final processed =
+            value.renderWithData(data).interpolateJavascript(data);
+        return MapEntry(key, processed);
+      }
+      return MapEntry(key, value);
+    });
   }
 
   /// Eksekusi tanpa parameter.
@@ -182,33 +197,5 @@ extension HttpDataExtension on HttpData {
     final executor = HttpRequestExecutor();
     final config = toRequestConfig(data);
     return executor.execute(config);
-  }
-
-  Map<String, dynamic> bodyReplaceStringWithValues(
-    Map<String, dynamic> data,
-  ) {
-    return body.map((key, value) {
-      if (value is String) {
-        return MapEntry(key, value.replaceStringWithValues(data));
-      }
-      return MapEntry(key, value);
-    });
-  }
-
-  Map<String, dynamic> bodyReplaceStringWithValuesMultiple(JsonList data) {
-    return body.map((key, value) {
-      if (value is String) {
-        return MapEntry(key, value.replaceStringWithValuesMultiple(data));
-      }
-      return MapEntry(key, value);
-    });
-  }
-
-  Map<String, String> headersReplaceStringWithValues(
-    Map<String, dynamic> data,
-  ) {
-    return headers.map((key, value) {
-      return MapEntry(key, value.replaceStringWithValues(data));
-    });
   }
 }
