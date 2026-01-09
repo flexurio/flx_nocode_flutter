@@ -21,11 +21,14 @@ class HttpRequestConfig {
   /// akan dikonversi ke [FormData.fromMap].
   final bool asFormData;
 
+  final Map<String, String> params;
+
   const HttpRequestConfig({
     required this.method,
     required this.url,
     required this.headers,
     this.body,
+    this.params = const {},
     this.asFormData = false,
   });
 }
@@ -73,15 +76,13 @@ class HttpRequestResult {
 class HttpRequestExecutor {
   HttpRequestExecutor({Dio? dio}) : _dio = dio ?? Dio();
 
-  static const bool enableLog = false;
+  static const bool enableLog = true;
 
   final Dio _dio;
 
   Future<HttpRequestResult> execute(HttpRequestConfig config) async {
     final String methodUpper = config.method.toUpperCase();
 
-    // Menyamakan behaviour lama:
-    // body hanya dikirim untuk POST, PUT, PATCH
     const methodsWithBody = {'POST', 'PUT', 'PATCH'};
     final bool hasBody = methodsWithBody.contains(methodUpper);
 
@@ -96,21 +97,26 @@ class HttpRequestExecutor {
           dataBody = config.body;
         }
       } else if (config.body is Map<String, dynamic>) {
-        // Untuk GET/DELETE dkk, kalau body Map -> jadi queryParameters
         queryParameters = Map<String, dynamic>.from(
           config.body as Map<String, dynamic>,
         );
       } else {
-        // Fallback: kirim sebagai body juga
         dataBody = config.body;
       }
     }
 
-    // Support JS interpolation for URL and Headers
     final processedUrl = config.url.interpolateJavascript();
     final processedHeaders = config.headers.map((k, v) {
       return MapEntry(k.interpolateJavascript(), v.interpolateJavascript());
     });
+    final processedParams = config.params.map((k, v) {
+      return MapEntry(k.interpolateJavascript(), v.interpolateJavascript());
+    });
+
+    if (processedParams.isNotEmpty) {
+      queryParameters ??= {};
+      queryParameters.addAll(processedParams);
+    }
 
     final options = Options(
       method: methodUpper,

@@ -60,6 +60,9 @@ class HttpData extends HiveObject {
   ///   (either JSON or `FormData`, depending on [useFormData]).
   final Map<String, dynamic> body;
 
+  /// Explicit query parameters.
+  final Map<String, String> params;
+
   /// Whether to send [body] as Dio [FormData] (`multipart/form-data`).
   ///
   /// This is useful when uploading files or when backend expects
@@ -72,6 +75,7 @@ class HttpData extends HiveObject {
     required this.url,
     required this.headers,
     required this.body,
+    this.params = const {},
     this.useFormData = false,
   });
 
@@ -90,6 +94,7 @@ class HttpData extends HiveObject {
     String? url,
     Map<String, String>? headers,
     Map<String, dynamic>? body,
+    Map<String, String>? params,
     bool? useFormData,
   }) {
     return HttpData(
@@ -97,6 +102,7 @@ class HttpData extends HiveObject {
       url: url ?? this.url,
       headers: headers ?? this.headers,
       body: body ?? this.body,
+      params: params ?? this.params,
       useFormData: useFormData ?? this.useFormData,
     );
   }
@@ -119,6 +125,7 @@ class HttpData extends HiveObject {
       url: json['url'],
       headers: Map<String, String>.from(json['headers'] ?? const {}),
       body: Map<String, dynamic>.from(json['body'] ?? const {}),
+      params: Map<String, String>.from(json['params'] ?? const {}),
       useFormData: json['use_form_data'] ?? false,
     );
   }
@@ -128,6 +135,7 @@ class HttpData extends HiveObject {
         url: '',
         headers: {},
         body: {},
+        params: {},
         useFormData: false,
       );
 
@@ -153,6 +161,7 @@ class HttpData extends HiveObject {
       'url': url,
       'headers': headers,
       'body': body,
+      'params': params,
       'use_form_data': useFormData,
     };
   }
@@ -168,6 +177,7 @@ extension HttpDataExtension on HttpData {
       }),
       headers: headersReplaceStringWithValues(data),
       body: bodyReplaceStringWithValues(data),
+      params: paramsReplaceStringWithValues(data),
       asFormData: useFormData,
     );
   }
@@ -208,6 +218,14 @@ extension HttpDataExtension on HttpData {
     Map<String, dynamic> data,
   ) {
     return headers.map((key, value) {
+      return MapEntry(key, value.replaceStringWithValues(data));
+    });
+  }
+
+  Map<String, String> paramsReplaceStringWithValues(
+    Map<String, dynamic> data,
+  ) {
+    return params.map((key, value) {
       return MapEntry(key, value.replaceStringWithValues(data));
     });
   }
