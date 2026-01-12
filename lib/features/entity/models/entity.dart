@@ -273,6 +273,18 @@ class EntityCustom extends HiveObject {
   /// Whether the entity is a protected system entity that cannot be modified.
   bool get isProtected => ['flx_roles', 'flx_users'].contains(id);
 
+  /// Retrieves all permission codes defined for the entity's actions.
+  List<String> getAvailablePermissions() {
+    final List<String> permissions = [];
+    for (var action in actions) {
+      permissions.add(action.getPermission(id));
+    }
+    for (var action in actionsHome) {
+      permissions.add(action.getPermission(id));
+    }
+    return permissions.toSet().toList(); // Unique permissions
+  }
+
   /// Builds a list of [ActionButtonItem] widgets for the entity's custom views.
   List<ActionButtonItem> buttonViews(
     BuildContext context,
