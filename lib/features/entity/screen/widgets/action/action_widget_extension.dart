@@ -68,6 +68,7 @@ extension ActionWidgetExtension on ActionD {
     return LightButtonSmall(
       title: name,
       action: action,
+      iconColor: _parseColor(iconColor),
       onPressed: () async {
         if (type == ActionType.showDialog) {
           await showDialog(
@@ -113,9 +114,26 @@ extension ActionWidgetExtension on ActionD {
     if (action.icon != null) {
       return getIconByName(action.icon);
     }
-    // Note: iconCode is deprecated for release builds due to tree-shaking limitations.
     // We prioritize the named 'icon' property which uses a constant mapping.
     return null;
+  }
+
+  Color? _parseColor(String? colorStr) {
+    if (colorStr == null || colorStr.isEmpty) return null;
+    try {
+      if (colorStr.startsWith('#')) {
+        var hex = colorStr.replaceFirst('#', '');
+        if (hex.length == 6) hex = 'FF$hex';
+        return Color(int.parse('0x$hex'));
+      }
+      if (colorStr.startsWith('0x')) {
+        return Color(int.parse(colorStr));
+      }
+      return Color(int.parse('0x$colorStr'));
+    } catch (e) {
+      debugPrint('Error parsing color: $colorStr');
+      return null;
+    }
   }
 
   Widget buttonSingle(
@@ -165,15 +183,22 @@ extension ActionWidgetExtension on ActionD {
           data: data,
           onSuccessCallback: onSuccessCallback,
         );
+      case ActionType.showConfirmationDialog:
+        return _buildButtonShowConfirmationDialog(
+          entity: entity,
+          context: context,
+          data: data,
+          onSuccessCallback: onSuccessCallback,
+        );
       default:
         return NoCodeError(
           'Unhandled ActionType: $type',
           debugInfo:
-              'ActionType "$type" is not handled in ActionWidgetExtension.buttonSingle.',
+              'ActionType "$type" is not handled in ActionWidgetExtension.buttonSingle. Available types: ${ActionType.values}',
           description:
-              'The action type "$type" is not implemented in ActionWidgetExtension.buttonMultiple. This indicates a missing UI component for this action.',
+              'The action type "$type" is not implemented in ActionWidgetExtension.buttonSingle. This indicates a missing UI component for this action.',
           suggestion:
-              'Please ensure all ActionType enum values are handled in the switch statement within ActionWidgetExtension.buttonMultiple.',
+              'Please ensure all ActionType enum values are handled in the switch statement within ActionWidgetExtension.buttonSingle.',
         );
     }
   }
@@ -190,8 +215,9 @@ extension ActionWidgetExtension on ActionD {
       title: name,
       permission: null,
       action: actionType,
+      iconColor: _parseColor(iconColor),
       onPressed: () async {
-        if (http == null) {
+        if (http == null && type != ActionType.showConfirmationDialog) {
           Toast(context).fail('No http data found');
           return;
         }
@@ -200,6 +226,7 @@ extension ActionWidgetExtension on ActionD {
           context: context,
           action: actionType,
           label: name,
+          confirmationMessageText: confirmMessage,
           onConfirm: (ctx) => executeHttpMultiple(entity, ctx, data),
         );
       },
@@ -223,6 +250,7 @@ extension ActionWidgetExtension on ActionD {
       title: name,
       permission: null,
       action: actionType,
+      iconColor: _parseColor(iconColor),
       onPressed: () async {
         if (http == null) {
           Toast(context).fail('No http data found');
@@ -252,6 +280,7 @@ extension ActionWidgetExtension on ActionD {
       title: name,
       permission: null,
       action: actionType,
+      iconColor: _parseColor(iconColor),
       onPressed: () async {
         if (reference == null) {
           Toast(context).fail('No reference found');
@@ -306,6 +335,7 @@ extension ActionWidgetExtension on ActionD {
     return LightButton(
       title: name,
       permission: null,
+      iconColor: _parseColor(iconColor),
       onPressed: () async {
         if (layoutFormId == null) {
           Toast(context).fail('No page found');
@@ -345,6 +375,7 @@ extension ActionWidgetExtension on ActionD {
       title: name,
       permission: null,
       action: actionType,
+      iconColor: _parseColor(iconColor),
       onPressed: () async {
         if (layoutFormId == null) {
           Toast(context).fail('No page found');
@@ -388,6 +419,7 @@ extension ActionWidgetExtension on ActionD {
       title: name,
       permission: null,
       action: actionType,
+      iconColor: _parseColor(iconColor),
       onPressed: () async {
         if (http == null) {
           Toast(context).fail('No http data found');
@@ -395,6 +427,44 @@ extension ActionWidgetExtension on ActionD {
         }
         await executeHttp(entity, context, data,
             onSuccessCallback: onSuccessCallback);
+      },
+      iconOverride: actionIcon(this),
+    );
+  }
+
+  Widget _buildButtonShowConfirmationDialog({
+    required EntityCustom entity,
+    required BuildContext context,
+    required JsonMap data,
+    VoidCallback? onSuccessCallback,
+  }) {
+    return LightButton(
+      title: name,
+      permission: null,
+      action: action,
+      iconColor: _parseColor(iconColor),
+      onPressed: () async {
+        await showConfirmDialog(
+          context: context,
+          action: action,
+          label: name,
+          confirmationMessageText: confirmMessage,
+          onConfirm: (ctx) async {
+            if (http != null) {
+              await executeHttp(entity, ctx, data,
+                  onSuccessCallback: onSuccessCallback);
+            } else {
+              // Trigger success even without HTTP if explicitly set as confirmation dialog
+              handleOnSuccessSingle(
+                entity: entity,
+                context: context,
+                responseData: null,
+                data: data,
+                onSuccessCallback: onSuccessCallback,
+              );
+            }
+          },
+        );
       },
       iconOverride: actionIcon(this),
     );

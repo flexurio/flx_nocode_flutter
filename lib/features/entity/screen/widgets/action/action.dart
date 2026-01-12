@@ -42,7 +42,7 @@ extension ActionLogicExtension on ActionD {
   }) async {
     if (http == null) {
       Toast(context).fail('No http data found');
-      _handleOnFailure(context, 'No http data found');
+      handleOnFailure(context, 'No http data found');
       return;
     }
 
@@ -53,7 +53,7 @@ extension ActionLogicExtension on ActionD {
 
       if (isSuccess) {
         Toast(context).success('Request success');
-        _handleOnSuccessSingle(
+        handleOnSuccessSingle(
           entity: entity,
           context: context,
           responseData: response.data,
@@ -63,16 +63,16 @@ extension ActionLogicExtension on ActionD {
       } else {
         final message = response.message ?? 'Request failed';
         Toast(context).fail(message);
-        _handleOnFailure(context, message, raw: response);
+        handleOnFailure(context, message, raw: response);
       }
     } on DioException catch (e) {
       final message = e.message ?? 'Request failed';
       Toast(context).fail(message);
-      _handleOnFailure(context, message, raw: e);
+      handleOnFailure(context, message, raw: e);
     } catch (e) {
       const message = 'Unexpected error';
       Toast(context).fail(message);
-      _handleOnFailure(context, message, raw: e);
+      handleOnFailure(context, message, raw: e);
     }
   }
 
@@ -89,7 +89,7 @@ extension ActionLogicExtension on ActionD {
 
     if (http == null) {
       Toast(context).fail('No http data found');
-      _handleOnFailure(context, 'No http data found');
+      handleOnFailure(context, 'No http data found');
       return;
     }
 
@@ -101,7 +101,7 @@ extension ActionLogicExtension on ActionD {
 
       if (isSuccess) {
         Toast(context).success('Request success');
-        _handleOnSuccessMultiple(
+        handleOnSuccessMultiple(
           entity: entity,
           context: context,
           responseData: response.data,
@@ -111,23 +111,23 @@ extension ActionLogicExtension on ActionD {
       } else {
         final message = response.message ?? 'Request failed';
         Toast(context).fail(message);
-        _handleOnFailure(context, message, raw: response);
+        handleOnFailure(context, message, raw: response);
       }
     } on DioException catch (e) {
       final message = e.message ?? 'Request failed';
       Toast(context).fail(message);
-      _handleOnFailure(context, message, raw: e);
+      handleOnFailure(context, message, raw: e);
     } catch (e) {
       const message = 'Unexpected error';
       Toast(context).fail(message);
-      _handleOnFailure(context, message, raw: e);
+      handleOnFailure(context, message, raw: e);
     }
   }
 
   // ------------------------------------------------------
   //                   SUCCESS HANDLERS
   // ------------------------------------------------------
-  void _handleOnSuccessSingle({
+  void handleOnSuccessSingle({
     required EntityCustom entity,
     required BuildContext context,
     required Object? responseData,
@@ -135,7 +135,7 @@ extension ActionLogicExtension on ActionD {
     VoidCallback? onSuccessCallback,
   }) {
     print('==============================');
-    print('[ActionLogic] 🚀 _handleOnSuccessSingle()');
+    print('[ActionLogic] 🚀 handleOnSuccessSingle()');
     print('[ActionLogic] → Action ID: $id');
     print('[ActionLogic] → onSuccess value: "$onSuccess"');
 
@@ -201,7 +201,7 @@ extension ActionLogicExtension on ActionD {
     print('==============================');
   }
 
-  void _handleOnSuccessMultiple({
+  void handleOnSuccessMultiple({
     required EntityCustom entity,
     required BuildContext context,
     required Object? responseData,
@@ -209,7 +209,7 @@ extension ActionLogicExtension on ActionD {
     VoidCallback? onSuccessCallback,
   }) {
     if (data.isNotEmpty) {
-      _handleOnSuccessSingle(
+      handleOnSuccessSingle(
         entity: entity,
         context: context,
         responseData: responseData,
@@ -222,7 +222,7 @@ extension ActionLogicExtension on ActionD {
   // ------------------------------------------------------
   //                     FAILURE HANDLER
   // ------------------------------------------------------
-  void _handleOnFailure(
+  void handleOnFailure(
     BuildContext context,
     String message, {
     Object? raw,
@@ -278,6 +278,7 @@ extension ActionLogicExtension on ActionD {
     required BuildContext context,
     required DataAction action,
     required String label,
+    String? confirmationMessageText,
     required Future<void> Function(BuildContext ctx) onConfirm,
   }) async {
     await showDialog<void>(
@@ -291,6 +292,7 @@ extension ActionLogicExtension on ActionD {
             action: action,
             data: Entity.assetType,
             label: label,
+            confirmationMessageText: confirmationMessageText,
             onConfirm: () async {
               setState(() => isProgress = true);
               try {

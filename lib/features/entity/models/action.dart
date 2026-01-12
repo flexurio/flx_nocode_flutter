@@ -15,7 +15,9 @@ enum ActionType {
   refresh('refresh', 'Refresh Data'),
   navigateHome('navigate_home', 'Navigate Home'),
   showErrorDialog('show_error_dialog', 'Show Error Dialog'),
-  navigateBack('navigate_back', 'Navigate Back');
+  navigateBack('navigate_back', 'Navigate Back'),
+  showConfirmationDialog(
+      'show_confirmation_dialog', 'Show Confirmation Dialog');
 
   final String id;
   final String label;
@@ -69,6 +71,9 @@ class ActionD extends HiveObject {
 
   final bool isMultiple;
   final double? width;
+  final String? confirmTitle;
+  final String? confirmMessage;
+  final String? iconColor;
 
   ActionD({
     required this.isMultiple,
@@ -84,6 +89,9 @@ class ActionD extends HiveObject {
     required this.type,
     required this.name,
     this.width,
+    this.confirmTitle,
+    this.confirmMessage,
+    this.iconColor,
   });
 
   /// Creates a copy of this [ActionD] object with optional modifications.
@@ -101,6 +109,9 @@ class ActionD extends HiveObject {
     int? iconCode,
     Rule? rule,
     double? width,
+    String? confirmTitle,
+    String? confirmMessage,
+    String? iconColor,
   }) {
     return ActionD(
       width: width ?? this.width,
@@ -116,6 +127,9 @@ class ActionD extends HiveObject {
       icon: icon ?? this.icon,
       iconCode: iconCode ?? this.iconCode,
       rule: rule ?? this.rule,
+      confirmTitle: confirmTitle ?? this.confirmTitle,
+      confirmMessage: confirmMessage ?? this.confirmMessage,
+      iconColor: iconColor ?? this.iconColor,
     );
   }
 
@@ -139,6 +153,9 @@ class ActionD extends HiveObject {
               Map<String, dynamic>.from(json['rule'] as Map),
             ),
       width: json['width']?.toDouble(),
+      confirmTitle: json['confirm_title'],
+      confirmMessage: json['confirm_message'],
+      iconColor: json['icon_color'],
     );
   }
 
@@ -158,6 +175,9 @@ class ActionD extends HiveObject {
       if (rule != null) 'rule': rule!.toMap(),
       if (http != null) 'http': http!.toJson(),
       'width': width,
+      'confirm_title': confirmTitle,
+      'confirm_message': confirmMessage,
+      'icon_color': iconColor,
     };
   }
 
@@ -171,6 +191,8 @@ class ActionD extends HiveObject {
         return DataAction.create;
       case ActionType.openPage:
         return DataAction.add;
+      case ActionType.showConfirmationDialog:
+        return DataAction.confirm;
       default:
         return DataAction.none;
     }
