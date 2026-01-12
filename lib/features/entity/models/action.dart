@@ -74,6 +74,7 @@ class ActionD extends HiveObject {
   final String? confirmTitle;
   final String? confirmMessage;
   final String? iconColor;
+  final String? permission;
 
   ActionD({
     required this.isMultiple,
@@ -92,6 +93,7 @@ class ActionD extends HiveObject {
     this.confirmTitle,
     this.confirmMessage,
     this.iconColor,
+    this.permission,
   });
 
   /// Creates a copy of this [ActionD] object with optional modifications.
@@ -112,6 +114,7 @@ class ActionD extends HiveObject {
     String? confirmTitle,
     String? confirmMessage,
     String? iconColor,
+    String? permission,
   }) {
     return ActionD(
       width: width ?? this.width,
@@ -130,6 +133,7 @@ class ActionD extends HiveObject {
       confirmTitle: confirmTitle ?? this.confirmTitle,
       confirmMessage: confirmMessage ?? this.confirmMessage,
       iconColor: iconColor ?? this.iconColor,
+      permission: permission ?? this.permission,
     );
   }
 
@@ -156,6 +160,7 @@ class ActionD extends HiveObject {
       confirmTitle: json['confirm_title'],
       confirmMessage: json['confirm_message'],
       iconColor: json['icon_color'],
+      permission: json['permission'],
     );
   }
 
@@ -178,6 +183,7 @@ class ActionD extends HiveObject {
       'confirm_title': confirmTitle,
       'confirm_message': confirmMessage,
       'icon_color': iconColor,
+      'permission': permission,
     };
   }
 
@@ -196,6 +202,11 @@ class ActionD extends HiveObject {
       default:
         return DataAction.none;
     }
+  }
+
+  String getPermission(String entityId) {
+    if (permission != null && permission!.isNotEmpty) return permission!;
+    return '${entityId}_$id';
   }
 }
 
