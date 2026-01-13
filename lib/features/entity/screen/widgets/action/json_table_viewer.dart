@@ -9,6 +9,7 @@ Future<void> showJsonAsTableDialog(
 ) async {
   return showDialog(
     context: context,
+    useRootNavigator: false,
     barrierDismissible: false, // biar nggak ketutup pas lagi drag
     builder: (ctx) {
       return DraggableDialogContainer(

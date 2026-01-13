@@ -107,6 +107,7 @@ class BackendOther extends HiveObject {
     final controller = Get.put(EntityController(entity), tag: tag);
     return showDialog<bool?>(
       barrierDismissible: false,
+      useRootNavigator: false,
       context: context,
       builder: (context) {
         const action = DataAction.delete;

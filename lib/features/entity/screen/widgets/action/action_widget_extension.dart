@@ -73,6 +73,7 @@ extension ActionWidgetExtension on ActionD {
         if (type == ActionType.showDialog) {
           await showDialog(
             context: context,
+            useRootNavigator: false,
             barrierDismissible: false,
             builder: (ctx) {
               return CreatePage.prepare(
@@ -305,6 +306,7 @@ extension ActionWidgetExtension on ActionD {
         if (jsonData == null) {
           await showDialog(
             context: context,
+            useRootNavigator: false,
             builder: (ctx) => AlertDialog(
               title: const Text('Error'),
               content: const Text('JSON tidak valid atau data kosong.'),
@@ -385,6 +387,7 @@ extension ActionWidgetExtension on ActionD {
 
         await showDialog(
           context: context,
+          useRootNavigator: false,
           barrierDismissible: false,
           builder: (ctx) {
             return CreatePage.prepare(

@@ -146,6 +146,7 @@ extension ActionLogicExtension on ActionD {
       case ActionType.showDialog:
         showDialog(
           context: context,
+          useRootNavigator: false,
           builder: (_) => AlertDialog(
             title: const Text('Success'),
             content: const Text('Operation completed successfully.'),
@@ -240,6 +241,7 @@ extension ActionLogicExtension on ActionD {
       case ActionType.showErrorDialog:
         showDialog(
           context: context,
+          useRootNavigator: false,
           builder: (_) => AlertDialog(
             title: const Text('Failed'),
             content: Text(message),
@@ -283,6 +285,7 @@ extension ActionLogicExtension on ActionD {
   }) async {
     await showDialog<void>(
       context: context,
+      useRootNavigator: false,
       barrierDismissible: false,
       builder: (dialogCtx) {
         bool isProgress = false;
