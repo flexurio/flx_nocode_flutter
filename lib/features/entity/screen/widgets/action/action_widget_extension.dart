@@ -105,7 +105,8 @@ extension ActionWidgetExtension on ActionD {
           );
         }
       },
-      permissions: [getPermission(entity.id)],
+      permissions:
+          entity.bypassAllPermissions ? null : [getPermission(entity.id)],
       iconOverride: actionIcon(this),
     );
   }
@@ -213,7 +214,7 @@ extension ActionWidgetExtension on ActionD {
 
     return LightButton(
       title: name,
-      permission: getPermission(entity.id),
+      permission: entity.bypassAllPermissions ? null : getPermission(entity.id),
       action: actionType,
       iconColor: _parseColor(iconColor),
       onPressed: () async {
@@ -248,7 +249,7 @@ extension ActionWidgetExtension on ActionD {
 
     return LightButton(
       title: name,
-      permission: getPermission(entity.id),
+      permission: entity.bypassAllPermissions ? null : getPermission(entity.id),
       action: actionType,
       iconColor: _parseColor(iconColor),
       onPressed: () async {
@@ -278,7 +279,7 @@ extension ActionWidgetExtension on ActionD {
 
     return LightButton(
       title: name,
-      permission: getPermission(entity.id),
+      permission: entity.bypassAllPermissions ? null : getPermission(entity.id),
       action: actionType,
       iconColor: _parseColor(iconColor),
       onPressed: () async {
@@ -334,7 +335,7 @@ extension ActionWidgetExtension on ActionD {
   }) {
     return LightButton(
       title: name,
-      permission: getPermission(entity.id),
+      permission: entity.bypassAllPermissions ? null : getPermission(entity.id),
       iconColor: _parseColor(iconColor),
       onPressed: () async {
         if (layoutFormId == null) {
@@ -373,7 +374,7 @@ extension ActionWidgetExtension on ActionD {
 
     return LightButton(
       title: name,
-      permission: getPermission(entity.id),
+      permission: entity.bypassAllPermissions ? null : getPermission(entity.id),
       action: actionType,
       iconColor: _parseColor(iconColor),
       onPressed: () async {
@@ -417,7 +418,7 @@ extension ActionWidgetExtension on ActionD {
 
     return LightButton(
       title: name,
-      permission: getPermission(entity.id),
+      permission: entity.bypassAllPermissions ? null : getPermission(entity.id),
       action: actionType,
       iconColor: _parseColor(iconColor),
       onPressed: () async {
@@ -440,7 +441,7 @@ extension ActionWidgetExtension on ActionD {
   }) {
     return LightButton(
       title: name,
-      permission: getPermission(entity.id),
+      permission: entity.bypassAllPermissions ? null : getPermission(entity.id),
       action: action,
       iconColor: _parseColor(iconColor),
       onPressed: () async {

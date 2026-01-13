@@ -29,7 +29,9 @@ class EntityCreateButtonOld extends StatelessWidget {
   Widget build(BuildContext context) {
     if (layoutForm == null) return const SizedBox.shrink();
     return Button.small(
-      permission: bypassPermission ? null : '${entity.id}_write',
+      permission: (bypassPermission || entity.bypassAllPermissions)
+          ? null
+          : '${entity.id}_write',
       action: DataAction.create,
       onPressed: () async {
         final success = await Navigator.push(

@@ -53,6 +53,9 @@ class EntityCustom extends HiveObject {
 
   final List<ActionD> actionsHome;
 
+  /// Whether to bypass all permission checks for this entity.
+  final bool bypassAllPermissions;
+
   /// A map defining the layout of columns in a data table view.
   /// The key is the field reference, and the value is typically a flex factor.
   Map<String, int> layoutTable;
@@ -72,6 +75,7 @@ class EntityCustom extends HiveObject {
     required this.layoutListTile,
     required this.layoutTable,
     required this.exports,
+    this.bypassAllPermissions = false,
   });
 
   static String assetBasePath = 'asset';
@@ -126,6 +130,7 @@ class EntityCustom extends HiveObject {
           (raw, _) => ActionD.fromJson(raw),
         ),
         paginationOption: parser.parsePaginationOption(),
+        bypassAllPermissions: parser.parseBypassAllPermissions(),
       );
     } catch (e) {
       debugPrint("[EntityCustom] Entity: $id fromJson error: $e");
@@ -147,7 +152,8 @@ class EntityCustom extends HiveObject {
         actions = [],
         actionsHome = [],
         layoutTable = {},
-        exports = [];
+        exports = [],
+        bypassAllPermissions = false;
 
   /// Creates a copy of this [EntityCustom] instance with the given fields replaced.
   EntityCustom copyWith({
@@ -164,6 +170,7 @@ class EntityCustom extends HiveObject {
     List<Export>? exports,
     List<ActionD>? actions,
     List<ActionD>? actionsHome,
+    bool? bypassAllPermissions,
   }) {
     return EntityCustom(
       id: id ?? this.id,
@@ -179,6 +186,7 @@ class EntityCustom extends HiveObject {
       layoutListTile: layoutListTile ?? this.layoutListTile,
       layoutTable: layoutTable ?? this.layoutTable,
       exports: exports ?? this.exports,
+      bypassAllPermissions: bypassAllPermissions ?? this.bypassAllPermissions,
     );
   }
 
@@ -265,6 +273,7 @@ class EntityCustom extends HiveObject {
       'layout_table': layoutTable,
       'actions': actions.map((e) => e.toJson()).toList(),
       'actions_home': actionsHome.map((e) => e.toJson()).toList(),
+      'bypass_all_permissions': bypassAllPermissions,
     };
   }
 
@@ -484,5 +493,12 @@ class _EntityCustomJsonParser {
           "Invalid type for 'pagination_option': expected Map");
     }
     return PaginationOption.fromJson(raw);
+  }
+
+  /// Parses the bypass all permissions flag.
+  /// Default is false, but if key is missing, it's true.
+  bool parseBypassAllPermissions() {
+    if (!json.containsKey('bypass_all_permissions')) return true;
+    return json['bypass_all_permissions'] == true;
   }
 }
