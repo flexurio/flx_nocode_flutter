@@ -193,6 +193,20 @@ class EntityCustom extends HiveObject {
     return data;
   }
 
+  /// Retrieves all available permissions for a given entity ID.
+  static Future<List<String>> getPermissions(
+    String id, {
+    bool useFileSystem = false,
+    String? basePath,
+  }) async {
+    final entity = await getEntity(
+      id,
+      useFileSystem: useFileSystem,
+      basePath: basePath,
+    );
+    return entity?.getAvailablePermissions() ?? [];
+  }
+
   /// Loads and parses an entity definition from a JSON asset file.
   ///
   /// The [id] corresponds to the filename (e.g., 'my_entity.json').

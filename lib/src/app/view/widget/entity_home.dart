@@ -232,7 +232,6 @@ class NoCodePageLoader extends StatefulWidget {
   final Configuration Function()? getConfiguration;
   final bool bypassPermission;
   final String? basePath;
-  final Function(List<String> permissions)? onPermissionsLoaded;
 
   const NoCodePageLoader({
     super.key,
@@ -245,7 +244,6 @@ class NoCodePageLoader extends StatefulWidget {
     this.getConfiguration,
     this.basePath,
     required this.bypassPermission,
-    this.onPermissionsLoaded,
   });
 
   @override
@@ -283,11 +281,6 @@ class _NoCodePageLoaderState extends State<NoCodePageLoader> {
               child: NoCodeError('Entity not found! Id: ${widget.entityId}'),
             );
           }
-
-          // Expose permissions once loaded
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            widget.onPermissionsLoaded?.call(entity.getAvailablePermissions());
-          });
 
           return MenuCustom(
             parentData: [],
