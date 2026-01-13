@@ -96,6 +96,7 @@ class _EntityCreateViewState extends State<EntityCreateView> {
               widget.onSuccess();
               Toast(context).dataChanged(_action, coreEntity);
               if (widget.autoBackWhenSuccess) Navigator.pop(context, true);
+              controller.reset();
             }
           });
         },

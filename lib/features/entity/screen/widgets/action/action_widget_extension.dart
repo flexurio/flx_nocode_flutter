@@ -86,7 +86,6 @@ extension ActionWidgetExtension on ActionD {
                 width: width,
                 onSuccess: () {
                   onSuccess();
-                  Navigator.of(ctx).pop();
                 },
               );
             },
@@ -401,7 +400,6 @@ extension ActionWidgetExtension on ActionD {
               width: width,
               onSuccess: () {
                 onSuccessCallback?.call();
-                Navigator.of(ctx).pop();
               },
             );
           },

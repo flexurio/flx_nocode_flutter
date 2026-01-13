@@ -71,8 +71,7 @@ class CreateForm extends StatelessWidget {
                   } else {
                     controller.clearForm();
                   }
-                  // Reset state to initial to prevent re-triggering
-                  // Actually, it's better to use a dedicated signal or reset the state.
+                  entityCtrl.reset();
                 }
               });
             },
