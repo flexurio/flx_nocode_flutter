@@ -3,7 +3,6 @@ import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
-import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
