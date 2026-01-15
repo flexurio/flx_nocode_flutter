@@ -8,6 +8,7 @@ import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.
 import 'package:flx_nocode_flutter/features/layout_form/screen/pages/create_page.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'json_table_viewer.dart';
+import 'action_button_regular.dart';
 
 typedef JsonList = List<Map<String, dynamic>>;
 
@@ -65,49 +66,12 @@ extension ActionWidgetExtension on ActionD {
     required JsonMap filters,
     required VoidCallback onSuccess,
   }) {
-    return LightButtonSmall(
-      title: name,
-      action: action,
-      iconColor: _parseColor(iconColor),
-      onPressed: () async {
-        if (type == ActionType.showDialog) {
-          await showDialog(
-            context: context,
-            useRootNavigator: false,
-            barrierDismissible: false,
-            builder: (ctx) {
-              return CreatePage.prepare(
-                popup: true,
-                embedded: true,
-                entity: entity,
-                layoutFormId: layoutFormId ?? '',
-                parentData: parentData,
-                filters: filters,
-                width: width,
-                onSuccess: () {
-                  onSuccess();
-                },
-              );
-            },
-          );
-        } else {
-          // Default to openPage
-          await Navigator.push(
-            context,
-            CreatePage.route(
-              entity: entity,
-              onSuccess: onSuccess,
-              embedded: false,
-              parentData: parentData,
-              filters: filters,
-              layoutFormId: layoutFormId ?? '',
-            ),
-          );
-        }
-      },
-      permissions:
-          entity.bypassAllPermissions ? null : [getPermission(entity.id)],
-      iconOverride: actionIcon(this),
+    return ActionButtonRegular(
+      actionD: this,
+      entity: entity,
+      parentData: parentData,
+      filters: filters,
+      onSuccess: onSuccess,
     );
   }
 
