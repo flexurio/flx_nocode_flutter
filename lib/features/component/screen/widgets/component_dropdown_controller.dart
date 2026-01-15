@@ -118,17 +118,23 @@ class ComponentDropdownController extends GetxController {
   }
 
   JsonMap _prepareRequestData() {
-    // If 'data' is passed (from state), use it as base.
+    final requestData = <String, dynamic>{};
+
+    // 1. Start with values from state (if any) as a base
     final state = data['data'] as Map?;
     if (state != null) {
-      return Map<String, dynamic>.from(state);
+      requestData.addAll(Map<String, dynamic>.from(state));
     }
 
-    // Fallback: manually extract from controllers if state is missing.
-    final requestData = <String, dynamic>{};
+    // 2. Overlay current values from _allControllers to ensure freshness
+    // This is crucial because dependency listeners might fire before the widget
+    // receives the updated state via build updates.
     for (final entry in _allControllers.entries) {
+      // Only overwrite if the controller has a value (or empty string)
+      // This maps the controller text directly to the key.
       requestData[entry.key] = entry.value.text;
     }
+
     return requestData;
   }
 
