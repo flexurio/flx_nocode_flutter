@@ -15,15 +15,21 @@ extension ComponentTextFieldWidgets on ComponentTextField {
       maxLines: maxLines,
       labelText: label,
       enabled: enabled,
-      validator: this.required
-          ? (value) {
-              final actualValue = controller?.text ?? value;
-              if (actualValue == null || actualValue.trim().isEmpty) {
-                return '$label is required';
-              }
-              return null;
-            }
-          : null,
+      validator: (value) {
+        final actualValue = controller?.text ?? value;
+        if (this.required) {
+          if (actualValue == null || actualValue.trim().isEmpty) {
+            return '$label is required';
+          }
+        }
+        if (regex != null &&
+            actualValue != null &&
+            actualValue.isNotEmpty &&
+            !RegExp(regex!).hasMatch(actualValue)) {
+          return 'Invalid format';
+        }
+        return null;
+      },
     );
   }
 }

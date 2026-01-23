@@ -9,6 +9,7 @@ class ComponentTextField extends Component {
   final String hintText;
   final bool enabled;
   final bool required;
+  final String? regex;
 
   ComponentTextField({
     required super.id,
@@ -19,6 +20,7 @@ class ComponentTextField extends Component {
     this.hintText = '',
     required this.enabled,
     this.required = false,
+    this.regex,
     super.visibilityCondition,
     super.events,
   }) : super(type: 'text_field');
@@ -35,6 +37,7 @@ class ComponentTextField extends Component {
       hintText: '',
       enabled: true,
       required: false,
+      regex: null,
     );
   }
 
@@ -58,6 +61,7 @@ class ComponentTextField extends Component {
       return true;
     }();
     final required = map['required'] == true;
+    final regex = map['regex']?.toString();
     final visibilityCondition = map['visibilityCondition']?.toString();
     final events = map['events'] as Map<String, dynamic>? ?? {};
 
@@ -70,6 +74,7 @@ class ComponentTextField extends Component {
       hintText: hintText,
       enabled: enabled,
       required: required,
+      regex: regex,
       visibilityCondition: visibilityCondition,
       events: events,
     );
@@ -86,6 +91,7 @@ class ComponentTextField extends Component {
         'hintText': hintText,
         'enabled': enabled,
         'required': required,
+        if (regex != null) 'regex': regex,
         if (visibilityCondition != null)
           'visibilityCondition': visibilityCondition,
         'events': events,
