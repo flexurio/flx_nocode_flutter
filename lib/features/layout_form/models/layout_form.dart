@@ -19,6 +19,7 @@ class LayoutForm extends HiveObject {
   final String id;
   final String label;
   final String type; // "create" | "update" | "view" | "home"
+  @Deprecated('Use components instead')
   final List<GroupLayout> groups;
   final Rule? visibleIf;
   final List<Component> components;
