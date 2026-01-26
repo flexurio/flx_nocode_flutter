@@ -17,11 +17,18 @@ extension ActionListWidgetExtension on List<ActionD> {
     required BuildContext context,
     required JsonMap data,
     required JsonList parentData,
+    bool? bypassPermission,
     VoidCallback? onSuccessCallback,
   }) {
     return where((action) => action.isVisibleFor(data))
-        .map((e) => e.buttonSingle(entity, context, data, parentData,
-            onSuccessCallback: onSuccessCallback))
+        .map((e) => e.buttonSingle(
+              entity,
+              context,
+              data,
+              parentData,
+              bypassPermission: bypassPermission,
+              onSuccessCallback: onSuccessCallback,
+            ))
         .toList();
   }
 
@@ -30,9 +37,16 @@ extension ActionListWidgetExtension on List<ActionD> {
     required BuildContext context,
     required JsonList data,
     required JsonList parentData,
+    bool? bypassPermission,
   }) {
     return where((action) => action.isVisibleForList(data))
-        .map((e) => e.buttonMultiple(entity, context, data, parentData))
+        .map((e) => e.buttonMultiple(
+              entity,
+              context,
+              data,
+              parentData,
+              bypassPermission: bypassPermission,
+            ))
         .toList();
   }
 }
@@ -60,6 +74,7 @@ extension ActionWidgetExtension on ActionD {
     required EntityCustom entity,
     required JsonList parentData,
     required JsonMap filters,
+    bool? bypassPermission,
     required VoidCallback onSuccess,
   }) {
     return ActionButtonRegular(
@@ -68,6 +83,7 @@ extension ActionWidgetExtension on ActionD {
       parentData: parentData,
       filters: filters,
       onSuccess: onSuccess,
+      bypassPermission: bypassPermission,
     );
   }
 
@@ -102,11 +118,14 @@ extension ActionWidgetExtension on ActionD {
     BuildContext context,
     JsonMap data,
     JsonList parentData, {
+    bool? bypassPermission,
     VoidCallback? onSuccessCallback,
   }) {
     return LightButton(
       title: name,
-      permission: entity.bypassAllPermissions ? null : getPermission(entity.id),
+      permission: (bypassPermission ?? entity.bypassAllPermissions)
+          ? null
+          : getPermission(entity.id),
       iconColor: _parseColor(iconColor),
       onPressed: () => executeSingle(
         entity: entity,
@@ -123,13 +142,16 @@ extension ActionWidgetExtension on ActionD {
     EntityCustom entity,
     BuildContext context,
     JsonList data,
-    JsonList parentData,
-  ) {
+    JsonList parentData, {
+    bool? bypassPermission,
+  }) {
     const actionType = DataAction.print;
 
     return LightButton(
       title: name,
-      permission: entity.bypassAllPermissions ? null : getPermission(entity.id),
+      permission: (bypassPermission ?? entity.bypassAllPermissions)
+          ? null
+          : getPermission(entity.id),
       action: actionType,
       iconColor: _parseColor(iconColor),
       onPressed: () async {

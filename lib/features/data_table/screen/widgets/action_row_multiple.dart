@@ -10,12 +10,14 @@ class ActionRowMultiple extends StatelessWidget {
     required this.entity,
     required this.parentData,
     required this.actions,
+    this.bypassPermission = false,
   });
 
   final List<Map<String, dynamic>> rows;
   final List<ActionD> actions;
   final EntityCustom entity;
   final List<Map<String, dynamic>> parentData;
+  final bool bypassPermission;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,7 @@ class ActionRowMultiple extends StatelessWidget {
             context: context,
             data: rows,
             parentData: parentData,
+            bypassPermission: bypassPermission,
           ),
         ),
       ],

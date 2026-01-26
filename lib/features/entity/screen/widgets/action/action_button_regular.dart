@@ -6,6 +6,13 @@ import 'package:flx_nocode_flutter/features/layout_form/screen/pages/create_page
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
 
 class ActionButtonRegular extends StatefulWidget {
+  final ActionD actionD;
+  final EntityCustom entity;
+  final List<Map<String, dynamic>> parentData;
+  final Map<String, dynamic> filters;
+  final VoidCallback onSuccess;
+  final bool? bypassPermission;
+
   const ActionButtonRegular({
     super.key,
     required this.actionD,
@@ -13,13 +20,8 @@ class ActionButtonRegular extends StatefulWidget {
     required this.parentData,
     required this.filters,
     required this.onSuccess,
+    this.bypassPermission,
   });
-
-  final ActionD actionD;
-  final EntityCustom entity;
-  final List<Map<String, dynamic>> parentData;
-  final Map<String, dynamic> filters;
-  final VoidCallback onSuccess;
 
   @override
   State<ActionButtonRegular> createState() => _ActionButtonRegularState();
@@ -174,9 +176,10 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
       iconColor: _parseColor(widget.actionD.iconColor),
       onPressed: _onPressed,
       status: _status,
-      permissions: widget.entity.bypassAllPermissions
-          ? null
-          : [widget.actionD.getPermission(widget.entity.id)],
+      permissions:
+          (widget.bypassPermission ?? widget.entity.bypassAllPermissions)
+              ? null
+              : [widget.actionD.getPermission(widget.entity.id)],
       iconOverride: _actionIcon(widget.actionD),
     );
   }

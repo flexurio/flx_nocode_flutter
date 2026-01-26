@@ -227,6 +227,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 entity: widget.entity,
                 parentData: widget.parentData,
                 filters: _filters.toMap(),
+                bypassPermission: widget.bypassPermission,
                 onSuccess: () => _fetch(),
               ))
           .toList(),

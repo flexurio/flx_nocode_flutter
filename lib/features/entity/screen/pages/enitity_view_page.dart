@@ -147,6 +147,7 @@ class EntityViewPage extends StatelessWidget {
       context: context,
       data: data,
       parentData: parentData,
+      bypassPermission: bypassPermission,
       onSuccessCallback: () => onRefresh(context),
     );
     final modifyActions = _buildEntityCustomActionsLarge(
