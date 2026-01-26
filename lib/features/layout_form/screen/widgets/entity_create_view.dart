@@ -65,15 +65,17 @@ class CreateForm extends StatelessWidget {
               // if we use Obx. However, for a quick refactor:
               WidgetsBinding.instance.addPostFrameCallback((_) async {
                 if (entityCtrl.state is Success) {
-                  await onSuccess(data);
-                  if (context.mounted) {
-                    Toast(context).dataChanged(controller.action, coreEntity);
-                    if (autoBackWhenSuccess) {
-                      Navigator.pop(context, true);
-                    } else {
-                      controller.clearForm();
-                    }
+                  if (autoBackWhenSuccess && context.mounted) {
+                    Navigator.pop(context, true);
                   }
+
+                  await onSuccess(data);
+
+                  if (!autoBackWhenSuccess && context.mounted) {
+                    Toast(context).dataChanged(controller.action, coreEntity);
+                    controller.clearForm();
+                  }
+
                   entityCtrl.reset();
                 }
               });
