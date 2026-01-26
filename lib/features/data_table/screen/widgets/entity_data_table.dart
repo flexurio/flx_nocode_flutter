@@ -1,6 +1,7 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_widget_extension.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_create_button_old.dart';
@@ -142,18 +143,30 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           entity: widget.entity,
           data: data,
           onTap: () async {
-            Navigator.push(
-              context,
-              EntityViewPage.route(
-                parentData: parentData,
-                embedded: true,
+            if (widget.entity.actionPrimary != null) {
+              await widget.entity.actionPrimary!.executeSingle(
                 entity: widget.entity,
+                context: context,
                 data: data,
-                filters: Map.fromEntries(
-                  _filters.map((e) => MapEntry(e.reference, e.value)).toList(),
+                parentData: parentData,
+                onSuccessCallback: () => _fetch(),
+              );
+            } else {
+              Navigator.push(
+                context,
+                EntityViewPage.route(
+                  parentData: parentData,
+                  embedded: true,
+                  entity: widget.entity,
+                  data: data,
+                  filters: Map.fromEntries(
+                    _filters
+                        .map((e) => MapEntry(e.reference, e.value))
+                        .toList(),
+                  ),
                 ),
-              ),
-            ).then((value) => _fetch());
+              ).then((value) => _fetch());
+            }
           },
         );
       },

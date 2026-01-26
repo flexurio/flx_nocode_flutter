@@ -52,6 +52,7 @@ class EntityCustom extends HiveObject {
   final List<ActionD> actions;
 
   final List<ActionD> actionsHome;
+  final ActionD? actionPrimary;
 
   /// Whether to bypass all permission checks for this entity.
   final bool bypassAllPermissions;
@@ -64,6 +65,7 @@ class EntityCustom extends HiveObject {
   EntityCustom({
     required this.actions,
     this.actionsHome = const [],
+    this.actionPrimary,
     required this.id,
     required this.label,
     required this.description,
@@ -129,6 +131,7 @@ class EntityCustom extends HiveObject {
           'actions_home',
           (raw, _) => ActionD.fromJson(raw),
         ),
+        actionPrimary: parser.parseActionD('action_primary'),
         paginationOption: parser.parsePaginationOption(),
         bypassAllPermissions: parser.parseBypassAllPermissions(),
       );
@@ -151,6 +154,7 @@ class EntityCustom extends HiveObject {
         layoutListTile = null,
         actions = [],
         actionsHome = [],
+        actionPrimary = null,
         layoutTable = {},
         exports = [],
         bypassAllPermissions = false;
@@ -170,12 +174,17 @@ class EntityCustom extends HiveObject {
     List<Export>? exports,
     List<ActionD>? actions,
     List<ActionD>? actionsHome,
+    ActionD? actionPrimary,
     bool? bypassAllPermissions,
+    bool clearActionPrimary = false,
+    bool clearLayoutListTile = false,
   }) {
     return EntityCustom(
       id: id ?? this.id,
       actions: actions ?? this.actions,
       actionsHome: actionsHome ?? this.actionsHome,
+      actionPrimary:
+          clearActionPrimary ? null : (actionPrimary ?? this.actionPrimary),
       label: label ?? this.label,
       description: description ?? this.description,
       fields: fields ?? this.fields,
@@ -183,7 +192,8 @@ class EntityCustom extends HiveObject {
       paginationOption: paginationOption ?? this.paginationOption,
       views: views ?? this.views,
       layoutForm: layoutForm ?? this.layoutForm,
-      layoutListTile: layoutListTile ?? this.layoutListTile,
+      layoutListTile:
+          clearLayoutListTile ? null : (layoutListTile ?? this.layoutListTile),
       layoutTable: layoutTable ?? this.layoutTable,
       exports: exports ?? this.exports,
       bypassAllPermissions: bypassAllPermissions ?? this.bypassAllPermissions,
@@ -273,6 +283,7 @@ class EntityCustom extends HiveObject {
       'layout_table': layoutTable,
       'actions': actions.map((e) => e.toJson()).toList(),
       'actions_home': actionsHome.map((e) => e.toJson()).toList(),
+      'action_primary': actionPrimary?.toJson(),
       'bypass_all_permissions': bypassAllPermissions,
     };
   }
@@ -500,5 +511,10 @@ class _EntityCustomJsonParser {
   bool parseBypassAllPermissions() {
     if (!json.containsKey('bypass_all_permissions')) return true;
     return json['bypass_all_permissions'] == true;
+  }
+
+  ActionD? parseActionD(String key) {
+    if (!json.containsKey(key) || json[key] == null) return null;
+    return ActionD.fromJson(json[key]);
   }
 }

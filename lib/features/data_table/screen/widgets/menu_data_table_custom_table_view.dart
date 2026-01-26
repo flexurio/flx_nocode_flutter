@@ -7,6 +7,8 @@ import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_display.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 
@@ -107,20 +109,30 @@ class MenuDataTableCustomTableView extends StatelessWidget {
             entity,
             field.reference,
             row[field.reference],
-            onTap: index != 0
+            onTap: index != 0 || entity.actionPrimary == null
                 ? null
                 : () async {
-                    await Navigator.push(
-                      context,
-                      EntityViewPage.route(
-                        parentData: parentData,
-                        embedded: embedded,
+                    if (entity.actionPrimary != null) {
+                      await entity.actionPrimary!.executeSingle(
                         entity: entity,
+                        context: context,
                         data: row,
-                        filters: filtersMap,
-                      ),
-                    );
-                    onRefresh();
+                        parentData: parentData,
+                        onSuccessCallback: () => onRefresh(),
+                      );
+                    } else {
+                      await Navigator.push(
+                        context,
+                        EntityViewPage.route(
+                          parentData: parentData,
+                          embedded: embedded,
+                          entity: entity,
+                          data: row,
+                          filters: filtersMap,
+                        ),
+                      );
+                      onRefresh();
+                    }
                   },
           ),
         ),

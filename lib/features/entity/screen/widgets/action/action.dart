@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
@@ -6,6 +7,8 @@ import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/export/screen/widgets/export_to_pdf.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/json_table_viewer.dart';
+import 'package:flx_nocode_flutter/features/layout_form/screen/pages/create_page.dart';
 
 typedef JsonList = List<Map<String, dynamic>>;
 
@@ -30,6 +33,138 @@ extension ActionLogicExtension on ActionD {
   }) =>
       executeHttpMultiple(entity, context, data,
           onSuccessCallback: onSuccessCallback);
+
+  Future<void> executeSingle({
+    required EntityCustom entity,
+    required BuildContext context,
+    required JsonMap data,
+    required JsonList parentData,
+    VoidCallback? onSuccessCallback,
+  }) async {
+    switch (type) {
+      case ActionType.listJsonViewAsTable:
+        if (reference == null) {
+          Toast(context).fail('No reference found');
+          return;
+        }
+        final dynamic rawData = data[reference];
+        dynamic jsonData;
+        if (rawData is String) {
+          try {
+            jsonData = jsonDecode(rawData);
+          } catch (e) {
+            jsonData = null;
+          }
+        } else {
+          jsonData = rawData;
+        }
+        if (jsonData == null) {
+          await showDialog(
+            context: context,
+            useRootNavigator: false,
+            builder: (ctx) => AlertDialog(
+              title: const Text('Error'),
+              content: const Text('JSON tidak valid atau data kosong.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+          return;
+        }
+        await showJsonAsTableDialog(context, jsonData);
+        break;
+
+      case ActionType.print:
+      case ActionType.http:
+        await showConfirmDialog(
+          context: context,
+          action: action,
+          label: name,
+          onConfirm: (ctx) => executeHttp(entity, ctx, data,
+              onSuccessCallback: onSuccessCallback),
+        );
+        break;
+
+      case ActionType.openPage:
+        if (layoutFormId == null) {
+          Toast(context).fail('No page found');
+          return;
+        }
+        await Navigator.push(
+          context,
+          CreatePage.route(
+            data: data,
+            entity: entity,
+            embedded: false,
+            layoutFormId: layoutFormId!,
+            onSuccess: () {
+              onSuccessCallback?.call();
+            },
+            filters: const <String, dynamic>{},
+            parentData: parentData,
+          ),
+        );
+        break;
+
+      case ActionType.showDialog:
+        if (layoutFormId == null) {
+          Toast(context).fail('No page found');
+          return;
+        }
+        await showDialog(
+          context: context,
+          useRootNavigator: false,
+          barrierDismissible: false,
+          builder: (ctx) {
+            return CreatePage.prepare(
+              popup: true,
+              embedded: true,
+              entity: entity,
+              layoutFormId: layoutFormId!,
+              parentData: parentData,
+              data: data,
+              filters: const {},
+              width: width,
+              onSuccess: () {
+                onSuccessCallback?.call();
+              },
+            );
+          },
+        );
+        break;
+
+      case ActionType.showConfirmationDialog:
+        await showConfirmDialog(
+          context: context,
+          action: action,
+          label: name,
+          confirmationMessageText: confirmMessage,
+          onConfirm: (ctx) async {
+            if (http != null) {
+              await executeHttp(entity, ctx, data,
+                  onSuccessCallback: onSuccessCallback);
+            } else {
+              handleOnSuccessSingle(
+                entity: entity,
+                context: context,
+                responseData: null,
+                data: data,
+                onSuccessCallback: onSuccessCallback,
+              );
+            }
+          },
+        );
+        break;
+
+      default:
+        Toast(context).fail('Unhandled ActionType: $type');
+        break;
+    }
+  }
 
   // ------------------------------------------------------
   //                SINGLE HTTP EXECUTION

@@ -46,13 +46,14 @@ class DView extends HiveObject {
     String? entity,
     Map<String, String>? filter,
     Rule? rule,
+    bool clearRule = false,
   }) {
     return DView(
       id: id ?? this.id,
       label: label ?? this.label,
       entity: entity ?? this.entity,
       filter: filter ?? this.filter,
-      rule: rule ?? this.rule,
+      rule: clearRule ? null : (rule ?? this.rule),
     );
   }
 
