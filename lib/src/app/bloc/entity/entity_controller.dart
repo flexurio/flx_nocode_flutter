@@ -219,7 +219,11 @@ class EntityController extends GetxController {
 
       if (result.isSuccess) {
         _logSuccess('WORKFLOW', 'Execution completed successfully');
-        _state.value = const EntityState.success({});
+        _state.value = EntityState.success(
+          result.data is Map<String, dynamic>
+              ? Map<String, dynamic>.from(result.data as Map)
+              : {},
+        );
       } else {
         _logError('WORKFLOW', result.error?.message ?? 'Workflow failed');
         _state.value =

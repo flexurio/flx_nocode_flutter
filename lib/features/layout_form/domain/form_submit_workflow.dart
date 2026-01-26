@@ -205,11 +205,12 @@ enum WorkflowRunStatus { success, stopped, failed }
 class WorkflowRunResult {
   final WorkflowRunStatus status;
   final WorkflowException? error;
+  final dynamic data;
 
-  const WorkflowRunResult._(this.status, [this.error]);
+  const WorkflowRunResult._(this.status, [this.error, this.data]);
 
-  factory WorkflowRunResult.success() =>
-      const WorkflowRunResult._(WorkflowRunStatus.success);
+  factory WorkflowRunResult.success([dynamic data]) =>
+      WorkflowRunResult._(WorkflowRunStatus.success, null, data);
 
   factory WorkflowRunResult.stopped() =>
       const WorkflowRunResult._(WorkflowRunStatus.stopped);
@@ -311,6 +312,7 @@ class WorkflowContext {
   final WorkflowValidator? validator;
 
   bool stopped = false;
+  dynamic lastData;
 
   WorkflowContext({
     required this.form,
@@ -745,6 +747,7 @@ class HttpAction implements WorkflowAction {
         if (!result.isSuccess) {
           throw Exception('HTTP $name failed with status ${result.status}');
         }
+        ctx.lastData = result.data;
         return;
       } catch (e) {
         print('[HttpAction] Attempt ${attempt + 1} failed: $e');
@@ -1150,7 +1153,7 @@ class WorkflowExecutor {
         print('[WorkflowExecutor] Executing onSuccess actions...');
         await _runActions(definition.onSuccess, ctx);
         print('[WorkflowExecutor] Run SUCCESS');
-        return WorkflowRunResult.success();
+        return WorkflowRunResult.success(ctx.lastData);
       }
 
       print('[WorkflowExecutor] Run STOPPED');

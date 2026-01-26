@@ -29,9 +29,16 @@ extension StringJsInterpolationExtension on String {
       for (final v in config.variables) v.key: v.value,
       if (variables != null) ...{
         ...variables,
-        if (!variables.containsKey('form')) 'form': variables,
-        if (!variables.containsKey('data')) 'data': variables,
-        if (!variables.containsKey('current')) 'current': variables,
+        if (!variables.containsKey('form'))
+          'form': variables['form'] ?? variables,
+        if (!variables.containsKey('record'))
+          'record': variables['record'] ?? variables['data'] ?? variables,
+        if (!variables.containsKey('vars')) 'vars': variables['vars'] ?? {},
+        if (!variables.containsKey('data'))
+          'data': variables['data'] ?? variables,
+        if (!variables.containsKey('current'))
+          'current': variables['current'] ?? variables['data'] ?? variables,
+        if (!variables.containsKey('http')) 'http': variables['http'] ?? {},
       },
     };
 

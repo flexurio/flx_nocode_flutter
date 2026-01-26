@@ -324,15 +324,21 @@ extension ActionLogicExtension on ActionD {
         break;
       case ActionType.showSuccessDialogWithData:
         final vars = <String, dynamic>{};
+        print('[ActionLogic] 💎 responseData: $responseData');
         if (responseData is Map<String, dynamic>) {
-          vars.addAll({'data': responseData});
+          vars.addAll(responseData);
         }
+        print('[ActionLogic] 💎 Interpolation vars: $vars');
 
         final titleText =
             (successTitle ?? 'Success').interpolateJavascript(vars);
         final messageText = (successMessage ?? '').interpolateJavascript(vars);
         final copyLabelText = (copyLabel ?? 'Copy').interpolateJavascript(vars);
         final copyValueText = (copyValue ?? '').interpolateJavascript(vars);
+
+        print('[ActionLogic] 💎 titleText: "$titleText"');
+        print('[ActionLogic] 💎 messageText: "$messageText"');
+        print('[ActionLogic] 💎 copyValueText: "$copyValueText"');
 
         await showDialog(
           context: context,
