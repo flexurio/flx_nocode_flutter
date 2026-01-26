@@ -179,10 +179,10 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
       iconColor: _parseColor(widget.actionD.iconColor),
       onPressed: _onPressed,
       status: _status,
-      permissions:
-          (widget.bypassPermission ?? widget.entity.bypassAllPermissions)
-              ? null
-              : [widget.actionD.getPermission(widget.entity.id)],
+      permissions: ((widget.bypassPermission ?? false) ||
+              widget.entity.bypassAllPermissions)
+          ? null
+          : [widget.actionD.getPermission(widget.entity.id)],
       iconOverride: _actionIcon(widget.actionD),
       expanded: widget.expanded,
     );

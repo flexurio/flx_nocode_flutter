@@ -39,7 +39,9 @@ class EntityDeleteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LightButton(
-      permission: bypassPermission ? null : '${entity.id}_delete',
+      permission: (bypassPermission || entity.bypassAllPermissions)
+          ? null
+          : '${entity.id}_delete',
       action: DataAction.delete,
       onPressed: () async {
         await _showConfirmationDialog(context);

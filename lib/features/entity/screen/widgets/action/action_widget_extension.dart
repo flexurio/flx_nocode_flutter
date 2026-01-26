@@ -128,7 +128,7 @@ extension ActionWidgetExtension on ActionD {
   }) {
     return LightButton(
       title: name,
-      permission: (bypassPermission ?? entity.bypassAllPermissions)
+      permission: ((bypassPermission ?? false) || entity.bypassAllPermissions)
           ? null
           : getPermission(entity.id),
       iconColor: _parseColor(iconColor),
@@ -156,7 +156,7 @@ extension ActionWidgetExtension on ActionD {
 
     return LightButton(
       title: name,
-      permission: (bypassPermission ?? entity.bypassAllPermissions)
+      permission: ((bypassPermission ?? false) || entity.bypassAllPermissions)
           ? null
           : getPermission(entity.id),
       action: actionType,
