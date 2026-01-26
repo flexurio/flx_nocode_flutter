@@ -17,7 +17,9 @@ enum ActionType {
   showErrorDialog('show_error_dialog', 'Show Error Dialog'),
   navigateBack('navigate_back', 'Navigate Back'),
   showConfirmationDialog(
-      'show_confirmation_dialog', 'Show Confirmation Dialog');
+      'show_confirmation_dialog', 'Show Confirmation Dialog'),
+  showSuccessDialogWithData(
+      'show_success_dialog_with_data', 'Show Success Dialog with Data');
 
   final String id;
   final String label;
@@ -76,6 +78,12 @@ class ActionD extends HiveObject {
   final String? iconColor;
   final String? permission;
 
+  // for success dialog with data
+  final String? successTitle;
+  final String? successMessage;
+  final String? copyLabel;
+  final String? copyValue;
+
   ActionD({
     required this.isMultiple,
     required this.onSuccess,
@@ -94,6 +102,10 @@ class ActionD extends HiveObject {
     this.confirmMessage,
     this.iconColor,
     this.permission,
+    this.successTitle,
+    this.successMessage,
+    this.copyLabel,
+    this.copyValue,
   });
 
   /// Creates a copy of this [ActionD] object with optional modifications.
@@ -115,6 +127,10 @@ class ActionD extends HiveObject {
     String? confirmMessage,
     String? iconColor,
     String? permission,
+    String? successTitle,
+    String? successMessage,
+    String? copyLabel,
+    String? copyValue,
   }) {
     return ActionD(
       width: width ?? this.width,
@@ -134,6 +150,10 @@ class ActionD extends HiveObject {
       confirmMessage: confirmMessage ?? this.confirmMessage,
       iconColor: iconColor ?? this.iconColor,
       permission: permission ?? this.permission,
+      successTitle: successTitle ?? this.successTitle,
+      successMessage: successMessage ?? this.successMessage,
+      copyLabel: copyLabel ?? this.copyLabel,
+      copyValue: copyValue ?? this.copyValue,
     );
   }
 
@@ -161,6 +181,10 @@ class ActionD extends HiveObject {
       confirmMessage: json['confirm_message'],
       iconColor: json['icon_color'],
       permission: json['permission'],
+      successTitle: json['success_title'],
+      successMessage: json['success_message'],
+      copyLabel: json['copy_label'],
+      copyValue: json['copy_value'],
     );
   }
 
@@ -184,6 +208,10 @@ class ActionD extends HiveObject {
       'confirm_message': confirmMessage,
       'icon_color': iconColor,
       'permission': permission,
+      'success_title': successTitle,
+      'success_message': successMessage,
+      'copy_label': copyLabel,
+      'copy_value': copyValue,
     };
   }
 

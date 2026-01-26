@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/entity_create_view.dart';
@@ -30,7 +31,7 @@ class CreatePage extends StatelessWidget {
   final Map<String, dynamic>? data;
   final List<Map<String, dynamic>> parentData;
   final EntityCustom entity;
-  final VoidCallback onSuccess;
+  final FutureOr<void> Function(Map<String, dynamic>? data) onSuccess;
   final Map<String, dynamic> filters;
   final bool embedded;
   final bool autoBackWhenSuccess;
@@ -49,7 +50,7 @@ class CreatePage extends StatelessWidget {
     required EntityCustom entity,
     required String layoutFormId,
     required List<Map<String, dynamic>> parentData,
-    required VoidCallback onSuccess,
+    required FutureOr<void> Function(Map<String, dynamic>? data) onSuccess,
     Configuration? configuration,
     bool popup = false,
     double? width,
@@ -83,7 +84,7 @@ class CreatePage extends StatelessWidget {
     required String layoutFormId,
     required EntityCustom entity,
     Map<String, dynamic>? data,
-    required VoidCallback onSuccess,
+    required FutureOr<void> Function(Map<String, dynamic>? data) onSuccess,
     required bool embedded,
     required Map<String, dynamic> filters,
     required List<Map<String, dynamic>> parentData,

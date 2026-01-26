@@ -24,7 +24,7 @@ class EntityCreatePageOld extends StatelessWidget {
   final Map<String, dynamic>? data;
   final List<Map<String, dynamic>> parentData;
   final EntityCustom entity;
-  final VoidCallback onSuccess;
+  final void Function(Map<String, dynamic>? data) onSuccess;
   final Map<String, dynamic> filters;
   final bool embedded;
   final bool autoBackWhenSuccess;
@@ -41,7 +41,7 @@ class EntityCreatePageOld extends StatelessWidget {
     required EntityCustom entity,
     required LayoutForm? layoutForm,
     required List<Map<String, dynamic>> parentData,
-    required VoidCallback onSuccess,
+    required void Function(Map<String, dynamic>? data) onSuccess,
   }) {
     if (layoutForm == null) {
       return NoCodeError(
@@ -75,7 +75,7 @@ class EntityCreatePageOld extends StatelessWidget {
     required LayoutForm layoutForm,
     required EntityCustom entity,
     Map<String, dynamic>? data,
-    required VoidCallback onSuccess,
+    required void Function(Map<String, dynamic>? data) onSuccess,
     required bool embedded,
     required Map<String, dynamic> filters,
     required List<Map<String, dynamic>> parentData,

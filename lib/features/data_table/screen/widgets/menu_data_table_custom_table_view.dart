@@ -8,7 +8,6 @@ import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field
 import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_display.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
-import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 

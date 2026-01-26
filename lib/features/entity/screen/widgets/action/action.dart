@@ -9,6 +9,7 @@ import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/json_table_viewer.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/pages/create_page.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
 typedef JsonList = List<Map<String, dynamic>>;
 
@@ -101,8 +102,15 @@ extension ActionLogicExtension on ActionD {
             entity: entity,
             embedded: false,
             layoutFormId: layoutFormId!,
-            onSuccess: () {
+            onSuccess: (responseData) async {
               onSuccessCallback?.call();
+              await handleOnSuccessSingle(
+                entity: entity,
+                context: context,
+                responseData: responseData,
+                data: data,
+                onSuccessCallback: onSuccessCallback,
+              );
             },
             filters: const <String, dynamic>{},
             parentData: parentData,
@@ -129,11 +137,28 @@ extension ActionLogicExtension on ActionD {
               data: data,
               filters: const {},
               width: width,
-              onSuccess: () {
+              onSuccess: (responseData) async {
                 onSuccessCallback?.call();
+                await handleOnSuccessSingle(
+                  entity: entity,
+                  context: context,
+                  responseData: responseData,
+                  data: data,
+                  onSuccessCallback: onSuccessCallback,
+                );
               },
             );
           },
+        );
+        break;
+
+      case ActionType.showSuccessDialogWithData:
+        await handleOnSuccessSingle(
+          entity: entity,
+          context: context,
+          responseData: null,
+          data: data,
+          onSuccessCallback: onSuccessCallback,
         );
         break;
 
@@ -148,7 +173,7 @@ extension ActionLogicExtension on ActionD {
               await executeHttp(entity, ctx, data,
                   onSuccessCallback: onSuccessCallback);
             } else {
-              handleOnSuccessSingle(
+              await handleOnSuccessSingle(
                 entity: entity,
                 context: context,
                 responseData: null,
@@ -188,7 +213,7 @@ extension ActionLogicExtension on ActionD {
 
       if (isSuccess) {
         Toast(context).success('Request success');
-        handleOnSuccessSingle(
+        await handleOnSuccessSingle(
           entity: entity,
           context: context,
           responseData: response.data,
@@ -236,7 +261,7 @@ extension ActionLogicExtension on ActionD {
 
       if (isSuccess) {
         Toast(context).success('Request success');
-        handleOnSuccessMultiple(
+        await handleOnSuccessMultiple(
           entity: entity,
           context: context,
           responseData: response.data,
@@ -262,13 +287,13 @@ extension ActionLogicExtension on ActionD {
   // ------------------------------------------------------
   //                   SUCCESS HANDLERS
   // ------------------------------------------------------
-  void handleOnSuccessSingle({
+  Future<void> handleOnSuccessSingle({
     required EntityCustom entity,
     required BuildContext context,
     required Object? responseData,
     required JsonMap data,
     VoidCallback? onSuccessCallback,
-  }) {
+  }) async {
     print('==============================');
     print('[ActionLogic] 🚀 handleOnSuccessSingle()');
     print('[ActionLogic] → Action ID: $id');
@@ -279,7 +304,7 @@ extension ActionLogicExtension on ActionD {
 
     switch (successType) {
       case ActionType.showDialog:
-        showDialog(
+        await showDialog(
           context: context,
           useRootNavigator: false,
           builder: (_) => AlertDialog(
@@ -297,9 +322,48 @@ extension ActionLogicExtension on ActionD {
       case ActionType.toast:
         Toast(context).success('Request success');
         break;
+      case ActionType.showSuccessDialogWithData:
+        final vars = <String, dynamic>{};
+        if (responseData is Map<String, dynamic>) {
+          vars.addAll({'data': responseData});
+        }
+
+        final titleText =
+            (successTitle ?? 'Success').interpolateJavascript(vars);
+        final messageText = (successMessage ?? '').interpolateJavascript(vars);
+        final copyLabelText = (copyLabel ?? 'Copy').interpolateJavascript(vars);
+        final copyValueText = (copyValue ?? '').interpolateJavascript(vars);
+
+        await showDialog(
+          context: context,
+          useRootNavigator: false,
+          builder: (_) => CardSuccessWithData(
+            title: titleText,
+            message: messageText,
+            copyLabel: copyLabelText,
+            copyValue: copyValueText,
+          ),
+        );
+        break;
       case ActionType.refresh:
         print('[ActionLogic] 🔃 Executing onSuccess refresh');
         onSuccessCallback?.call();
+        break;
+      case ActionType.navigateBack:
+        print('[ActionLogic] 🔙 Executing onSuccess navigateBack');
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        } else {
+          Toast(context).notify('Cannot navigate back');
+        }
+        break;
+      case ActionType.navigateHome:
+        print('[ActionLogic] 🏠 Executing onSuccess navigateHome');
+        // Assuming a standard way to go home or using GetX if available
+        // For now, pop until we can't pop anymore or pop once if it's a dialog
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        }
         break;
       default:
         print('[ActionLogic] → No standard ActionType matched for onSuccess');
@@ -337,15 +401,15 @@ extension ActionLogicExtension on ActionD {
     print('==============================');
   }
 
-  void handleOnSuccessMultiple({
+  Future<void> handleOnSuccessMultiple({
     required EntityCustom entity,
     required BuildContext context,
     required Object? responseData,
     required JsonList data,
     VoidCallback? onSuccessCallback,
-  }) {
+  }) async {
     if (data.isNotEmpty) {
-      handleOnSuccessSingle(
+      await handleOnSuccessSingle(
         entity: entity,
         context: context,
         responseData: responseData,
@@ -435,9 +499,18 @@ extension ActionLogicExtension on ActionD {
               setState(() => isProgress = true);
               try {
                 await onConfirm(ctx);
-                Navigator.of(ctx).pop();
+                if (ctx.mounted) {
+                  final route = ModalRoute.of(ctx);
+                  if (route != null) {
+                    if (route.isCurrent) {
+                      Navigator.of(ctx).pop();
+                    } else {
+                      Navigator.of(ctx).removeRoute(route);
+                    }
+                  }
+                }
               } finally {
-                if (Navigator.of(ctx).canPop()) {
+                if (ctx.mounted) {
                   setState(() => isProgress = false);
                 }
               }

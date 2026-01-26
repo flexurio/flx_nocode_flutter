@@ -51,8 +51,15 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
                 parentData: widget.parentData,
                 filters: widget.filters,
                 width: action.width,
-                onSuccess: () {
+                onSuccess: (responseData) async {
                   widget.onSuccess();
+                  await action.handleOnSuccessSingle(
+                    entity: widget.entity,
+                    context: context,
+                    responseData: responseData,
+                    data: widget.filters,
+                    onSuccessCallback: widget.onSuccess,
+                  );
                 },
               );
             },
@@ -68,6 +75,16 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
               onSuccessCallback: widget.onSuccess);
           break;
 
+        case ActionType.showSuccessDialogWithData:
+          await action.handleOnSuccessSingle(
+            entity: widget.entity,
+            context: context,
+            responseData: null,
+            data: widget.filters,
+            onSuccessCallback: widget.onSuccess,
+          );
+          break;
+
         case ActionType.showConfirmationDialog:
           await action.showConfirmDialog(
             context: context,
@@ -79,7 +96,7 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
                 await action.executeHttp(widget.entity, ctx, widget.filters,
                     onSuccessCallback: widget.onSuccess);
               } else {
-                action.handleOnSuccessSingle(
+                await action.handleOnSuccessSingle(
                   entity: widget.entity,
                   context: context,
                   responseData: null,
@@ -97,7 +114,16 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
             context,
             CreatePage.route(
               entity: widget.entity,
-              onSuccess: widget.onSuccess,
+              onSuccess: (responseData) async {
+                widget.onSuccess();
+                await action.handleOnSuccessSingle(
+                  entity: widget.entity,
+                  context: context,
+                  responseData: responseData,
+                  data: widget.filters,
+                  onSuccessCallback: widget.onSuccess,
+                );
+              },
               embedded: false,
               parentData: widget.parentData,
               filters: widget.filters,

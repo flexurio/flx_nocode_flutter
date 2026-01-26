@@ -40,7 +40,7 @@ class EntityCreateButtonOld extends StatelessWidget {
             parentData: parentData,
             layoutForm: layoutForm!,
             entity: entity,
-            onSuccess: onSuccess,
+            onSuccess: (_) => onSuccess(),
             embedded: embedded,
             filters: filters,
           ),

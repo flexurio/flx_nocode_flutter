@@ -195,7 +195,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
               EntityCreatePageOld.route(
                 layoutForm: action,
                 entity: widget.entity,
-                onSuccess: () => _fetch(),
+                onSuccess: (_) => _fetch(),
                 embedded: false,
                 parentData: widget.parentData,
                 filters: _filters.toMap(),

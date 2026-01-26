@@ -30,7 +30,7 @@ class EntityCreateView extends StatefulWidget {
   final Map<String, dynamic>? data;
   final List<Map<String, dynamic>> parentData;
   final EntityCustom entity;
-  final VoidCallback onSuccess;
+  final void Function(Map<String, dynamic>? data) onSuccess;
   final Map<String, dynamic> filters;
   final bool embedded;
   final bool autoBackWhenSuccess;
@@ -90,10 +90,10 @@ class _EntityCreateViewState extends State<EntityCreateView> {
     return Obx(() {
       final state = controller.state;
       state.maybeWhen(
-        success: (_) {
+        success: (data) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (controller.state is Success) {
-              widget.onSuccess();
+              widget.onSuccess(data);
               Toast(context).dataChanged(_action, coreEntity);
               if (widget.autoBackWhenSuccess) Navigator.pop(context, true);
               controller.reset();

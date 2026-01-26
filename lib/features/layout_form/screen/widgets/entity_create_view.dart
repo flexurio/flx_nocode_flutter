@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 
@@ -33,7 +34,7 @@ class CreateForm extends StatelessWidget {
   final Map<String, dynamic>? data;
   final List<Map<String, dynamic>> parentData;
   final EntityCustom entity;
-  final VoidCallback onSuccess;
+  final FutureOr<void> Function(Map<String, dynamic>? data) onSuccess;
   final Map<String, dynamic> filters;
   final bool embedded;
   final bool autoBackWhenSuccess;
@@ -58,18 +59,20 @@ class CreateForm extends StatelessWidget {
         return Obx(() {
           final state = entityCtrl.state;
           state.maybeWhen(
-            success: (_) {
+            success: (data) {
               // Note: We need to ensure this only runs once per success.
               // In Bloc, listener handles this. In GetX, we might need a more robust way
               // if we use Obx. However, for a quick refactor:
-              WidgetsBinding.instance.addPostFrameCallback((_) {
+              WidgetsBinding.instance.addPostFrameCallback((_) async {
                 if (entityCtrl.state is Success) {
-                  onSuccess();
-                  Toast(context).dataChanged(controller.action, coreEntity);
-                  if (autoBackWhenSuccess) {
-                    Navigator.pop(context, true);
-                  } else {
-                    controller.clearForm();
+                  await onSuccess(data);
+                  if (context.mounted) {
+                    Toast(context).dataChanged(controller.action, coreEntity);
+                    if (autoBackWhenSuccess) {
+                      Navigator.pop(context, true);
+                    } else {
+                      controller.clearForm();
+                    }
                   }
                   entityCtrl.reset();
                 }

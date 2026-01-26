@@ -70,7 +70,7 @@ Future<void> main() async {
             embedded: true,
             noHeader: true,
             filters: {},
-            onSuccess: onSuccess,
+            onSuccess: (_) => onSuccess(),
             autoBackWhenSuccess: false,
           );
         };

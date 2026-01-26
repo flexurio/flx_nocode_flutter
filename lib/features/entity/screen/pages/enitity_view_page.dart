@@ -240,7 +240,7 @@ class EntityViewPage extends StatelessWidget {
                   entity: entity,
                   data: data,
                   filters: filters,
-                  onSuccess: () => onRefresh(context),
+                  onSuccess: (_) => onRefresh(context),
                 ),
               );
             },
