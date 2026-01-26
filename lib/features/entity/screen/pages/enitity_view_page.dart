@@ -148,6 +148,7 @@ class EntityViewPage extends StatelessWidget {
       data: data,
       parentData: parentData,
       bypassPermission: bypassPermission,
+      expanded: true,
       onSuccessCallback: () => onRefresh(context),
     );
     final modifyActions = _buildEntityCustomActionsLarge(
@@ -167,6 +168,7 @@ class EntityViewPage extends StatelessWidget {
         data,
         parentData,
         bypassPermission,
+        expanded: true,
       ),
       ...modifyActions,
     ];
@@ -182,7 +184,7 @@ class EntityViewPage extends StatelessWidget {
     required List<Map<String, dynamic>> parentData,
   }) {
     return [
-      ...entity.exports.buildSingleButtons(data),
+      ...entity.exports.buildSingleButtons(data, expanded: true),
       // if (entity.allowUpdate)
       //   ...entity.layoutForm.updateForms.map(
       //     (e) => LightButton(
@@ -211,6 +213,7 @@ class EntityViewPage extends StatelessWidget {
           entity: entity,
           data: data,
           onSuccess: () => onRefresh(context),
+          expanded: true,
         ),
     ];
   }

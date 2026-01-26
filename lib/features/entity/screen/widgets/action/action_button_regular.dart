@@ -21,7 +21,10 @@ class ActionButtonRegular extends StatefulWidget {
     required this.filters,
     required this.onSuccess,
     this.bypassPermission,
+    this.expanded = false,
   });
+
+  final bool expanded;
 
   @override
   State<ActionButtonRegular> createState() => _ActionButtonRegularState();
@@ -181,6 +184,7 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
               ? null
               : [widget.actionD.getPermission(widget.entity.id)],
       iconOverride: _actionIcon(widget.actionD),
+      expanded: widget.expanded,
     );
   }
 }

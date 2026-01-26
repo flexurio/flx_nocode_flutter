@@ -10,6 +10,7 @@ class EntityDeleteButton extends StatelessWidget {
     required this.data,
     required this.onSuccess,
     required this.bypassPermission,
+    this.expanded = false,
   });
 
   final Map<String, dynamic> data;
@@ -21,16 +22,19 @@ class EntityDeleteButton extends StatelessWidget {
     required Map<String, dynamic> data,
     required VoidCallback onSuccess,
     required bool bypassPermission,
+    bool expanded = false,
   }) {
     return EntityDeleteButton._(
       entity: entity,
       data: data,
       onSuccess: onSuccess,
       bypassPermission: bypassPermission,
+      expanded: expanded,
     );
   }
 
   final EntityCustom entity;
+  final bool expanded;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +44,7 @@ class EntityDeleteButton extends StatelessWidget {
       onPressed: () async {
         await _showConfirmationDialog(context);
       },
+      expanded: expanded,
     );
   }
 

@@ -8,8 +8,9 @@ extension DViewWidget on DView {
     BuildContext context,
     Map<String, dynamic> data,
     List<Map<String, dynamic>> parentData,
-    bool bypassPermission,
-  ) {
+    bool bypassPermission, {
+    bool expanded = false,
+  }) {
     return FutureBuilder<EntityCustom?>(
       future: EntityCustom.getEntity(entity),
       builder: (context, snapshot) {
@@ -51,6 +52,8 @@ extension DViewWidget on DView {
               ),
             );
           },
+          iconOverride: Icons.visibility,
+          expanded: expanded,
         );
       },
     );
@@ -59,7 +62,8 @@ extension DViewWidget on DView {
 
 extension ListDViewWidget on List<DView> {
   List<Widget> buildButtons(BuildContext context, Map<String, dynamic> data,
-      List<Map<String, dynamic>> parentData, bool bypassPermission) {
+      List<Map<String, dynamic>> parentData, bool bypassPermission,
+      {bool expanded = false}) {
     print('\n======================================================');
     print('[View] buildButtons | Total items: ${this.length}');
 
@@ -89,6 +93,7 @@ extension ListDViewWidget on List<DView> {
             data,
             parentData,
             bypassPermission,
+            expanded: expanded,
           ),
         )
         .toList();

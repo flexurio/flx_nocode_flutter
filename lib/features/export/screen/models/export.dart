@@ -130,7 +130,8 @@ extension ExportList on List<Export> {
   /// Filters the list to find exports that are of `typeMode` 'single' and
   /// have a valid template, then creates a button for each to trigger the
   /// PDF export action for the given [data] record.
-  List<Widget> buildSingleButtons(Map<String, dynamic> data) {
+  List<Widget> buildSingleButtons(Map<String, dynamic> data,
+      {bool expanded = false}) {
     final buttons = <Widget>[];
     for (final e in this) {
       if (!e.visibility || !e.isSingle || e.template == null) continue;
@@ -147,6 +148,7 @@ extension ExportList on List<Export> {
           );
         },
         permission: null,
+        expanded: expanded,
       );
       buttons.add(button);
     }

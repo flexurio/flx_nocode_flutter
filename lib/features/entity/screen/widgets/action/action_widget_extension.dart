@@ -18,6 +18,7 @@ extension ActionListWidgetExtension on List<ActionD> {
     required JsonMap data,
     required JsonList parentData,
     bool? bypassPermission,
+    bool expanded = false,
     VoidCallback? onSuccessCallback,
   }) {
     return where((action) => action.isVisibleFor(data))
@@ -27,6 +28,7 @@ extension ActionListWidgetExtension on List<ActionD> {
               data,
               parentData,
               bypassPermission: bypassPermission,
+              expanded: expanded,
               onSuccessCallback: onSuccessCallback,
             ))
         .toList();
@@ -75,6 +77,7 @@ extension ActionWidgetExtension on ActionD {
     required JsonList parentData,
     required JsonMap filters,
     bool? bypassPermission,
+    bool expanded = false,
     required VoidCallback onSuccess,
   }) {
     return ActionButtonRegular(
@@ -84,6 +87,7 @@ extension ActionWidgetExtension on ActionD {
       filters: filters,
       onSuccess: onSuccess,
       bypassPermission: bypassPermission,
+      expanded: expanded,
     );
   }
 
@@ -119,6 +123,7 @@ extension ActionWidgetExtension on ActionD {
     JsonMap data,
     JsonList parentData, {
     bool? bypassPermission,
+    bool expanded = false,
     VoidCallback? onSuccessCallback,
   }) {
     return LightButton(
@@ -135,6 +140,7 @@ extension ActionWidgetExtension on ActionD {
         onSuccessCallback: onSuccessCallback,
       ),
       iconOverride: actionIcon(this),
+      expanded: expanded,
     );
   }
 
@@ -144,6 +150,7 @@ extension ActionWidgetExtension on ActionD {
     JsonList data,
     JsonList parentData, {
     bool? bypassPermission,
+    bool expanded = false,
   }) {
     const actionType = DataAction.print;
 
@@ -169,6 +176,7 @@ extension ActionWidgetExtension on ActionD {
         );
       },
       iconOverride: actionIcon(this),
+      expanded: expanded,
     );
   }
 }
