@@ -45,11 +45,15 @@ class ComponentRow extends Component {
   /// - stretch
   final String yAlign;
 
+  /// Horizontal gap between children.
+  final double horizontalGap;
+
   ComponentRow({
     required super.id,
     this.children = const [],
     this.xAlign = 'left',
     this.yAlign = 'top',
+    this.horizontalGap = 12.0,
   }) : super(type: 'row');
 
   /// Creates an empty [ComponentRow] with default values.
@@ -59,6 +63,7 @@ class ComponentRow extends Component {
       children: const [],
       xAlign: 'left',
       yAlign: 'top',
+      horizontalGap: 12.0,
     );
   }
 
@@ -86,6 +91,8 @@ class ComponentRow extends Component {
       children: parsedChildren,
       xAlign: map['x_align']?.toString().trim() ?? 'left',
       yAlign: map['y_align']?.toString().trim() ?? 'top',
+      horizontalGap:
+          double.tryParse(map['horizontal_gap']?.toString() ?? '') ?? 12.0,
     );
   }
 
@@ -95,6 +102,7 @@ class ComponentRow extends Component {
         'type': type,
         'x_align': xAlign,
         'y_align': yAlign,
+        'horizontal_gap': horizontalGap,
         'children': children.map((e) => e.toMap()).toList(growable: false),
       };
 }

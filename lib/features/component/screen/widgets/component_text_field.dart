@@ -14,6 +14,7 @@ extension ComponentTextFieldWidgets on ComponentTextField {
       maxLength: maxLength,
       maxLines: maxLines,
       labelText: label,
+      helperText: helperText,
       enabled: enabled,
       validator: (value) {
         final actualValue = controller?.text ?? value;
