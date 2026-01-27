@@ -11,6 +11,9 @@ import 'package:flx_nocode_flutter/features/component/models/component_text_fiel
 import 'package:flx_nocode_flutter/features/component/models/component_button.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_container.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_number_field.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_switch.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_image.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_divider.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
@@ -67,6 +70,12 @@ class Component {
         return ComponentNumberField.fromMap(map);
       case ComponentType.container:
         return ComponentContainer.fromMap(map);
+      case ComponentType.switchType:
+        return ComponentSwitch.fromMap(map);
+      case ComponentType.image:
+        return ComponentImage.fromMap(map);
+      case ComponentType.divider:
+        return ComponentDivider.fromMap(map);
       default:
         throw FormatException('Unknown component type "$type"');
     }
@@ -109,6 +118,12 @@ class Component {
         return ComponentNumberField.empty(Component._generateId(type));
       case ComponentType.container:
         return ComponentContainer.empty(Component._generateId(type));
+      case ComponentType.switchType:
+        return ComponentSwitch.empty(Component._generateId(type));
+      case ComponentType.image:
+        return ComponentImage.empty(Component._generateId(type));
+      case ComponentType.divider:
+        return ComponentDivider.empty(Component._generateId(type));
       default:
         throw FormatException('Unknown component type "$type"');
     }
@@ -214,6 +229,9 @@ class ComponentType {
   static const String fieldDisplay = 'field_display';
   static const String numberField = 'number_field';
   static const String container = 'container';
+  static const String switchType = 'switch';
+  static const String image = 'image';
+  static const String divider = 'divider';
 
   static const List<ComponentTypeEntry> values = [
     ComponentTypeEntry(id: table, label: 'Table'),
@@ -229,6 +247,9 @@ class ComponentType {
     ComponentTypeEntry(id: fieldDisplay, label: 'Field Display'),
     ComponentTypeEntry(id: numberField, label: 'Number Field'),
     ComponentTypeEntry(id: container, label: 'Container'),
+    ComponentTypeEntry(id: switchType, label: 'Switch'),
+    ComponentTypeEntry(id: image, label: 'Image'),
+    ComponentTypeEntry(id: divider, label: 'Divider'),
   ];
 
   static String labelOf(String type) => values

@@ -12,6 +12,10 @@ import 'package:flx_nocode_flutter/features/component/models/component_text_fiel
 import 'package:flx_nocode_flutter/features/component/models/component_button.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_number_field.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_text.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_container.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_switch.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_image.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_divider.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/c_column.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/c_row.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_date_picker.dart';
@@ -24,6 +28,10 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_t
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_text.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_number_field.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_button.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_container.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_switch.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_image.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_divider.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 
@@ -53,6 +61,14 @@ extension ComponentWidget on Component {
       return (this as ComponentButton).toWidget(data);
     } else if (this.type == ComponentNumberField.componentId) {
       return (this as ComponentNumberField).toWidget(data);
+    } else if (this.type == ComponentContainer.componentId) {
+      return (this as ComponentContainer).toWidget(data);
+    } else if (this.type == ComponentSwitch.componentId) {
+      return (this as ComponentSwitch).toWidget(data);
+    } else if (this.type == ComponentImage.componentId) {
+      return (this as ComponentImage).toWidget(data);
+    } else if (this.type == ComponentDivider.componentId) {
+      return (this as ComponentDivider).toWidget(data);
     }
     return NoCodeError('Unknown component type: ${this.type}');
   }
