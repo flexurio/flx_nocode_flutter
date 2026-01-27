@@ -10,6 +10,7 @@ class ComponentTextField extends Component {
   final bool enabled;
   final bool required;
   final String? regex;
+  final String? regexErrorMessage;
   final String? helperText;
 
   ComponentTextField({
@@ -22,6 +23,7 @@ class ComponentTextField extends Component {
     required this.enabled,
     this.required = false,
     this.regex,
+    this.regexErrorMessage,
     this.helperText,
     super.visibilityCondition,
     super.events,
@@ -40,6 +42,7 @@ class ComponentTextField extends Component {
       enabled: true,
       required: false,
       regex: null,
+      regexErrorMessage: null,
       helperText: null,
     );
   }
@@ -65,6 +68,7 @@ class ComponentTextField extends Component {
     }();
     final required = map['required'] == true;
     final regex = map['regex']?.toString();
+    final regexErrorMessage = map['regexErrorMessage']?.toString();
     final helperText = map['helperText']?.toString();
     final visibilityCondition = map['visibilityCondition']?.toString();
     final events = map['events'] as Map<String, dynamic>? ?? {};
@@ -79,6 +83,7 @@ class ComponentTextField extends Component {
       enabled: enabled,
       required: required,
       regex: regex,
+      regexErrorMessage: regexErrorMessage,
       helperText: helperText,
       visibilityCondition: visibilityCondition,
       events: events,
@@ -97,6 +102,7 @@ class ComponentTextField extends Component {
         'enabled': enabled,
         'required': required,
         if (regex != null) 'regex': regex,
+        if (regexErrorMessage != null) 'regexErrorMessage': regexErrorMessage,
         if (helperText != null) 'helperText': helperText,
         if (visibilityCondition != null)
           'visibilityCondition': visibilityCondition,

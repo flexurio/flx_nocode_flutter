@@ -27,7 +27,7 @@ extension ComponentTextFieldWidgets on ComponentTextField {
             actualValue != null &&
             actualValue.isNotEmpty &&
             !RegExp(regex!).hasMatch(actualValue)) {
-          return 'Invalid format';
+          return regexErrorMessage ?? 'Invalid format';
         }
         return null;
       },
