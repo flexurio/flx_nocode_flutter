@@ -106,7 +106,12 @@ class ActionD extends HiveObject {
     this.successMessage,
     this.copyLabel,
     this.copyValue,
-  });
+  }) {
+    if (type == ActionType.openPage || type == ActionType.showDialog) {
+      assert(layoutFormId != null && layoutFormId!.isNotEmpty,
+          'Action "$id" of type "${type.id}" requires a non-empty layoutFormId.');
+    }
+  }
 
   /// Creates a copy of this [ActionD] object with optional modifications.
   ActionD copyWith({
@@ -159,16 +164,26 @@ class ActionD extends HiveObject {
 
   /// Factory constructor for parsing from a JSON map.
   factory ActionD.fromJson(Map<String, dynamic> json) {
+    final type = ActionType.fromId(json['type']);
+    final layoutFormId = json['layout_form_id'];
+
+    if (type == ActionType.openPage || type == ActionType.showDialog) {
+      if (layoutFormId == null || layoutFormId.toString().isEmpty) {
+        throw FormatException(
+            'Action "${json['id'] ?? 'unknown'}" (type: "${type.id}") requires "layout_form_id"');
+      }
+    }
+
     return ActionD(
       isMultiple: json['is_multiple'] ?? false,
       id: json['id'] ?? '',
-      type: ActionType.fromId(json['type']),
+      type: type,
       name: json['name'] ?? '',
       http: json['http'] != null ? HttpData.fromJson(json['http']) : null,
       onSuccess: json['on_success'] ?? 'toast',
       onFailure: json['on_failure'] ?? 'toast',
       reference: json['reference'],
-      layoutFormId: json['layout_form_id'],
+      layoutFormId: layoutFormId,
       icon: json['icon'],
       iconCode: json['icon_code'],
       rule: json['rule'] == null

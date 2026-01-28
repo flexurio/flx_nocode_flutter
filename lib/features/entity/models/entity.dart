@@ -14,7 +14,7 @@ import 'package:flx_nocode_flutter/src/app/util/resource_loader.dart';
 
 /// Represents a dynamically configured entity.
 ///
-/// An `EntityCustom` object defines the structure, behavior, and layout
+/// An [EntityCustom] object defines the structure, behavior, and layout
 /// of a data model, typically loaded from a JSON configuration file. It includes
 /// everything from data fields and backend endpoints to UI layouts for forms and lists.
 class EntityCustom extends HiveObject {
@@ -49,16 +49,21 @@ class EntityCustom extends HiveObject {
   final LayoutListTile? layoutListTile;
 
   /// A list of custom [ActionD] definitions that can be performed on the entity.
+  /// This typically includes list-level or row-level actions.
   final List<ActionD> actions;
 
+  /// A list of custom [ActionD] definitions displayed on the home or dashboard view.
   final List<ActionD> actionsHome;
+
+  /// The primary action for this entity, often used in floating action buttons or prominent UI locations.
   final ActionD? actionPrimary;
 
   /// Whether to bypass all permission checks for this entity.
+  /// If true, the system will not check for specific user permissions before executing actions.
   final bool bypassAllPermissions;
 
   /// A map defining the layout of columns in a data table view.
-  /// The key is the field reference, and the value is typically a flex factor.
+  /// The key is the field reference, and the value is typically a flex factor or column width.
   Map<String, int> layoutTable;
 
   /// Creates a new instance of [EntityCustom].
@@ -80,15 +85,15 @@ class EntityCustom extends HiveObject {
     this.bypassAllPermissions = false,
   });
 
+  /// The base path for entity assets (e.g., 'asset').
   static String assetBasePath = 'asset';
+
+  /// The base directory path for entity files in the file system (e.g., '.').
   static String fileSystemBasePath = '.';
+
+  /// Whether to prefer the file system over assets when loading entity configurations.
   static bool preferFileSystem = false;
 
-  /// Creates an [EntityCustom] instance from a JSON map.
-  ///
-  /// This factory parses a [Map<String, dynamic>] (typically from a JSON file)
-  /// and constructs an [EntityCustom] object, validating required keys and
-  /// handling nested object parsing.
   /// Creates an [EntityCustom] instance from a JSON map.
   ///
   /// This factory parses a [Map<String, dynamic>] (typically from a JSON file)
@@ -142,6 +147,8 @@ class EntityCustom extends HiveObject {
   }
 
   /// Creates an empty, uninitialized [EntityCustom] instance.
+  ///
+  /// Useful as a default value or for UI states where no entity is selected.
   EntityCustom.empty()
       : id = '',
         label = '',
@@ -160,6 +167,9 @@ class EntityCustom extends HiveObject {
         bypassAllPermissions = false;
 
   /// Creates a copy of this [EntityCustom] instance with the given fields replaced.
+  ///
+  /// [clearActionPrimary] if set to true will force [actionPrimary] to be null.
+  /// [clearLayoutListTile] if set to true will force [layoutListTile] to be null.
   EntityCustom copyWith({
     String? id,
     String? label,
@@ -212,6 +222,10 @@ class EntityCustom extends HiveObject {
   }
 
   /// Retrieves all available permissions for a given entity ID.
+  ///
+  /// [id] is the entity identifier.
+  /// [useFileSystem] if true, attempts to load the entity from the local file system.
+  /// [basePath] optionally overrides the default loading path.
   static Future<List<String>> getPermissions(
     String id, {
     bool useFileSystem = false,
@@ -227,7 +241,9 @@ class EntityCustom extends HiveObject {
 
   /// Loads and parses an entity definition from a JSON asset file.
   ///
-  /// The [id] corresponds to the filename (e.g., 'my_entity.json').
+  /// [id] corresponds to the filename (e.g., 'my_entity').
+  /// [useFileSystem] if true, attempts to load the entity from the local file system.
+  /// [basePath] optionally overrides the default loading path.
   /// Returns `null` if the asset cannot be found or parsed.
   static Future<EntityCustom?> getEntity(
     String id, {
@@ -263,6 +279,8 @@ class EntityCustom extends HiveObject {
   }
 
   /// Reorders the [layoutTable] map based on old and new indices.
+  ///
+  /// This is used for UI components that allow drag-and-drop reordering of table columns.
   void layoutTableReorder(oldIndex, newIndex) {
     layoutTable = reorderMap(layoutTable, oldIndex, newIndex);
   }
@@ -320,6 +338,12 @@ class EntityCustom extends HiveObject {
   }
 
   /// Builds a list of [ActionButtonItem] widgets for the entity's custom views.
+  ///
+  /// [context] is the build context.
+  /// [data] is the entity instance data.
+  /// [entity] is the current entity configuration.
+  /// [embedded] indicates if the view is embedded within another component.
+  /// [parentData] provides context from parent entities if applicable.
   List<ActionButtonItem> buttonViews(
     BuildContext context,
     Map<String, dynamic> data,
@@ -368,6 +392,10 @@ extension EntitiesExtenstion on List<EntityCustom> {
 
 /// A utility function to reorder a map's entries.
 ///
+/// [map] is the map to reorder.
+/// [oldIndex] is the current index of the entry to move.
+/// [newIndex] is the target index for the entry.
+///
 /// Creates a new map with the entry at [oldIndex] moved to [newIndex].
 Map<K, V> reorderMap<K, V>(
   Map<K, V> map,
@@ -396,6 +424,8 @@ class _EntityCustomJsonParser {
   _EntityCustomJsonParser(this.json);
 
   /// Validates that [key] exists and is of type [T].
+  ///
+  /// Throws a [FormatException] if the key is missing or the type is incorrect.
   T requireKey<T>(String key) {
     if (!json.containsKey(key) || json[key] == null) {
       throw FormatException("Missing key: '$key' (expected $T).");
@@ -410,6 +440,11 @@ class _EntityCustomJsonParser {
   }
 
   /// Parses a required list of items using the provided [mapItem] function.
+  ///
+  /// [key] is the JSON key containing the list.
+  /// [mapItem] is a callback to convert each list element to type [T].
+  ///
+  /// Throws a [FormatException] if the list is missing or if mapping fails.
   List<T> parseListRequired<T>(
     String key,
     T Function(dynamic raw, int index) mapItem,
@@ -425,6 +460,11 @@ class _EntityCustomJsonParser {
   }
 
   /// Parses an optional list of items, returning an empty list if the key is missing.
+  ///
+  /// [key] is the JSON key containing the list.
+  /// [mapItem] is a callback to convert each list element to type [T].
+  ///
+  /// Throws a [FormatException] if the key exists but is not a list, or if mapping fails.
   List<T> parseListOptional<T>(
     String key,
     T Function(dynamic raw, int index) mapItem,
@@ -448,6 +488,9 @@ class _EntityCustomJsonParser {
   }
 
   /// Specialized parser for the layout table flex map.
+  ///
+  /// [key] is the JSON key (usually 'layout_table').
+  /// Expects a map of field references to numerical values (flex).
   Map<String, int> parseLayoutTable(String key) {
     if (!json.containsKey(key) || json[key] == null) return <String, int>{};
     final raw = json[key];
@@ -468,7 +511,9 @@ class _EntityCustomJsonParser {
     });
   }
 
-  /// Extracts and validates the entity ID.
+  /// Extracts and validates the entity ID from JSON.
+  ///
+  /// Throws [FormatException] if 'id' is missing or not a String.
   String parseId() {
     final v = json['id'];
     if (v is! String) {
@@ -478,7 +523,10 @@ class _EntityCustomJsonParser {
     return v;
   }
 
-  /// Parses the layout list tile configuration if present.
+  /// Parses the [LayoutListTile] configuration from JSON if present.
+  ///
+  /// Returns `null` if the key 'layout_list_tile' is missing.
+  /// Throws [FormatException] if the value is not a Map.
   LayoutListTile? parseLayoutListTile() {
     if (!json.containsKey('layout_list_tile') ||
         json['layout_list_tile'] == null) {
@@ -492,7 +540,10 @@ class _EntityCustomJsonParser {
     return LayoutListTile.fromJson(raw);
   }
 
-  /// Parses pagination options with sensible defaults.
+  /// Parses the [PaginationOption] from JSON or returns defaults.
+  ///
+  /// If 'pagination_option' is missing, returns [PaginationOption] with default values.
+  /// Throws [FormatException] if the value is not a Map.
   PaginationOption parsePaginationOption() {
     if (!json.containsKey('pagination_option') ||
         json['pagination_option'] == null) {
@@ -506,13 +557,18 @@ class _EntityCustomJsonParser {
     return PaginationOption.fromJson(raw);
   }
 
-  /// Parses the bypass all permissions flag.
-  /// Default is false, but if key is missing, it's true.
+  /// Parses the 'bypass_all_permissions' flag from JSON.
+  ///
+  /// Defaults to `true` if the key is missing (for backward compatibility or restrictive-by-default logic context).
+  /// Note: [EntityCustom.fromJson] uses this to initialize the model.
   bool parseBypassAllPermissions() {
     if (!json.containsKey('bypass_all_permissions')) return true;
     return json['bypass_all_permissions'] == true;
   }
 
+  /// Parses a single [ActionD] from the JSON if present.
+  ///
+  /// [key] is the JSON key for the action.
   ActionD? parseActionD(String key) {
     if (!json.containsKey(key) || json[key] == null) return null;
     return ActionD.fromJson(json[key]);
