@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/controller.dart';
-import 'package:gap/gap.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/group_builder.dart';
 
 import '../../../../../flx_nocode_flutter.dart';
 
@@ -53,27 +51,24 @@ class _EntityCreateFormOldState extends State<EntityCreateFormOld> {
           return const SizedBox.shrink();
         }
 
-        final visibleGroups = widget.layoutForm.groups
-            .where((g) => g.isVisible(state))
-            .toList(growable: false);
-
         final children = <Widget>[];
-        for (var i = 0; i < visibleGroups.length; i++) {
-          final group = visibleGroups[i];
+        for (final component in widget.layoutForm.components) {
           children.add(
-            GroupBuilder(
-              parentData: widget.parentData,
-              group: group,
-              entity: widget.entity,
-              dataAction: widget.dataAction,
+            widget.layoutForm.renderComponent(
+              context: context,
+              component: component,
+              data: state,
               controllers: widget.controllers,
-              formState: _formState,
+              parentData: widget.parentData,
+              dataAction: widget.dataAction,
             ),
           );
-          if (i < visibleGroups.length - 1) children.add(const Gap(24));
         }
 
-        return Column(children: children);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
+        );
       },
     );
   }

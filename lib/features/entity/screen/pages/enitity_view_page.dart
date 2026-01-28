@@ -1,6 +1,5 @@
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_widget_extension.dart';
-import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_display.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/layout_form.dart';
 import 'package:flx_nocode_flutter/features/view/screen/widgets/view.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
@@ -287,68 +286,4 @@ class EntityViewPage extends StatelessWidget {
           ),
         );
   }
-
-  Widget _buildData(Map<String, dynamic> data) {
-    List<Widget> children = [];
-    final entityForm = entity.layoutForm.getByType(FormType.view);
-    if (entityForm == null) return SizedBox.shrink();
-
-    final groups = entityForm.groups;
-
-    for (final group in groups) {
-      final rows = group.rows;
-      List<Widget> childrenRows = [];
-      for (final row in rows) {
-        final c = row.columns;
-        final fields = row.fields;
-        final chunks = _chunk<String>(fields, c);
-        for (final chunk in chunks) {
-          final fields = chunk.map<Widget>((field) {
-            return TileDataVertical(
-              label: entity.getField(field)?.label ?? field,
-              child: EntityFieldDisplay.build(
-                entity,
-                field,
-                data[field],
-              ),
-            );
-          }).toList();
-          final remainingFields = c - fields.length;
-          for (int i = 0; i < remainingFields; i++) {
-            fields.add(
-              SizedBox.shrink(),
-            );
-          }
-
-          childrenRows.add(RowFields(children: fields));
-        }
-      }
-
-      children.addAll([
-        Text(
-          group.title,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        ...childrenRows
-      ]);
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: children,
-    );
-  }
-}
-
-List<List<T>> _chunk<T>(List<T> items, int maxSize) {
-  if (maxSize <= 0) {
-    throw ArgumentError('maxSize must be greater than 0');
-  }
-
-  final List<List<T>> chunks = [];
-  for (var i = 0; i < items.length; i += maxSize) {
-    final end = (i + maxSize < items.length) ? i + maxSize : items.length;
-    chunks.add(items.sublist(i, end));
-  }
-  return chunks;
 }

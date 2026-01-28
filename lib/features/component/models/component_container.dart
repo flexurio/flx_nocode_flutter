@@ -12,6 +12,7 @@ class ComponentContainer extends Component {
   final double? borderRadius;
   final String? borderColor;
   final double? borderWidth;
+  final Component? child;
 
   ComponentContainer({
     required super.id,
@@ -23,6 +24,7 @@ class ComponentContainer extends Component {
     this.borderRadius,
     this.borderColor,
     this.borderWidth,
+    this.child,
   }) : super(type: componentId);
 
   factory ComponentContainer.empty(String id) {
@@ -58,6 +60,9 @@ class ComponentContainer extends Component {
       borderRadius: parseDouble(map['borderRadius']),
       borderColor: map['borderColor']?.toString(),
       borderWidth: parseDouble(map['borderWidth']),
+      child: map['child'] != null
+          ? Component.fromMap(Map<String, dynamic>.from(map['child']))
+          : null,
     );
   }
 
@@ -73,5 +78,6 @@ class ComponentContainer extends Component {
         'borderRadius': borderRadius,
         'borderColor': borderColor,
         'borderWidth': borderWidth,
+        if (child != null) 'child': child!.toMap(),
       };
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_container.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
+
 extension ComponentContainerWidgets on ComponentContainer {
   Widget toWidget(JsonMap data) {
     return Container(
@@ -20,6 +22,7 @@ extension ComponentContainerWidgets on ComponentContainer {
               )
             : null,
       ),
+      child: child?.toWidget(data: data),
     );
   }
 

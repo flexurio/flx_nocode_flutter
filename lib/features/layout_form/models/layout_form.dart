@@ -3,7 +3,6 @@ import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
 import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
 import 'package:hive/hive.dart';
 
-import 'package:flx_nocode_flutter/features/entity/models/group_layout.dart';
 import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
 import 'package:flx_nocode_flutter/features/entity/models/button_action.dart';
 
@@ -19,8 +18,6 @@ class LayoutForm extends HiveObject {
   final String id;
   final String label;
   final String type; // "create" | "update" | "view" | "home"
-  @Deprecated('Use components instead')
-  final List<GroupLayout> groups;
   final Rule? visibleIf;
   final List<Component> components;
   final List<ButtonAction> buttons;
@@ -61,7 +58,6 @@ class LayoutForm extends HiveObject {
       : id = '',
         label = '',
         type = createType,
-        groups = const [],
         visibleIf = null,
         components = const [],
         buttons = const [],
@@ -72,7 +68,6 @@ class LayoutForm extends HiveObject {
     required this.id,
     required this.label,
     required this.type,
-    required List<GroupLayout> groups,
     this.visibleIf,
     required this.components,
     List<ButtonAction>? buttons,
@@ -80,7 +75,6 @@ class LayoutForm extends HiveObject {
     Map<String, dynamic>? submitWorkflow,
   })  : assert(label.trim().isNotEmpty, 'label is required'),
         assert(type.trim().isNotEmpty, 'type is required'),
-        groups = List<GroupLayout>.unmodifiable(groups),
         buttons = List<ButtonAction>.unmodifiable(buttons ?? const []),
         submitWorkflow = submitWorkflow == null
             ? null
@@ -107,18 +101,6 @@ class LayoutForm extends HiveObject {
     if (map['label'] == null || map['label'].toString().trim().isEmpty) {
       throw const FormatException('Action "label" is required');
     }
-
-    final rawGroups = map['groups'];
-    if (rawGroups is! List) {
-      throw const FormatException('"groups" must be an array');
-    }
-
-    final groups = rawGroups.map((e) {
-      if (e is! Map) {
-        throw const FormatException('Each group must be an object');
-      }
-      return GroupLayout.fromMap(e.cast<String, dynamic>());
-    }).toList(growable: false);
 
     final dynamic rawActions =
         map.containsKey('buttons') ? map['buttons'] : null;
@@ -200,7 +182,6 @@ class LayoutForm extends HiveObject {
       components: components ?? const [],
       label: map['label'].toString().trim(),
       type: type,
-      groups: groups,
       visibleIf: map['visible_if'] == null
           ? null
           : Rule.fromMap(_coerceJsonMap(map['visible_if'])),
@@ -215,7 +196,6 @@ class LayoutForm extends HiveObject {
       'id': id,
       'label': label,
       'type': type,
-      'groups': groups.map((e) => e.toMap()).toList(growable: false),
       'components': components.map((e) => e.toMap()).toList(growable: false),
     };
 
@@ -240,7 +220,6 @@ class LayoutForm extends HiveObject {
     String? id,
     String? label,
     String? type,
-    List<GroupLayout>? groups,
     Rule? visibleIf,
     List<ButtonAction>? buttons,
     List<Component>? components,
@@ -252,7 +231,6 @@ class LayoutForm extends HiveObject {
       components: components ?? this.components,
       label: label ?? this.label,
       type: type ?? this.type,
-      groups: groups ?? this.groups,
       visibleIf: visibleIf ?? this.visibleIf,
       buttons: buttons ?? this.buttons,
       multiForms: multiForms ?? this.multiForms,

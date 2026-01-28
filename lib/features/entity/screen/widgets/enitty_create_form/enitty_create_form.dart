@@ -103,15 +103,18 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
         };
 
         final children = widget.layoutForm.components.map((c) {
-          final ctrl = allControllers[c.id];
-          return c.convertToWidget({
-            'controller': ctrl,
-            'allControllers': allControllers,
-            'data': state,
-            'form': state,
-            'current': state,
-            if (widget.parentData.isNotEmpty) 'parent': widget.parentData.last,
-          });
+          return c.toWidget(
+            data: {
+              ...state,
+              'form': state,
+              'current': state,
+              if (widget.parentData.isNotEmpty)
+                'parent': widget.parentData.last,
+            },
+            controllers: allControllers,
+            parentData: widget.parentData,
+            dataAction: widget.dataAction,
+          );
         }).toList();
         return Column(children: children);
       },

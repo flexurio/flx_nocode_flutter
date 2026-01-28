@@ -15,7 +15,7 @@ extension ComponentColumnWidgets on ComponentColumn {
     childData.remove('controller');
 
     final widgets = children
-        .map((child) => child.convertToWidget(childData))
+        .map((child) => child.toWidget(data: childData))
         .toList(growable: false);
 
     if (widgets.isEmpty) return const SizedBox.shrink();

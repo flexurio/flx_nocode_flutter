@@ -8,15 +8,13 @@ extension LayoutFormWidget on LayoutForm {
     print('[LayoutFormWidget] toWidget');
     if (multiForms.isNotEmpty) {
       final requestedPage = data['page'];
-      final int currentPage =
-          requestedPage is num && multiForms.isNotEmpty
-              ? requestedPage.toInt().clamp(0, multiForms.length - 1)
-              : 0;
+      final int currentPage = requestedPage is num && multiForms.isNotEmpty
+          ? requestedPage.toInt().clamp(0, multiForms.length - 1)
+          : 0;
 
       final children =
           multiForms.map((f) => f.toWidget(data)).toList(growable: false);
-      final titles =
-          multiForms.map((f) => f.label).toList(growable: false);
+      final titles = multiForms.map((f) => f.label).toList(growable: false);
 
       return MultiForm(
         children: children,
@@ -26,7 +24,7 @@ extension LayoutFormWidget on LayoutForm {
     }
 
     return Column(
-      children: components.map((e) => e.convertToWidget(data)).toList(),
+      children: components.map((e) => e.toWidget(data: data)).toList(),
     );
   }
 }

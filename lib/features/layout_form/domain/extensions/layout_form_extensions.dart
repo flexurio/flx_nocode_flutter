@@ -4,6 +4,9 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
+import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
+import 'package:flutter/widgets.dart';
 
 extension LayoutFormDomainX on LayoutForm {
   FormType get formType => FormType.fromString(type);
@@ -13,8 +16,8 @@ extension LayoutFormDomainX on LayoutForm {
     List<EntityField> fields,
   ) {
     final used = LinkedHashSet<String>();
-    for (final g in groups) {
-      used.addAll(g.usedFields());
+    for (final c in components) {
+      _collectFields(c, used);
     }
 
     final available = <String>[];
@@ -29,24 +32,47 @@ extension LayoutFormDomainX on LayoutForm {
   /// Convenience: all unique field references used in this form.
   List<String> allFields() {
     final s = LinkedHashSet<String>();
-    for (final g in groups) {
-      s.addAll(g.usedFields());
+    for (final c in components) {
+      _collectFields(c, s);
     }
     return List.unmodifiable(s);
   }
 
+  void _collectFields(Component c, Set<String> fields) {
+    // For field-like components, the ID is the field reference
+    if (c is ComponentTextField ||
+        c is ComponentNumberField ||
+        c is ComponentDatePicker ||
+        c is ComponentCheckbox ||
+        c is ComponentDropdown ||
+        c is ComponentRadio ||
+        c is ComponentSwitch ||
+        c is ComponentFieldDisplay) {
+      fields.add(c.id);
+    }
+
+    // Recurse into containers
+    if (c is ComponentColumn) {
+      for (final child in c.children) {
+        _collectFields(child, fields);
+      }
+    } else if (c is ComponentRow) {
+      for (final child in c.children) {
+        _collectFields(child, fields);
+      }
+    } else if (c is ComponentContainer) {
+      if (c.child != null) {
+        _collectFields(c.child!, fields);
+      }
+    }
+  }
+
   /// Validate invariants that aren’t covered by asserts (safe for release mode).
   void validate() {
-    // 1) Require unique group IDs (if provided)
+    // 1) Require unique component IDs
     final seen = <String>{};
-    for (final g in groups) {
-      final id = g.id.trim();
-      if (id.isEmpty) {
-        throw const FormatException('Each group must have a non-empty "id".');
-      }
-      if (!seen.add(id)) {
-        throw FormatException('Duplicate group id "$id" detected.');
-      }
+    for (final c in components) {
+      _validateComponent(c, seen);
     }
 
     // 2) Verify supported type values
@@ -58,10 +84,50 @@ extension LayoutFormDomainX on LayoutForm {
     }
   }
 
+  void _validateComponent(Component c, Set<String> seen) {
+    final id = c.id.trim();
+    if (id.isEmpty) {
+      throw const FormatException('Each component must have a non-empty "id".');
+    }
+    if (!seen.add(id)) {
+      throw FormatException('Duplicate component id "$id" detected.');
+    }
+
+    if (c is ComponentColumn) {
+      for (final child in c.children) {
+        _validateComponent(child, seen);
+      }
+    } else if (c is ComponentRow) {
+      for (final child in c.children) {
+        _validateComponent(child, seen);
+      }
+    } else if (c is ComponentContainer) {
+      if (c.child != null) {
+        _validateComponent(c.child!, seen);
+      }
+    }
+  }
+
   /// Evaluates visibility for this form against a given form state.
   /// If `visibleIf` is null => visible by default.
   bool isVisible(Map<String, dynamic> formState) {
     return visibleIf?.evaluate(formState) ?? true;
+  }
+
+  Widget renderComponent({
+    required BuildContext context,
+    required Component component,
+    required Map<String, dynamic> data,
+    required Map<String, TextEditingController> controllers,
+    required List<Map<String, dynamic>> parentData,
+    required DataAction dataAction,
+  }) {
+    return component.toWidget(
+      data: data,
+      controllers: controllers,
+      parentData: parentData,
+      dataAction: dataAction,
+    );
   }
 
   DataAction get action {
