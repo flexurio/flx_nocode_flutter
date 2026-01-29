@@ -84,6 +84,9 @@ class ActionD extends HiveObject {
   final String? copyLabel;
   final String? copyValue;
 
+  /// The variable name to store the result of the action (e.g. HTTP response body).
+  final String? targetVariable;
+
   ActionD({
     required this.isMultiple,
     required this.onSuccess,
@@ -106,6 +109,7 @@ class ActionD extends HiveObject {
     this.successMessage,
     this.copyLabel,
     this.copyValue,
+    this.targetVariable,
   }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       assert(layoutFormId != null && layoutFormId!.isNotEmpty,
@@ -136,6 +140,7 @@ class ActionD extends HiveObject {
     String? successMessage,
     String? copyLabel,
     String? copyValue,
+    String? targetVariable,
   }) {
     return ActionD(
       width: width ?? this.width,
@@ -159,6 +164,7 @@ class ActionD extends HiveObject {
       successMessage: successMessage ?? this.successMessage,
       copyLabel: copyLabel ?? this.copyLabel,
       copyValue: copyValue ?? this.copyValue,
+      targetVariable: targetVariable ?? this.targetVariable,
     );
   }
 
@@ -200,6 +206,7 @@ class ActionD extends HiveObject {
       successMessage: json['success_message'],
       copyLabel: json['copy_label'],
       copyValue: json['copy_value'],
+      targetVariable: json['target_variable'],
     );
   }
 
@@ -227,6 +234,7 @@ class ActionD extends HiveObject {
       'success_message': successMessage,
       'copy_label': copyLabel,
       'copy_value': copyValue,
+      'target_variable': targetVariable,
     };
   }
 

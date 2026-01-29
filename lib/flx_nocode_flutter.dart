@@ -11,6 +11,7 @@ export 'src/app/model/backend_other.dart';
 export 'src/app/model/backend.dart';
 export 'src/app/model/configuration.dart';
 export 'features/entity/models/entity.dart';
+export 'features/entity/models/action.dart';
 export 'features/entity/models/rule.dart';
 export 'src/app/model/layout_list_tile.dart';
 export 'src/app/model/no_code.dart';

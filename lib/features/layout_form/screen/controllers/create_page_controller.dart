@@ -1,7 +1,9 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_field_form_controllers.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
+import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
@@ -28,10 +30,14 @@ class CreatePageController extends GetxController {
     required this.initialDataInput,
     required this.parentData,
     this.filters = const {},
+    this.httpRequestExecutor,
   });
 
   /// The entity template for this form.
   final EntityCustom entity;
+
+  /// Optional executor for HTTP requests, primarily for testing.
+  final HttpRequestExecutor? httpRequestExecutor;
 
   /// Target layout form identifier.
   final String layoutFormId;
@@ -110,7 +116,10 @@ class CreatePageController extends GetxController {
       action = layoutForm.action;
       _initializeControllers();
       _initializeSteps();
-    } catch (_) {
+
+      // Execute onInit actions after initialization
+      _executeOnInitActions();
+    } catch (e) {
       hasError.value = true;
       errorDescription.value =
           'Could not find layout form with id: $layoutFormId';
@@ -264,5 +273,57 @@ class CreatePageController extends GetxController {
     if (label.isEmpty) return '';
     if (label.toLowerCase() == baseTitle.toLowerCase()) return '';
     return label;
+  }
+
+  /// Executes any actions defined in [LayoutForm.onInit].
+  ///
+  /// This allows pre-fetching data or setting up state when the page loads.
+  Future<void> _executeOnInitActions() async {
+    if (layoutForm.onInit.isEmpty) return;
+
+    // Prepare context data for interpolation
+    final data = <String, dynamic>{
+      if (initialDataInput != null) ...initialDataInput!,
+      ...filters,
+    };
+    // Include parent data if possible
+    if (parentData.isNotEmpty) {
+      // flattened parent data could be useful
+      for (final p in parentData) {
+        data.addAll(p);
+      }
+    }
+
+    for (final action in layoutForm.onInit) {
+      if (action.http != null) {
+        try {
+          final result = await action.http!.execute(
+            data,
+            executor: httpRequestExecutor,
+          );
+
+          if (action.targetVariable != null &&
+              action.targetVariable!.isNotEmpty) {
+            final key = action.targetVariable!;
+
+            // Store the result
+            initialData[key] = result.data;
+
+            // Update controller if a field matches this variable
+            if (controllers.containsKey(key)) {
+              // Convert structure to string if needed, or just use toString
+              final textVal = result.data?.toString() ?? '';
+              controllers[key]?.text = textVal;
+            }
+
+            // Also update the data map for subsequent actions in this loop
+            data[key] = result.data;
+          }
+        } catch (e) {
+          print(
+              '[CreatePageController] Error executing onInit action ${action.id}: $e');
+        }
+      }
+    }
   }
 }

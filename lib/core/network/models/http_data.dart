@@ -193,9 +193,12 @@ extension HttpDataExtension on HttpData {
   /// ```dart
   /// final result = await httpData.execute();
   /// ```
-  Future<HttpRequestResult> execute(JsonMap data) async {
-    final executor = HttpRequestExecutor();
+  Future<HttpRequestResult> execute(
+    JsonMap data, {
+    HttpRequestExecutor? executor,
+  }) async {
+    final exec = executor ?? HttpRequestExecutor();
     final config = toRequestConfig(data);
-    return executor.execute(config);
+    return exec.execute(config);
   }
 }

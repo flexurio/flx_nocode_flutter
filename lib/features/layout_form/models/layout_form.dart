@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 
 import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
 import 'package:flx_nocode_flutter/features/entity/models/button_action.dart';
+import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 
 typedef JsonMap = Map<String, dynamic>;
 
@@ -23,6 +24,7 @@ class LayoutForm extends HiveObject {
   final List<ButtonAction> buttons;
   final List<LayoutForm> multiForms;
   final Map<String, dynamic>? submitWorkflow;
+  final List<ActionD> onInit;
 
   static const String createType = 'create';
   static const String updateType = 'update';
@@ -62,7 +64,8 @@ class LayoutForm extends HiveObject {
         components = const [],
         buttons = const [],
         multiForms = const [],
-        submitWorkflow = null;
+        submitWorkflow = null,
+        onInit = const [];
 
   LayoutForm({
     required this.id,
@@ -73,6 +76,7 @@ class LayoutForm extends HiveObject {
     List<ButtonAction>? buttons,
     List<LayoutForm>? multiForms,
     Map<String, dynamic>? submitWorkflow,
+    List<ActionD>? onInit,
   })  : assert(label.trim().isNotEmpty, 'label is required'),
         assert(type.trim().isNotEmpty, 'type is required'),
         buttons = List<ButtonAction>.unmodifiable(buttons ?? const []),
@@ -83,7 +87,8 @@ class LayoutForm extends HiveObject {
           (multiForms ?? const []).map(
             (f) => f.multiForms.isEmpty ? f : f.copyWith(multiForms: const []),
           ),
-        );
+        ),
+        onInit = List<ActionD>.unmodifiable(onInit ?? const []);
 
   factory LayoutForm.fromMap(JsonMap map) =>
       _fromMapInternal(map, allowMultiForms: true);
@@ -177,6 +182,20 @@ class LayoutForm extends HiveObject {
       submitWorkflow = Map<String, dynamic>.from(raw);
     }
 
+    final rawOnInit = map['on_init'];
+    List<ActionD> onInit = const [];
+    if (rawOnInit != null) {
+      if (rawOnInit is! List) {
+        throw const FormatException('"on_init" must be an array');
+      }
+      onInit = rawOnInit.map<ActionD>((e) {
+        if (e is! Map) {
+          throw const FormatException('Each on_init item must be an object');
+        }
+        return ActionD.fromJson(e.cast<String, dynamic>());
+      }).toList(growable: false);
+    }
+
     return LayoutForm(
       id: id,
       components: components ?? const [],
@@ -188,6 +207,7 @@ class LayoutForm extends HiveObject {
       buttons: parsedActions,
       multiForms: multiForms,
       submitWorkflow: submitWorkflow,
+      onInit: onInit,
     );
   }
 
@@ -213,6 +233,10 @@ class LayoutForm extends HiveObject {
           multiForms.map((e) => e.toMap()).toList(growable: false);
     }
 
+    if (onInit.isNotEmpty) {
+      m['on_init'] = onInit.map((e) => e.toJson()).toList(growable: false);
+    }
+
     return m;
   }
 
@@ -225,6 +249,7 @@ class LayoutForm extends HiveObject {
     List<Component>? components,
     List<LayoutForm>? multiForms,
     Map<String, dynamic>? submitWorkflow,
+    List<ActionD>? onInit,
   }) {
     return LayoutForm(
       id: id ?? this.id,
@@ -235,6 +260,7 @@ class LayoutForm extends HiveObject {
       buttons: buttons ?? this.buttons,
       multiForms: multiForms ?? this.multiForms,
       submitWorkflow: submitWorkflow ?? this.submitWorkflow,
+      onInit: onInit ?? this.onInit,
     );
   }
 }
