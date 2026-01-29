@@ -11,6 +11,7 @@ extension ComponentFieldDisplayWidgets on ComponentFieldDisplay {
       child: Text(
         this.value.interpolateJavascript(
           {
+            ...data,
             "current": data,
           },
         ),

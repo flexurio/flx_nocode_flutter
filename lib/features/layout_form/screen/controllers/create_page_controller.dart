@@ -327,7 +327,7 @@ class CreatePageController extends GetxController {
               : <String, dynamic>{};
 
           debugPrint(
-              '[CreatePageController] Syncing ${output.length} workflow output keys back to form');
+              '[CreatePageController] Syncing ${output.length} workflow output keys back to form: $output');
 
           for (final entry in output.entries) {
             initialData[entry.key] = entry.value;
@@ -360,7 +360,7 @@ class CreatePageController extends GetxController {
             );
 
             debugPrint(
-                '[CreatePageController] Legacy Action SUCCESS: ${action.id}');
+                '[CreatePageController] Legacy Action SUCCESS: ${action.id}, Data: ${result.data}');
 
             if (action.targetVariable != null &&
                 action.targetVariable!.isNotEmpty) {

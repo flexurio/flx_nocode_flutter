@@ -292,10 +292,12 @@ class GetxHttpExecutor implements HttpExecutor {
         method: request.method,
         headers: request.headers,
         data: request.body,
+        mockEnabled: request.mockEnabled,
+        mockData: request.mockData,
       );
 
       if (EntityController.enableLog) {
-        debugPrint('    [HTTP] ✅ Response received');
+        debugPrint('    [HTTP] ✅ Response received: $response');
       }
 
       return HttpResult(

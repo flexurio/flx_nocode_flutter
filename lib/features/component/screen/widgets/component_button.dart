@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_button.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
 Color _parseColor(String input, [Color? fallback]) {
   final fb = fallback ?? Colors.blue;
@@ -49,7 +50,7 @@ extension ComponentButtonWidgets on ComponentButton {
     return Button.string(
       color: color,
       onPressed: () {},
-      action: text,
+      action: text.interpolateJavascript(data),
       isInProgress: false,
       permission: null,
     );

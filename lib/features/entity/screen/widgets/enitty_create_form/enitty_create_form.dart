@@ -16,6 +16,7 @@ class EntityCreateForm extends StatefulWidget {
     required this.controllers,
     required this.layoutForm,
     required this.parentData,
+    this.initialData = const {},
   });
 
   final DataAction dataAction;
@@ -23,6 +24,7 @@ class EntityCreateForm extends StatefulWidget {
   final Map<String, TextEditingController> controllers;
   final LayoutForm layoutForm;
   final List<Map<String, dynamic>> parentData;
+  final Map<String, dynamic> initialData;
 
   @override
   State<EntityCreateForm> createState() => _EntityCreateFormState();
@@ -105,6 +107,7 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
         final children = widget.layoutForm.components.map((c) {
           return c.toWidget(
             data: {
+              ...widget.initialData,
               ...state,
               'form': state,
               'current': state,
