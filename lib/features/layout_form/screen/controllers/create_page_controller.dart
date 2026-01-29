@@ -337,6 +337,14 @@ class CreatePageController extends GetxController {
                   '[CreatePageController]   > Set controller [${entry.key}] = ${entry.value}');
             }
           }
+
+          // ALSO expose the full http context to initialData
+          // The user requested to access data directly without .data suffix
+          // e.g. {{ http.get_detail.employee.nik }} instead of {{ http.get_detail.data.employee.nik }}
+          final httpData =
+              ctx.http.map((key, value) => MapEntry(key, value.data));
+          initialData['http'] = httpData;
+
           initialData.refresh();
         }
       } catch (e) {
