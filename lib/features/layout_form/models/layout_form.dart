@@ -24,7 +24,8 @@ class LayoutForm extends HiveObject {
   final List<ButtonAction> buttons;
   final List<LayoutForm> multiForms;
   final Map<String, dynamic>? submitWorkflow;
-  final List<ActionD> onInit;
+  final dynamic
+      onInit; // Map<String, dynamic> (Workflow) or List<ActionD> (Legacy)
 
   static const String createType = 'create';
   static const String updateType = 'update';
@@ -65,7 +66,7 @@ class LayoutForm extends HiveObject {
         buttons = const [],
         multiForms = const [],
         submitWorkflow = null,
-        onInit = const [];
+        onInit = null;
 
   LayoutForm({
     required this.id,
@@ -76,7 +77,7 @@ class LayoutForm extends HiveObject {
     List<ButtonAction>? buttons,
     List<LayoutForm>? multiForms,
     Map<String, dynamic>? submitWorkflow,
-    List<ActionD>? onInit,
+    dynamic onInit,
   })  : assert(label.trim().isNotEmpty, 'label is required'),
         assert(type.trim().isNotEmpty, 'type is required'),
         buttons = List<ButtonAction>.unmodifiable(buttons ?? const []),
@@ -88,7 +89,7 @@ class LayoutForm extends HiveObject {
             (f) => f.multiForms.isEmpty ? f : f.copyWith(multiForms: const []),
           ),
         ),
-        onInit = List<ActionD>.unmodifiable(onInit ?? const []);
+        onInit = onInit;
 
   factory LayoutForm.fromMap(JsonMap map) =>
       _fromMapInternal(map, allowMultiForms: true);
@@ -182,18 +183,17 @@ class LayoutForm extends HiveObject {
       submitWorkflow = Map<String, dynamic>.from(raw);
     }
 
-    final rawOnInit = map['on_init'];
-    List<ActionD> onInit = const [];
-    if (rawOnInit != null) {
-      if (rawOnInit is! List) {
-        throw const FormatException('"on_init" must be an array');
-      }
+    final rawOnInit = map['on_init'] ?? map['onInit'];
+    dynamic onInit;
+    if (rawOnInit is List) {
       onInit = rawOnInit.map<ActionD>((e) {
         if (e is! Map) {
           throw const FormatException('Each on_init item must be an object');
         }
         return ActionD.fromJson(e.cast<String, dynamic>());
-      }).toList(growable: false);
+      }).toList();
+    } else if (rawOnInit is Map) {
+      onInit = Map<String, dynamic>.from(rawOnInit);
     }
 
     return LayoutForm(
@@ -233,8 +233,14 @@ class LayoutForm extends HiveObject {
           multiForms.map((e) => e.toMap()).toList(growable: false);
     }
 
-    if (onInit.isNotEmpty) {
-      m['on_init'] = onInit.map((e) => e.toJson()).toList(growable: false);
+    if (onInit != null) {
+      if (onInit is List<ActionD>) {
+        m['on_init'] = onInit.map((e) => e.toJson()).toList();
+      } else if (onInit is List) {
+        m['on_init'] = onInit;
+      } else if (onInit is Map) {
+        m['on_init'] = onInit;
+      }
     }
 
     return m;
@@ -249,7 +255,7 @@ class LayoutForm extends HiveObject {
     List<Component>? components,
     List<LayoutForm>? multiForms,
     Map<String, dynamic>? submitWorkflow,
-    List<ActionD>? onInit,
+    dynamic onInit,
   }) {
     return LayoutForm(
       id: id ?? this.id,

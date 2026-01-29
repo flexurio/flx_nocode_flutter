@@ -198,7 +198,7 @@ class EntityController extends GetxController {
 
     try {
       final definition = WorkflowDefinition.fromJson(workflow);
-      final executor = _GetxHttpExecutor();
+      final executor = GetxHttpExecutor();
 
       final ctx = WorkflowContext(
         form: form,
@@ -266,8 +266,8 @@ class EntityController extends GetxController {
   }
 }
 
-class _GetxHttpExecutor implements HttpExecutor {
-  _GetxHttpExecutor();
+class GetxHttpExecutor implements HttpExecutor {
+  GetxHttpExecutor();
 
   @override
   Future<HttpResult> execute(HttpData request) async {

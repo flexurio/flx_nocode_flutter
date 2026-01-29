@@ -10,6 +10,11 @@ import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
+import 'package:flx_nocode_flutter/features/entity/models/action.dart';
+import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
+
 import 'utils/create_page_controller_utils.dart';
 
 /// A unified controller for managing the state and logic of form creation and editing.
@@ -279,7 +284,8 @@ class CreatePageController extends GetxController {
   ///
   /// This allows pre-fetching data or setting up state when the page loads.
   Future<void> _executeOnInitActions() async {
-    if (layoutForm.onInit.isEmpty) return;
+    final onInit = layoutForm.onInit;
+    if (onInit == null) return;
 
     // Prepare context data for interpolation
     final data = <String, dynamic>{
@@ -288,40 +294,78 @@ class CreatePageController extends GetxController {
     };
     // Include parent data if possible
     if (parentData.isNotEmpty) {
-      // flattened parent data could be useful
       for (final p in parentData) {
         data.addAll(p);
       }
     }
 
-    for (final action in layoutForm.onInit) {
-      if (action.http != null) {
-        try {
-          final result = await action.http!.execute(
-            data,
-            executor: httpRequestExecutor,
-          );
+    if (onInit is Map<String, dynamic>) {
+      // Execute as Workflow
+      try {
+        final definition = WorkflowDefinition.fromJson(onInit);
+        final executor = GetxHttpExecutor(); // Reusing the same executor
+        final ctx = WorkflowContext(
+          form: currentData,
+          data: initialDataInput ?? {},
+          auth: AuthContext(
+            permissions: UserRepositoryApp.instance.permissions,
+          ),
+          httpExecutor: executor,
+        );
 
-          if (action.targetVariable != null &&
-              action.targetVariable!.isNotEmpty) {
-            final key = action.targetVariable!;
+        final result = await WorkflowExecutor(definition).run(ctx);
 
-            // Store the result
-            initialData[key] = result.data;
+        if (result.isSuccess) {
+          // Sync workflow output back to form
+          final output = result.data is Map<String, dynamic>
+              ? Map<String, dynamic>.from(result.data as Map)
+              : <String, dynamic>{};
 
-            // Update controller if a field matches this variable
-            if (controllers.containsKey(key)) {
-              // Convert structure to string if needed, or just use toString
-              final textVal = result.data?.toString() ?? '';
-              controllers[key]?.text = textVal;
+          for (final entry in output.entries) {
+            initialData[entry.key] = entry.value;
+            if (controllers.containsKey(entry.key)) {
+              controllers[entry.key]?.text = entry.value?.toString() ?? '';
             }
-
-            // Also update the data map for subsequent actions in this loop
-            data[key] = result.data;
           }
-        } catch (e) {
-          print(
-              '[CreatePageController] Error executing onInit action ${action.id}: $e');
+        }
+      } catch (e) {
+        debugPrint(
+            '[CreatePageController] Error executing onInit workflow: $e');
+      }
+      return;
+    }
+
+    if (onInit is List<ActionD>) {
+      // Execute as Legacy Actions
+      for (final action in onInit) {
+        if (action.http != null) {
+          try {
+            final result = await action.http!.execute(
+              data,
+              executor: httpRequestExecutor,
+            );
+
+            if (action.targetVariable != null &&
+                action.targetVariable!.isNotEmpty) {
+              final key = action.targetVariable!;
+
+              // Store the result
+              initialData[key] = result.data;
+
+              // Update controller if a field matches this variable
+              if (controllers.containsKey(key)) {
+                final textVal = result.data?.toString() ?? '';
+                controllers[key]?.text = textVal;
+              }
+
+              // Also update the data map for subsequent actions in this loop
+              data[key] = result.data;
+            }
+          } catch (e) {
+            debugPrint(
+              '[CreatePageController] Error executing onInit action ${action.id}: $e',
+            );
+          }
         }
       }
     }
