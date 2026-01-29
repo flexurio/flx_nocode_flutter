@@ -215,6 +215,7 @@ class EntityCustom extends HiveObject {
   /// This is useful for testing or populating forms with placeholder values.
   Map<String, dynamic> dummy() {
     final data = <String, dynamic>{};
+    data['id'] = 1;
     for (var field in fields) {
       data[field.reference] = field.dummyValue();
     }

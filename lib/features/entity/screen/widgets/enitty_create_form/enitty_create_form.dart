@@ -82,6 +82,10 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
       builder: (context, _) {
         final state = _formState.state;
 
+        // Debugging
+        print(
+            'EntityCreateForm build. InitialData keys: ${widget.initialData.keys.toList()}');
+
         final formVisible = widget.layoutForm.isVisible(state);
         if (!formVisible) {
           return const SizedBox.shrink();

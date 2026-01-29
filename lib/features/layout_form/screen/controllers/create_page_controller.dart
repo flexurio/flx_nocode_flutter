@@ -337,6 +337,7 @@ class CreatePageController extends GetxController {
                   '[CreatePageController]   > Set controller [${entry.key}] = ${entry.value}');
             }
           }
+          initialData.refresh();
         }
       } catch (e) {
         debugPrint(
