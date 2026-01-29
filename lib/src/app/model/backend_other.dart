@@ -32,6 +32,28 @@ class BackendOther extends HiveObject {
     this.mockData,
   });
 
+  BackendOther copyWith({
+    String? method,
+    String? url,
+    String? title,
+    String? visible,
+    Color? color,
+    Map<String, String>? headers,
+    bool? mockEnabled,
+    Object? mockData,
+  }) {
+    return BackendOther(
+      method: method ?? this.method,
+      url: url ?? this.url,
+      title: title ?? this.title,
+      visible: visible ?? this.visible,
+      color: color ?? this.color,
+      headers: headers ?? this.headers,
+      mockEnabled: mockEnabled ?? this.mockEnabled,
+      mockData: mockData ?? this.mockData,
+    );
+  }
+
   factory BackendOther.fromJson(Map<String, dynamic> json) {
     return BackendOther(
       method: json['method'],

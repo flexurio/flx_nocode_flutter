@@ -108,6 +108,28 @@ class BackendEndpoint extends HiveObject {
     this.mockData,
   });
 
+  BackendEndpoint copyWith({
+    String? method,
+    String? url,
+    Map<String, Object>? data,
+    Map<String, String>? headers,
+    bool? cached,
+    String? cacheDuration,
+    bool? mockEnabled,
+    Object? mockData,
+  }) {
+    return BackendEndpoint(
+      method: method ?? this.method,
+      url: url ?? this.url,
+      data: data ?? this.data,
+      headers: headers ?? this.headers,
+      cached: cached ?? this.cached,
+      cacheDuration: cacheDuration ?? this.cacheDuration,
+      mockEnabled: mockEnabled ?? this.mockEnabled,
+      mockData: mockData ?? this.mockData,
+    );
+  }
+
   /// Factory constructor to create [BackendEndpoint] from JSON.
   factory BackendEndpoint.fromJson(Map<String, Object?> json) {
     try {
