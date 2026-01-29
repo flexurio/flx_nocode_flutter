@@ -65,6 +65,12 @@ class HttpData extends HiveObject {
   /// form-encoded / multipart payload instead of raw JSON.
   final bool useFormData;
 
+  /// Whether to use mock data instead of calling the actual API.
+  final bool mockEnabled;
+
+  /// The data to return when [mockEnabled] is true.
+  final Object? mockData;
+
   /// Creates a new immutable [HttpData] instance.
   HttpData({
     required this.method,
@@ -72,6 +78,8 @@ class HttpData extends HiveObject {
     required this.headers,
     required this.body,
     this.useFormData = false,
+    this.mockEnabled = false,
+    this.mockData,
   });
 
   /// Creates a modified copy of this [HttpData].
@@ -90,6 +98,8 @@ class HttpData extends HiveObject {
     Map<String, String>? headers,
     Map<String, dynamic>? body,
     bool? useFormData,
+    bool? mockEnabled,
+    Object? mockData,
   }) {
     return HttpData(
       method: method ?? this.method,
@@ -97,6 +107,8 @@ class HttpData extends HiveObject {
       headers: headers ?? this.headers,
       body: body ?? this.body,
       useFormData: useFormData ?? this.useFormData,
+      mockEnabled: mockEnabled ?? this.mockEnabled,
+      mockData: mockData ?? this.mockData,
     );
   }
 
@@ -119,6 +131,8 @@ class HttpData extends HiveObject {
       headers: Map<String, String>.from(json['headers'] ?? const {}),
       body: Map<String, dynamic>.from(json['body'] ?? const {}),
       useFormData: json['use_form_data'] ?? false,
+      mockEnabled: json['mock_enabled'] ?? false,
+      mockData: json['mock_data'],
     );
   }
 
@@ -153,6 +167,8 @@ class HttpData extends HiveObject {
       'headers': headers,
       'body': body,
       'use_form_data': useFormData,
+      'mock_enabled': mockEnabled,
+      'mock_data': mockData,
     };
   }
 }
@@ -166,6 +182,8 @@ extension HttpDataExtension on HttpData {
       headers: _interpolateHeaders(data),
       body: _interpolateBody(data),
       asFormData: useFormData,
+      mockEnabled: mockEnabled,
+      mockData: mockData,
     );
   }
 

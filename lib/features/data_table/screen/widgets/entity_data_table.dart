@@ -75,6 +75,8 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             filters: _filters,
             method: widget.entity.backend.readAll!.method,
             url: widget.entity.backend.readAll!.url,
+            mockEnabled: widget.entity.backend.readAll!.mockEnabled,
+            mockData: widget.entity.backend.readAll!.mockData,
           ),
         );
   }

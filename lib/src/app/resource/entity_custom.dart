@@ -98,8 +98,29 @@ class EntityCustomRepository extends Repository {
     required Map<String, dynamic> filterMap,
     Map<String, String>? headers,
     int? cachedDurationSeconds,
+    bool mockEnabled = false,
+    Object? mockData,
   }) async {
     try {
+      if (mockEnabled) {
+        print('──────────────────────────────────────────────────');
+        print('[EntityCustomRepository] 🎭 MOCK FETCH REQUEST');
+        print('📂 Path   : $path');
+        print('──────────────────────────────────────────────────');
+        final dataList = (mockData is List)
+            ? mockData.cast<Map<String, dynamic>>()
+            : (mockData is Map && mockData.containsKey('data'))
+                ? (mockData['data'] as List).cast<Map<String, dynamic>>()
+                : <Map<String, dynamic>>[];
+        final total = (mockData is Map && mockData.containsKey('total_data'))
+            ? mockData['total_data'] as int
+            : dataList.length;
+
+        return pageOptions.copyWith(
+          data: dataList,
+          totalRows: total,
+        );
+      }
       print('──────────────────────────────────────────────────');
       print('[EntityCustomRepository] 🔍 FETCH REQUEST');
       print('📂 Path   : $path');
@@ -165,8 +186,27 @@ class EntityCustomRepository extends Repository {
     required String method,
     required String id,
     Map<String, String>? headers,
+    bool mockEnabled = false,
+    Object? mockData,
   }) async {
     try {
+      if (mockEnabled) {
+        print('──────────────────────────────────────────────────');
+        print('[EntityCustomRepository] 🎭 MOCK FETCH BY ID REQUEST');
+        print('📂 Path   : $path');
+        print('──────────────────────────────────────────────────');
+        if (mockData is List) {
+          return mockData.cast<Map<String, dynamic>>().first;
+        } else if (mockData is Map) {
+          if (mockData.containsKey('data')) {
+            final list =
+                (mockData['data'] as List).cast<Map<String, dynamic>>();
+            return list.first;
+          }
+          return mockData as Map<String, dynamic>;
+        }
+        return {};
+      }
       final response = await _request<Map<String, dynamic>>(
         accessToken: accessToken,
         path: path.replaceFirst('{id}', id),
@@ -192,8 +232,17 @@ class EntityCustomRepository extends Repository {
     required String method,
     Map<String, String>? headers,
     Map<String, dynamic>? data,
+    bool mockEnabled = false,
+    Object? mockData,
   }) async {
     try {
+      if (mockEnabled) {
+        print('──────────────────────────────────────────────────');
+        print('[EntityCustomRepository] 🎭 MOCK MODIFY REQUEST');
+        print('📂 Path  : $path');
+        print('──────────────────────────────────────────────────');
+        return (mockData as Map<String, dynamic>?) ?? {};
+      }
       if (data != null) {
         print('──────────────────────────────────────────────────');
         print('[EntityCustomRepository] 🆕 MODIFY REQUEST');

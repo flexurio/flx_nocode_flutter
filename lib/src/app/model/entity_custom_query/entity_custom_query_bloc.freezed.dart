@@ -654,6 +654,8 @@ abstract class _Error implements EntityCustomQueryState {
 mixin _$EntityCustomQueryEvent {
   String get method => throw _privateConstructorUsedError;
   String get url => throw _privateConstructorUsedError;
+  bool? get mockEnabled => throw _privateConstructorUsedError;
+  Object? get mockData => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
@@ -661,9 +663,13 @@ mixin _$EntityCustomQueryEvent {
             List<Filter>? filters,
             String method,
             String url,
-            int? cachedDurationSeconds)
+            int? cachedDurationSeconds,
+            bool? mockEnabled,
+            Object? mockData)
         fetch,
-    required TResult Function(String id, String method, String url) fetchById,
+    required TResult Function(String id, String method, String url,
+            bool? mockEnabled, Object? mockData)
+        fetchById,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -673,9 +679,13 @@ mixin _$EntityCustomQueryEvent {
             List<Filter>? filters,
             String method,
             String url,
-            int? cachedDurationSeconds)?
+            int? cachedDurationSeconds,
+            bool? mockEnabled,
+            Object? mockData)?
         fetch,
-    TResult? Function(String id, String method, String url)? fetchById,
+    TResult? Function(String id, String method, String url, bool? mockEnabled,
+            Object? mockData)?
+        fetchById,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -685,9 +695,13 @@ mixin _$EntityCustomQueryEvent {
             List<Filter>? filters,
             String method,
             String url,
-            int? cachedDurationSeconds)?
+            int? cachedDurationSeconds,
+            bool? mockEnabled,
+            Object? mockData)?
         fetch,
-    TResult Function(String id, String method, String url)? fetchById,
+    TResult Function(String id, String method, String url, bool? mockEnabled,
+            Object? mockData)?
+        fetchById,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -722,7 +736,7 @@ abstract class $EntityCustomQueryEventCopyWith<$Res> {
           $Res Function(EntityCustomQueryEvent) then) =
       _$EntityCustomQueryEventCopyWithImpl<$Res, EntityCustomQueryEvent>;
   @useResult
-  $Res call({String method, String url});
+  $Res call({String method, String url, bool? mockEnabled, Object? mockData});
 }
 
 /// @nodoc
@@ -741,6 +755,8 @@ class _$EntityCustomQueryEventCopyWithImpl<$Res,
   $Res call({
     Object? method = null,
     Object? url = null,
+    Object? mockEnabled = freezed,
+    Object? mockData = freezed,
   }) {
     return _then(_value.copyWith(
       method: null == method
@@ -751,6 +767,11 @@ class _$EntityCustomQueryEventCopyWithImpl<$Res,
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String,
+      mockEnabled: freezed == mockEnabled
+          ? _value.mockEnabled
+          : mockEnabled // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      mockData: freezed == mockData ? _value.mockData : mockData,
     ) as $Val);
   }
 }
@@ -768,7 +789,9 @@ abstract class _$$FetchImplCopyWith<$Res>
       List<Filter>? filters,
       String method,
       String url,
-      int? cachedDurationSeconds});
+      int? cachedDurationSeconds,
+      bool? mockEnabled,
+      Object? mockData});
 }
 
 /// @nodoc
@@ -787,6 +810,8 @@ class __$$FetchImplCopyWithImpl<$Res>
     Object? method = null,
     Object? url = null,
     Object? cachedDurationSeconds = freezed,
+    Object? mockEnabled = freezed,
+    Object? mockData = freezed,
   }) {
     return _then(_$FetchImpl(
       pageOptions: freezed == pageOptions
@@ -809,6 +834,11 @@ class __$$FetchImplCopyWithImpl<$Res>
           ? _value.cachedDurationSeconds
           : cachedDurationSeconds // ignore: cast_nullable_to_non_nullable
               as int?,
+      mockEnabled: freezed == mockEnabled
+          ? _value.mockEnabled
+          : mockEnabled // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      mockData: freezed == mockData ? _value.mockData : mockData,
     ));
   }
 }
@@ -821,7 +851,9 @@ class _$FetchImpl implements _Fetch {
       final List<Filter>? filters,
       required this.method,
       required this.url,
-      required this.cachedDurationSeconds})
+      required this.cachedDurationSeconds,
+      this.mockEnabled,
+      this.mockData})
       : _filters = filters;
 
   @override
@@ -842,10 +874,14 @@ class _$FetchImpl implements _Fetch {
   final String url;
   @override
   final int? cachedDurationSeconds;
+  @override
+  final bool? mockEnabled;
+  @override
+  final Object? mockData;
 
   @override
   String toString() {
-    return 'EntityCustomQueryEvent.fetch(pageOptions: $pageOptions, filters: $filters, method: $method, url: $url, cachedDurationSeconds: $cachedDurationSeconds)';
+    return 'EntityCustomQueryEvent.fetch(pageOptions: $pageOptions, filters: $filters, method: $method, url: $url, cachedDurationSeconds: $cachedDurationSeconds, mockEnabled: $mockEnabled, mockData: $mockData)';
   }
 
   @override
@@ -859,7 +895,10 @@ class _$FetchImpl implements _Fetch {
             (identical(other.method, method) || other.method == method) &&
             (identical(other.url, url) || other.url == url) &&
             (identical(other.cachedDurationSeconds, cachedDurationSeconds) ||
-                other.cachedDurationSeconds == cachedDurationSeconds));
+                other.cachedDurationSeconds == cachedDurationSeconds) &&
+            (identical(other.mockEnabled, mockEnabled) ||
+                other.mockEnabled == mockEnabled) &&
+            const DeepCollectionEquality().equals(other.mockData, mockData));
   }
 
   @override
@@ -869,7 +908,9 @@ class _$FetchImpl implements _Fetch {
       const DeepCollectionEquality().hash(_filters),
       method,
       url,
-      cachedDurationSeconds);
+      cachedDurationSeconds,
+      mockEnabled,
+      const DeepCollectionEquality().hash(mockData));
 
   @JsonKey(ignore: true)
   @override
@@ -885,11 +926,16 @@ class _$FetchImpl implements _Fetch {
             List<Filter>? filters,
             String method,
             String url,
-            int? cachedDurationSeconds)
+            int? cachedDurationSeconds,
+            bool? mockEnabled,
+            Object? mockData)
         fetch,
-    required TResult Function(String id, String method, String url) fetchById,
+    required TResult Function(String id, String method, String url,
+            bool? mockEnabled, Object? mockData)
+        fetchById,
   }) {
-    return fetch(pageOptions, filters, method, url, cachedDurationSeconds);
+    return fetch(pageOptions, filters, method, url, cachedDurationSeconds,
+        mockEnabled, mockData);
   }
 
   @override
@@ -900,12 +946,16 @@ class _$FetchImpl implements _Fetch {
             List<Filter>? filters,
             String method,
             String url,
-            int? cachedDurationSeconds)?
+            int? cachedDurationSeconds,
+            bool? mockEnabled,
+            Object? mockData)?
         fetch,
-    TResult? Function(String id, String method, String url)? fetchById,
+    TResult? Function(String id, String method, String url, bool? mockEnabled,
+            Object? mockData)?
+        fetchById,
   }) {
-    return fetch?.call(
-        pageOptions, filters, method, url, cachedDurationSeconds);
+    return fetch?.call(pageOptions, filters, method, url, cachedDurationSeconds,
+        mockEnabled, mockData);
   }
 
   @override
@@ -916,13 +966,18 @@ class _$FetchImpl implements _Fetch {
             List<Filter>? filters,
             String method,
             String url,
-            int? cachedDurationSeconds)?
+            int? cachedDurationSeconds,
+            bool? mockEnabled,
+            Object? mockData)?
         fetch,
-    TResult Function(String id, String method, String url)? fetchById,
+    TResult Function(String id, String method, String url, bool? mockEnabled,
+            Object? mockData)?
+        fetchById,
     required TResult orElse(),
   }) {
     if (fetch != null) {
-      return fetch(pageOptions, filters, method, url, cachedDurationSeconds);
+      return fetch(pageOptions, filters, method, url, cachedDurationSeconds,
+          mockEnabled, mockData);
     }
     return orElse();
   }
@@ -965,7 +1020,9 @@ abstract class _Fetch implements EntityCustomQueryEvent {
       final List<Filter>? filters,
       required final String method,
       required final String url,
-      required final int? cachedDurationSeconds}) = _$FetchImpl;
+      required final int? cachedDurationSeconds,
+      final bool? mockEnabled,
+      final Object? mockData}) = _$FetchImpl;
 
   PageOptions<Map<String, dynamic>>? get pageOptions;
   List<Filter>? get filters;
@@ -974,6 +1031,10 @@ abstract class _Fetch implements EntityCustomQueryEvent {
   @override
   String get url;
   int? get cachedDurationSeconds;
+  @override
+  bool? get mockEnabled;
+  @override
+  Object? get mockData;
   @override
   @JsonKey(ignore: true)
   _$$FetchImplCopyWith<_$FetchImpl> get copyWith =>
@@ -988,7 +1049,12 @@ abstract class _$$FetchByIdImplCopyWith<$Res>
       __$$FetchByIdImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String method, String url});
+  $Res call(
+      {String id,
+      String method,
+      String url,
+      bool? mockEnabled,
+      Object? mockData});
 }
 
 /// @nodoc
@@ -1005,6 +1071,8 @@ class __$$FetchByIdImplCopyWithImpl<$Res>
     Object? id = null,
     Object? method = null,
     Object? url = null,
+    Object? mockEnabled = freezed,
+    Object? mockData = freezed,
   }) {
     return _then(_$FetchByIdImpl(
       id: null == id
@@ -1019,6 +1087,11 @@ class __$$FetchByIdImplCopyWithImpl<$Res>
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
               as String,
+      mockEnabled: freezed == mockEnabled
+          ? _value.mockEnabled
+          : mockEnabled // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      mockData: freezed == mockData ? _value.mockData : mockData,
     ));
   }
 }
@@ -1027,7 +1100,11 @@ class __$$FetchByIdImplCopyWithImpl<$Res>
 
 class _$FetchByIdImpl implements _FetchById {
   const _$FetchByIdImpl(
-      {required this.id, required this.method, required this.url});
+      {required this.id,
+      required this.method,
+      required this.url,
+      this.mockEnabled,
+      this.mockData});
 
   @override
   final String id;
@@ -1035,10 +1112,14 @@ class _$FetchByIdImpl implements _FetchById {
   final String method;
   @override
   final String url;
+  @override
+  final bool? mockEnabled;
+  @override
+  final Object? mockData;
 
   @override
   String toString() {
-    return 'EntityCustomQueryEvent.fetchById(id: $id, method: $method, url: $url)';
+    return 'EntityCustomQueryEvent.fetchById(id: $id, method: $method, url: $url, mockEnabled: $mockEnabled, mockData: $mockData)';
   }
 
   @override
@@ -1048,11 +1129,15 @@ class _$FetchByIdImpl implements _FetchById {
             other is _$FetchByIdImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.method, method) || other.method == method) &&
-            (identical(other.url, url) || other.url == url));
+            (identical(other.url, url) || other.url == url) &&
+            (identical(other.mockEnabled, mockEnabled) ||
+                other.mockEnabled == mockEnabled) &&
+            const DeepCollectionEquality().equals(other.mockData, mockData));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, method, url);
+  int get hashCode => Object.hash(runtimeType, id, method, url, mockEnabled,
+      const DeepCollectionEquality().hash(mockData));
 
   @JsonKey(ignore: true)
   @override
@@ -1068,11 +1153,15 @@ class _$FetchByIdImpl implements _FetchById {
             List<Filter>? filters,
             String method,
             String url,
-            int? cachedDurationSeconds)
+            int? cachedDurationSeconds,
+            bool? mockEnabled,
+            Object? mockData)
         fetch,
-    required TResult Function(String id, String method, String url) fetchById,
+    required TResult Function(String id, String method, String url,
+            bool? mockEnabled, Object? mockData)
+        fetchById,
   }) {
-    return fetchById(id, method, url);
+    return fetchById(id, method, url, mockEnabled, mockData);
   }
 
   @override
@@ -1083,11 +1172,15 @@ class _$FetchByIdImpl implements _FetchById {
             List<Filter>? filters,
             String method,
             String url,
-            int? cachedDurationSeconds)?
+            int? cachedDurationSeconds,
+            bool? mockEnabled,
+            Object? mockData)?
         fetch,
-    TResult? Function(String id, String method, String url)? fetchById,
+    TResult? Function(String id, String method, String url, bool? mockEnabled,
+            Object? mockData)?
+        fetchById,
   }) {
-    return fetchById?.call(id, method, url);
+    return fetchById?.call(id, method, url, mockEnabled, mockData);
   }
 
   @override
@@ -1098,13 +1191,17 @@ class _$FetchByIdImpl implements _FetchById {
             List<Filter>? filters,
             String method,
             String url,
-            int? cachedDurationSeconds)?
+            int? cachedDurationSeconds,
+            bool? mockEnabled,
+            Object? mockData)?
         fetch,
-    TResult Function(String id, String method, String url)? fetchById,
+    TResult Function(String id, String method, String url, bool? mockEnabled,
+            Object? mockData)?
+        fetchById,
     required TResult orElse(),
   }) {
     if (fetchById != null) {
-      return fetchById(id, method, url);
+      return fetchById(id, method, url, mockEnabled, mockData);
     }
     return orElse();
   }
@@ -1145,13 +1242,19 @@ abstract class _FetchById implements EntityCustomQueryEvent {
   const factory _FetchById(
       {required final String id,
       required final String method,
-      required final String url}) = _$FetchByIdImpl;
+      required final String url,
+      final bool? mockEnabled,
+      final Object? mockData}) = _$FetchByIdImpl;
 
   String get id;
   @override
   String get method;
   @override
   String get url;
+  @override
+  bool? get mockEnabled;
+  @override
+  Object? get mockData;
   @override
   @JsonKey(ignore: true)
   _$$FetchByIdImplCopyWith<_$FetchByIdImpl> get copyWith =>

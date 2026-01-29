@@ -283,6 +283,8 @@ class EntityViewPage extends StatelessWidget {
             id: data['id'].toString(),
             method: entity.backend.read!.method,
             url: entity.backend.read!.url,
+            mockEnabled: entity.backend.read!.mockEnabled,
+            mockData: entity.backend.read!.mockData,
           ),
         );
   }

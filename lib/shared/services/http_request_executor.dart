@@ -21,12 +21,20 @@ class HttpRequestConfig {
   /// akan dikonversi ke [FormData.fromMap].
   final bool asFormData;
 
+  /// Whether to use mock data instead of calling the actual API.
+  final bool mockEnabled;
+
+  /// The data to return when [mockEnabled] is true.
+  final Object? mockData;
+
   const HttpRequestConfig({
     required this.method,
     required this.url,
     required this.headers,
     this.body,
     this.asFormData = false,
+    this.mockEnabled = false,
+    this.mockData,
   });
 }
 
@@ -112,6 +120,18 @@ class HttpRequestExecutor {
       headers: processedHeaders,
     );
 
+    if (config.mockEnabled) {
+      _logMockRequest(
+        method: methodUpper,
+        url: processedUrl,
+        data: config.mockData,
+      );
+      return HttpRequestResult.success(
+        statusCode: 200,
+        data: config.mockData,
+      );
+    }
+
     _logHttpRequest(
       method: methodUpper,
       url: processedUrl,
@@ -177,6 +197,20 @@ class HttpRequestExecutor {
   }
 
   // --------------------------- LOGGING -------------------------------------
+  void _logMockRequest({
+    required String method,
+    required String url,
+    required Object? data,
+  }) {
+    if (enableLog) {
+      print('================ HTTP MOCK REQUEST ============');
+      print('→ Method     : $method');
+      print('→ URL        : $url');
+      print('→ Mock Data  : $data');
+      print('==============================');
+    }
+  }
+
   void _logHttpRequest({
     required String method,
     required String url,

@@ -72,6 +72,7 @@ class Backend extends HiveObject {
       'create': create?.toJson(),
       'update': update?.toJson(),
       'delete': deleteX?.toJson(),
+      'others': others.map((e) => e.toJson()).toList(),
     };
   }
 }
@@ -90,6 +91,12 @@ class BackendEndpoint extends HiveObject {
   /// s=seconds, m=minutes, h=hours, d=days
   final String? cacheDuration;
 
+  /// Whether to use mock data instead of calling the actual API.
+  final bool mockEnabled;
+
+  /// The data to return when [mockEnabled] is true.
+  final Object? mockData;
+
   BackendEndpoint({
     required this.method,
     required this.url,
@@ -97,6 +104,8 @@ class BackendEndpoint extends HiveObject {
     this.headers,
     this.cached = false,
     this.cacheDuration,
+    this.mockEnabled = false,
+    this.mockData,
   });
 
   /// Factory constructor to create [BackendEndpoint] from JSON.
@@ -109,6 +118,8 @@ class BackendEndpoint extends HiveObject {
         headers: (json['headers'] as Map?)?.cast<String, String>(),
         cached: (json['cached'] as bool?) ?? false,
         cacheDuration: json['cache_duration'] as String?,
+        mockEnabled: (json['mock_enabled'] as bool?) ?? false,
+        mockData: json['mock_data'],
       );
     } catch (e) {
       // Hindari print berlebihan di production; ganti dengan logger bila perlu.
@@ -126,7 +137,9 @@ class BackendEndpoint extends HiveObject {
       'data': data,
       'headers': headers,
       'cached': cached,
-      'cacheDuration': cacheDuration,
+      'cache_duration': cacheDuration,
+      'mock_enabled': mockEnabled,
+      'mock_data': mockData,
     };
   }
 }

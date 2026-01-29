@@ -30,11 +30,15 @@ class EntityCustomQueryEvent with _$EntityCustomQueryEvent {
     required String method,
     required String url,
     required int? cachedDurationSeconds,
+    bool? mockEnabled,
+    Object? mockData,
   }) = _Fetch;
   const factory EntityCustomQueryEvent.fetchById({
     required String id,
     required String method,
     required String url,
+    bool? mockEnabled,
+    Object? mockData,
   }) = _FetchById;
 }
 
@@ -44,7 +48,7 @@ class EntityCustomQueryBloc
     on<EntityCustomQueryEvent>(
       (event, emit) async {
         await event.when(
-          fetchById: (id, method, url) async {
+          fetchById: (id, method, url, mockEnabled, mockData) async {
             print(
                 'EntityCustomQueryBloc.fetchById: id=$id, method=$method, url=$url');
             emit(_Loading(_pageOptions));
@@ -61,6 +65,8 @@ class EntityCustomQueryBloc
                 method: method,
                 path: finalUrl,
                 headers: headers,
+                mockEnabled: mockEnabled ?? false,
+                mockData: mockData,
               );
               print('EntityCustomQueryBloc.fetchById: success, data received');
               emit(_Loaded(_pageOptions.copyWith(data: [data])));
@@ -75,6 +81,8 @@ class EntityCustomQueryBloc
             method,
             url,
             cachedDurationSeconds,
+            mockEnabled,
+            mockData,
           ) async {
             print(
                 'EntityCustomQueryBloc.fetch: method=$method, url=$url, cachedDurationSeconds=$cachedDurationSeconds');
@@ -102,6 +110,8 @@ class EntityCustomQueryBloc
                 filterMap: filterMap,
                 headers: null,
                 cachedDurationSeconds: cachedDurationSeconds,
+                mockEnabled: mockEnabled ?? false,
+                mockData: mockData,
               );
 
               print(

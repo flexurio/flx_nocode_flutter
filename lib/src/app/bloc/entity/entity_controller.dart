@@ -54,7 +54,9 @@ class EntityController extends GetxController {
         method: method,
         headers: entity.backend.create?.headers,
         data: Map.from(data)
-          ..addAll(entity.backend.create!.body(filters: filters)),
+          ..addAll(entity.backend.create?.body(filters: filters) ?? {}),
+        mockEnabled: entity.backend.create?.mockEnabled ?? false,
+        mockData: entity.backend.create?.mockData,
       );
       _logSuccess('EXECUTE', response);
       _state.value = EntityState.success(response);
@@ -80,6 +82,8 @@ class EntityController extends GetxController {
         path: resolvedUrl,
         method: event.method,
         headers: event.headers,
+        mockEnabled: event.mockEnabled,
+        mockData: event.mockData,
       );
       _logSuccess('OTHER EVENT', response);
       _state.value = EntityState.success(response);
@@ -113,6 +117,8 @@ class EntityController extends GetxController {
         headers: entity.backend.create!.headers,
         data: Map.from(data)
           ..addAll(entity.backend.create!.body(filters: filters)),
+        mockEnabled: entity.backend.create!.mockEnabled,
+        mockData: entity.backend.create!.mockData,
       );
       _logSuccess('CREATE', response);
       _state.value = EntityState.success(response);
@@ -153,6 +159,8 @@ class EntityController extends GetxController {
         headers: entity.backend.update!.headers,
         data: Map.from(data)
           ..addAll(entity.backend.update!.body(filters: filters)),
+        mockEnabled: entity.backend.update!.mockEnabled,
+        mockData: entity.backend.update!.mockData,
       );
       _logSuccess('EDIT', response);
       _state.value = EntityState.success(response);
@@ -177,6 +185,8 @@ class EntityController extends GetxController {
         ),
         method: entity.backend.deleteX!.method,
         headers: entity.backend.deleteX!.headers,
+        mockEnabled: entity.backend.deleteX!.mockEnabled,
+        mockData: entity.backend.deleteX!.mockData,
       );
       _logSuccess('DELETE', 'Deleted successfully');
       _state.value = const EntityState.success(null);

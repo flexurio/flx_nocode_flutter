@@ -15,6 +15,12 @@ class BackendOther extends HiveObject {
   final Color color;
   final Map<String, String>? headers;
 
+  /// Whether to use mock data instead of calling the actual API.
+  final bool mockEnabled;
+
+  /// The data to return when [mockEnabled] is true.
+  final Object? mockData;
+
   BackendOther({
     required this.method,
     required this.url,
@@ -22,6 +28,8 @@ class BackendOther extends HiveObject {
     required this.visible,
     required this.color,
     this.headers,
+    this.mockEnabled = false,
+    this.mockData,
   });
 
   factory BackendOther.fromJson(Map<String, dynamic> json) {
@@ -32,7 +40,22 @@ class BackendOther extends HiveObject {
       visible: json['visible'],
       color: core.colorFromHex(json['color']),
       headers: (json['headers'] as Map?)?.cast<String, String>(),
+      mockEnabled: (json['mock_enabled'] as bool?) ?? false,
+      mockData: json['mock_data'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'method': method,
+      'url': url,
+      'title': title,
+      'visible': visible,
+      'color': '#${color.value.toRadixString(16).padLeft(8, '0')}',
+      'headers': headers,
+      'mock_enabled': mockEnabled,
+      'mock_data': mockData,
+    };
   }
 
   bool checkVisible(Map<String, dynamic> data) {
