@@ -196,6 +196,7 @@ import 'dart:convert';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
+import '../../../src/app/model/configuration.dart';
 
 typedef WorkflowValidator = Future<void> Function(
     String scope, Map<String, dynamic> form);
@@ -399,7 +400,7 @@ class Template {
 
 class _WorkflowScopeBuilder {
   static Map<String, dynamic> build(WorkflowContext ctx) {
-    return <String, dynamic>{
+    final scope = <String, dynamic>{
       'form': _sanitize(ctx.form),
       'record': _sanitize(ctx.record),
       'data': _sanitize(ctx.data),
@@ -416,6 +417,28 @@ class _WorkflowScopeBuilder {
         }),
       ),
     };
+
+    // Add globals from Configuration
+    try {
+      scope['backend_host'] = Configuration.instance.backendHost;
+      scope['app_name'] = Configuration.instance.appName;
+      for (final v in Configuration.instance.variables) {
+        scope[v.key] = v.value;
+      }
+    } catch (_) {
+      // Configuration not initialized yet
+    }
+
+    // Spread data into root for convenience (e.g. {{ id }} instead of {{ data.id }})
+    if (ctx.data.isNotEmpty) {
+      for (final entry in ctx.data.entries) {
+        if (!scope.containsKey(entry.key)) {
+          scope[entry.key] = _sanitize(entry.value);
+        }
+      }
+    }
+
+    return scope;
   }
 
   static dynamic _sanitize(dynamic value) {
@@ -719,6 +742,8 @@ class HttpAction implements WorkflowAction {
             (k, v) => MapEntry(k.toString(), v),
           ),
           useFormData: http.useFormData,
+          mockEnabled: http.mockEnabled,
+          mockData: Template.resolve(http.mockData, ctx),
         );
 
         print('[HttpAction] Executing "$actionLabel":');

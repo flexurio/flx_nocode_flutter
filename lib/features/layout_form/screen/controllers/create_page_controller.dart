@@ -12,7 +12,6 @@ import 'package:get/get.dart';
 
 import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
-import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 
 import 'utils/create_page_controller_utils.dart';
@@ -287,26 +286,30 @@ class CreatePageController extends GetxController {
     final onInit = layoutForm.onInit;
     if (onInit == null) return;
 
+    debugPrint(
+        '[CreatePageController] _executeOnInitActions STARTED for $layoutFormId');
+
     // Prepare context data for interpolation
-    final data = <String, dynamic>{
+    final contextData = <String, dynamic>{
       if (initialDataInput != null) ...initialDataInput!,
       ...filters,
     };
     // Include parent data if possible
     if (parentData.isNotEmpty) {
       for (final p in parentData) {
-        data.addAll(p);
+        contextData.addAll(p);
       }
     }
 
     if (onInit is Map<String, dynamic>) {
+      debugPrint('[CreatePageController] Executing onInit as Workflow');
       // Execute as Workflow
       try {
         final definition = WorkflowDefinition.fromJson(onInit);
         final executor = GetxHttpExecutor(); // Reusing the same executor
         final ctx = WorkflowContext(
           form: currentData,
-          data: initialDataInput ?? {},
+          data: contextData,
           auth: AuthContext(
             permissions: UserRepositoryApp.instance.permissions,
           ),
@@ -314,6 +317,8 @@ class CreatePageController extends GetxController {
         );
 
         final result = await WorkflowExecutor(definition).run(ctx);
+        debugPrint(
+            '[CreatePageController] onInit Workflow result: ${result.status}');
 
         if (result.isSuccess) {
           // Sync workflow output back to form
@@ -321,10 +326,15 @@ class CreatePageController extends GetxController {
               ? Map<String, dynamic>.from(result.data as Map)
               : <String, dynamic>{};
 
+          debugPrint(
+              '[CreatePageController] Syncing ${output.length} workflow output keys back to form');
+
           for (final entry in output.entries) {
             initialData[entry.key] = entry.value;
             if (controllers.containsKey(entry.key)) {
               controllers[entry.key]?.text = entry.value?.toString() ?? '';
+              debugPrint(
+                  '[CreatePageController]   > Set controller [${entry.key}] = ${entry.value}');
             }
           }
         }
@@ -336,18 +346,28 @@ class CreatePageController extends GetxController {
     }
 
     if (onInit is List<ActionD>) {
+      debugPrint(
+          '[CreatePageController] Executing onInit as Legacy Actions (${onInit.length} actions)');
       // Execute as Legacy Actions
       for (final action in onInit) {
         if (action.http != null) {
           try {
+            debugPrint(
+                '[CreatePageController] Executing Legacy Action: ${action.id}');
             final result = await action.http!.execute(
-              data,
+              contextData,
               executor: httpRequestExecutor,
             );
+
+            debugPrint(
+                '[CreatePageController] Legacy Action SUCCESS: ${action.id}');
 
             if (action.targetVariable != null &&
                 action.targetVariable!.isNotEmpty) {
               final key = action.targetVariable!;
+
+              debugPrint(
+                  '[CreatePageController] Syncing Action result to variable: $key');
 
               // Store the result
               initialData[key] = result.data;
@@ -356,10 +376,12 @@ class CreatePageController extends GetxController {
               if (controllers.containsKey(key)) {
                 final textVal = result.data?.toString() ?? '';
                 controllers[key]?.text = textVal;
+                debugPrint(
+                    '[CreatePageController]   > Set controller [$key] = $textVal');
               }
 
               // Also update the data map for subsequent actions in this loop
-              data[key] = result.data;
+              contextData[key] = result.data;
             }
           } catch (e) {
             debugPrint(
@@ -369,5 +391,6 @@ class CreatePageController extends GetxController {
         }
       }
     }
+    debugPrint('[CreatePageController] _executeOnInitActions ENDED');
   }
 }
