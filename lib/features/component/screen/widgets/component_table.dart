@@ -1,69 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' hide TColumn;
-import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:get/get.dart';
+import 'component_table_controller.dart';
 
 extension ComponentTableWidgets on ComponentTable {
   Widget toWidget(JsonMap data) {
-    return _ComponentTableHttpWidget(component: this, data: data);
+    return _ComponentTableWidget(component: this, data: data);
   }
 }
 
-class _ComponentTableHttpWidget extends StatefulWidget {
-  const _ComponentTableHttpWidget({
+class _ComponentTableWidget extends StatelessWidget {
+  const _ComponentTableWidget({
     required this.component,
     required this.data,
   });
 
   final ComponentTable component;
   final JsonMap data;
-
-  @override
-  State<_ComponentTableHttpWidget> createState() =>
-      _ComponentTableHttpWidgetState();
-}
-
-class _ComponentTableHttpWidgetState extends State<_ComponentTableHttpWidget> {
-  late Future<List<JsonMap>> _future;
-
-  @override
-  void initState() {
-    super.initState();
-    _future = _loadData(widget.data);
-  }
-
-  Future<List<JsonMap>> _loadData(JsonMap item) async {
-    final httpData = widget.component.http;
-    final result = await httpData.execute(item);
-
-    if (!result.isSuccess) {
-      throw Exception(result.message ?? 'Request failed');
-    }
-
-    final data = result.data;
-
-    if (data is List) {
-      return data
-          .where((e) => e is Map)
-          .map<JsonMap>((e) => Map<String, dynamic>.from(e as Map))
-          .toList();
-    }
-
-    if (data is Map) {
-      final map = Map<String, dynamic>.from(data);
-      final inner = map['data'];
-      if (inner is List) {
-        return inner
-            .where((e) => e is Map)
-            .map<JsonMap>((e) => Map<String, dynamic>.from(e as Map))
-            .toList();
-      }
-    }
-
-    return const <JsonMap>[];
-  }
 
   String _buildCellText(JsonMap row, TColumn column) {
     final key = column.body;
@@ -80,78 +36,79 @@ class _ComponentTableHttpWidgetState extends State<_ComponentTableHttpWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<JsonMap>>(
-      future: _future,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
+    // Unique tag for each table component to prevent controller collision
+    final tag = 'table_${component.id}';
+    final controller = Get.put(
+      ComponentTableController(component: component, contextData: data),
+      tag: tag,
+    );
+    controller.updateContextData(data);
 
-        final rows = snapshot.data ?? const <JsonMap>[];
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-        var tableColumns = widget.component.columns.map((c) {
-          return TableColumn<JsonMap>(
-            title: c.header,
-            width: c.width,
-            builder: (row, index) {
-              final text = _buildCellText(row, c);
-              return Text(
-                text.interpolateJavascript(
-                  {
-                    "current": widget.data.map((key, value) {
-                      if (value is TextEditingController) {
-                        return MapEntry(key, value.text);
-                      }
-                      return MapEntry(key, value);
-                    }),
-                    "row": row,
-                  },
-                ),
-              );
-            },
-          );
-        }).toList();
+      final rows = controller.rows;
 
-        if (tableColumns.isEmpty) {
-          tableColumns = [
-            TableColumn<JsonMap>(
-              title: 'No Columns',
-              width: 200,
-              builder: (_, __) => const Text('-'),
-            ),
-          ];
-        }
-
-        final table = YuhuTable<JsonMap>(
-          width: widget.component.width,
-          data: rows,
-          columns: tableColumns,
+      var tableColumns = component.columns.map((c) {
+        return TableColumn<JsonMap>(
+          title: c.header,
+          width: c.width,
+          builder: (row, index) {
+            final text = _buildCellText(row, c);
+            return Text(
+              text.interpolateJavascript({
+                "current": data.map((key, value) {
+                  if (value is TextEditingController) {
+                    return MapEntry(key, value.text);
+                  }
+                  return MapEntry(key, value);
+                }),
+                "row": row,
+              }),
+            );
+          },
         );
+      }).toList();
 
-        if (snapshot.hasError) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Tooltip(
-                  message: 'Failed to load data: ${snapshot.error}',
-                  child: Icon(
-                    Icons.error,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
+      if (tableColumns.isEmpty) {
+        tableColumns = [
+          TableColumn<JsonMap>(
+            title: 'No Columns',
+            width: 200,
+            builder: (_, __) => const Text('-'),
+          ),
+        ];
+      }
+
+      final table = YuhuTable<JsonMap>(
+        width: component.width,
+        data: rows,
+        columns: tableColumns,
+      );
+
+      if (controller.error.value != null) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Tooltip(
+                message: 'Failed to load data: ${controller.error.value}',
+                child: Icon(
+                  Icons.error,
+                  color: Theme.of(context).colorScheme.error,
                 ),
               ),
-              table,
-            ],
-          );
-        }
+            ),
+            table,
+          ],
+        );
+      }
 
-        return table;
-      },
-    );
+      return table;
+    });
   }
 }

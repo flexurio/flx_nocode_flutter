@@ -81,7 +81,7 @@ class HttpRequestResult {
 class HttpRequestExecutor {
   HttpRequestExecutor({Dio? dio}) : _dio = dio ?? Dio();
 
-  static const bool enableLog = false;
+  static const bool enableLog = true;
 
   final Dio _dio;
 
@@ -111,13 +111,35 @@ class HttpRequestExecutor {
     }
 
     final processedUrl = config.url.interpolateJavascript();
-    final processedHeaders = config.headers.map((k, v) {
-      return MapEntry(k.interpolateJavascript(), v.interpolateJavascript());
+
+    // Sanitize headers: Remove forbidden browser headers that can cause CORS/Security errors
+    final forbiddenHeaders = {
+      'connection',
+      'user-agent',
+      'host',
+      'origin',
+      'referer',
+      'sec-fetch-dest',
+      'sec-fetch-mode',
+      'sec-fetch-site',
+      'sec-gpc',
+      'sec-ch-ua',
+      'sec-ch-ua-mobile',
+      'sec-ch-ua-platform',
+      'accept-encoding',
+      'content-length',
+    };
+
+    final sanitizedHeaders = <String, String>{};
+    config.headers.forEach((k, v) {
+      if (!forbiddenHeaders.contains(k.toLowerCase())) {
+        sanitizedHeaders[k.interpolateJavascript()] = v.interpolateJavascript();
+      }
     });
 
     final options = Options(
       method: methodUpper,
-      headers: processedHeaders,
+      headers: sanitizedHeaders,
     );
 
     if (config.mockEnabled) {
@@ -135,7 +157,7 @@ class HttpRequestExecutor {
     _logHttpRequest(
       method: methodUpper,
       url: processedUrl,
-      headers: processedHeaders,
+      headers: sanitizedHeaders,
       body: config.body,
       asFormData: config.asFormData,
     );
@@ -179,7 +201,8 @@ class HttpRequestExecutor {
       );
       final String message = _extractErrorMessage(
         e.response?.data,
-        fallback: e.message ?? 'Unknown error occurred',
+        fallback:
+            e.message ?? 'Network error or CORS policy blocked the request',
       );
       return HttpRequestResult.failure(
         statusCode: e.response?.statusCode,
