@@ -12,7 +12,7 @@ extension ComponentTableWidgets on ComponentTable {
   }
 }
 
-class _ComponentTableWidget extends StatelessWidget {
+class _ComponentTableWidget extends StatefulWidget {
   const _ComponentTableWidget({
     required this.component,
     required this.data,
@@ -20,6 +20,42 @@ class _ComponentTableWidget extends StatelessWidget {
 
   final ComponentTable component;
   final JsonMap data;
+
+  @override
+  State<_ComponentTableWidget> createState() => _ComponentTableWidgetState();
+}
+
+class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
+  late String tag;
+  late ComponentTableController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    tag = 'table_${widget.component.id}_${identityHashCode(this)}';
+    controller = Get.put(
+      ComponentTableController(
+        component: widget.component,
+        contextData: widget.data,
+      ),
+      tag: tag,
+    );
+  }
+
+  @override
+  void dispose() {
+    Get.delete<ComponentTableController>(tag: tag);
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant _ComponentTableWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.data != widget.data) {
+      controller.updateContextData(widget.data);
+      controller.loadData();
+    }
+  }
 
   String _buildCellText(JsonMap row, TColumn column) {
     final key = column.body;
@@ -36,14 +72,6 @@ class _ComponentTableWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Unique tag for each table component to prevent controller collision
-    final tag = 'table_${component.id}';
-    final controller = Get.put(
-      ComponentTableController(component: component, contextData: data),
-      tag: tag,
-    );
-    controller.updateContextData(data);
-
     return Obx(() {
       if (controller.isLoading.value) {
         return const Center(child: CircularProgressIndicator());
@@ -51,7 +79,7 @@ class _ComponentTableWidget extends StatelessWidget {
 
       final rows = controller.rows;
 
-      var tableColumns = component.columns.map((c) {
+      var tableColumns = widget.component.columns.map((c) {
         return TableColumn<JsonMap>(
           title: c.header,
           width: c.width,
@@ -59,7 +87,7 @@ class _ComponentTableWidget extends StatelessWidget {
             final text = _buildCellText(row, c);
             return Text(
               text.interpolateJavascript({
-                "current": data.map((key, value) {
+                "current": widget.data.map((key, value) {
                   if (value is TextEditingController) {
                     return MapEntry(key, value.text);
                   }
@@ -83,7 +111,7 @@ class _ComponentTableWidget extends StatelessWidget {
       }
 
       final table = YuhuTable<JsonMap>(
-        width: component.width,
+        width: widget.component.width,
         data: rows,
         columns: tableColumns,
       );
