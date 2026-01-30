@@ -18,7 +18,6 @@ JsonMap _coerceJsonMap(dynamic v) {
 class LayoutForm extends HiveObject {
   final String id;
   final String label;
-  final String type; // "create" | "update" | "view" | "home"
   final Rule? visibleIf;
   final List<Component> components;
   final List<ButtonAction> buttons;
@@ -26,11 +25,6 @@ class LayoutForm extends HiveObject {
   final Map<String, dynamic>? submitWorkflow;
   final dynamic
       onInit; // Map<String, dynamic> (Workflow) or List<ActionD> (Legacy)
-
-  static const String createType = 'create';
-  static const String updateType = 'update';
-  static const String viewType = 'view';
-  static const String homeType = 'home';
 
   List<String> get componentIds => components.map((e) => e.id).toList();
   bool get useNewForm => components.isNotEmpty;
@@ -60,7 +54,6 @@ class LayoutForm extends HiveObject {
   LayoutForm.empty()
       : id = '',
         label = '',
-        type = createType,
         visibleIf = null,
         components = const [],
         buttons = const [],
@@ -71,7 +64,6 @@ class LayoutForm extends HiveObject {
   LayoutForm({
     required this.id,
     required this.label,
-    required this.type,
     this.visibleIf,
     required this.components,
     List<ButtonAction>? buttons,
@@ -79,7 +71,6 @@ class LayoutForm extends HiveObject {
     Map<String, dynamic>? submitWorkflow,
     dynamic onInit,
   })  : assert(label.trim().isNotEmpty, 'label is required'),
-        assert(type.trim().isNotEmpty, 'type is required'),
         buttons = List<ButtonAction>.unmodifiable(buttons ?? const []),
         submitWorkflow = submitWorkflow == null
             ? null
@@ -98,11 +89,7 @@ class LayoutForm extends HiveObject {
     JsonMap map, {
     required bool allowMultiForms,
   }) {
-    if (map['type'] == null || map['type'].toString().trim().isEmpty) {
-      throw const FormatException('Action "type" is required');
-    }
-    final type = map['type'].toString().trim();
-    final id = map['id']?.toString().trim() ?? type;
+    final id = map['id']?.toString().trim() ?? '';
 
     if (map['label'] == null || map['label'].toString().trim().isEmpty) {
       throw const FormatException('Action "label" is required');
@@ -200,7 +187,6 @@ class LayoutForm extends HiveObject {
       id: id,
       components: components ?? const [],
       label: map['label'].toString().trim(),
-      type: type,
       visibleIf: map['visible_if'] == null
           ? null
           : Rule.fromMap(_coerceJsonMap(map['visible_if'])),
@@ -215,7 +201,6 @@ class LayoutForm extends HiveObject {
     final m = <String, dynamic>{
       'id': id,
       'label': label,
-      'type': type,
       'components': components.map((e) => e.toMap()).toList(growable: false),
     };
 
@@ -249,7 +234,6 @@ class LayoutForm extends HiveObject {
   LayoutForm copyWith({
     String? id,
     String? label,
-    String? type,
     Rule? visibleIf,
     List<ButtonAction>? buttons,
     List<Component>? components,
@@ -261,7 +245,6 @@ class LayoutForm extends HiveObject {
       id: id ?? this.id,
       components: components ?? this.components,
       label: label ?? this.label,
-      type: type ?? this.type,
       visibleIf: visibleIf ?? this.visibleIf,
       buttons: buttons ?? this.buttons,
       multiForms: multiForms ?? this.multiForms,

@@ -9,7 +9,7 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component.d
 import 'package:flutter/widgets.dart';
 
 extension LayoutFormDomainX on LayoutForm {
-  FormType get formType => FormType.fromString(type);
+  FormType get formType => FormType.fromString(id);
 
   /// Returns (usedFields, availableFields) with unique, ordered entries.
   (List<String> usedFields, List<String> availableFields) getFieldByStatus(
@@ -73,14 +73,6 @@ extension LayoutFormDomainX on LayoutForm {
     final seen = <String>{};
     for (final c in components) {
       _validateComponent(c, seen);
-    }
-
-    // 2) Verify supported type values
-    final allowed = {'create', 'update', 'view', 'home'};
-    if (!allowed.contains(type)) {
-      throw FormatException(
-        'Invalid "type": "$type". Allowed: ${allowed.join(", ")}',
-      );
     }
   }
 

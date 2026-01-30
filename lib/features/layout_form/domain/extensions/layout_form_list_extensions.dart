@@ -12,7 +12,7 @@ extension LayoutFormListExtension on List<LayoutForm> {
   }
 
   LayoutForm? getByType(FormType type) {
-    final index = indexWhere((e) => e.type == type.name && !e.useNewForm);
+    final index = indexWhere((e) => e.id == type.name && !e.useNewForm);
     if (index > -1) {
       return this[index];
     }
@@ -20,7 +20,7 @@ extension LayoutFormListExtension on List<LayoutForm> {
   }
 
   int getTypeIndex(FormType type) {
-    final index = indexWhere((e) => e.type == type.name);
+    final index = indexWhere((e) => e.id == type.name);
     return index == -1 ? 0 : index;
   }
 }
