@@ -246,8 +246,7 @@ class _JsonTableViewerState extends State<JsonTableViewer> {
                       rows: [
                         for (int i = 0; i < filteredRows.length; i++)
                           DataRow(
-                            color:
-                                WidgetStateProperty.resolveWith<Color?>((_) {
+                            color: WidgetStateProperty.resolveWith<Color?>((_) {
                               // alternating row color
                               return i.isEven ? Colors.grey.shade50 : null;
                             }),
