@@ -176,11 +176,16 @@ class HttpData extends HiveObject {
 extension HttpDataExtension on HttpData {
   /// Build HttpRequestConfig dari HttpData.
   HttpRequestConfig toRequestConfig(JsonMap data) {
+    // String interpolation for URL and body.
+    // Query parameters are assumed to be part of the URL string.
+    String processedUrl = url.renderWithData(data).interpolateJavascript(data);
+    final interpolatedBody = _interpolateBody(data);
+
     return HttpRequestConfig(
       method: method.toUpperCase(),
-      url: url.renderWithData(data).interpolateJavascript(data),
+      url: processedUrl,
       headers: _interpolateHeaders(data),
-      body: _interpolateBody(data),
+      body: interpolatedBody,
       asFormData: useFormData,
       mockEnabled: mockEnabled,
       mockData: mockData,
