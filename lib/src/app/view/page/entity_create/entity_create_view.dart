@@ -7,7 +7,6 @@ import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_field_form_controllers.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_create/widgets/entity_create_layouts.dart';
 import 'package:flutter/material.dart';
@@ -120,9 +119,7 @@ class _EntityCreateViewState extends State<EntityCreateView> {
               submitButton: _buildButtonSubmit(controller),
               coreEntity: coreEntity,
               title: _buildTitle(),
-              action: widget.layoutForm.formType.isHome
-                  ? DataAction.reprocess
-                  : _action,
+              action: widget.layoutForm.isHome ? DataAction.reprocess : _action,
               suffixText: headerSuffix,
             );
     });
@@ -131,12 +128,12 @@ class _EntityCreateViewState extends State<EntityCreateView> {
   String _buildTitle() {
     final baseTitle = '${_action.title} ${widget.entity.coreEntity.title}';
     final label = widget.layoutForm.label.trim();
-    if (widget.layoutForm.formType.isHome && label.isNotEmpty) return label;
+    if (widget.layoutForm.isHome && label.isNotEmpty) return label;
     return baseTitle;
   }
 
   String _headerSuffix() {
-    if (!widget.layoutForm.formType.isHome) return '';
+    if (!widget.layoutForm.isHome) return '';
     final baseTitle = '${_action.title} ${widget.entity.coreEntity.title}';
     final label = widget.layoutForm.label.trim();
     if (label.isEmpty) return '';
@@ -182,7 +179,7 @@ class _EntityCreateViewState extends State<EntityCreateView> {
 
   void _submit(EntityController controller) {
     if (_formKey.currentState!.validate()) {
-      if (_action.isEdit || widget.layoutForm.formType.isHome) {
+      if (_action.isEdit || widget.layoutForm.isHome) {
         controller.edit(data: _data, filters: widget.filters);
       } else {
         controller.create(data: _data, filters: widget.filters);
@@ -234,8 +231,7 @@ class _EntityCreateViewState extends State<EntityCreateView> {
         permission: null,
         isInProgress: inProgress,
         onPressed: () => _submit(controller),
-        action:
-            widget.layoutForm.formType.isHome ? DataAction.reprocess : _action,
+        action: widget.layoutForm.isHome ? DataAction.reprocess : _action,
       );
     });
   }

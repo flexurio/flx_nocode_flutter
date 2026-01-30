@@ -5,7 +5,6 @@ import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_fiel
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
 import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -265,13 +264,13 @@ class CreatePageController extends GetxController {
   String get title {
     final baseTitle = '${action.title} ${entity.coreEntity.title}';
     final label = layoutForm.label.trim();
-    if (layoutForm.formType.isHome && label.isNotEmpty) return label;
+    if (layoutForm.isHome && label.isNotEmpty) return label;
     return baseTitle;
   }
 
   /// Computes a suffix for the header, often used for additional context in Home forms.
   String get headerSuffix {
-    if (!layoutForm.formType.isHome) return '';
+    if (!layoutForm.isHome) return '';
     final baseTitle = '${action.title} ${entity.coreEntity.title}';
     final label = layoutForm.label.trim();
     if (label.isEmpty) return '';

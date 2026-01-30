@@ -4,7 +4,6 @@ import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/enitty_create_form.dart';
 import 'package:flx_nocode_flutter/src/app/view/page/entity_create/widgets/entity_create_layouts.dart';
@@ -93,9 +92,7 @@ class CreateForm extends StatelessWidget {
                     popup: true,
                     width: width ?? 400,
                     title: controller.title,
-                    icon: layoutForm.formType.isHome
-                        ? Icons.home
-                        : Icons.edit_note,
+                    icon: layoutForm.isHome ? Icons.home : Icons.edit_note,
                     actions: [
                       Button.action(
                         permission: null,
@@ -125,7 +122,7 @@ class CreateForm extends StatelessWidget {
                           _buildButtonSubmit(context, controller, entityCtrl),
                       coreEntity: coreEntity,
                       title: controller.title,
-                      action: layoutForm.formType.isHome
+                      action: layoutForm.isHome
                           ? DataAction.reprocess
                           : controller.action,
                       suffixText: controller.headerSuffix,
@@ -220,7 +217,7 @@ class CreateForm extends StatelessWidget {
                 permission: null,
                 isInProgress: inProgress,
                 onPressed: () => controller.submit(context),
-                action: layoutForm.formType.isHome
+                action: layoutForm.isHome
                     ? DataAction.reprocess
                     : controller.action,
               ),
@@ -238,9 +235,7 @@ class CreateForm extends StatelessWidget {
         permission: null,
         isInProgress: inProgress,
         onPressed: () => controller.submit(context),
-        action: layoutForm.formType.isHome
-            ? DataAction.reprocess
-            : controller.action,
+        action: layoutForm.isHome ? DataAction.reprocess : controller.action,
       );
     });
   }

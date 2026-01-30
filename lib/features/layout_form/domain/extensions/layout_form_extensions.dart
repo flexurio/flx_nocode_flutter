@@ -3,13 +3,16 @@ import 'dart:collection';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
 import 'package:flutter/widgets.dart';
 
 extension LayoutFormDomainX on LayoutForm {
-  FormType get formType => FormType.fromString(id);
+  bool get isHome => id.toLowerCase().trim() == 'home';
+  bool get isView =>
+      ['view', 'detail', 'details'].contains(id.toLowerCase().trim());
+  bool get isCreate => ['create', 'add'].contains(id.toLowerCase().trim());
+  bool get isUpdate => ['update', 'edit'].contains(id.toLowerCase().trim());
 
   /// Returns (usedFields, availableFields) with unique, ordered entries.
   (List<String> usedFields, List<String> availableFields) getFieldByStatus(
@@ -123,10 +126,10 @@ extension LayoutFormDomainX on LayoutForm {
   }
 
   DataAction get action {
-    if (formType.isHome) return DataAction.create;
-    if (formType.isUpdate) return DataAction.update;
-    if (formType.isView) return DataAction.view;
-    if (formType.isCreate) return DataAction.create;
+    if (isHome) return DataAction.create;
+    if (isUpdate) return DataAction.update;
+    if (isView) return DataAction.view;
+    if (isCreate) return DataAction.create;
     return DataAction.none;
   }
 }

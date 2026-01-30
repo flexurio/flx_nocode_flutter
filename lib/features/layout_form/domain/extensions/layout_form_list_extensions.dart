@@ -1,26 +1,18 @@
+import 'package:collection/collection.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:flx_nocode_flutter/features/layout_form/models/type.dart';
 
 extension LayoutFormListExtension on List<LayoutForm> {
   List<LayoutForm> get updateForms {
-    return where((element) => element.formType == FormType.update).toList();
+    return where((element) => element.isUpdate).toList();
   }
 
   List<LayoutForm> get homeActionForms {
-    return where((element) => element.formType == FormType.home).toList();
+    return where((element) => element.isHome).toList();
   }
 
-  LayoutForm? getByType(FormType type) {
-    final index = indexWhere((e) => e.id == type.name && !e.useNewForm);
-    if (index > -1) {
-      return this[index];
-    }
-    return null;
-  }
-
-  int getTypeIndex(FormType type) {
-    final index = indexWhere((e) => e.id == type.name);
-    return index == -1 ? 0 : index;
-  }
+  LayoutForm? get home => firstWhereOrNull((e) => e.isHome);
+  LayoutForm? get view => firstWhereOrNull((e) => e.isView);
+  LayoutForm? get create => firstWhereOrNull((e) => e.isCreate);
+  LayoutForm? get update => firstWhereOrNull((e) => e.isUpdate);
 }

@@ -236,7 +236,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       if (widget.entity.allowCreate)
         EntityCreateButtonOld(
           parentData: widget.parentData,
-          layoutForm: widget.entity.layoutForm.getByType(FormType.create),
+          layoutForm: widget.entity.layoutForm.create,
           embedded: widget.embedded,
           entity: widget.entity,
           filters: _filters.toMap(),
