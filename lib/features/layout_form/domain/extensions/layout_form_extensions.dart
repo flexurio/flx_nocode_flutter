@@ -10,9 +10,14 @@ import 'package:flutter/widgets.dart';
 extension LayoutFormDomainX on LayoutForm {
   bool get isHome => id.toLowerCase().trim() == 'home';
   bool get isView =>
-      ['view', 'detail', 'details'].contains(id.toLowerCase().trim());
-  bool get isCreate => ['create', 'add'].contains(id.toLowerCase().trim());
-  bool get isUpdate => ['update', 'edit'].contains(id.toLowerCase().trim());
+      id.toLowerCase().trim().startsWith('view') ||
+      id.toLowerCase().trim().startsWith('detail');
+  bool get isCreate =>
+      id.toLowerCase().trim().startsWith('create') ||
+      id.toLowerCase().trim().startsWith('add');
+  bool get isUpdate =>
+      id.toLowerCase().trim().startsWith('update') ||
+      id.toLowerCase().trim().startsWith('edit');
 
   /// Returns (usedFields, availableFields) with unique, ordered entries.
   (List<String> usedFields, List<String> availableFields) getFieldByStatus(
