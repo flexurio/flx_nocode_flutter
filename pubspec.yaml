@@ -1,4 +1,5 @@
 name: flx_nocode_flutter
+publish_to: none
 description: A Flutter package that enables no-code app development with built-in support for JSON parsing, API integrations, and dynamic content rendering.
 homepage: https://github.com/flexurio/flx_nocode_flutter
 repository: https://github.com/flexurio/flx_nocode_flutter

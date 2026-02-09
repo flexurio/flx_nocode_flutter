@@ -1,9 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_date_picker.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_dropdown.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_number_field.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 
 class ComponentTableController extends GetxController {

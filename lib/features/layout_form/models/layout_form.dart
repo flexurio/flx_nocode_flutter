@@ -1,6 +1,4 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
-import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
-import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
 import 'package:hive/hive.dart';
 
 import 'package:flx_nocode_flutter/features/entity/models/rule.dart';

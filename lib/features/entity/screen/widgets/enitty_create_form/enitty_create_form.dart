@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/controller.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
-import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
 
 import '../../../../../flx_nocode_flutter.dart';
