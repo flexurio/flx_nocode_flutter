@@ -1,16 +1,14 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_widget_extension.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
-import 'package:flx_nocode_flutter/src/app/view/widget/entity_create_button_old.dart';
-import 'package:flx_nocode_flutter/src/app/view/widget/filter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_identifier/screen_identifier.dart';
 
 import '../../../../src/app/view/widget/error.dart';
+import 'menu_data_table_actions.dart';
 import 'menu_data_table_custom_table_view.dart';
 
 class MenuDataTableCustom extends StatefulWidget {
@@ -67,16 +65,18 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   }
 
   void _fetch([PageOptions<Map<String, dynamic>>? pageOptions]) {
-    if (widget.entity.backend.readAll == null) return;
+    final readAll = widget.entity.backend.readAll;
+    if (readAll == null) return;
+
     context.read<EntityCustomQueryBloc>().add(
           EntityCustomQueryEvent.fetch(
             cachedDurationSeconds: null,
             pageOptions: pageOptions,
             filters: _filters,
-            method: widget.entity.backend.readAll!.method,
-            url: widget.entity.backend.readAll!.url,
-            mockEnabled: widget.entity.backend.readAll!.mockEnabled,
-            mockData: widget.entity.backend.readAll!.mockData,
+            method: readAll.method,
+            url: readAll.url,
+            mockEnabled: readAll.mockEnabled,
+            mockData: readAll.mockData,
           ),
         );
   }
@@ -85,20 +85,21 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   Widget build(BuildContext context) {
     return BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
       builder: (context, state) {
+        final status = state.map(
+          initial: (_) => Status.progress,
+          loading: (_) => Status.progress,
+          loaded: (_) => Status.loaded,
+          error: (_) => Status.error,
+        );
+
+        final pageOptions = state.maybeWhen(
+          loaded: (data) => data,
+          loading: (data) => data,
+          orElse: PageOptions<Map<String, dynamic>>.empty,
+        );
+
         return ScreenIdentifierBuilder(
           builder: (context, screenIdentifier) {
-            final status = state.maybeWhen(
-              loading: (_) => Status.progress,
-              loaded: (_) => Status.loaded,
-              orElse: () => Status.error,
-            );
-
-            final pageOptions = state.maybeWhen(
-              loaded: (data) => data,
-              loading: (data) => data,
-              orElse: PageOptions<Map<String, dynamic>>.empty,
-            );
-
             return screenIdentifier.conditions(
               md: MenuDataTableCustomTableView(
                 entity: widget.entity,
@@ -138,41 +139,47 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       status: status,
       pageOptions: pageOptions,
       builder: (data) {
-        if (widget.entity.layoutListTile == null) {
+        final layoutListTile = widget.entity.layoutListTile;
+        if (layoutListTile == null) {
           return NoCodeError('layout_list_tile is null');
         }
-        return widget.entity.layoutListTile!.build(
+        return layoutListTile.build(
           entity: widget.entity,
           data: data,
-          onTap: () async {
-            if (widget.entity.actionPrimary != null) {
-              await widget.entity.actionPrimary!.executeSingle(
-                entity: widget.entity,
-                context: context,
-                data: data,
-                parentData: parentData,
-                onSuccessCallback: () => _fetch(),
-              );
-            } else {
-              Navigator.push(
-                context,
-                EntityViewPage.route(
-                  parentData: parentData,
-                  embedded: true,
-                  entity: widget.entity,
-                  data: data,
-                  filters: Map.fromEntries(
-                    _filters
-                        .map((e) => MapEntry(e.reference, e.value))
-                        .toList(),
-                  ),
-                ),
-              ).then((value) => _fetch());
-            }
-          },
+          onTap: () => _handleItemTap(data, parentData),
         );
       },
     );
+  }
+
+  Future<void> _handleItemTap(
+    Map<String, dynamic> data,
+    List<Map<String, dynamic>> parentData,
+  ) async {
+    final actionPrimary = widget.entity.actionPrimary;
+
+    if (actionPrimary != null) {
+      await actionPrimary.executeSingle(
+        entity: widget.entity,
+        context: context,
+        data: data,
+        parentData: parentData,
+        onSuccessCallback: () => _fetch(),
+      );
+      return;
+    }
+
+    await Navigator.push(
+      context,
+      EntityViewPage.route(
+        parentData: parentData,
+        embedded: true,
+        entity: widget.entity,
+        data: data,
+        filters: _filters.toMap(),
+      ),
+    );
+    _fetch();
   }
 
   List<Widget> _buildActionLeft() {
@@ -182,99 +189,45 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     ];
   }
 
-  List<Widget> _buildHomeActions() {
-    final buttons = <Widget>[];
-    final actions = widget.entity.layoutForm.homeActionForms;
-    for (final action in actions) {
-      buttons.add(
-        LightButtonSmall(
-          title: action.label,
-          action: DataAction.reprocess,
-          permissions: null,
-          onPressed: () async {
-            await Navigator.push(
-              context,
-              EntityCreatePageOld.route(
-                layoutForm: action,
-                entity: widget.entity,
-                onSuccess: (_) => _fetch(),
-                embedded: false,
-                parentData: widget.parentData,
-                filters: _filters.toMap(),
-              ),
-            );
-          },
-        ),
-      );
-    }
-    return buttons;
-  }
-
   List<Widget> _buildActionRight(Widget refreshButton) {
     return [
-      _buildButtonExports(),
-      FilterButton(
-        fields: widget.entity.fields,
-        currentFilters: _filters,
+      MenuDataTableActions(
+        entity: widget.entity,
+        parentData: widget.parentData,
+        embedded: widget.embedded,
+        bypassPermission: widget.bypassPermission,
+        filters: _filters,
+        refreshButton: refreshButton,
         onFilterChanged: (filters) {
           _filters = filters;
           _fetch();
         },
+        onRefresh: _fetch,
       ),
-      ..._buildHomeActions(),
-      refreshButton,
-      ...widget.entity.actionsHome
-          .map((e) => e.buildButtonRegular(
-                context: context,
-                entity: widget.entity,
-                parentData: widget.parentData,
-                filters: _filters.toMap(),
-                bypassPermission: widget.bypassPermission,
-                onSuccess: () => _fetch(),
-              ))
-          .toList(),
-      if (widget.entity.allowCreate)
-        EntityCreateButtonOld(
-          parentData: widget.parentData,
-          layoutForm: widget.entity.layoutForm.create,
-          embedded: widget.embedded,
-          entity: widget.entity,
-          filters: _filters.toMap(),
-          bypassPermission: widget.bypassPermission,
-          onSuccess: () => _fetch(),
-        ),
     ];
   }
 
-  Widget _buildButtonExports() {
-    final exportButtons = widget.entity.exports
-        .where((e) => e.visibility)
-        .map((e) => e.buildButton(filters: _filters))
-        .toList();
-    if (exportButtons.isEmpty) return const SizedBox();
-    return LightButtonSmallGroup(
-      action: DataAction.export,
-      childrenList: exportButtons,
-    );
-  }
-
   Widget _buildFilterInformation(Color primaryColor) {
+    if (_filters.isEmpty) return const SizedBox.shrink();
+
     return Wrap(
       spacing: 12,
-      children: _filters
-          .map(
-            (e) => Chip(
-              side: BorderSide.none,
-              backgroundColor: primaryColor,
-              label: Text(
-                '${e.getLabel(widget.entity)}: ${e.value}',
-                style: const TextStyle(color: Colors.white),
-              ),
-              iconTheme: const IconThemeData(color: Colors.white),
-              onDeleted: () => setState(() => _filters.remove(e)),
-            ),
-          )
-          .toList(),
+      children: _filters.map((filter) {
+        final label = filter.getLabel(widget.entity);
+        return Chip(
+          side: BorderSide.none,
+          backgroundColor: primaryColor,
+          label: Text(
+            '$label: ${filter.value}',
+            style: const TextStyle(color: Colors.white),
+          ),
+          iconTheme: const IconThemeData(color: Colors.white),
+          onDeleted: () {
+            setState(() => _filters.remove(filter));
+            _fetch();
+          },
+        );
+      }).toList(),
     );
   }
 }
