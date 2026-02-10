@@ -127,8 +127,14 @@ class EntityViewPage extends StatelessWidget {
       parentData,
       embedded,
     );
-    return entity.buttonViews(context, data, entity, embedded, parentData)
-      ..addAll(modifyActions);
+    return entity.buttonViews(
+      context,
+      data,
+      entity,
+      embedded,
+      parentData,
+      onSuccess: () => onRefresh(context),
+    )..addAll(modifyActions);
   }
 
   static List<Widget> actionsLarge({
@@ -167,6 +173,7 @@ class EntityViewPage extends StatelessWidget {
         parentData,
         bypassPermission,
         expanded: true,
+        onRefresh: () => onRefresh(context),
       ),
       ...modifyActions,
     ];

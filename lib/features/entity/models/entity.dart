@@ -367,8 +367,9 @@ class EntityCustom extends HiveObject {
     Map<String, dynamic> data,
     EntityCustom entity,
     bool embedded,
-    List<Map<String, dynamic>> parentData,
-  ) {
+    List<Map<String, dynamic>> parentData, {
+    VoidCallback? onSuccess,
+  }) {
     return views
         .where((e) => e.rule == null || e.rule!.evaluate(data))
         .map(
@@ -378,6 +379,7 @@ class EntityCustom extends HiveObject {
             parentData,
             entity,
             embedded,
+            onSuccess: onSuccess,
           ),
         )
         .toList();

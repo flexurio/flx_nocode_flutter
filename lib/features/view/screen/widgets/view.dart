@@ -10,6 +10,7 @@ extension DViewWidget on DView {
     List<Map<String, dynamic>> parentData,
     bool bypassPermission, {
     bool expanded = false,
+    VoidCallback? onRefresh,
   }) {
     return FutureBuilder<EntityCustom?>(
       future: EntityCustom.getEntity(entity),
@@ -39,7 +40,7 @@ extension DViewWidget on DView {
           title: label,
           permission: null,
           onPressed: () async {
-            Navigator.push(
+            await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => MenuCustom.fromId(
@@ -51,6 +52,7 @@ extension DViewWidget on DView {
                 ),
               ),
             );
+            onRefresh?.call();
           },
           iconOverride: Icons.visibility,
           expanded: expanded,
@@ -63,7 +65,7 @@ extension DViewWidget on DView {
 extension ListDViewWidget on List<DView> {
   List<Widget> buildButtons(BuildContext context, Map<String, dynamic> data,
       List<Map<String, dynamic>> parentData, bool bypassPermission,
-      {bool expanded = false}) {
+      {bool expanded = false, VoidCallback? onRefresh}) {
     print('\n======================================================');
     print('[View] buildButtons | Total items: ${this.length}');
 
@@ -94,6 +96,7 @@ extension ListDViewWidget on List<DView> {
             parentData,
             bypassPermission,
             expanded: expanded,
+            onRefresh: onRefresh,
           ),
         )
         .toList();

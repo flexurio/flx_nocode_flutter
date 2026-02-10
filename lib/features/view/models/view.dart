@@ -89,16 +89,18 @@ class DView extends HiveObject {
     Map<String, dynamic> data,
     List<Map<String, dynamic>> parentData,
     EntityCustom entity,
-    bool embedded,
-  ) {
+    bool embedded, {
+    VoidCallback? onSuccess,
+  }) {
     return ActionButtonItem(
       color: DataAction.view.color,
       icon: DataAction.view.icon,
       label: '${DataAction.view.title} $label',
       onPressed: () async {
         if (embedded) {
-          Future.delayed(const Duration(milliseconds: 200), () {
-            Navigator.push(
+          await Future.delayed(const Duration(milliseconds: 200));
+          if (context.mounted) {
+            await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => MenuCustom.fromId(
@@ -109,7 +111,8 @@ class DView extends HiveObject {
                 ),
               ),
             );
-          });
+            onSuccess?.call();
+          }
         } else {
           MenuBloc.instance.add(
             Menu3Selected(
