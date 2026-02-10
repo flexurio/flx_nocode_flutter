@@ -65,13 +65,8 @@ class EntityCustom extends HiveObject {
   /// The key is the field reference, and the value is typically a flex factor or column width.
   Map<String, int> layoutTable;
 
-  /// A list of field references that will be used as filters on the home page.
-  /// A list of field references that will be used as filters on the home page.
-  List<String> filterOption;
-
-  /// A configuration map for each filter field (e.g., date range options).
-  /// Key: field reference, Value: Map of configuration options.
-  Map<String, Map<String, dynamic>> filterConfig;
+  /// The list of filters to be displayed on the home page.
+  List<FilterOption> filters;
 
   /// Creates a new instance of [EntityCustom].
   EntityCustom({
@@ -89,9 +84,8 @@ class EntityCustom extends HiveObject {
     required this.layoutListTile,
     required this.layoutTable,
     required this.exports,
-    this.filterOption = const [],
+    this.filters = const [],
     this.bypassAllPermissions = false,
-    this.filterConfig = const {},
   });
 
   /// The base path for entity assets (e.g., 'asset').
@@ -147,12 +141,8 @@ class EntityCustom extends HiveObject {
         ),
         actionPrimary: parser.parseActionD('action_primary'),
         paginationOption: parser.parsePaginationOption(),
-        filterOption: parser.parseListOptional<String>(
-          'filter_option',
-          (raw, _) => raw as String,
-        ),
+        filters: parser.parseFilters(),
         bypassAllPermissions: parser.parseBypassAllPermissions(),
-        filterConfig: parser.parseFilterConfig('filter_config'),
       );
     } catch (e) {
       debugPrint("[EntityCustom] Entity: $id fromJson error: $e");
@@ -178,9 +168,8 @@ class EntityCustom extends HiveObject {
         actionPrimary = null,
         layoutTable = {},
         exports = [],
-        filterOption = [],
-        bypassAllPermissions = false,
-        filterConfig = {};
+        filters = [],
+        bypassAllPermissions = false;
 
   /// Creates a copy of this [EntityCustom] instance with the given fields replaced.
   ///
@@ -201,11 +190,10 @@ class EntityCustom extends HiveObject {
     List<ActionD>? actions,
     List<ActionD>? actionsHome,
     ActionD? actionPrimary,
-    List<String>? filterOption,
+    List<FilterOption>? filters,
     bool? bypassAllPermissions,
     bool clearActionPrimary = false,
     bool clearLayoutListTile = false,
-    Map<String, Map<String, dynamic>>? filterConfig,
   }) {
     return EntityCustom(
       id: id ?? this.id,
@@ -224,9 +212,8 @@ class EntityCustom extends HiveObject {
           clearLayoutListTile ? null : (layoutListTile ?? this.layoutListTile),
       layoutTable: layoutTable ?? this.layoutTable,
       exports: exports ?? this.exports,
-      filterOption: filterOption ?? this.filterOption,
+      filters: filters ?? this.filters,
       bypassAllPermissions: bypassAllPermissions ?? this.bypassAllPermissions,
-      filterConfig: filterConfig ?? this.filterConfig,
     );
   }
 
@@ -306,13 +293,13 @@ class EntityCustom extends HiveObject {
     layoutTable = reorderMap(layoutTable, oldIndex, newIndex);
   }
 
-  /// Reorders the [filterOption] list based on old and new indices.
-  void filterOptionReorder(int oldIndex, int newIndex) {
+  /// Reorders the [filters] list based on old and new indices.
+  void filterReorder(int oldIndex, int newIndex) {
     if (newIndex > oldIndex) {
       newIndex -= 1;
     }
-    final item = filterOption.removeAt(oldIndex);
-    filterOption.insert(newIndex, item);
+    final item = filters.removeAt(oldIndex);
+    filters.insert(newIndex, item);
   }
 
   /// Serializes this [EntityCustom] instance to a JSON map.
@@ -332,9 +319,8 @@ class EntityCustom extends HiveObject {
       'actions': actions.map((e) => e.toJson()).toList(),
       'actions_home': actionsHome.map((e) => e.toJson()).toList(),
       'action_primary': actionPrimary?.toJson(),
-      'filter_option': filterOption,
+      'filters': filters.map((e) => e.toJson()).toList(),
       'bypass_all_permissions': bypassAllPermissions,
-      'filter_config': filterConfig,
     };
   }
 
@@ -395,6 +381,37 @@ class EntityCustom extends HiveObject {
           ),
         )
         .toList();
+  }
+}
+
+class FilterOption {
+  final String reference;
+  final Map<String, dynamic> config;
+
+  FilterOption({required this.reference, this.config = const {}});
+
+  factory FilterOption.fromJson(dynamic json) {
+    if (json is String) {
+      return FilterOption(reference: json);
+    } else if (json is Map<String, dynamic>) {
+      final reference = json['reference'] ?? json['field'];
+      if (reference == null) {
+        throw const FormatException(
+            "FilterOption must have a 'reference' or 'field' key.");
+      }
+      final config = Map<String, dynamic>.from(json);
+      config.remove('reference');
+      config.remove('field');
+      return FilterOption(reference: reference, config: config);
+    }
+    throw FormatException("Invalid FilterOption format: $json");
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'reference': reference,
+      ...config,
+    };
   }
 }
 
@@ -545,7 +562,8 @@ class _EntityCustomJsonParser {
 
   /// Parses the [filterConfig] map from JSON.
   Map<String, Map<String, dynamic>> parseFilterConfig(String key) {
-    if (!json.containsKey(key) || json[key] == null) return <String, Map<String, dynamic>>{};
+    if (!json.containsKey(key) || json[key] == null)
+      return <String, Map<String, dynamic>>{};
     final raw = json[key];
     if (raw is! Map) {
       throw FormatException(
@@ -558,7 +576,7 @@ class _EntityCustomJsonParser {
             "Invalid key in '$key': expected String, got ${k.runtimeType}");
       }
       if (v is! Map) {
-         throw FormatException(
+        throw FormatException(
             "Invalid value for '$key[$k]': expected Map, got ${v.runtimeType}");
       }
       return MapEntry(k, Map<String, dynamic>.from(v));
@@ -626,5 +644,26 @@ class _EntityCustomJsonParser {
   ActionD? parseActionD(String key) {
     if (!json.containsKey(key) || json[key] == null) return null;
     return ActionD.fromJson(json[key]);
+  }
+
+  List<FilterOption> parseFilters() {
+    if (json.containsKey('filters')) {
+      return parseListOptional<FilterOption>(
+        'filters',
+        (raw, _) => FilterOption.fromJson(raw),
+      );
+    }
+    // Fallback to filter_option + filter_config
+    final options = parseListOptional<String>(
+      'filter_option',
+      (raw, _) => raw as String,
+    );
+    final configMap = parseFilterConfig('filter_config');
+    return options.map((ref) {
+      return FilterOption(
+        reference: ref,
+        config: configMap[ref] ?? {},
+      );
+    }).toList();
   }
 }

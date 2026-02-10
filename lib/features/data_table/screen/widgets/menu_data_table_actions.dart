@@ -38,9 +38,9 @@ class MenuDataTableActions extends StatelessWidget {
       children: [
         _buildButtonExports(),
         FilterButton(
-          fields: entity.filterOption.isNotEmpty
-              ? entity.filterOption
-                  .map((e) => entity.getField(e))
+          fields: entity.filters.isNotEmpty
+              ? entity.filters
+                  .map((e) => entity.getField(e.reference))
                   .whereType<EntityField>()
                   .toList()
               : entity.fields,

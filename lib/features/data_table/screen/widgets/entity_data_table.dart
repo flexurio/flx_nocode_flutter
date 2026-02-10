@@ -191,8 +191,9 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   List<Widget> _buildActionLeft() {
     final widgets = <Widget>[];
 
-    if (widget.entity.filterOption.isNotEmpty) {
-      for (final fieldRef in widget.entity.filterOption) {
+    if (widget.entity.filters.isNotEmpty) {
+      for (final f in widget.entity.filters) {
+        final fieldRef = f.reference;
         final field = widget.entity.getField(fieldRef);
         if (field == null) continue;
 
@@ -205,7 +206,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           InlineFilter(
             key: ValueKey('filter_$fieldRef'),
             field: field,
-            config: widget.entity.filterConfig[fieldRef] ?? {},
+            config: f.config,
             initialValue: currentFilter?.value,
             onChanged: (val) => _onInlineFilterChanged(fieldRef, val),
           ),
@@ -257,7 +258,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       spacing: 12,
       children: _filters.map((filter) {
         // Skip showing chips for inline filters to avoid duplication
-        if (widget.entity.filterOption.contains(filter.reference)) {
+        if (widget.entity.filters.any((e) => e.reference == filter.reference)) {
           return const SizedBox.shrink();
         }
 
