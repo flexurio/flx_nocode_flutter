@@ -65,6 +65,9 @@ class EntityCustom extends HiveObject {
   /// The key is the field reference, and the value is typically a flex factor or column width.
   Map<String, int> layoutTable;
 
+  /// A list of field references that will be used as filters on the home page.
+  List<String> filterOption;
+
   /// Creates a new instance of [EntityCustom].
   EntityCustom({
     required this.actions,
@@ -81,6 +84,7 @@ class EntityCustom extends HiveObject {
     required this.layoutListTile,
     required this.layoutTable,
     required this.exports,
+    this.filterOption = const [],
     this.bypassAllPermissions = false,
   });
 
@@ -137,6 +141,10 @@ class EntityCustom extends HiveObject {
         ),
         actionPrimary: parser.parseActionD('action_primary'),
         paginationOption: parser.parsePaginationOption(),
+        filterOption: parser.parseListOptional<String>(
+          'filter_option',
+          (raw, _) => raw as String,
+        ),
         bypassAllPermissions: parser.parseBypassAllPermissions(),
       );
     } catch (e) {
@@ -163,6 +171,7 @@ class EntityCustom extends HiveObject {
         actionPrimary = null,
         layoutTable = {},
         exports = [],
+        filterOption = [],
         bypassAllPermissions = false;
 
   /// Creates a copy of this [EntityCustom] instance with the given fields replaced.
@@ -184,6 +193,7 @@ class EntityCustom extends HiveObject {
     List<ActionD>? actions,
     List<ActionD>? actionsHome,
     ActionD? actionPrimary,
+    List<String>? filterOption,
     bool? bypassAllPermissions,
     bool clearActionPrimary = false,
     bool clearLayoutListTile = false,
@@ -205,6 +215,7 @@ class EntityCustom extends HiveObject {
           clearLayoutListTile ? null : (layoutListTile ?? this.layoutListTile),
       layoutTable: layoutTable ?? this.layoutTable,
       exports: exports ?? this.exports,
+      filterOption: filterOption ?? this.filterOption,
       bypassAllPermissions: bypassAllPermissions ?? this.bypassAllPermissions,
     );
   }
@@ -285,6 +296,15 @@ class EntityCustom extends HiveObject {
     layoutTable = reorderMap(layoutTable, oldIndex, newIndex);
   }
 
+  /// Reorders the [filterOption] list based on old and new indices.
+  void filterOptionReorder(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) {
+      newIndex -= 1;
+    }
+    final item = filterOption.removeAt(oldIndex);
+    filterOption.insert(newIndex, item);
+  }
+
   /// Serializes this [EntityCustom] instance to a JSON map.
   Map<String, dynamic> toJson() {
     return {
@@ -302,6 +322,7 @@ class EntityCustom extends HiveObject {
       'actions': actions.map((e) => e.toJson()).toList(),
       'actions_home': actionsHome.map((e) => e.toJson()).toList(),
       'action_primary': actionPrimary?.toJson(),
+      'filter_option': filterOption,
       'bypass_all_permissions': bypassAllPermissions,
     };
   }
