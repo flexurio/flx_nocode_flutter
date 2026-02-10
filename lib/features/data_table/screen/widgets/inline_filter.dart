@@ -55,36 +55,47 @@ class _InlineFilterState extends State<InlineFilter> {
       return;
     }
 
-    _controller.text = widget.initialValue!;
+    final val = widget.initialValue!;
+    _controller.text = val;
+
     if (widget.field.isDateTime || widget.field.type == 'date') {
       try {
         final mode = widget.config['mode'] ?? 'date_range';
 
-        if (mode == 'date_range') {
-          if (widget.initialValue!.contains(':')) {
-            final split = widget.initialValue!.split(':');
-            _selectedDateRange = PickerDateRange(
-              DateTime.tryParse(split[0]),
-              DateTime.tryParse(split[1]),
-            );
-          } else {
-            final date = DateTime.tryParse(widget.initialValue!);
-            _selectedDateRange = PickerDateRange(date, date);
+        if (val.startsWith('__range__')) {
+          final rangeContent = val.replaceFirst('__range__', '');
+          final parts = rangeContent.split('|');
+          if (parts.length == 2) {
+            final start = DateTime.tryParse(parts[0].split(' ')[0]);
+            final end = DateTime.tryParse(parts[1].split(' ')[0]);
+            if (mode == 'date_range') {
+              _selectedDateRange = PickerDateRange(start, end);
+            } else {
+              _selectedDate = start;
+            }
           }
-        } else if (mode == 'year_month') {
-          // Format expected: yyyy-MM
-          // But DateTime.parse expects yyyy-MM-dd
-          _selectedDate = DateTime.tryParse('${widget.initialValue}-01');
-        } else if (mode == 'year') {
-          // Format expected: yyyy
-          _selectedDate = DateTime(
-              int.tryParse(widget.initialValue!) ?? DateTime.now().year);
         } else {
-          // Single date yyyy-MM-dd
-          _selectedDate = DateTime.tryParse(widget.initialValue!);
+          // Legacy or fallback format
+          if (mode == 'date_range') {
+            if (val.contains(':')) {
+              final split = val.split(':');
+              _selectedDateRange = PickerDateRange(
+                DateTime.tryParse(split[0]),
+                DateTime.tryParse(split[1]),
+              );
+            } else {
+              final date = DateTime.tryParse(val);
+              _selectedDateRange = PickerDateRange(date, date);
+            }
+          } else if (mode == 'year_month') {
+            _selectedDate = DateTime.tryParse('$val-01');
+          } else if (mode == 'year') {
+            _selectedDate = DateTime(int.tryParse(val) ?? DateTime.now().year);
+          } else {
+            _selectedDate = DateTime.tryParse(val);
+          }
         }
       } catch (_) {
-        // Fallback if parsing fails
         _selectedDate = null;
         _selectedDateRange = null;
       }
@@ -120,11 +131,7 @@ class _InlineFilterState extends State<InlineFilter> {
         ? DateFormat('yyyy-MM-dd').format(range.endDate!)
         : start;
 
-    if (start == end) {
-      widget.onChanged(start);
-    } else {
-      widget.onChanged('$start:$end');
-    }
+    widget.onChanged('__range__$start 00:00:00|$end 23:59:59');
   }
 
   void _onDateChanged(DateTime? date, String format) {
@@ -135,9 +142,13 @@ class _InlineFilterState extends State<InlineFilter> {
       widget.onChanged(null);
     } else {
       try {
-        widget.onChanged(DateFormat(format).format(date));
+        final val = DateFormat(format).format(date);
+        if (format == 'yyyy-MM-dd') {
+          widget.onChanged('__range__$val 00:00:00|$val 23:59:59');
+        } else {
+          widget.onChanged(val);
+        }
       } catch (e) {
-        // Fallback
         widget.onChanged(date.toString());
       }
     }

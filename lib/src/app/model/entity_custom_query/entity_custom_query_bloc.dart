@@ -94,7 +94,7 @@ class EntityCustomQueryBloc
 
               final filterMap = <String, dynamic>{};
               for (final f in filter ?? []) {
-                filterMap[f.getKeyBackend()] = f.value;
+                filterMap.addAll(f.getBackendParams());
               }
 
               final interpolatedUrl = url.interpolateJavascript();
