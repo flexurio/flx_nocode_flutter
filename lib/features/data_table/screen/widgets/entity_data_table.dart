@@ -202,15 +202,12 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
         } catch (_) {}
 
         widgets.add(
-          SizedBox(
-            width: 200,
-            child: InlineFilter(
-              key: ValueKey('filter_$fieldRef'),
-              field: field,
-              config: widget.entity.filterConfig[fieldRef] ?? {},
-              initialValue: currentFilter?.value,
-              onChanged: (val) => _onInlineFilterChanged(fieldRef, val),
-            ),
+          InlineFilter(
+            key: ValueKey('filter_$fieldRef'),
+            field: field,
+            config: widget.entity.filterConfig[fieldRef] ?? {},
+            initialValue: currentFilter?.value,
+            onChanged: (val) => _onInlineFilterChanged(fieldRef, val),
           ),
         );
         widgets.add(const Gap(12));
@@ -218,7 +215,8 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     }
 
     if (_filters.isNotEmpty) {
-      widgets.add(_buildFilterInformation(Theme.of(context).colorScheme.primary));
+      widgets
+          .add(_buildFilterInformation(Theme.of(context).colorScheme.primary));
     }
 
     return widgets;
@@ -281,5 +279,3 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     );
   }
 }
-
-

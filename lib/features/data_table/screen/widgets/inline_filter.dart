@@ -41,7 +41,7 @@ class _InlineFilterState extends State<InlineFilter> {
   @override
   void didUpdateWidget(covariant InlineFilter oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.initialValue != oldWidget.initialValue || 
+    if (widget.initialValue != oldWidget.initialValue ||
         widget.config['mode'] != oldWidget.config['mode']) {
       _parseInitialValue();
     }
@@ -59,7 +59,7 @@ class _InlineFilterState extends State<InlineFilter> {
     if (widget.field.isDateTime || widget.field.type == 'date') {
       try {
         final mode = widget.config['mode'] ?? 'date_range';
-        
+
         if (mode == 'date_range') {
           if (widget.initialValue!.contains(':')) {
             final split = widget.initialValue!.split(':');
@@ -74,18 +74,19 @@ class _InlineFilterState extends State<InlineFilter> {
         } else if (mode == 'year_month') {
           // Format expected: yyyy-MM
           // But DateTime.parse expects yyyy-MM-dd
-          _selectedDate = DateTime.tryParse('${widget.initialValue}-01'); 
+          _selectedDate = DateTime.tryParse('${widget.initialValue}-01');
         } else if (mode == 'year') {
-           // Format expected: yyyy
-           _selectedDate = DateTime(int.tryParse(widget.initialValue!) ?? DateTime.now().year);
+          // Format expected: yyyy
+          _selectedDate = DateTime(
+              int.tryParse(widget.initialValue!) ?? DateTime.now().year);
         } else {
           // Single date yyyy-MM-dd
           _selectedDate = DateTime.tryParse(widget.initialValue!);
         }
       } catch (_) {
-         // Fallback if parsing fails
-         _selectedDate = null;
-         _selectedDateRange = null;
+        // Fallback if parsing fails
+        _selectedDate = null;
+        _selectedDateRange = null;
       }
     }
   }
@@ -127,19 +128,19 @@ class _InlineFilterState extends State<InlineFilter> {
   }
 
   void _onDateChanged(DateTime? date, String format) {
-      setState(() {
-        _selectedDate = date;
-      });
-      if (date == null) {
-          widget.onChanged(null);
-      } else {
-          try {
-             widget.onChanged(DateFormat(format).format(date));
-          } catch(e) {
-             // Fallback
-             widget.onChanged(date.toString());
-          }
+    setState(() {
+      _selectedDate = date;
+    });
+    if (date == null) {
+      widget.onChanged(null);
+    } else {
+      try {
+        widget.onChanged(DateFormat(format).format(date));
+      } catch (e) {
+        // Fallback
+        widget.onChanged(date.toString());
       }
+    }
   }
 
   @override
@@ -152,39 +153,40 @@ class _InlineFilterState extends State<InlineFilter> {
 
     // Handle Date Type
     if (widget.field.isDateTime || widget.field.type == 'date') {
-       final mode = widget.config['mode'] ?? 'date_range';
-       
-       if (mode == 'date_range') {
-         return DropDownSmallDateRange(
-            labelText: widget.field.label,
-            onChanged: _onDateRangeChanged,
-            initialValue: _selectedDateRange,
-         );
-       } else if (mode == 'year_month') {
-         return DropDownSmallYearMonth(
-            labelText: widget.field.label,
-            initialValue: _selectedDate,
-            onChanged: (date) => _onDateChanged(date, 'yyyy-MM'),
-         );
-       } else if (mode == 'year') {
-         return DropDownSmallYearPicker(
-            labelText: widget.field.label,
-            initialValue: _selectedDate?.year,
-            onChanged: (year) => _onDateChanged(DateTime(year), 'yyyy'),
-         );
-       } else {
-         // Single date
-         return DropDownSmallDate(
-            labelText: widget.field.label,
-            initialValue: _selectedDate,
-            onChanged: (date) => _onDateChanged(date, 'yyyy-MM-dd'),
-         );
-       }
+      final mode = widget.config['mode'] ?? 'date_range';
+
+      if (mode == 'date_range') {
+        return DropDownSmallDateRange(
+          labelText: widget.field.label,
+          onChanged: _onDateRangeChanged,
+          initialValue: _selectedDateRange,
+        );
+      } else if (mode == 'year_month') {
+        return DropDownSmallYearMonth(
+          labelText: widget.field.label,
+          initialValue: _selectedDate,
+          onChanged: (date) => _onDateChanged(date, 'yyyy-MM'),
+        );
+      } else if (mode == 'year') {
+        return DropDownSmallYearPicker(
+          labelText: widget.field.label,
+          initialValue: _selectedDate?.year,
+          onChanged: (year) => _onDateChanged(DateTime(year), 'yyyy'),
+        );
+      } else {
+        // Single date
+        return DropDownSmallDate(
+          labelText: widget.field.label,
+          initialValue: _selectedDate,
+          onChanged: (date) => _onDateChanged(date, 'yyyy-MM-dd'),
+        );
+      }
     }
 
     // Default Text Input
     return SizedBox(
       height: 40,
+      width: 200,
       child: TextField(
         controller: _controller,
         onChanged: _onSearchChanged,
