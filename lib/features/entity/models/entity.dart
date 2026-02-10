@@ -66,7 +66,12 @@ class EntityCustom extends HiveObject {
   Map<String, int> layoutTable;
 
   /// A list of field references that will be used as filters on the home page.
+  /// A list of field references that will be used as filters on the home page.
   List<String> filterOption;
+
+  /// A configuration map for each filter field (e.g., date range options).
+  /// Key: field reference, Value: Map of configuration options.
+  Map<String, Map<String, dynamic>> filterConfig;
 
   /// Creates a new instance of [EntityCustom].
   EntityCustom({
@@ -86,6 +91,7 @@ class EntityCustom extends HiveObject {
     required this.exports,
     this.filterOption = const [],
     this.bypassAllPermissions = false,
+    this.filterConfig = const {},
   });
 
   /// The base path for entity assets (e.g., 'asset').
@@ -146,6 +152,7 @@ class EntityCustom extends HiveObject {
           (raw, _) => raw as String,
         ),
         bypassAllPermissions: parser.parseBypassAllPermissions(),
+        filterConfig: parser.parseFilterConfig('filter_config'),
       );
     } catch (e) {
       debugPrint("[EntityCustom] Entity: $id fromJson error: $e");
@@ -172,7 +179,8 @@ class EntityCustom extends HiveObject {
         layoutTable = {},
         exports = [],
         filterOption = [],
-        bypassAllPermissions = false;
+        bypassAllPermissions = false,
+        filterConfig = {};
 
   /// Creates a copy of this [EntityCustom] instance with the given fields replaced.
   ///
@@ -197,6 +205,7 @@ class EntityCustom extends HiveObject {
     bool? bypassAllPermissions,
     bool clearActionPrimary = false,
     bool clearLayoutListTile = false,
+    Map<String, Map<String, dynamic>>? filterConfig,
   }) {
     return EntityCustom(
       id: id ?? this.id,
@@ -217,6 +226,7 @@ class EntityCustom extends HiveObject {
       exports: exports ?? this.exports,
       filterOption: filterOption ?? this.filterOption,
       bypassAllPermissions: bypassAllPermissions ?? this.bypassAllPermissions,
+      filterConfig: filterConfig ?? this.filterConfig,
     );
   }
 
@@ -324,6 +334,7 @@ class EntityCustom extends HiveObject {
       'action_primary': actionPrimary?.toJson(),
       'filter_option': filterOption,
       'bypass_all_permissions': bypassAllPermissions,
+      'filter_config': filterConfig,
     };
   }
 
@@ -529,6 +540,28 @@ class _EntityCustomJsonParser {
           ? v.toInt()
           : throw FormatException("Invalid value for '$key[$k]': expected num");
       return MapEntry(k, val);
+    });
+  }
+
+  /// Parses the [filterConfig] map from JSON.
+  Map<String, Map<String, dynamic>> parseFilterConfig(String key) {
+    if (!json.containsKey(key) || json[key] == null) return <String, Map<String, dynamic>>{};
+    final raw = json[key];
+    if (raw is! Map) {
+      throw FormatException(
+        "Invalid type for '$key': expected Map, got ${raw.runtimeType}.",
+      );
+    }
+    return raw.map((k, v) {
+      if (k is! String) {
+        throw FormatException(
+            "Invalid key in '$key': expected String, got ${k.runtimeType}");
+      }
+      if (v is! Map) {
+         throw FormatException(
+            "Invalid value for '$key[$k]': expected Map, got ${v.runtimeType}");
+      }
+      return MapEntry(k, Map<String, dynamic>.from(v));
     });
   }
 

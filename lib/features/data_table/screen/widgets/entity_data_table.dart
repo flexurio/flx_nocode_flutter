@@ -1,4 +1,10 @@
+import 'dart:async';
+
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/features/data_table/screen/widgets/inline_filter.dart';
+import 'package:flx_nocode_flutter/features/field/models/field.dart';
+import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
@@ -183,10 +189,49 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   }
 
   List<Widget> _buildActionLeft() {
-    if (_filters.isEmpty) return const <Widget>[];
-    return [
-      _buildFilterInformation(Theme.of(context).colorScheme.primary),
-    ];
+    final widgets = <Widget>[];
+
+    if (widget.entity.filterOption.isNotEmpty) {
+      for (final fieldRef in widget.entity.filterOption) {
+        final field = widget.entity.getField(fieldRef);
+        if (field == null) continue;
+
+        Filter? currentFilter;
+        try {
+          currentFilter = _filters.firstWhere((f) => f.reference == fieldRef);
+        } catch (_) {}
+
+        widgets.add(
+          SizedBox(
+            width: 200,
+            child: InlineFilter(
+              key: ValueKey('filter_$fieldRef'),
+              field: field,
+              config: widget.entity.filterConfig[fieldRef] ?? {},
+              initialValue: currentFilter?.value,
+              onChanged: (val) => _onInlineFilterChanged(fieldRef, val),
+            ),
+          ),
+        );
+        widgets.add(const Gap(12));
+      }
+    }
+
+    if (_filters.isNotEmpty) {
+      widgets.add(_buildFilterInformation(Theme.of(context).colorScheme.primary));
+    }
+
+    return widgets;
+  }
+
+  void _onInlineFilterChanged(String ref, String? val) {
+    setState(() {
+      _filters.removeWhere((f) => f.reference == ref);
+      if (val != null && val.isNotEmpty) {
+        _filters.add(Filter(reference: ref, value: val));
+      }
+    });
+    _fetch();
   }
 
   List<Widget> _buildActionRight(Widget refreshButton) {
@@ -213,6 +258,11 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     return Wrap(
       spacing: 12,
       children: _filters.map((filter) {
+        // Skip showing chips for inline filters to avoid duplication
+        if (widget.entity.filterOption.contains(filter.reference)) {
+          return const SizedBox.shrink();
+        }
+
         final label = filter.getLabel(widget.entity);
         return Chip(
           side: BorderSide.none,
@@ -231,3 +281,5 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     );
   }
 }
+
+
