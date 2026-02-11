@@ -19,6 +19,7 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_d
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
 extension ComponentWidget on Component {
   Widget toWidget({
@@ -33,6 +34,9 @@ extension ComponentWidget on Component {
       if (parentData != null) 'parentData': parentData,
       if (dataAction != null) 'dataAction': dataAction,
     };
+
+    final isVisible = visibilityCondition?.evaluateVisibility(fullData) ?? true;
+    if (!isVisible) return const SizedBox.shrink();
 
     if (this.type == ComponentText.componentId) {
       return (this as ComponentText).toWidget(fullData);

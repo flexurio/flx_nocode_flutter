@@ -9,6 +9,8 @@ class ComponentText extends Component {
 
   ComponentText({
     required super.id,
+    super.visibilityCondition,
+    super.events,
     this.value = 'Text',
   }) : super(type: 'text');
 
@@ -24,14 +26,17 @@ class ComponentText extends Component {
     }
     return ComponentText(
       id: id,
+      visibilityCondition: map['visibilityCondition']?.toString(),
+      events: map['events'] is Map
+          ? Map<String, dynamic>.from(map['events'])
+          : const <String, dynamic>{},
       value: map['value']?.toString() ?? 'Text',
     );
   }
 
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
+        ...super.toMap(),
         'value': value,
       };
 }

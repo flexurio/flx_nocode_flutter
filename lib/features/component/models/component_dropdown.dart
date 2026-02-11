@@ -16,6 +16,8 @@ class ComponentDropdown extends Component {
 
   ComponentDropdown({
     required super.id,
+    super.visibilityCondition,
+    super.events,
     required this.label,
     required this.options,
     required this.initialValue,
@@ -90,6 +92,10 @@ class ComponentDropdown extends Component {
 
     return ComponentDropdown(
       id: id,
+      visibilityCondition: map['visibilityCondition']?.toString(),
+      events: map['events'] is Map
+          ? Map<String, dynamic>.from(map['events'])
+          : const <String, dynamic>{},
       label: label,
       options: options,
       initialValue: initialValue,
@@ -104,8 +110,7 @@ class ComponentDropdown extends Component {
 
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
+        ...super.toMap(),
         'label': label,
         'options': options,
         'initialValue': initialValue,

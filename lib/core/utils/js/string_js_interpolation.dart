@@ -15,14 +15,11 @@ extension StringJsInterpolationExtension on String {
   /// - Helper `now(format)` and numeric helpers are available.
   static const bool enableLog = false;
 
-  String interpolateJavascript([Map<String, dynamic>? variables]) {
-    final regex = RegExp(r'\{\{\s*((?:(?!\}\}).)*)\s*\}\}', dotAll: true);
-    if (!contains(regex)) return this;
-
+  Map<String, dynamic> _prepareVariables([Map<String, dynamic>? variables]) {
     final config = Configuration.instance;
     final userRepo = UserRepositoryApp.instance;
 
-    final allVars = <String, dynamic>{
+    return <String, dynamic>{
       'auth_token': userRepo.token ?? '',
       'user_id': userRepo.userApp?.id?.toString() ?? '',
       'backend_host': config.backendHost,
@@ -41,6 +38,13 @@ extension StringJsInterpolationExtension on String {
         if (!variables.containsKey('http')) 'http': variables['http'] ?? {},
       },
     };
+  }
+
+  String interpolateJavascript([Map<String, dynamic>? variables]) {
+    final regex = RegExp(r'\{\{\s*((?:(?!\}\}).)*)\s*\}\}', dotAll: true);
+    if (!contains(regex)) return this;
+
+    final allVars = _prepareVariables(variables);
 
     if (enableLog) {
       const encoder = JsonEncoder.withIndent('  ');
@@ -76,6 +80,33 @@ extension StringJsInterpolationExtension on String {
         return match.group(0) ?? '';
       }
     });
+  }
+
+  /// Evaluates the string as a JavaScript boolean expression.
+  /// If the string is empty, returns true.
+  /// If the string is wrapped in `{{ ... }}`, it strips them before evaluation.
+  bool evaluateVisibility([Map<String, dynamic>? variables]) {
+    final condition = trim();
+    if (condition.isEmpty) return true;
+
+    try {
+      final allVars = _prepareVariables(variables);
+
+      String expr = condition;
+      if (condition.startsWith('{{') && condition.endsWith('}}')) {
+        expr = condition.substring(2, condition.length - 2).trim();
+      }
+
+      final script = _buildJsScript(expr, allVars);
+      final value = evalJs(script).toLowerCase();
+      return value == 'true';
+    } catch (e) {
+      if (enableLog) {
+        debugPrint('  ❌ [JS Visibility] Failed to evaluate: $condition');
+        debugPrint('     Error: $e');
+      }
+      return true; // Default to visible on error to avoid soft-locking UI
+    }
   }
 
   /// Builds a self-contained JS snippet:

@@ -16,6 +16,8 @@ class ComponentContainer extends Component {
 
   ComponentContainer({
     required super.id,
+    super.visibilityCondition,
+    super.events,
     this.padding,
     this.margin,
     this.width,
@@ -44,6 +46,11 @@ class ComponentContainer extends Component {
       throw const FormatException('Component "id" is required');
     }
 
+    final visibilityCondition = map['visibilityCondition']?.toString();
+    final events = map['events'] is Map
+        ? Map<String, dynamic>.from(map['events'])
+        : const <String, dynamic>{};
+
     double? parseDouble(dynamic value) {
       if (value == null) return null;
       if (value is num) return value.toDouble();
@@ -52,6 +59,8 @@ class ComponentContainer extends Component {
 
     return ComponentContainer(
       id: id,
+      visibilityCondition: visibilityCondition,
+      events: events,
       padding: parseDouble(map['padding']),
       margin: parseDouble(map['margin']),
       width: parseDouble(map['width']),
@@ -68,8 +77,7 @@ class ComponentContainer extends Component {
 
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
+        ...super.toMap(),
         'padding': padding,
         'margin': margin,
         'width': width,

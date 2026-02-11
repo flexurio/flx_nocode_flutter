@@ -50,6 +50,8 @@ class ComponentRow extends Component {
 
   ComponentRow({
     required super.id,
+    super.visibilityCondition,
+    super.events,
     this.children = const [],
     this.xAlign = 'left',
     this.yAlign = 'top',
@@ -73,6 +75,11 @@ class ComponentRow extends Component {
       throw const FormatException('Component "id" is required');
     }
 
+    final visibilityCondition = map['visibilityCondition']?.toString();
+    final events = map['events'] is Map
+        ? Map<String, dynamic>.from(map['events'])
+        : const <String, dynamic>{};
+
     // Parse children
     final rawChildren = map['children'];
     List<Component> parsedChildren = const [];
@@ -88,6 +95,8 @@ class ComponentRow extends Component {
 
     return ComponentRow(
       id: id,
+      visibilityCondition: visibilityCondition,
+      events: events,
       children: parsedChildren,
       xAlign: map['x_align']?.toString().trim() ?? 'left',
       yAlign: map['y_align']?.toString().trim() ?? 'top',
@@ -98,8 +107,7 @@ class ComponentRow extends Component {
 
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
+        ...super.toMap(),
         'x_align': xAlign,
         'y_align': yAlign,
         'horizontal_gap': horizontalGap,
