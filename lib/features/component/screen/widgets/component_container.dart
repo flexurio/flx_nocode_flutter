@@ -26,6 +26,27 @@ extension ComponentContainerWidgets on ComponentContainer {
     );
   }
 
+  Widget toMockWidget() {
+    return Container(
+      width: width,
+      height: height,
+      padding: padding != null ? EdgeInsets.all(padding!) : null,
+      margin: margin != null ? EdgeInsets.all(margin!) : null,
+      decoration: BoxDecoration(
+        color: _parseColor(color),
+        borderRadius:
+            borderRadius != null ? BorderRadius.circular(borderRadius!) : null,
+        border: (borderColor != null || borderWidth != null)
+            ? Border.all(
+                color: _parseColor(borderColor) ?? Colors.transparent,
+                width: borderWidth ?? 1.0,
+              )
+            : null,
+      ),
+      child: child?.toMockWidget(),
+    );
+  }
+
   Color? _parseColor(String? hexString) {
     if (hexString == null || hexString.isEmpty) return null;
     try {

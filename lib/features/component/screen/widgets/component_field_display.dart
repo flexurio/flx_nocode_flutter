@@ -18,4 +18,11 @@ extension ComponentFieldDisplayWidgets on ComponentFieldDisplay {
       ),
     );
   }
+
+  Widget toMockWidget() {
+    return TileDataVertical(
+      label: label,
+      child: Text(value),
+    );
+  }
 }

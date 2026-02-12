@@ -33,4 +33,14 @@ extension ComponentTextFieldWidgets on ComponentTextField {
       },
     );
   }
+
+  Widget toMockWidget() {
+    return FTextFormField(
+      maxLength: maxLength,
+      maxLines: maxLines,
+      labelText: label,
+      helperText: helperText,
+      enabled: enabled,
+    );
+  }
 }

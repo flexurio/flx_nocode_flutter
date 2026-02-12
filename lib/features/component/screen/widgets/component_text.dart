@@ -7,4 +7,8 @@ extension ComponentTextWidgets on ComponentText {
   Widget toWidget(JsonMap data) {
     return Text(value.interpolateJavascript(data));
   }
+
+  Widget toMockWidget() {
+    return Text(value);
+  }
 }

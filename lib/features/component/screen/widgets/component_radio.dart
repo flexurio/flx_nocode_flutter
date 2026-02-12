@@ -50,6 +50,18 @@ extension ComponentRadioWidgets on ComponentRadio {
       },
     );
   }
+
+  Widget toMockWidget() {
+    final items = options.isNotEmpty ? options : const ['Option 1', 'Option 2'];
+    return _RadioGroup(
+      label: label,
+      options: items,
+      initialValue: initialValue.isNotEmpty && items.contains(initialValue)
+          ? initialValue
+          : (items.isNotEmpty ? items.first : ''),
+      onChanged: (val) {},
+    );
+  }
 }
 
 class _RadioGroup extends StatefulWidget {

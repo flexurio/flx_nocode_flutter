@@ -20,4 +20,13 @@ extension ComponentNumberFieldWidgets on ComponentNumberField {
       ],
     );
   }
+
+  Widget toMockWidget() {
+    return FTextFormField(
+      labelText: label,
+      enabled: enabled,
+      hintText: initialValue.isEmpty ? null : initialValue,
+      isNumeric: true,
+    );
+  }
 }

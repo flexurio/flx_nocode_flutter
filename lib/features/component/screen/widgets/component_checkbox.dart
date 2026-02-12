@@ -14,6 +14,16 @@ extension ComponentCheckboxWidgets on ComponentCheckbox {
       controller: controller is TextEditingController ? controller : null,
     );
   }
+
+  Widget toMockWidget() {
+    return CheckboxListTile(
+      dense: true,
+      contentPadding: EdgeInsets.zero,
+      value: value,
+      title: Text(label),
+      onChanged: (val) {},
+    );
+  }
 }
 
 class _CheckboxTile extends StatefulWidget {

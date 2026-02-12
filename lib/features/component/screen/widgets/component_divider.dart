@@ -10,4 +10,12 @@ extension ComponentDividerWidgets on ComponentDivider {
       endIndent: endIndent,
     );
   }
+
+  Widget toMockWidget() {
+    return Divider(
+      thickness: thickness,
+      indent: indent,
+      endIndent: endIndent,
+    );
+  }
 }

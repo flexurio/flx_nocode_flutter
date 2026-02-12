@@ -34,6 +34,28 @@ extension ComponentRowWidgets on ComponentRow {
       children: rowChildren,
     );
   }
+
+  Widget toMockWidget() {
+    final widgets =
+        children.map((child) => child.toMockWidget()).toList(growable: false);
+
+    if (widgets.isEmpty) return const SizedBox.shrink();
+    if (widgets.length == 1) return widgets.first;
+
+    final List<Widget> rowChildren = [];
+    for (int i = 0; i < widgets.length; i++) {
+      rowChildren.add(Expanded(child: widgets[i]));
+      if (i < widgets.length - 1 && horizontalGap > 0) {
+        rowChildren.add(Gap(horizontalGap));
+      }
+    }
+
+    return Row(
+      mainAxisAlignment: _mapXAlign(xAlign),
+      crossAxisAlignment: _mapYAlign(yAlign),
+      children: rowChildren,
+    );
+  }
 }
 
 /// Converts human-friendly JSON `x_align` into Flutter MainAxisAlignment.

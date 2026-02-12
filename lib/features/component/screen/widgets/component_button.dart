@@ -55,4 +55,15 @@ extension ComponentButtonWidgets on ComponentButton {
       permission: null,
     );
   }
+
+  Widget toMockWidget() {
+    final color = _parseColor(this.color);
+    return Button.string(
+      color: color,
+      onPressed: () {},
+      action: text,
+      isInProgress: false,
+      permission: null,
+    );
+  }
 }

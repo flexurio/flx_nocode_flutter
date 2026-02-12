@@ -56,4 +56,12 @@ extension ComponentDatePickerWidgets on ComponentDatePicker {
           : null,
     );
   }
+
+  Widget toMockWidget() {
+    return FieldDatePicker(
+      controller: TextEditingController(),
+      labelText: label,
+      dateFormat: dateFormat,
+    );
+  }
 }

@@ -9,6 +9,39 @@ extension ComponentTableWidgets on ComponentTable {
   Widget toWidget(JsonMap data) {
     return _ComponentTableWidget(component: this, data: data);
   }
+
+  Widget toMockWidget() {
+    var tableColumns = columns.map((c) {
+      return TableColumn<JsonMap>(
+        title: c.header,
+        width: c.width,
+        builder: (row, index) {
+          return Text(row[c.body]?.toString() ?? '-');
+        },
+      );
+    }).toList();
+
+    if (tableColumns.isEmpty) {
+      tableColumns = [
+        TableColumn<JsonMap>(
+          title: 'No Columns',
+          width: 200,
+          builder: (_, __) => const Text('-'),
+        ),
+      ];
+    }
+
+    return YuhuTable<JsonMap>(
+      width: width,
+      data: [
+        for (var i = 0; i < 3; i++)
+          {
+            for (var col in columns) col.body: 'Data ${i + 1}',
+          },
+      ],
+      columns: tableColumns,
+    );
+  }
 }
 
 class _ComponentTableWidget extends StatefulWidget {

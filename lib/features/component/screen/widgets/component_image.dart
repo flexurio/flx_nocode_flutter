@@ -18,6 +18,21 @@ extension ComponentImageWidgets on ComponentImage {
     );
   }
 
+  Widget toMockWidget() {
+    return Image.network(
+      url,
+      width: width,
+      height: height,
+      fit: _mapFit(fit),
+      errorBuilder: (context, error, stackTrace) => Container(
+        width: width ?? 100,
+        height: height ?? 100,
+        color: Colors.grey.shade200,
+        child: const Icon(Icons.image, color: Colors.grey),
+      ),
+    );
+  }
+
   BoxFit _mapFit(String fit) {
     switch (fit.toLowerCase()) {
       case 'contain':

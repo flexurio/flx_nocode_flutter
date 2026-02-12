@@ -73,4 +73,41 @@ extension ComponentWidget on Component {
     }
     return NoCodeError('Unknown component type: ${this.type}');
   }
+
+  Widget toMockWidget() {
+    if (this.type == ComponentText.componentId) {
+      return (this as ComponentText).toMockWidget();
+    } else if (this.type == ComponentTable.componentId) {
+      return (this as ComponentTable).toMockWidget();
+    } else if (this.type == ComponentFieldDisplay.componentId) {
+      return (this as ComponentFieldDisplay).toMockWidget();
+    } else if (this.type == ComponentRow.componentId) {
+      return (this as ComponentRow).toMockWidget();
+    } else if (this.type == ComponentColumn.componentId) {
+      return (this as ComponentColumn).toMockWidget();
+    } else if (this.type == ComponentTextField.componentId) {
+      return (this as ComponentTextField).toMockWidget();
+    } else if (this.type == ComponentDatePicker.componentId) {
+      return (this as ComponentDatePicker).toMockWidget();
+    } else if (this.type == ComponentCheckbox.componentId) {
+      return (this as ComponentCheckbox).toMockWidget();
+    } else if (this.type == ComponentDropdown.componentId) {
+      return (this as ComponentDropdown).toMockWidget();
+    } else if (this.type == ComponentRadio.componentId) {
+      return (this as ComponentRadio).toMockWidget();
+    } else if (this.type == ComponentButton.componentId) {
+      return (this as ComponentButton).toMockWidget();
+    } else if (this.type == ComponentNumberField.componentId) {
+      return (this as ComponentNumberField).toMockWidget();
+    } else if (this.type == ComponentContainer.componentId) {
+      return (this as ComponentContainer).toMockWidget();
+    } else if (this.type == ComponentSwitch.componentId) {
+      return (this as ComponentSwitch).toMockWidget();
+    } else if (this.type == ComponentImage.componentId) {
+      return (this as ComponentImage).toMockWidget();
+    } else if (this.type == ComponentDivider.componentId) {
+      return (this as ComponentDivider).toMockWidget();
+    }
+    return Text('Mock Widget: $type');
+  }
 }

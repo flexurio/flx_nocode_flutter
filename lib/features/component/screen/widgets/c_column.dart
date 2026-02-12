@@ -35,6 +35,28 @@ extension ComponentColumnWidgets on ComponentColumn {
       children: childrenWithGap,
     );
   }
+
+  Widget toMockWidget() {
+    final widgets =
+        children.map((child) => child.toMockWidget()).toList(growable: false);
+
+    if (widgets.isEmpty) return const SizedBox.shrink();
+    if (widgets.length == 1) return widgets.first;
+
+    final List<Widget> childrenWithGap = [];
+    for (int i = 0; i < widgets.length; i++) {
+      childrenWithGap.add(widgets[i]);
+      if (i < widgets.length - 1 && gap > 0) {
+        childrenWithGap.add(Gap(gap));
+      }
+    }
+
+    return Column(
+      mainAxisAlignment: _mapYAlignToMainAxis(yAlign),
+      crossAxisAlignment: _mapXAlignToCrossAxis(xAlign),
+      children: childrenWithGap,
+    );
+  }
 }
 
 /// Converts simple `y_align` keywords into Flutter's [MainAxisAlignment].

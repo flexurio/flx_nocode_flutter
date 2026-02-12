@@ -14,4 +14,14 @@ extension ComponentSwitchWidgets on ComponentSwitch {
       dense: true,
     );
   }
+
+  Widget toMockWidget() {
+    return SwitchListTile(
+      title: Text(label, style: const TextStyle(fontSize: 14)),
+      value: initialValue,
+      onChanged: enabled ? (val) {} : null,
+      contentPadding: EdgeInsets.zero,
+      dense: true,
+    );
+  }
 }
