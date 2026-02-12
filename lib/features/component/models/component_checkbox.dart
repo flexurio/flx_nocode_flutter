@@ -9,6 +9,8 @@ class ComponentCheckbox extends Component {
     required super.id,
     required this.label,
     required this.value,
+    super.visibilityCondition,
+    super.events = const {},
   }) : super(type: componentId);
 
   static const String componentId = 'checkbox';
@@ -24,7 +26,7 @@ class ComponentCheckbox extends Component {
   factory ComponentCheckbox.fromMap(Map<String, dynamic> map) {
     final id = map['id']?.toString().trim();
     if (id == null || id.isEmpty) {
-      throw const FormatException('Component \"id\" is required');
+      throw const FormatException('Component "id" is required');
     }
     final label = map['label']?.toString().trim() ?? 'Checkbox';
     final rawValue = map['value'];
@@ -39,13 +41,14 @@ class ComponentCheckbox extends Component {
       id: id,
       label: label,
       value: value,
+      visibilityCondition: map['visibilityCondition']?.toString(),
+      events: map['events'] as Map<String, dynamic>? ?? const {},
     );
   }
 
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
+        ...super.toMap(),
         'label': label,
         'value': value,
       };

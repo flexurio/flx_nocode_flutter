@@ -17,6 +17,8 @@ class ComponentDatePicker extends Component {
     this.maxDate,
     this.required = false,
     this.dateFormat,
+    super.visibilityCondition,
+    super.events = const {},
   }) : super(type: componentId);
 
   static const String componentId = 'date_picker';
@@ -41,6 +43,7 @@ class ComponentDatePicker extends Component {
     final maxDate = map['maxDate']?.toString();
     final required = map['required'] == true;
     final dateFormat = map['dateFormat']?.toString();
+
     return ComponentDatePicker(
       id: id,
       label: label,
@@ -49,13 +52,14 @@ class ComponentDatePicker extends Component {
       maxDate: maxDate,
       required: required,
       dateFormat: dateFormat,
+      visibilityCondition: map['visibilityCondition']?.toString(),
+      events: map['events'] as Map<String, dynamic>? ?? const {},
     );
   }
 
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
+        ...super.toMap(),
         'label': label,
         'initialValue': initialValue,
         'minDate': minDate,

@@ -46,6 +46,8 @@ class ComponentTable extends Component {
     required super.id,
     required this.http,
     required this.width,
+    super.visibilityCondition,
+    super.events = const {},
   }) : super(type: 'table');
 
   /// Creates an empty [ComponentTable] with default values.
@@ -107,6 +109,8 @@ class ComponentTable extends Component {
               map['http'] as Map<String, dynamic>,
             ),
       width: (map['width'] as num?)?.toDouble(),
+      visibilityCondition: map['visibilityCondition']?.toString(),
+      events: map['events'] as Map<String, dynamic>? ?? const {},
     );
   }
 
@@ -124,8 +128,7 @@ class ComponentTable extends Component {
   /// ```
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
+        ...super.toMap(),
         'http': http.toJson(),
         'width': width,
         'columns': columns

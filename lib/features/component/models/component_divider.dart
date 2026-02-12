@@ -11,6 +11,8 @@ class ComponentDivider extends Component {
     this.thickness = 1.0,
     this.indent = 0.0,
     this.endIndent = 0.0,
+    super.visibilityCondition,
+    super.events = const {},
   }) : super(type: 'divider');
 
   static String get componentId => 'divider';
@@ -34,13 +36,14 @@ class ComponentDivider extends Component {
       thickness: double.tryParse(map['thickness']?.toString() ?? '') ?? 1.0,
       indent: double.tryParse(map['indent']?.toString() ?? '') ?? 0.0,
       endIndent: double.tryParse(map['endIndent']?.toString() ?? '') ?? 0.0,
+      visibilityCondition: map['visibilityCondition']?.toString(),
+      events: map['events'] as Map<String, dynamic>? ?? const {},
     );
   }
 
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
+        ...super.toMap(),
         'thickness': thickness,
         'indent': indent,
         'endIndent': endIndent,

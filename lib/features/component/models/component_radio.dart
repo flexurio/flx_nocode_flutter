@@ -13,6 +13,8 @@ class ComponentRadio extends Component {
     required this.options,
     required this.initialValue,
     this.required = false,
+    super.visibilityCondition,
+    super.events = const {},
   }) : super(type: componentId);
 
   static const String componentId = 'radio';
@@ -30,7 +32,7 @@ class ComponentRadio extends Component {
   factory ComponentRadio.fromMap(Map<String, dynamic> map) {
     final id = map['id']?.toString().trim();
     if (id == null || id.isEmpty) {
-      throw const FormatException('Component \"id\" is required');
+      throw const FormatException('Component "id" is required');
     }
     final label = map['label']?.toString().trim() ?? 'Radio';
     final initialValue = map['initialValue']?.toString().trim() ?? '';
@@ -53,13 +55,14 @@ class ComponentRadio extends Component {
       options: options,
       initialValue: initialValue,
       required: required,
+      visibilityCondition: map['visibilityCondition']?.toString(),
+      events: map['events'] as Map<String, dynamic>? ?? const {},
     );
   }
 
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
+        ...super.toMap(),
         'label': label,
         'options': options,
         'initialValue': initialValue,

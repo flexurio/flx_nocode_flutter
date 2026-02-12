@@ -38,6 +38,8 @@ class ComponentFieldDisplay extends Component {
     required super.id,
     required this.label,
     required this.value,
+    super.visibilityCondition,
+    super.events = const {},
   }) : super(type: 'field_display');
 
   /// Component ID constant for referencing the type.
@@ -62,6 +64,8 @@ class ComponentFieldDisplay extends Component {
       id: id,
       label: label,
       value: value,
+      visibilityCondition: map['visibilityCondition']?.toString(),
+      events: map['events'] as Map<String, dynamic>? ?? const {},
     );
   }
 
@@ -86,8 +90,7 @@ class ComponentFieldDisplay extends Component {
   /// ```
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
+        ...super.toMap(),
         'label': label,
         'value': value,
       };

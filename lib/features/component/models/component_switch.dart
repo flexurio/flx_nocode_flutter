@@ -11,6 +11,8 @@ class ComponentSwitch extends Component {
     this.label = 'Switch',
     this.initialValue = false,
     this.enabled = true,
+    super.visibilityCondition,
+    super.events = const {},
   }) : super(type: 'switch');
 
   static String get componentId => 'switch';
@@ -34,13 +36,14 @@ class ComponentSwitch extends Component {
       label: map['label']?.toString() ?? 'Switch',
       initialValue: map['initialValue'] == true,
       enabled: map['enabled'] != false,
+      visibilityCondition: map['visibilityCondition']?.toString(),
+      events: map['events'] as Map<String, dynamic>? ?? const {},
     );
   }
 
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
+        ...super.toMap(),
         'label': label,
         'initialValue': initialValue,
         'enabled': enabled,

@@ -13,6 +13,8 @@ class ComponentImage extends Component {
     this.width,
     this.height,
     this.fit = 'cover',
+    super.visibilityCondition,
+    super.events = const {},
   }) : super(type: 'image');
 
   static String get componentId => 'image';
@@ -35,13 +37,14 @@ class ComponentImage extends Component {
       width: double.tryParse(map['width']?.toString() ?? ''),
       height: double.tryParse(map['height']?.toString() ?? ''),
       fit: map['fit']?.toString() ?? 'cover',
+      visibilityCondition: map['visibilityCondition']?.toString(),
+      events: map['events'] as Map<String, dynamic>? ?? const {},
     );
   }
 
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
+        ...super.toMap(),
         'url': url,
         if (width != null) 'width': width,
         if (height != null) 'height': height,

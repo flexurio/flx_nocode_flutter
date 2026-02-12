@@ -11,6 +11,8 @@ class ComponentNumberField extends Component {
     required this.label,
     required this.initialValue,
     required this.enabled,
+    super.visibilityCondition,
+    super.events = const {},
   }) : super(type: componentId);
 
   static const String componentId = 'number_field';
@@ -45,13 +47,14 @@ class ComponentNumberField extends Component {
       label: label,
       initialValue: initialValue,
       enabled: enabled,
+      visibilityCondition: map['visibilityCondition']?.toString(),
+      events: map['events'] as Map<String, dynamic>? ?? const {},
     );
   }
 
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
+        ...super.toMap(),
         'label': label,
         'initialValue': initialValue,
         'enabled': enabled,
