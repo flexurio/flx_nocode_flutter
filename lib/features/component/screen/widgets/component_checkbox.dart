@@ -16,12 +16,29 @@ extension ComponentCheckboxWidgets on ComponentCheckbox {
   }
 
   Widget toMockWidget() {
-    return CheckboxListTile(
-      dense: true,
-      contentPadding: EdgeInsets.zero,
-      value: value,
-      title: Text(label),
-      onChanged: (val) {},
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 18,
+          height: 18,
+          decoration: BoxDecoration(
+            color: value ? Colors.blue : Colors.white,
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(
+              color: value ? Colors.blue : Colors.grey.shade400,
+            ),
+          ),
+          child: value
+              ? const Icon(Icons.check, size: 14, color: Colors.white)
+              : null,
+        ),
+        const SizedBox(width: 10),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, color: Colors.black87),
+        ),
+      ],
     );
   }
 }

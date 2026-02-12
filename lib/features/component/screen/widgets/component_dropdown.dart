@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_dropdown.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'component_dropdown_widget.dart';
@@ -13,11 +12,42 @@ extension ComponentDropdownWidgets on ComponentDropdown {
   }
 
   Widget toMockWidget() {
-    return FDropDownSearch<Map<String, dynamic>>(
-      items: options.map((e) => {'label': e, 'value': e}).toList(),
-      labelText: label,
-      itemAsString: (item) => item['label']?.toString() ?? '',
-      onChanged: (val) {},
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (label.isNotEmpty) ...[
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 6),
+        ],
+        Container(
+          height: 44,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Select $label...',
+                  style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                ),
+              ),
+              Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

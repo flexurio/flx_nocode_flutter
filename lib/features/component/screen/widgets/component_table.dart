@@ -11,35 +11,75 @@ extension ComponentTableWidgets on ComponentTable {
   }
 
   Widget toMockWidget() {
-    var tableColumns = columns.map((c) {
-      return TableColumn<JsonMap>(
-        title: c.header,
-        width: c.width,
-        builder: (row, index) {
-          return Text(row[c.body]?.toString() ?? '-');
-        },
-      );
-    }).toList();
-
-    if (tableColumns.isEmpty) {
-      tableColumns = [
-        TableColumn<JsonMap>(
-          title: 'No Columns',
-          width: 200,
-          builder: (_, __) => const Text('-'),
-        ),
-      ];
-    }
-
-    return YuhuTable<JsonMap>(
+    return Container(
       width: width,
-      data: [
-        for (var i = 0; i < 3; i++)
-          {
-            for (var col in columns) col.body: 'Data ${i + 1}',
-          },
-      ],
-      columns: tableColumns,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(8)),
+              border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+            ),
+            child: Row(
+              children: columns.isEmpty
+                  ? [
+                      const Text('No Columns',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w600))
+                    ]
+                  : columns
+                      .map((c) => Expanded(
+                            flex: (c.width ?? 100).toInt(),
+                            child: Text(
+                              c.header,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ))
+                      .toList(),
+            ),
+          ),
+          // Placeholder Rows
+          for (var i = 0; i < 2; i++)
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              decoration: BoxDecoration(
+                border: i == 0
+                    ? Border(bottom: BorderSide(color: Colors.grey.shade100))
+                    : null,
+              ),
+              child: Row(
+                children: columns.isEmpty
+                    ? [const Text('-', style: TextStyle(fontSize: 12))]
+                    : columns
+                        .map((c) => Expanded(
+                              flex: (c.width ?? 100).toInt(),
+                              child: Text(
+                                'Data ${i + 1}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                            ))
+                        .toList(),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

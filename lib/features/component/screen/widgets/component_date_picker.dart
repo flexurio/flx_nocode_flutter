@@ -58,10 +58,42 @@ extension ComponentDatePickerWidgets on ComponentDatePicker {
   }
 
   Widget toMockWidget() {
-    return FieldDatePicker(
-      controller: TextEditingController(),
-      labelText: label,
-      dateFormat: dateFormat,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (label.isNotEmpty) ...[
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 6),
+        ],
+        Container(
+          height: 44,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  (dateFormat ?? 'yyyy-MM-dd').toUpperCase(),
+                  style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                ),
+              ),
+              Icon(Icons.calendar_today, color: Colors.grey.shade600, size: 18),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

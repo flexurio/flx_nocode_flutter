@@ -53,13 +53,48 @@ extension ComponentRadioWidgets on ComponentRadio {
 
   Widget toMockWidget() {
     final items = options.isNotEmpty ? options : const ['Option 1', 'Option 2'];
-    return _RadioGroup(
-      label: label,
-      options: items,
-      initialValue: initialValue.isNotEmpty && items.contains(initialValue)
-          ? initialValue
-          : (items.isNotEmpty ? items.first : ''),
-      onChanged: (val) {},
+    final selected = initialValue.isNotEmpty && items.contains(initialValue)
+        ? initialValue
+        : (items.isNotEmpty ? items.first : '');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (label.isNotEmpty) ...[
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+        ...items.map((opt) => Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Row(
+                children: [
+                  Container(
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: opt == selected
+                            ? Colors.blue
+                            : Colors.grey.shade400,
+                        width: opt == selected ? 4.5 : 1,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(opt, style: const TextStyle(fontSize: 13)),
+                ],
+              ),
+            )),
+      ],
     );
   }
 }

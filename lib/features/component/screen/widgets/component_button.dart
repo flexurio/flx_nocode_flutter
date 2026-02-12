@@ -58,12 +58,29 @@ extension ComponentButtonWidgets on ComponentButton {
 
   Widget toMockWidget() {
     final color = _parseColor(this.color);
-    return Button.string(
-      color: color,
-      onPressed: () {},
-      action: text,
-      isInProgress: false,
-      permission: null,
+    return Container(
+      height: 44,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+        ),
+      ),
     );
   }
 }

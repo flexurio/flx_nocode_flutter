@@ -35,12 +35,39 @@ extension ComponentTextFieldWidgets on ComponentTextField {
   }
 
   Widget toMockWidget() {
-    return FTextFormField(
-      maxLength: maxLength,
-      maxLines: maxLines,
-      labelText: label,
-      helperText: helperText,
-      enabled: enabled,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (label.isNotEmpty) ...[
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 6),
+        ],
+        Container(
+          height: maxLines > 1 ? null : 44,
+          constraints: maxLines > 1
+              ? const BoxConstraints(minHeight: 80)
+              : const BoxConstraints(),
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Text(
+            'Enter $label...',
+            style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+          ),
+        ),
+      ],
     );
   }
 }

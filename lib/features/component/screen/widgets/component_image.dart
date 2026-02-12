@@ -19,16 +19,26 @@ extension ComponentImageWidgets on ComponentImage {
   }
 
   Widget toMockWidget() {
-    return Image.network(
-      url,
-      width: width,
-      height: height,
-      fit: _mapFit(fit),
-      errorBuilder: (context, error, stackTrace) => Container(
-        width: width ?? 100,
-        height: height ?? 100,
-        color: Colors.grey.shade200,
-        child: const Icon(Icons.image, color: Colors.grey),
+    return Container(
+      width: width ?? double.infinity,
+      height: height ?? 120,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.image_outlined, color: Colors.grey.shade400, size: 32),
+          if (width != null || height != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              '${width?.toInt() ?? 'auto'} x ${height?.toInt() ?? 'auto'}',
+              style: TextStyle(color: Colors.grey.shade400, fontSize: 10),
+            ),
+          ],
+        ],
       ),
     );
   }
