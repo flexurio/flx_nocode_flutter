@@ -40,12 +40,16 @@ extension ComponentTableWidgets on ComponentTable {
                   : columns
                       .map((c) => Expanded(
                             flex: (c.width ?? 100).toInt(),
-                            child: Text(
-                              c.header,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black87,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              child: Text(
+                                c.header,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
                               ),
                             ),
                           ))
@@ -67,11 +71,15 @@ extension ComponentTableWidgets on ComponentTable {
                     : columns
                         .map((c) => Expanded(
                               flex: (c.width ?? 100).toInt(),
-                              child: Text(
-                                'Data ${i + 1}',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade600,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8),
+                                child: Text(
+                                  'Data ${i + 1}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade600,
+                                  ),
                                 ),
                               ),
                             ))
