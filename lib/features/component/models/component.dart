@@ -14,6 +14,7 @@ export 'package:flx_nocode_flutter/features/component/models/component_number_fi
 export 'package:flx_nocode_flutter/features/component/models/component_switch.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_image.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_divider.dart';
+export 'package:flx_nocode_flutter/features/component/models/component_icon_button.dart';
 
 import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
 import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
@@ -31,6 +32,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_number_fi
 import 'package:flx_nocode_flutter/features/component/models/component_switch.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_image.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_divider.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_icon_button.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
@@ -77,6 +79,8 @@ class Component {
         return ComponentRadio.fromMap(map);
       case ComponentType.button:
         return ComponentButton.fromMap(map);
+      case ComponentType.iconButton:
+        return ComponentIconButton.fromMap(map);
       case ComponentType.column:
         return ComponentColumn.fromMap(map);
       case ComponentType.row:
@@ -125,6 +129,8 @@ class Component {
         return ComponentRadio.empty(Component._generateId(type));
       case ComponentType.button:
         return ComponentButton.empty(Component._generateId(type));
+      case ComponentType.iconButton:
+        return ComponentIconButton.empty(Component._generateId(type));
       case ComponentType.column:
         return ComponentColumn.empty(Component._generateId(type));
       case ComponentType.row:
@@ -226,6 +232,7 @@ class Component {
     if (comp is ComponentRadio) return comp.label;
     if (comp is ComponentFieldDisplay) return comp.label;
     if (comp is ComponentButton) return comp.text;
+    if (comp is ComponentIconButton) return comp.icon;
     if (comp is ComponentText) return comp.value;
 
     return id;
@@ -241,6 +248,7 @@ class ComponentType {
   static const String dropdown = 'dropdown';
   static const String radio = 'radio';
   static const String button = 'button';
+  static const String iconButton = 'icon_button';
   static const String column = 'column';
   static const String row = 'row';
   static const String fieldDisplay = 'field_display';
@@ -259,6 +267,7 @@ class ComponentType {
     ComponentTypeEntry(id: dropdown, label: 'Dropdown'),
     ComponentTypeEntry(id: radio, label: 'Radio'),
     ComponentTypeEntry(id: button, label: 'Button'),
+    ComponentTypeEntry(id: iconButton, label: 'Icon Button'),
     ComponentTypeEntry(id: column, label: 'Column'),
     ComponentTypeEntry(id: row, label: 'Row'),
     ComponentTypeEntry(id: fieldDisplay, label: 'Field Display'),

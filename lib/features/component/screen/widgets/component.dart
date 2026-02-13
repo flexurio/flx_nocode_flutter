@@ -16,6 +16,7 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_c
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_switch.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_image.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_divider.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_icon_button.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
@@ -60,6 +61,8 @@ extension ComponentWidget on Component {
       return (this as ComponentRadio).toWidget(fullData);
     } else if (this.type == ComponentButton.componentId) {
       return (this as ComponentButton).toWidget(fullData);
+    } else if (this.type == ComponentIconButton.componentId) {
+      return (this as ComponentIconButton).toWidget(fullData);
     } else if (this.type == ComponentNumberField.componentId) {
       return (this as ComponentNumberField).toWidget(fullData);
     } else if (this.type == ComponentContainer.componentId) {
@@ -97,6 +100,8 @@ extension ComponentWidget on Component {
       return (this as ComponentRadio).toMockWidget();
     } else if (this.type == ComponentButton.componentId) {
       return (this as ComponentButton).toMockWidget();
+    } else if (this.type == ComponentIconButton.componentId) {
+      return (this as ComponentIconButton).toMockWidget();
     } else if (this.type == ComponentNumberField.componentId) {
       return (this as ComponentNumberField).toMockWidget();
     } else if (this.type == ComponentContainer.componentId) {
