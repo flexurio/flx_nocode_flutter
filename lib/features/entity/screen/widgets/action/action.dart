@@ -227,6 +227,15 @@ extension ActionLogicExtension on ActionD {
               }
             }
             controller.initialData.refresh();
+
+            // Handle success actions (like closing the dialog if configured)
+            await handleOnSuccessSingle(
+              entity: entity,
+              context: context,
+              responseData: null,
+              data: data,
+              onSuccessCallback: onSuccessCallback,
+            );
           }
         }
         break;
@@ -271,6 +280,15 @@ extension ActionLogicExtension on ActionD {
             list.add(itemValue);
             controller.initialData[varName] = list;
             controller.initialData.refresh();
+
+            // Handle success actions (like closing the dialog if configured)
+            await handleOnSuccessSingle(
+              entity: entity,
+              context: context,
+              responseData: null,
+              data: data,
+              onSuccessCallback: onSuccessCallback,
+            );
           }
         }
         break;
