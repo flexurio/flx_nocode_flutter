@@ -231,10 +231,14 @@ class CreateForm extends StatelessWidget {
         );
       }
 
+      final submitLabel =
+          layoutForm.submitWorkflow?['submit_label']?.toString();
+
       return Button.action(
         permission: null,
         isInProgress: inProgress,
         onPressed: () => controller.submit(context),
+        label: submitLabel,
         action: layoutForm.isHome ? DataAction.reprocess : controller.action,
       );
     });
