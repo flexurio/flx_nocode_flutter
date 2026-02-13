@@ -10,6 +10,9 @@ import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/json_ta
 import 'package:flx_nocode_flutter/features/layout_form/screen/pages/create_page.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
+import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
+import 'package:get/get.dart';
+
 typedef JsonList = List<Map<String, dynamic>>;
 
 extension ActionLogicExtension on ActionD {
@@ -182,6 +185,50 @@ extension ActionLogicExtension on ActionD {
             }
           },
         );
+        break;
+
+      case ActionType.setVariable:
+        final varName = targetVariable;
+        if (varName == null || varName.isEmpty) {
+          Toast(context).fail('Target variable name is required');
+          return;
+        }
+
+        final layoutId = data['layoutFormId'] as String?;
+
+        if (layoutId != null) {
+          final tag = 'create_page_$layoutId';
+          if (Get.isRegistered<CreatePageController>(tag: tag)) {
+            final controller = Get.find<CreatePageController>(tag: tag);
+
+            dynamic finalValue;
+            if (value != null && value!.isNotEmpty) {
+              // Store specific interpolated value
+              finalValue = value!.interpolateJavascript(data);
+            } else {
+              // Store entire form as a map
+              final formState = <String, dynamic>{};
+              controller.controllers.forEach((key, ctrl) {
+                formState[key] = ctrl.text;
+              });
+
+              finalValue = {
+                ...controller.initialData,
+                ...formState,
+              };
+            }
+
+            controller.initialData[varName] = finalValue;
+
+            // If it's a simple value, try to update a matching controller if it exists
+            if (finalValue is! Map && finalValue is! List) {
+              if (controller.controllers.containsKey(varName)) {
+                controller.controllers[varName]?.text = finalValue.toString();
+              }
+            }
+            controller.initialData.refresh();
+          }
+        }
         break;
 
       default:

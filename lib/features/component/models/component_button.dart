@@ -1,11 +1,13 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 
 class ComponentButton extends Component {
   final String text;
   final String color; // hex string or semantic name
   final String variant; // primary, secondary, outline, ghost, destructive
   final String size; // small, medium, large
+  final ActionD? onClick;
 
   ComponentButton({
     required super.id,
@@ -13,6 +15,7 @@ class ComponentButton extends Component {
     required this.color,
     this.variant = 'primary',
     this.size = 'medium',
+    this.onClick,
     super.visibilityCondition,
     super.events,
   }) : super(type: 'button');
@@ -41,12 +44,17 @@ class ComponentButton extends Component {
     final visibilityCondition = map['visibilityCondition']?.toString();
     final events = map['events'] as Map<String, dynamic>? ?? {};
 
+    final actionMap = map['onClick'];
+    final onClick =
+        actionMap != null ? ActionD.fromJson(Map.from(actionMap)) : null;
+
     return ComponentButton(
       id: id,
       text: text,
       color: color,
       variant: variant,
       size: size,
+      onClick: onClick,
       visibilityCondition: visibilityCondition,
       events: events,
     );
@@ -60,6 +68,7 @@ class ComponentButton extends Component {
         'color': color,
         'variant': variant,
         'size': size,
+        if (onClick != null) 'onClick': onClick!.toJson(),
         if (visibilityCondition != null)
           'visibilityCondition': visibilityCondition,
         'events': events,

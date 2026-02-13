@@ -114,6 +114,7 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
               'form': state,
               'current': state,
               'entity': widget.entity,
+              'layoutFormId': widget.layoutForm.id,
               if (widget.parentData.isNotEmpty)
                 'parent': widget.parentData.last,
             },

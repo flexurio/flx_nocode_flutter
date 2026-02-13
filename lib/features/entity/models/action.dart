@@ -19,7 +19,8 @@ enum ActionType {
   showConfirmationDialog(
       'show_confirmation_dialog', 'Show Confirmation Dialog'),
   showSuccessDialogWithData(
-      'show_success_dialog_with_data', 'Show Success Dialog with Data');
+      'show_success_dialog_with_data', 'Show Success Dialog with Data'),
+  setVariable('set_variable', 'Set Variable');
 
   final String id;
   final String label;
@@ -87,6 +88,9 @@ class ActionD extends HiveObject {
   /// The variable name to store the result of the action (e.g. HTTP response body).
   final String? targetVariable;
 
+  /// The value to be set for setVariable action type.
+  final String? value;
+
   ActionD({
     required this.isMultiple,
     required this.onSuccess,
@@ -110,6 +114,7 @@ class ActionD extends HiveObject {
     this.copyLabel,
     this.copyValue,
     this.targetVariable,
+    this.value,
   }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       assert(layoutFormId != null && layoutFormId!.isNotEmpty,
@@ -141,8 +146,10 @@ class ActionD extends HiveObject {
     String? copyLabel,
     String? copyValue,
     String? targetVariable,
+    String? value,
   }) {
     return ActionD(
+      value: value ?? this.value,
       width: width ?? this.width,
       isMultiple: isMultiple ?? this.isMultiple,
       id: id ?? this.id,
@@ -207,6 +214,7 @@ class ActionD extends HiveObject {
       copyLabel: json['copy_label'],
       copyValue: json['copy_value'],
       targetVariable: json['target_variable'],
+      value: json['value'],
     );
   }
 
@@ -235,6 +243,7 @@ class ActionD extends HiveObject {
       'copy_label': copyLabel,
       'copy_value': copyValue,
       'target_variable': targetVariable,
+      'value': value,
     };
   }
 
