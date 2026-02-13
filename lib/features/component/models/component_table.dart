@@ -46,6 +46,7 @@ class ComponentTable extends Component {
     required super.id,
     required this.http,
     required this.width,
+    this.referenceId,
     super.visibilityCondition,
     super.events = const {},
   }) : super(type: 'table');
@@ -80,6 +81,8 @@ class ComponentTable extends Component {
   /// describing how to extract a value from a row.
   final List<TColumn> columns;
 
+  final String? referenceId;
+
   /// Creates a [ComponentTable] instance from a JSON-compatible map.
   ///
   /// ### Expected Structure
@@ -109,6 +112,7 @@ class ComponentTable extends Component {
               map['http'] as Map<String, dynamic>,
             ),
       width: (map['width'] as num?)?.toDouble(),
+      referenceId: map['reference_id']?.toString(),
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
     );
@@ -131,6 +135,7 @@ class ComponentTable extends Component {
         ...super.toMap(),
         'http': http.toJson(),
         'width': width,
+        'reference_id': referenceId,
         'columns': columns
             .map((e) => {
                   'header': e.header,

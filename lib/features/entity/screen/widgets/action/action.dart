@@ -231,6 +231,50 @@ extension ActionLogicExtension on ActionD {
         }
         break;
 
+      case ActionType.appendVariable:
+        final varName = targetVariable;
+        if (varName == null || varName.isEmpty) {
+          Toast(context).fail('Target variable name is required');
+          return;
+        }
+
+        final layoutId = data['layoutFormId'] as String?;
+
+        if (layoutId != null) {
+          final tag = 'create_page_$layoutId';
+          if (Get.isRegistered<CreatePageController>(tag: tag)) {
+            final controller = Get.find<CreatePageController>(tag: tag);
+
+            dynamic itemValue;
+            if (value != null && value!.isNotEmpty) {
+              itemValue = value!.interpolateJavascript(data);
+            } else {
+              // Store entire form as a map
+              final formState = <String, dynamic>{};
+              controller.controllers.forEach((key, ctrl) {
+                formState[key] = ctrl.text;
+              });
+              itemValue = {
+                ...controller.initialData,
+                ...formState,
+              };
+            }
+
+            final currentData = controller.initialData[varName];
+            List<dynamic> list;
+            if (currentData is List) {
+              list = List.from(currentData);
+            } else {
+              list = [];
+            }
+
+            list.add(itemValue);
+            controller.initialData[varName] = list;
+            controller.initialData.refresh();
+          }
+        }
+        break;
+
       default:
         Toast(context).fail('Unhandled ActionType: $type');
         break;

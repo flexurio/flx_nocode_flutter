@@ -20,7 +20,8 @@ enum ActionType {
       'show_confirmation_dialog', 'Show Confirmation Dialog'),
   showSuccessDialogWithData(
       'show_success_dialog_with_data', 'Show Success Dialog with Data'),
-  setVariable('set_variable', 'Set Variable');
+  setVariable('set_variable', 'Set Variable'),
+  appendVariable('append_variable', 'Append Variable');
 
   final String id;
   final String label;

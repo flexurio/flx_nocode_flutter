@@ -32,7 +32,28 @@ class ComponentTableController extends GetxController {
       isLoading.value = true;
       error.value = null;
 
+      // 1. Check local data if referenceId is provided
+      if (component.referenceId != null && component.referenceId!.isNotEmpty) {
+        final localData = contextData[component.referenceId];
+        if (localData is List) {
+          rows.value = localData
+              .where((e) => e is Map)
+              .map<JsonMap>((e) => Map<String, dynamic>.from(e as Map))
+              .toList();
+          isLoading.value = false;
+          // If we have local data, we usually don't need HTTP unless explicitly configured differently.
+          // For now, return if local data is found.
+          return;
+        }
+      }
+
       final httpData = component.http;
+      if (httpData.url.isEmpty) {
+        // No URL and no local data
+        rows.value = [];
+        isLoading.value = false;
+        return;
+      }
 
       // We want to see the interpolated values
       final requestConfig = httpData.toRequestConfig(contextData);
