@@ -66,7 +66,7 @@ extension ComponentWidget on Component {
     } else if (this.type == ComponentNumberField.componentId) {
       return (this as ComponentNumberField).toWidget(fullData);
     } else if (this.type == ComponentContainer.componentId) {
-      return (this as ComponentContainer).toWidget(fullData);
+      return (this as ComponentContainer).toWidget(data: fullData);
     } else if (this.type == ComponentSwitch.componentId) {
       return (this as ComponentSwitch).toWidget(fullData);
     } else if (this.type == ComponentImage.componentId) {

@@ -8,6 +8,8 @@ class ComponentContainer extends Component {
   final double? margin;
   final double? width;
   final double? height;
+  final String? widthMode; // 'fill', 'hug', 'fixed'
+  final String? heightMode; // 'fill', 'hug', 'fixed'
   final String? color;
   final double? borderRadius;
   final String? borderColor;
@@ -22,6 +24,8 @@ class ComponentContainer extends Component {
     this.margin,
     this.width,
     this.height,
+    this.widthMode,
+    this.heightMode,
     this.color,
     this.borderRadius,
     this.borderColor,
@@ -37,6 +41,8 @@ class ComponentContainer extends Component {
       borderRadius: 8.0,
       borderColor: '#E0E0E0',
       borderWidth: 1.0,
+      widthMode: 'hug',
+      heightMode: 'hug',
     );
   }
 
@@ -57,6 +63,12 @@ class ComponentContainer extends Component {
       return double.tryParse(value.toString());
     }
 
+    Component? childComponent;
+    if (map['child'] != null) {
+      childComponent =
+          Component.fromMap(Map<String, dynamic>.from(map['child']));
+    }
+
     return ComponentContainer(
       id: id,
       visibilityCondition: visibilityCondition,
@@ -65,13 +77,13 @@ class ComponentContainer extends Component {
       margin: parseDouble(map['margin']),
       width: parseDouble(map['width']),
       height: parseDouble(map['height']),
+      widthMode: map['widthMode']?.toString(),
+      heightMode: map['heightMode']?.toString(),
       color: map['color']?.toString(),
       borderRadius: parseDouble(map['borderRadius']),
       borderColor: map['borderColor']?.toString(),
       borderWidth: parseDouble(map['borderWidth']),
-      child: map['child'] != null
-          ? Component.fromMap(Map<String, dynamic>.from(map['child']))
-          : null,
+      child: childComponent,
     );
   }
 
@@ -82,6 +94,8 @@ class ComponentContainer extends Component {
         'margin': margin,
         'width': width,
         'height': height,
+        'widthMode': widthMode,
+        'heightMode': heightMode,
         'color': color,
         'borderRadius': borderRadius,
         'borderColor': borderColor,
