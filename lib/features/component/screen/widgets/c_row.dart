@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
+import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:gap/gap.dart';
@@ -22,7 +22,40 @@ extension ComponentRowWidgets on ComponentRow {
 
     final List<Widget> rowChildren = [];
     for (int i = 0; i < widgets.length; i++) {
-      rowChildren.add(Expanded(child: widgets[i]));
+      final child = children[i];
+      Widget rowChild = widgets[i];
+
+      String? widthMode;
+      double? fixedWidth;
+      int? flexValue;
+
+      if (child is ComponentContainer) {
+        widthMode = child.widthMode;
+        fixedWidth = child.width;
+      } else if (child is ComponentRow) {
+        widthMode = child.widthMode;
+      } else if (child is ComponentColumn) {
+        widthMode = child.widthMode;
+      } else if (child is ComponentDropdown) {
+        widthMode = child.widthMode;
+        fixedWidth = child.width;
+        flexValue = child.flex;
+      } else if (child is ComponentDatePicker) {
+        widthMode = child.widthMode;
+        fixedWidth = child.width;
+        flexValue = child.flex;
+      }
+
+      final mode = widthMode?.toLowerCase();
+      if (mode == 'fill') {
+        rowChildren.add(Expanded(flex: flexValue ?? 1, child: rowChild));
+      } else if (mode == 'fixed' && fixedWidth != null) {
+        rowChildren.add(SizedBox(width: fixedWidth, child: rowChild));
+      } else {
+        // Default to hug if not specified or unrecognized
+        rowChildren.add(rowChild);
+      }
+
       if (i < widgets.length - 1 && horizontalGap > 0) {
         rowChildren.add(Gap(horizontalGap));
       }
@@ -44,7 +77,39 @@ extension ComponentRowWidgets on ComponentRow {
 
     final List<Widget> rowChildren = [];
     for (int i = 0; i < widgets.length; i++) {
-      rowChildren.add(Expanded(child: widgets[i]));
+      final child = children[i];
+      Widget rowChild = widgets[i];
+
+      String? widthMode;
+      double? fixedWidth;
+      int? flexValue;
+
+      if (child is ComponentContainer) {
+        widthMode = child.widthMode;
+        fixedWidth = child.width;
+      } else if (child is ComponentRow) {
+        widthMode = child.widthMode;
+      } else if (child is ComponentColumn) {
+        widthMode = child.widthMode;
+      } else if (child is ComponentDropdown) {
+        widthMode = child.widthMode;
+        fixedWidth = child.width;
+        flexValue = child.flex;
+      } else if (child is ComponentDatePicker) {
+        widthMode = child.widthMode;
+        fixedWidth = child.width;
+        flexValue = child.flex;
+      }
+
+      final mode = widthMode?.toLowerCase();
+      if (mode == 'fill') {
+        rowChildren.add(Expanded(flex: flexValue ?? 1, child: rowChild));
+      } else if (mode == 'fixed' && fixedWidth != null) {
+        rowChildren.add(SizedBox(width: fixedWidth, child: rowChild));
+      } else {
+        rowChildren.add(rowChild);
+      }
+
       if (i < widgets.length - 1 && horizontalGap > 0) {
         rowChildren.add(Gap(horizontalGap));
       }

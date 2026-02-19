@@ -13,6 +13,9 @@ class ComponentDropdown extends Component {
   final List<ComponentAction> onChangeActions;
   final bool required;
   final List<String> dependsOn;
+  final String? widthMode; // 'fill', 'hug', 'fixed'
+  final double? width;
+  final int? flex;
 
   ComponentDropdown({
     required super.id,
@@ -27,6 +30,9 @@ class ComponentDropdown extends Component {
     this.onChangeActions = const [],
     this.required = false,
     this.dependsOn = const [],
+    this.widthMode,
+    this.width,
+    this.flex,
   }) : super(type: componentId);
 
   static const String componentId = 'dropdown';
@@ -40,6 +46,7 @@ class ComponentDropdown extends Component {
       httpData: HttpData.empty(),
       required: false,
       dependsOn: const [],
+      widthMode: 'hug',
     );
   }
 
@@ -105,6 +112,11 @@ class ComponentDropdown extends Component {
       onChangeActions: onChangeActions,
       required: required,
       dependsOn: dependsOn,
+      widthMode: map['widthMode']?.toString(),
+      width: map['width'] != null
+          ? double.tryParse(map['width'].toString())
+          : null,
+      flex: map['flex'] != null ? int.tryParse(map['flex'].toString()) : null,
     );
   }
 
@@ -120,5 +132,8 @@ class ComponentDropdown extends Component {
         'onChangeActions': onChangeActions.map((e) => e.toMap()).toList(),
         'required': required,
         'dependsOn': dependsOn,
+        'widthMode': widthMode,
+        'width': width,
+        'flex': flex,
       };
 }

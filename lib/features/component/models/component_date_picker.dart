@@ -7,6 +7,9 @@ class ComponentDatePicker extends Component {
   final String? minDate;
   final String? maxDate;
   final bool required;
+  final String? widthMode; // 'fill', 'hug', 'fixed'
+  final double? width;
+  final int? flex;
   final String? dateFormat;
 
   ComponentDatePicker({
@@ -17,6 +20,9 @@ class ComponentDatePicker extends Component {
     this.maxDate,
     this.required = false,
     this.dateFormat,
+    this.widthMode,
+    this.width,
+    this.flex,
     super.visibilityCondition,
     super.events = const {},
   }) : super(type: componentId);
@@ -29,6 +35,7 @@ class ComponentDatePicker extends Component {
       label: 'Date Picker',
       initialValue: '',
       required: false,
+      widthMode: 'hug',
     );
   }
 
@@ -52,6 +59,11 @@ class ComponentDatePicker extends Component {
       maxDate: maxDate,
       required: required,
       dateFormat: dateFormat,
+      widthMode: map['widthMode']?.toString(),
+      width: map['width'] != null
+          ? double.tryParse(map['width'].toString())
+          : null,
+      flex: map['flex'] != null ? int.tryParse(map['flex'].toString()) : null,
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
     );
@@ -66,5 +78,8 @@ class ComponentDatePicker extends Component {
         'maxDate': maxDate,
         'required': required,
         'dateFormat': dateFormat,
+        'widthMode': widthMode,
+        'width': width,
+        'flex': flex,
       };
 }

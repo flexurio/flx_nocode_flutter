@@ -1,6 +1,7 @@
 enum ComponentSizeMode {
   fill,
-  hug;
+  hug,
+  fixed;
 
   static ComponentSizeMode? fromString(String? value) {
     if (value == null) return null;
@@ -17,6 +18,8 @@ enum ComponentSizeMode {
         return 'Fill';
       case ComponentSizeMode.hug:
         return 'Hug';
+      case ComponentSizeMode.fixed:
+        return 'Fixed';
     }
   }
 }
