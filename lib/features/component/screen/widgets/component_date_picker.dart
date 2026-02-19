@@ -59,7 +59,7 @@ extension ComponentDatePickerWidgets on ComponentDatePicker {
 
   Widget toMockWidget() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
         if (label.isNotEmpty) ...[
@@ -75,6 +75,7 @@ extension ComponentDatePickerWidgets on ComponentDatePicker {
         ],
         Container(
           height: 44,
+          width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: Colors.white,

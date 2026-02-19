@@ -13,7 +13,7 @@ extension ComponentDropdownWidgets on ComponentDropdown {
 
   Widget toMockWidget() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
         if (label.isNotEmpty) ...[
@@ -29,6 +29,7 @@ extension ComponentDropdownWidgets on ComponentDropdown {
         ],
         Container(
           height: 44,
+          width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: Colors.white,

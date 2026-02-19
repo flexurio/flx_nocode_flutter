@@ -17,7 +17,7 @@ extension ComponentSwitchWidgets on ComponentSwitch {
 
   Widget toMockWidget() {
     return Row(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(
           child: Text(
