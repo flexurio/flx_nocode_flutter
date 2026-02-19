@@ -26,6 +26,16 @@ class LayoutForm extends HiveObject {
 
   List<String> get componentIds => components.map((e) => e.id).toList();
   bool get useNewForm => components.isNotEmpty;
+  bool get showSubmitButton {
+    if (submitWorkflow == null) return true;
+    if (submitWorkflow!.containsKey('show_submit_button')) {
+      return submitWorkflow!['show_submit_button'] == true;
+    }
+    if (submitWorkflow!.containsKey('hide_submit_button')) {
+      return submitWorkflow!['hide_submit_button'] == false;
+    }
+    return true;
+  }
 
   List<Component> get allComponents {
     final list = <Component>[];

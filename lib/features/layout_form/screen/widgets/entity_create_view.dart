@@ -192,8 +192,7 @@ class CreateForm extends StatelessWidget {
       final inProgress =
           state.maybeWhen(loading: () => true, orElse: () => false);
 
-      final isHidden = layoutForm.submitWorkflow?['hide_submit_button'] == true;
-      if (isHidden) {
+      if (!layoutForm.showSubmitButton) {
         return const SizedBox.shrink();
       }
 
