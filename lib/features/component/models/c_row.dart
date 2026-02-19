@@ -48,6 +48,9 @@ class ComponentRow extends Component {
   /// Horizontal gap between children.
   final double horizontalGap;
 
+  final String? widthMode; // 'fill', 'hug'
+  final String? heightMode; // 'fill', 'hug'
+
   ComponentRow({
     required super.id,
     super.visibilityCondition,
@@ -56,6 +59,8 @@ class ComponentRow extends Component {
     this.xAlign = 'left',
     this.yAlign = 'top',
     this.horizontalGap = 12.0,
+    this.widthMode,
+    this.heightMode,
   }) : super(type: 'row');
 
   /// Creates an empty [ComponentRow] with default values.
@@ -66,6 +71,8 @@ class ComponentRow extends Component {
       xAlign: 'left',
       yAlign: 'top',
       horizontalGap: 12.0,
+      widthMode: 'fill',
+      heightMode: 'hug',
     );
   }
 
@@ -102,6 +109,8 @@ class ComponentRow extends Component {
       yAlign: map['y_align']?.toString().trim() ?? 'top',
       horizontalGap:
           double.tryParse(map['horizontal_gap']?.toString() ?? '') ?? 12.0,
+      widthMode: map['widthMode']?.toString(),
+      heightMode: map['heightMode']?.toString(),
     );
   }
 
@@ -111,6 +120,8 @@ class ComponentRow extends Component {
         'x_align': xAlign,
         'y_align': yAlign,
         'horizontal_gap': horizontalGap,
+        'widthMode': widthMode,
+        'heightMode': heightMode,
         'children': children.map((e) => e.toMap()).toList(growable: false),
       };
 }

@@ -50,6 +50,9 @@ class ComponentColumn extends Component {
   /// Default: 12.0
   final double gap;
 
+  final String? widthMode; // 'fill', 'hug'
+  final String? heightMode; // 'fill', 'hug'
+
   ComponentColumn({
     required super.id,
     super.visibilityCondition,
@@ -58,6 +61,8 @@ class ComponentColumn extends Component {
     this.xAlign = 'left',
     this.yAlign = 'top',
     this.gap = 12.0,
+    this.widthMode,
+    this.heightMode,
   }) : super(type: 'column');
 
   /// Creates an empty [ComponentColumn] with default values.
@@ -68,6 +73,8 @@ class ComponentColumn extends Component {
       xAlign: 'left',
       yAlign: 'top',
       gap: 12.0,
+      widthMode: 'fill',
+      heightMode: 'hug',
     );
   }
 
@@ -104,6 +111,8 @@ class ComponentColumn extends Component {
       xAlign: (map['x_align']?.toString().trim() ?? 'left'),
       yAlign: (map['y_align']?.toString().trim() ?? 'top'),
       gap: (map['gap'] is num) ? (map['gap'] as num).toDouble() : 12.0,
+      widthMode: map['widthMode']?.toString(),
+      heightMode: map['heightMode']?.toString(),
     );
   }
 
@@ -113,6 +122,8 @@ class ComponentColumn extends Component {
         'x_align': xAlign,
         'y_align': yAlign,
         'gap': gap,
+        'widthMode': widthMode,
+        'heightMode': heightMode,
         'children': children.map((e) => e.toMap()).toList(growable: false),
       };
 }
