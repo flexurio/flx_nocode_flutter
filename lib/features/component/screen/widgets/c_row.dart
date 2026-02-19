@@ -20,6 +20,10 @@ extension ComponentRowWidgets on ComponentRow {
     if (widgets.isEmpty) return const SizedBox.shrink();
     if (widgets.length == 1) return widgets.first;
 
+    final parentWidthMode = widthMode?.toLowerCase();
+    final mainAxisSize =
+        (parentWidthMode == 'hug') ? MainAxisSize.min : MainAxisSize.max;
+
     final List<Widget> rowChildren = [];
     for (int i = 0; i < widgets.length; i++) {
       final child = children[i];
@@ -44,16 +48,42 @@ extension ComponentRowWidgets on ComponentRow {
         widthMode = child.widthMode;
         fixedWidth = child.width;
         flexValue = child.flex;
+      } else if (child is ComponentTextField) {
+        widthMode = child.widthMode;
+        fixedWidth = child.width;
+        flexValue = child.flex;
+      } else if (child is ComponentNumberField) {
+        widthMode = child.widthMode;
+        fixedWidth = child.width;
+        flexValue = child.flex;
+      } else if (child is ComponentButton) {
+        widthMode = child.widthMode;
+        fixedWidth = child.width;
+        flexValue = child.flex;
       }
 
       final mode = widthMode?.toLowerCase();
       if (mode == 'fill') {
-        rowChildren.add(Expanded(flex: flexValue ?? 1, child: rowChild));
+        if (mainAxisSize == MainAxisSize.max) {
+          rowChildren.add(Expanded(flex: flexValue ?? 1, child: rowChild));
+        } else {
+          // Smart detection: parent is hug, child is fill. Force a width to prevent crash.
+          rowChildren.add(SizedBox(width: 200, child: rowChild));
+        }
       } else if (mode == 'fixed' && fixedWidth != null) {
         rowChildren.add(SizedBox(width: fixedWidth, child: rowChild));
       } else {
         // Default to hug if not specified or unrecognized
-        rowChildren.add(rowChild);
+        // To prevent 'blank' inputs, we give them a default width if explicitly hug in a row
+        if (child is ComponentDropdown ||
+            child is ComponentDatePicker ||
+            child is ComponentTextField ||
+            child is ComponentNumberField ||
+            child is ComponentButton) {
+          rowChildren.add(SizedBox(width: 200, child: rowChild));
+        } else {
+          rowChildren.add(rowChild);
+        }
       }
 
       if (i < widgets.length - 1 && horizontalGap > 0) {
@@ -64,6 +94,7 @@ extension ComponentRowWidgets on ComponentRow {
     return Row(
       mainAxisAlignment: _mapXAlign(xAlign),
       crossAxisAlignment: _mapYAlign(yAlign),
+      mainAxisSize: mainAxisSize,
       children: rowChildren,
     );
   }
@@ -75,6 +106,10 @@ extension ComponentRowWidgets on ComponentRow {
     if (widgets.isEmpty) return const SizedBox.shrink();
     if (widgets.length == 1) return widgets.first;
 
+    final parentWidthMode = widthMode?.toLowerCase();
+    final mainAxisSize =
+        (parentWidthMode == 'hug') ? MainAxisSize.min : MainAxisSize.max;
+
     final List<Widget> rowChildren = [];
     for (int i = 0; i < widgets.length; i++) {
       final child = children[i];
@@ -99,15 +134,39 @@ extension ComponentRowWidgets on ComponentRow {
         widthMode = child.widthMode;
         fixedWidth = child.width;
         flexValue = child.flex;
+      } else if (child is ComponentTextField) {
+        widthMode = child.widthMode;
+        fixedWidth = child.width;
+        flexValue = child.flex;
+      } else if (child is ComponentNumberField) {
+        widthMode = child.widthMode;
+        fixedWidth = child.width;
+        flexValue = child.flex;
+      } else if (child is ComponentButton) {
+        widthMode = child.widthMode;
+        fixedWidth = child.width;
+        flexValue = child.flex;
       }
 
       final mode = widthMode?.toLowerCase();
       if (mode == 'fill') {
-        rowChildren.add(Expanded(flex: flexValue ?? 1, child: rowChild));
+        if (mainAxisSize == MainAxisSize.max) {
+          rowChildren.add(Expanded(flex: flexValue ?? 1, child: rowChild));
+        } else {
+          rowChildren.add(SizedBox(width: 200, child: rowChild));
+        }
       } else if (mode == 'fixed' && fixedWidth != null) {
         rowChildren.add(SizedBox(width: fixedWidth, child: rowChild));
       } else {
-        rowChildren.add(rowChild);
+        if (child is ComponentDropdown ||
+            child is ComponentDatePicker ||
+            child is ComponentTextField ||
+            child is ComponentNumberField ||
+            child is ComponentButton) {
+          rowChildren.add(SizedBox(width: 200, child: rowChild));
+        } else {
+          rowChildren.add(rowChild);
+        }
       }
 
       if (i < widgets.length - 1 && horizontalGap > 0) {
@@ -118,6 +177,7 @@ extension ComponentRowWidgets on ComponentRow {
     return Row(
       mainAxisAlignment: _mapXAlign(xAlign),
       crossAxisAlignment: _mapYAlign(yAlign),
+      mainAxisSize: mainAxisSize,
       children: rowChildren,
     );
   }

@@ -5,12 +5,18 @@ class ComponentNumberField extends Component {
   final String label;
   final String initialValue;
   final bool enabled;
+  final String? widthMode;
+  final double? width;
+  final int? flex;
 
   ComponentNumberField({
     required super.id,
     required this.label,
     required this.initialValue,
     required this.enabled,
+    this.widthMode,
+    this.width,
+    this.flex,
     super.visibilityCondition,
     super.events = const {},
   }) : super(type: componentId);
@@ -23,6 +29,7 @@ class ComponentNumberField extends Component {
       label: 'Number Field',
       initialValue: '',
       enabled: true,
+      widthMode: 'fill',
     );
   }
 
@@ -47,6 +54,9 @@ class ComponentNumberField extends Component {
       label: label,
       initialValue: initialValue,
       enabled: enabled,
+      widthMode: map['widthMode']?.toString(),
+      width: double.tryParse(map['width']?.toString() ?? ''),
+      flex: int.tryParse(map['flex']?.toString() ?? ''),
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
     );
@@ -58,5 +68,8 @@ class ComponentNumberField extends Component {
         'label': label,
         'initialValue': initialValue,
         'enabled': enabled,
+        'widthMode': widthMode,
+        'width': width,
+        'flex': flex,
       };
 }

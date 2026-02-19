@@ -12,6 +12,9 @@ class ComponentTextField extends Component {
   final String? regex;
   final String? regexErrorMessage;
   final String? helperText;
+  final String? widthMode;
+  final double? width;
+  final int? flex;
 
   ComponentTextField({
     required super.id,
@@ -25,6 +28,9 @@ class ComponentTextField extends Component {
     this.regex,
     this.regexErrorMessage,
     this.helperText,
+    this.widthMode,
+    this.width,
+    this.flex,
     super.visibilityCondition,
     super.events,
   }) : super(type: 'text_field');
@@ -44,6 +50,7 @@ class ComponentTextField extends Component {
       regex: null,
       regexErrorMessage: null,
       helperText: null,
+      widthMode: 'fill',
     );
   }
 
@@ -85,6 +92,9 @@ class ComponentTextField extends Component {
       regex: regex,
       regexErrorMessage: regexErrorMessage,
       helperText: helperText,
+      widthMode: map['widthMode']?.toString(),
+      width: double.tryParse(map['width']?.toString() ?? ''),
+      flex: int.tryParse(map['flex']?.toString() ?? ''),
       visibilityCondition: visibilityCondition,
       events: events,
     );
@@ -104,6 +114,9 @@ class ComponentTextField extends Component {
         if (regex != null) 'regex': regex,
         if (regexErrorMessage != null) 'regexErrorMessage': regexErrorMessage,
         if (helperText != null) 'helperText': helperText,
+        'widthMode': widthMode,
+        'width': width,
+        'flex': flex,
         if (visibilityCondition != null)
           'visibilityCondition': visibilityCondition,
         'events': events,

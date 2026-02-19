@@ -35,7 +35,7 @@ class ComponentDatePicker extends Component {
       label: 'Date Picker',
       initialValue: '',
       required: false,
-      widthMode: 'hug',
+      widthMode: 'fill',
     );
   }
 

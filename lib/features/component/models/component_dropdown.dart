@@ -46,7 +46,7 @@ class ComponentDropdown extends Component {
       httpData: HttpData.empty(),
       required: false,
       dependsOn: const [],
-      widthMode: 'hug',
+      widthMode: 'fill',
     );
   }
 

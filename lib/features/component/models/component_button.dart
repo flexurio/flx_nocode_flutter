@@ -8,6 +8,9 @@ class ComponentButton extends Component {
   final String variant; // primary, secondary, outline, ghost, destructive
   final String size; // small, medium, large
   final ActionD? onClick;
+  final String? widthMode;
+  final double? width;
+  final int? flex;
 
   ComponentButton({
     required super.id,
@@ -16,6 +19,9 @@ class ComponentButton extends Component {
     this.variant = 'primary',
     this.size = 'medium',
     this.onClick,
+    this.widthMode,
+    this.width,
+    this.flex,
     super.visibilityCondition,
     super.events,
   }) : super(type: 'button');
@@ -29,6 +35,7 @@ class ComponentButton extends Component {
       color: '#2196F3',
       variant: 'primary',
       size: 'medium',
+      widthMode: 'hug',
     );
   }
 
@@ -55,6 +62,9 @@ class ComponentButton extends Component {
       variant: variant,
       size: size,
       onClick: onClick,
+      widthMode: map['widthMode']?.toString(),
+      width: double.tryParse(map['width']?.toString() ?? ''),
+      flex: int.tryParse(map['flex']?.toString() ?? ''),
       visibilityCondition: visibilityCondition,
       events: events,
     );
@@ -69,6 +79,9 @@ class ComponentButton extends Component {
         'variant': variant,
         'size': size,
         if (onClick != null) 'onClick': onClick!.toJson(),
+        'widthMode': widthMode,
+        'width': width,
+        'flex': flex,
         if (visibilityCondition != null)
           'visibilityCondition': visibilityCondition,
         'events': events,
