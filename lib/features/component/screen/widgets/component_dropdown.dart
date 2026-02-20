@@ -12,8 +12,13 @@ extension ComponentDropdownWidgets on ComponentDropdown {
   }
 
   Widget toMockWidget() {
+    final isFixed = widthMode == 'fixed';
+    final isHug = widthMode == 'hug';
+    final isFill = !isFixed && !isHug; // Default to fill
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment:
+          isFill ? CrossAxisAlignment.stretch : CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         if (label.isNotEmpty) ...[
@@ -29,7 +34,10 @@ extension ComponentDropdownWidgets on ComponentDropdown {
         ],
         Container(
           height: 44,
-          width: double.infinity,
+          width: isFixed
+              ? (width != null && width! < 120 ? 120.0 : width)
+              : (isHug ? null : double.infinity),
+          constraints: const BoxConstraints(minWidth: 120),
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -37,13 +45,20 @@ extension ComponentDropdownWidgets on ComponentDropdown {
             border: Border.all(color: Colors.grey.shade300),
           ),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                child: Text(
+              if (isHug)
+                Text(
                   'Select $label...',
                   style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                )
+              else
+                Expanded(
+                  child: Text(
+                    'Select $label...',
+                    style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                  ),
                 ),
-              ),
               Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
             ],
           ),

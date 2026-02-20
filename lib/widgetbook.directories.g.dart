@@ -26,14 +26,28 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookFolder(
                 name: 'widgets',
                 children: [
-                  _widgetbook.WidgetbookLeafComponent(
+                  _widgetbook.WidgetbookComponent(
                     name: 'ComponentDropdownWidget',
-                    useCase: _widgetbook.WidgetbookUseCase(
-                      name: 'Mock Widget',
-                      builder:
-                          _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
-                              .mockComponentDropdownRaw,
-                    ),
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Fill Width',
+                        builder:
+                            _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
+                                .mockComponentDropdownFill,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Fixed Width',
+                        builder:
+                            _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
+                                .mockComponentDropdownFixed,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Hug Content',
+                        builder:
+                            _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
+                                .mockComponentDropdownHug,
+                      ),
+                    ],
                   )
                 ],
               )
