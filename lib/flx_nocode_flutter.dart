@@ -6,6 +6,7 @@ export 'features/field/models/field.dart';
 export 'features/layout_form/domain/extensions/layout_form_extensions.dart';
 export 'features/layout_form/domain/extensions/layout_form_list_extensions.dart';
 export 'features/layout_form/models/layout_form.dart';
+export 'features/layout_form/models/submit_workflow.dart';
 export 'src/app/model/backend_other.dart';
 export 'src/app/model/backend.dart';
 export 'src/app/model/configuration.dart';

@@ -230,13 +230,12 @@ class CreatePageController extends GetxController {
       return;
     }
 
-    if (layoutForm.submitWorkflow != null &&
-        layoutForm.submitWorkflow!.isNotEmpty) {
+    if (layoutForm.submitWorkflow != null) {
       Get.find<EntityController>(tag: 'entity_ctrl_$layoutFormId')
           .submitWorkflow(
         form: currentData,
         data: initialDataInput ?? {},
-        workflow: layoutForm.submitWorkflow!,
+        workflow: layoutForm.submitWorkflow!.toMap(),
       );
     } else {
       Toast(context).fail('Submit workflow not found');

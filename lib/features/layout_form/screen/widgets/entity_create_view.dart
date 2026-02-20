@@ -235,8 +235,7 @@ class CreateForm extends StatelessWidget {
         );
       }
 
-      final submitLabel =
-          layoutForm.submitWorkflow?['submit_label']?.toString();
+      final submitLabel = layoutForm.submitWorkflow?.submitLabel;
 
       return Button.action(
         permission: null,
