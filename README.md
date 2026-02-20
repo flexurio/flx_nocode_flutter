@@ -26,6 +26,8 @@ A detailed guide to the structure of this file, including all available fields a
 
 **[➡️ Read the Entity JSON Documentation](./docs/entity.md)**
 
+**[➡️ Read the Submit Workflow JSON Documentation](./docs/submit_workflow.md)**
+
 ## Getting Started
 
 To get a local copy up and running, follow these simple steps.

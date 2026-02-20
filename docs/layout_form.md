@@ -1,110 +1,103 @@
 # Layout Form JSON Documentation
 
-This document provides a detailed explanation of the `layout_form` object, which is used to define the structure and behavior of forms for creating, viewing, and updating entities.
+This document providing a detailed explanation of the `layout_form` object, which defines the structure and behavior of forms for creating, viewing, and updating entities.
 
-## `layout_form` Object
+## Root structure: `layout_form`
 
-The `layout_form` is an array of `LayoutForm` objects. Each object defines a specific form type (e.g., for creating or updating an entity).
+The `layout_form` is an **array** of `LayoutForm` objects. Each object define a specific form (e.g., for creating or updating an entity, or a custom modal).
 
 ### `LayoutForm` Properties
 
 | Key | Type | Required | Description |
 | --- | --- | --- | --- |
-| `label` | String | Yes | A human-readable name for the form (e.g., "Create Product", "User Details"). |
-| `type` | String | Yes | The type of form. Supported values are: `create`, `update`, `view`, `home`. |
-| `groups` | Array<Object> | Yes | An array of `GroupLayout` objects that define the sections and fields of the form. Must not be empty. |
-| `buttons` | Array<Object> | No | An array of `LayoutButton` objects that define custom action buttons for the form. |
-| `visible_if` | Object | No | A `Rule` object that defines conditions under which the form is visible. |
-| `components` | Array<Object> | No | An array of `Component` objects that define custom components to be rendered on the form. See [Component Documentation](./components.md) for more details. |
+| `id` | String | Yes | Unique identifier for the form. Used to determine the form's role (see [Form Identifiers](#form-identifiers)). |
+| `label` | String | Yes | Human-readable name for the form (e.g., "Create Product", "Edit User"). |
+| `visible_if` | Object | No | A `Rule` object determining when this form is available based on current data. |
+| `components` | Array<Object>| No | List of UI components to render. See [Component Documentation](./components.md). |
+| `buttons` | Array<Object>| No | Custom action buttons for the form. |
+| `multi_forms` | Array<Object>| No | An array of nested `LayoutForm` objects used for multi-step/wizard-style forms. |
+| `submit_workflow`| Object | No | defines how the form should be submitted. See [Submit Workflow Documentation](./submit_workflow.md). |
+| `on_init` | Array/Object | No | Actions (legacy or workflow) to run when the form is opened. |
 
-### `GroupLayout` Object
+---
 
-Each object in the `groups` array defines a section within the form.
+## Form Identifiers
 
-| Key | Type | Required | Description |
-| --- | --- | --- | --- |
-| `id` | String | Yes | A unique identifier for the group within the form. |
-| `label` | String | No | A display label for the group, often rendered as a section header. |
-| `fields` | Array<Object> | Yes | An array of `FormField` objects. |
+The `id` (or `type` in legacy configs) is used by the framework to infer the form's purpose and default actions.
 
-### `FormField` Object
+| ID Pattern | Action Kind | Description |
+| --- | --- | --- |
+| `create*` / `add*` | **Create** | Used for creating new entity instances. |
+| `update*` / `edit*` | **Update** | Used for modifying existing items. |
+| `view*` / `detail*` | **View** | Read-only view of item details. |
+| `home` | **Reprocess** | Often used for home/dashboard views or processing logs. |
 
-Each object inside the `fields` array of a `GroupLayout` defines a single input component.
+---
 
-| Key | Type | Required | Description |
-| --- | --- | --- | --- |
-| `widget` | String | Yes | The type of form widget to use (e.g., "Text", "Dropdown", "CheckBox"). |
-| `reference` | String | Yes | The `reference` of the entity field this widget is bound to. |
+## Multi-Step Forms (`multi_forms`)
 
-### `LayoutButton` Object
+When `multi_forms` is provided, the framework renders the form as a multi-step wizard. Each object in the `multi_forms` array is itself a `LayoutForm` representing one step.
 
-Each object in the `buttons` array defines a button in the form.
+- **Progress indicators** are automatically generated using the `label` of each step.
+- **Navigation** (Back/Next) is handled automatically unless overridden.
+- **Validation** is performed for each step before proceeding to the next.
 
-| Key | Type | Required | Description |
-| --- | --- | --- | --- |
-| `id` | String | No | A unique identifier for the button. |
-| `label` | String | Yes | The text displayed on the button. |
-| `action` | Object | Yes | A `ButtonAction` object that defines what the button does when clicked. |
+---
 
-### `ButtonAction` Object
-
-This object is nested within a `LayoutButton` and specifies the button's behavior.
-
-| Key | Type | Required | Description |
-| --- | --- | --- | --- |
-| `kind` | String | Yes | The kind of action (e.g., "api", "navigation"). |
-| `method` | String | Yes | The method for the action (e.g., "POST", "GET"). |
-| `url` | String | Yes | The target URL or path for the action. |
-| `content_type` | String | No | The content type for API requests (e.g., "application/json"). |
-| `payload` | Object | No | The data to be sent with the action. |
-
-### Example
+## Example
 
 ```json
-"layout_form": [
-  {
-    "label": "Create Product Form",
-    "type": "create",
-    "groups": [
-      {
-        "id": "basic_info",
-        "label": "Basic Information",
-        "fields": [
-          {
-            "widget": "Text",
-            "reference": "product_name"
-          },
-          {
-            "widget": "Dropdown",
-            "reference": "category_id"
-          }
-        ]
-      },
-      {
-        "id": "pricing_stock",
-        "label": "Pricing and Stock",
-        "fields": [
-          {
-            "widget": "Text",
-            "reference": "price"
-          },
-          {
-            "widget": "CheckBox",
-            "reference": "in_stock"
-          }
-        ]
-      }
-    ],
-    "buttons": [
-      {
-        "label": "Save Product",
-        "action": {
-          "kind": "api",
-          "method": "POST",
-          "url": "/products"
+{
+  "layout_form": [
+    {
+      "id": "create_product",
+      "label": "Create New Product",
+      "components": [
+        {
+          "id": "name",
+          "type": "text_field",
+          "label": "Product Name",
+          "required": true
+        },
+        {
+          "id": "price",
+          "type": "number_field",
+          "label": "Price",
+          "initialValue": "0"
         }
+      ],
+      "submit_workflow": {
+        "type": "workflow",
+        "submit_label": "Save Product",
+        "actions": [
+          {
+            "type": "validate"
+          },
+          {
+            "type": "http",
+            "name": "save",
+            "http": {
+              "method": "POST",
+              "path": "/products",
+              "body": "{{ current }}"
+            }
+          },
+          {
+            "type": "toast",
+            "variant": "success",
+            "message": "Product created!"
+          },
+          {
+            "type": "close_modal"
+          }
+        ]
       }
-    ]
-  }
-]
+    }
+  ]
+}
 ```
+
+## Key Related Guides
+
+- **[UI Components](./components.md)**: Details on available widgets like `text_field`, `dropdown`, `table`, etc.
+- **[Submission Workflow](./submit_workflow.md)**: Advanced logic for handling form submission, conditions, and API calls.

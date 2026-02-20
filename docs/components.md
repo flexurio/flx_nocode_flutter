@@ -1,124 +1,157 @@
 # Component JSON Documentation
 
-The `components` property is an array of `Component` objects. Each object must have an `id` and a `type`. The `type` determines the component's behavior and other available properties.
+Components are the building blocks of `flx_nocode_flutter` applications. They are used within `layout_form` to define UI elements and their behavior.
 
-| Type | Description |
-| --- | --- |
-| `text` | A simple text component. |
-| `table` | Renders data in a tabular format. |
-| `column` | A container that arranges its children vertically. |
-| `row` | A container that arranges its children horizontally. |
-| `field_display` | A non-editable field for displaying read-only values. |
+Every component must have an `id` and a `type`.
+
+## Common Properties
+
+Many components share these layout and behavioral properties:
+
+| Key | Type | Description |
+| --- | --- | --- |
+| `id` | String | Unique identifier for the component. |
+| `type` | String | The component type (e.g., `text`, `text_field`, `button`). |
+| `visibilityCondition` | String | A logic expression to determine if the component should be shown. |
+| `widthMode` | String | `fill` (expand), `hug` (fit content), or `fixed`. |
+| `width` | Double | Width in pixels (used if `widthMode` is `fixed`). |
+| `flex` | Integer | Flex factor when used inside a `column` or `row`. |
+| `events` | Map | Custom event listeners (e.g., `onLoad`). |
 
 ---
 
-#### `text` Component
+## 1. Input Components
 
-A basic component for displaying static text.
+### `text_field`
+A standard text input field.
 
-| Key | Type | Required | Description |
+| Key | Type | Default | Description |
 | --- | --- | --- | --- |
-| `id` | String | Yes | A unique identifier for the component. |
-| `type` | String | Yes | Must be `text`. |
+| `label` | String | `Label` | Display label for the field. |
+| `initialValue` | String | - | Default value (supports `{{interpolations}}`). |
+| `hintText` | String | - | Placeholder text. |
+| `maxLength` | Integer | `50` | Maximum character limit. |
+| `maxLines` | Integer | `1` | Number of visible lines. |
+| `required` | Boolean | `false` | Whether validation should fail if empty. |
+| `enabled` | Boolean | `true` | Whether the user can edit the field. |
+| `regex` | String | - | Regex pattern for validation. |
+| `regexErrorMessage`| String | - | Message shown on regex failure. |
 
 **Example:**
 ```json
 {
-  "id": "welcome_message",
-  "type": "text",
-  "value": "Welcome to the dashboard!"
+  "id": "user_email",
+  "type": "text_field",
+  "label": "Email Address",
+  "hintText": "email@example.com",
+  "regex": "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+  "regexErrorMessage": "Invalid email format"
 }
 ```
+
+### `number_field`
+Input field for numeric values.
+
+| Key | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | String | `Number Field` | Display label. |
+| `initialValue` | String | - | Initial numeric value as string. |
+| `enabled` | Boolean | `true` | Interaction state. |
+
+### `dropdown`
+A selectable list of options.
+
+| Key | Type | Required | Description |
+| --- | --- | --- | --- |
+| `label` | String | Yes | Display label. |
+| `options` | Array<String> | No | Static list of options. |
+| `httpData` | Object | No | Config for dynamic options via API. |
+| `optionKey` | String | No | Key for option value from API response. |
+| `optionLabel` | String | No | Key for option label from API response. |
+| `dependsOn` | Array<String>| No | List of component IDs that trigger a reload on change. |
+| `onChangeActions` | Array<Object>| No | Actions to trigger when the value changes. |
 
 ---
 
-#### `table` Component
+## 2. Display Components
 
-A component for displaying data fetched from an API in a table.
+### `text`
+Renders static or dynamic text without a label.
+
+| Key | Type | Default | Description |
+| --- | --- | --- | --- |
+| `value` | String | `Text` | The text content. |
+
+### `table`
+Displays a set of data in a grid.
 
 | Key | Type | Required | Description |
 | --- | --- | --- | --- |
-| `id` | String | Yes | A unique identifier for the component. |
-| `type` | String | Yes | Must be `table`. |
-| `http` | Object | Yes | An `HttpData` object specifying the API endpoint to fetch data from. |
-| `columns` | Array<Object> | Yes | An array of `TColumn` objects defining the table's columns. |
+| `http` | Object | Yes | `HttpData` config for fetching rows. |
+| `columns` | Array<Object> | Yes | List of `TColumn` objects. |
+| `width` | Double | No | Total table width. |
+| `reference_id` | String | No | Optional reference ID for external data syncing. |
 
-**`TColumn` Object:**
+**`TColumn` Fields:** `header` (label), `body` (data path), `width` (pixels).
 
-| Key | Type | Required | Description |
+### `image`
+Displays an image from a URL.
+
+| Key | Type | Default | Description |
 | --- | --- | --- | --- |
-| `header` | String | Yes | The text to display in the column header. |
-| `body` | String | Yes | The key used to extract the value from each row's data object. |
-
-**Example:**
-```json
-{
-  "id": "user_list_table",
-  "type": "table",
-  "http": {
-    "method": "GET",
-    "url": "/api/users"
-  },
-  "columns": [
-    { "header": "Name", "body": "fullName" },
-    { "header": "Email", "body": "emailAddress" }
-  ]
-}
-```
+| `url` | String | Placeholder | The image source. |
+| `fit` | String | `cover` | Sizing strategy (`cover`, `contain`, `fill`). |
+| `width` / `height` | Double | - | Dimensions in pixels. |
 
 ---
 
-#### `column` and `row` Components
+## 3. Interaction Components
 
-Layout components used to arrange other components either vertically (`column`) or horizontally (`row`).
+### `button` & `icon_button`
+Triggers an action when clicked.
 
-| Key | Type | Required | Description |
+| Key | Type | Default | Description |
 | --- | --- | --- | --- |
-| `id` | String | Yes | A unique identifier for the component. |
-| `type` | String | Yes | Must be `column` or `row`. |
-| `children` | Array<Object> | Yes | An array of nested `Component` objects. |
-| `x_align` | String | No | Horizontal alignment. For `column`: `left`, `center`, `right`, `stretch`. For `row`: `left`, `center`, `right`, `between`, `around`, `evenly`. |
-| `y_align` | String | No | Vertical alignment. For `column`: `top`, `center`, `bottom`, `between`, `around`, `evenly`. For `row`: `top`, `center`, `bottom`, `stretch`. |
-
-**Example:**
-```json
-{
-  "id": "user_profile_layout",
-  "type": "row",
-  "x_align": "center",
-  "children": [
-    { "id": "avatar", "type": "image", "url": "..." },
-    {
-      "id": "user_details",
-      "type": "column",
-      "children": [
-        { "id": "user_name", "type": "text", "value": "..." },
-        { "id": "user_email", "type": "text", "value": "..." }
-      ]
-    }
-  ]
-}
-```
+| `text` | String | `Button` | Label (for `button`). |
+| `icon` | String | `add` | Icon name (for `icon_button`). |
+| `variant` | String | `primary` | `primary`, `secondary`, `outline`, `ghost`, `destructive`. |
+| `size` | String | `medium` | `small`, `medium`, `large`. |
+| `onClick` | Object | - | The action to execute. See [Action Documentation](./actions.md). |
 
 ---
 
-#### `field_display` Component
+## 4. Layout Components
 
-A simple component for displaying a labeled, read-only value.
+### `column` & `row`
+Containers for arranging children.
 
-| Key | Type | Required | Description |
+| Key | Type | Default | Description |
 | --- | --- | --- | --- |
-| `id` | String | Yes | A unique identifier for the component. |
-| `type` | String | Yes | Must be `field_display`. |
-| `label` | String | Yes | The label for the value. |
-| `value` | String | Yes | The value to display. |
+| `children` | Array<Object> | `[]` | Nested components. |
+| `x_align` | String | `left` | Alignment on horizontal axis. |
+| `y_align` | String | `top` | Alignment on vertical axis. |
+| `gap` | Double | `12.0` | Spacing between items. |
 
-**Example:**
-```json
-{
-  "id": "order_status_display",
-  "type": "field_display",
-  "label": "Current Status",
-  "value": "Shipped"
-}
-```
+### `container`
+General purpose box with styling.
+
+| Key | Type | Description |
+| --- | --- | --- |
+| `child` | Object | Nested component. |
+| `padding` / `margin` | Double | Spacing in pixels. |
+| `color` | String | Hex background color. |
+| `borderRadius` | Double | Corner rounding radius. |
+| `borderColor` | String | Border color. |
+
+---
+
+## 5. Other States
+
+| Component Type | Purpose | Key Properties |
+| --- | --- | --- |
+| `checkbox` | Boolean toggle | `label`, `value` |
+| `switch` | Modern boolean toggle | `label`, `initialValue` |
+| `radio` | Single choice list | `label`, `options`, `initialValue` |
+| `date_picker` | Date selection | `label`, `initialValue`, `dateFormat`, `minDate`, `maxDate` |
+| `divider` | Visual separator | `thickness`, `indent`, `endIndent` |
+| `field_display` | Read-only labeled value | `label`, `value` |
