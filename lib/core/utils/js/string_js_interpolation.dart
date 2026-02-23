@@ -13,13 +13,13 @@ extension StringJsInterpolationExtension on String {
   ///   `(function(){ ... return <expr>; })()`
   /// - [variables] are injected as `const` values inside that scope.
   /// - Helper `now(format)` and numeric helpers are available.
-  static const bool enableLog = false;
+  static const bool enableLog = true;
 
   Map<String, dynamic> _prepareVariables([Map<String, dynamic>? variables]) {
     final config = Configuration.instance;
     final userRepo = UserRepositoryApp.instance;
 
-    return <String, dynamic>{
+    final allVars = <String, dynamic>{
       // 1. Load context variables (form, record, etc.)
       if (variables != null) ...{
         ...variables,
@@ -43,6 +43,23 @@ extension StringJsInterpolationExtension on String {
       'user_id': userRepo.userApp?.id?.toString() ?? '',
       'backend_host': config.backendHost,
     };
+
+    if (enableLog) {
+      debugPrint('  [JS Interpolation] userRepo.userApp: ${userRepo.userApp}');
+      debugPrint(
+          '  [JS Interpolation] userRepo.userApp.id: ${userRepo.userApp?.id}');
+      debugPrint('  [JS Interpolation] Final Variables Map:');
+      allVars.forEach((k, v) {
+        if (k == 'auth_token') {
+          debugPrint(
+              '    - $k: ${v.toString().substring(0, v.toString().length > 10 ? 10 : v.toString().length)}...');
+        } else {
+          debugPrint('    - $k: $v');
+        }
+      });
+    }
+
+    return allVars;
   }
 
   String interpolateJavascript([Map<String, dynamic>? variables]) {

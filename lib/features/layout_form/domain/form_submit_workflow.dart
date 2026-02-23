@@ -416,6 +416,7 @@ class _WorkflowScopeBuilder {
           'headers': _sanitize(v.headers),
         }),
       ),
+      'user_id': UserRepositoryApp.instance.userApp?.id?.toString() ?? '',
     };
 
     // Add globals from Configuration
