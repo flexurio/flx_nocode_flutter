@@ -241,7 +241,7 @@ class CreateForm extends StatelessWidget {
         permission: null,
         isInProgress: inProgress,
         onPressed: () => controller.submit(context),
-        label: submitLabel,
+        // label: submitLabel,
         action: layoutForm.isHome ? DataAction.reprocess : controller.action,
       );
     });
