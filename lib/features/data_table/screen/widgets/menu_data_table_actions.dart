@@ -49,14 +49,19 @@ class MenuDataTableActions extends StatelessWidget {
         ),
         ..._buildHomeActions(context),
         refreshButton,
-        ...entity.actionsHome.map((e) => e.buildButtonRegular(
-              context: context,
-              entity: entity,
-              parentData: parentData,
-              filters: filters.toMap(),
-              bypassPermission: bypassPermission,
-              onSuccess: onRefresh,
-            )),
+        ...entity.actionsHome
+            .where((action) => action.isVisibleFor(<String, dynamic>{
+                  ...filters.toMap(),
+                  if (parentData.isNotEmpty) ...parentData.first,
+                }))
+            .map((e) => e.buildButtonRegular(
+                  context: context,
+                  entity: entity,
+                  parentData: parentData,
+                  filters: filters.toMap(),
+                  bypassPermission: bypassPermission,
+                  onSuccess: onRefresh,
+                )),
       ],
     );
   }
