@@ -26,6 +26,12 @@ A detailed guide to the structure of this file, including all available fields a
 
 **[➡️ Read the Entity JSON Documentation](./docs/entity.md)**
 
+**[➡️ Read the Variables Documentation](./docs/variables.md)**
+
+**[➡️ Read the Components Documentation](./docs/components.md)**
+
+**[➡️ Read the String Interpolation Documentation](./docs/string_interpolation.md)**
+
 **[➡️ Read the Submit Workflow JSON Documentation](./docs/submit_workflow.md)**
 
 ## Getting Started

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 
 /// Represents a sequence of actions to be executed upon form submission.
@@ -32,6 +33,9 @@ class SubmitWorkflow {
     );
   }
 
+  factory SubmitWorkflow.fromJson(String source) =>
+      SubmitWorkflow.fromMap(json.decode(source));
+
   static List<WorkflowAction> _parseActions(dynamic raw) {
     if (raw is! List) return const [];
     return raw
@@ -52,6 +56,8 @@ class SubmitWorkflow {
         'on_error': onError.map((e) => e.toMap()).toList(),
     };
   }
+
+  String toJson() => json.encode(toMap());
 }
 
 /// Abstract base for all workflow actions.
