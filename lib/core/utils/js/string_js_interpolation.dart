@@ -13,7 +13,7 @@ extension StringJsInterpolationExtension on String {
   ///   `(function(){ ... return <expr>; })()`
   /// - [variables] are injected as `const` values inside that scope.
   /// - Helper `now(format)` and numeric helpers are available.
-  static const bool enableLog = true;
+  static const bool enableLog = false;
 
   Map<String, dynamic> _prepareVariables([Map<String, dynamic>? variables]) {
     final config = Configuration.instance;
