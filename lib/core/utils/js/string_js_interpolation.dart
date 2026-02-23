@@ -20,10 +20,7 @@ extension StringJsInterpolationExtension on String {
     final userRepo = UserRepositoryApp.instance;
 
     return <String, dynamic>{
-      'auth_token': userRepo.token ?? '',
-      'user_id': userRepo.userApp?.id?.toString() ?? '',
-      'backend_host': config.backendHost,
-      for (final v in config.variables) v.key: v.value,
+      // 1. Load context variables (form, record, etc.)
       if (variables != null) ...{
         ...variables,
         if (!variables.containsKey('form'))
@@ -37,6 +34,14 @@ extension StringJsInterpolationExtension on String {
           'current': variables['current'] ?? variables['data'] ?? variables,
         if (!variables.containsKey('http')) 'http': variables['http'] ?? {},
       },
+
+      // 2. Load custom global variables from config
+      for (final v in config.variables) v.key: v.value,
+
+      // 3. System variables (Highest priority, cannot be overwritten by record data)
+      'auth_token': userRepo.token ?? '',
+      'user_id': userRepo.userApp?.id?.toString() ?? '',
+      'backend_host': config.backendHost,
     };
   }
 
