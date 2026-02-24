@@ -217,6 +217,7 @@ class EntityController extends GetxController {
           permissions: UserRepositoryApp.instance.permissions,
         ),
         httpExecutor: executor,
+        validator: (scope, _) async {},
       );
 
       if (enableLog) {
