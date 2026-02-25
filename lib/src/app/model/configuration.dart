@@ -208,7 +208,7 @@ extension ConfigurationExtension on Configuration {
         companyPhone: company.phone,
         companyWebsite: company.website,
         companyAddress: company.address,
-        apiUrl: '',
+        apiUrl: backendHost,
         color: core.colorFromHex(theme.color),
         colorSoft: core.colorFromHex(theme.colorSoft),
         backgroundLoginPage: 'asset/image/background-3.jpg',
