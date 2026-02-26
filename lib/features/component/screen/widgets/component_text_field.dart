@@ -16,6 +16,7 @@ extension ComponentTextFieldWidgets on ComponentTextField {
       labelText: label,
       helperText: helperText,
       enabled: enabled,
+      obscureText: obscure,
       validator: (value) {
         final actualValue = controller?.text ?? value;
         if (this.required) {
@@ -57,14 +58,19 @@ extension ComponentTextFieldWidgets on ComponentTextField {
               : const BoxConstraints(),
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          alignment: maxLines > 1 ? Alignment.topLeft : Alignment.centerLeft,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.grey.shade300),
           ),
           child: Text(
-            'Enter $label...',
-            style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+            obscure ? '••••••••' : 'Enter $label...',
+            style: TextStyle(
+              color: Colors.grey.shade400,
+              fontSize: obscure ? 18 : 13,
+              letterSpacing: obscure ? 2 : null,
+            ),
           ),
         ),
       ],

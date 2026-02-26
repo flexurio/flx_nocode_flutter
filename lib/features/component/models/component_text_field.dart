@@ -15,6 +15,7 @@ class ComponentTextField extends Component {
   final String? widthMode;
   final double? width;
   final int? flex;
+  final bool obscure;
 
   ComponentTextField({
     required super.id,
@@ -31,6 +32,7 @@ class ComponentTextField extends Component {
     this.widthMode,
     this.width,
     this.flex,
+    this.obscure = false,
     super.visibilityCondition,
     super.events,
   }) : super(type: 'text_field');
@@ -51,6 +53,7 @@ class ComponentTextField extends Component {
       regexErrorMessage: null,
       helperText: null,
       widthMode: 'fill',
+      obscure: false,
     );
   }
 
@@ -79,6 +82,7 @@ class ComponentTextField extends Component {
     final helperText = map['helperText']?.toString();
     final visibilityCondition = map['visibilityCondition']?.toString();
     final events = map['events'] as Map<String, dynamic>? ?? {};
+    final obscure = map['obscure'] == true;
 
     return ComponentTextField(
       id: id,
@@ -95,6 +99,7 @@ class ComponentTextField extends Component {
       widthMode: map['widthMode']?.toString(),
       width: double.tryParse(map['width']?.toString() ?? ''),
       flex: int.tryParse(map['flex']?.toString() ?? ''),
+      obscure: obscure,
       visibilityCondition: visibilityCondition,
       events: events,
     );
@@ -117,6 +122,7 @@ class ComponentTextField extends Component {
         'widthMode': widthMode,
         'width': width,
         'flex': flex,
+        'obscure': obscure,
         if (visibilityCondition != null)
           'visibilityCondition': visibilityCondition,
         'events': events,
