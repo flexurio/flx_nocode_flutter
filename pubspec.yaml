@@ -45,7 +45,7 @@ dependencies:
 
   flx_core_flutter:
     git:
-      url: https://gitlab.com/VNEU/flexurio-erp-core.git
+      url: https://github.com/flexurio/flx_core_flutter.git
       ref: main
 
   hive: any
