@@ -188,39 +188,7 @@ class EntityViewPage extends StatelessWidget {
     required bool bypassPermission,
     required List<Map<String, dynamic>> parentData,
   }) {
-    return [
-      ...entity.exports.buildSingleButtons(data, expanded: true),
-      // if (entity.allowUpdate)
-      //   ...entity.layoutForm.updateForms.map(
-      //     (e) => LightButton(
-      //       permission: bypassPermission ? null : '${entity.id}_write',
-      //       action: DataAction.edit,
-      //       title: e.label,
-      //       onPressed: () async {
-      //         Navigator.push(
-      //           context,
-      //           EntityCreatePageOld.route(
-      //             parentData: parentData,
-      //             layoutForm: e,
-      //             filters: filters,
-      //             embedded: false,
-      //             entity: entity,
-      //             data: data,
-      //             onSuccess: () => onRefresh(context),
-      //           ),
-      //         );
-      //       },
-      //     ),
-      //   ),
-      if (entity.allowDelete)
-        EntityDeleteButton.prepare(
-          bypassPermission: bypassPermission,
-          entity: entity,
-          data: data,
-          onSuccess: () => onRefresh(context),
-          expanded: true,
-        ),
-    ];
+    return entity.exports.buildSingleButtons(data, expanded: true);
   }
 
   static List<ActionButtonItem> _buildEntityCustomActions(
