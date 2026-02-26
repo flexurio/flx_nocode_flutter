@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/data_table/screen/widgets/inline_filter.dart';
-import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:gap/gap.dart';
-import 'package:intl/intl.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
