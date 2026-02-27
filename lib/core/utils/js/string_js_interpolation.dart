@@ -88,7 +88,18 @@ extension StringJsInterpolationExtension on String {
 
       // Simple fallback for direct variable or path access (e.g. {{backend_host}}, {{form.email}})
       // This handles the majority of cases without needing JS evaluation.
-      final parts = expr.split('.');
+      // Special support for JSON.stringify wrapper used by the workflow system.
+      String targetExpr = expr;
+      bool isJsonWrapper = false;
+      if (targetExpr.startsWith('JSON.stringify(') &&
+          targetExpr.endsWith(')')) {
+        targetExpr = targetExpr
+            .substring('JSON.stringify('.length, targetExpr.length - 1)
+            .trim();
+        isJsonWrapper = true;
+      }
+
+      final parts = targetExpr.split('.');
       dynamic current = allVars;
       bool found = true;
       for (final part in parts) {
@@ -101,13 +112,18 @@ extension StringJsInterpolationExtension on String {
       }
 
       if (found) {
-        if (current == null) return '';
-        if (current is String || current is num || current is bool) {
-          return current.toString();
+        if (isJsonWrapper) {
+          try {
+            return jsonEncode(current);
+          } catch (_) {
+            // Fallback to JS if jsonEncode fails (e.g. circular refs)
+          }
+        } else {
+          if (current == null) return '';
+          if (current is String || current is num || current is bool) {
+            return current.toString();
+          }
         }
-        // If it's a map or list, we probably still want JS to handle it
-        // unless it's just a simple string representation.
-        // But for now, let's only return if it's a primitive.
       }
 
       try {
