@@ -86,6 +86,30 @@ extension StringJsInterpolationExtension on String {
         debugPrint('  [JS Interpolation] Evaluating: {{ $expr }}');
       }
 
+      // Simple fallback for direct variable or path access (e.g. {{backend_host}}, {{form.email}})
+      // This handles the majority of cases without needing JS evaluation.
+      final parts = expr.split('.');
+      dynamic current = allVars;
+      bool found = true;
+      for (final part in parts) {
+        if (current is Map && current.containsKey(part)) {
+          current = current[part];
+        } else {
+          found = false;
+          break;
+        }
+      }
+
+      if (found) {
+        if (current == null) return '';
+        if (current is String || current is num || current is bool) {
+          return current.toString();
+        }
+        // If it's a map or list, we probably still want JS to handle it
+        // unless it's just a simple string representation.
+        // But for now, let's only return if it's a primitive.
+      }
+
       try {
         final script = _buildJsScript(expr, allVars);
         final value = evalJs(script);
