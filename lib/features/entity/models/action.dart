@@ -259,6 +259,7 @@ class ActionD extends HiveObject {
       case ActionType.openPage:
         return DataAction.add;
       case ActionType.showConfirmationDialog:
+      case ActionType.http:
         return DataAction.confirm;
       default:
         return DataAction.none;

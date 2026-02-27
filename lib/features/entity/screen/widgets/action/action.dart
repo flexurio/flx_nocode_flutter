@@ -87,6 +87,7 @@ extension ActionLogicExtension on ActionD {
           context: context,
           action: action,
           label: name,
+          confirmationMessageText: confirmMessage,
           onConfirm: (ctx) => executeHttp(entity, ctx, data,
               onSuccessCallback: onSuccessCallback),
         );
