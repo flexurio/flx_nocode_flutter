@@ -43,7 +43,7 @@ class Export extends HiveObject {
   final bool visibility;
 
   /// A static list of supported export file types.
-  static List<String> allowedTypes = ['pdf', 'xlsx'];
+  static List<String> allowedTypes = ['pdf', 'xlsx', 'csv'];
 
   Export({
     required this.uuid,

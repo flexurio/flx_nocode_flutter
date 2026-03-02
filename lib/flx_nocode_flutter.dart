@@ -22,3 +22,4 @@ export 'src/app/view/widget/entity_home.dart';
 export 'features/field/models/type.dart';
 export 'features/component/models/component_button.dart';
 export 'features/component/models/component_text_field.dart';
+export 'features/component/models/component_table.dart';

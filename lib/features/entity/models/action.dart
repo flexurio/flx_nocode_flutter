@@ -1,6 +1,7 @@
-import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart' hide TColumn;
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
 import 'package:hive/hive.dart';
 
 enum ActionType {
@@ -21,7 +22,8 @@ enum ActionType {
   showSuccessDialogWithData(
       'show_success_dialog_with_data', 'Show Success Dialog with Data'),
   setVariable('set_variable', 'Set Variable'),
-  appendVariable('append_variable', 'Append Variable');
+  appendVariable('append_variable', 'Append Variable'),
+  export('export', 'Export');
 
   final String id;
   final String label;
@@ -92,6 +94,12 @@ class ActionD extends HiveObject {
   /// The value to be set for setVariable action type.
   final String? value;
 
+  /// The format for export action (excel, csv, pdf).
+  final String? exportFormat;
+
+  /// The column mappings for export action.
+  final List<TColumn>? exportColumns;
+
   ActionD({
     required this.isMultiple,
     required this.onSuccess,
@@ -116,6 +124,8 @@ class ActionD extends HiveObject {
     this.copyValue,
     this.targetVariable,
     this.value,
+    this.exportFormat,
+    this.exportColumns,
   }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       assert(layoutFormId != null && layoutFormId!.isNotEmpty,
@@ -148,8 +158,12 @@ class ActionD extends HiveObject {
     String? copyValue,
     String? targetVariable,
     String? value,
+    String? exportFormat,
+    List<TColumn>? exportColumns,
   }) {
     return ActionD(
+      exportFormat: exportFormat ?? this.exportFormat,
+      exportColumns: exportColumns ?? this.exportColumns,
       value: value ?? this.value,
       width: width ?? this.width,
       isMultiple: isMultiple ?? this.isMultiple,
@@ -216,6 +230,12 @@ class ActionD extends HiveObject {
       copyValue: json['copy_value'],
       targetVariable: json['target_variable'],
       value: json['value'],
+      exportFormat: json['export_format'],
+      exportColumns: json['export_columns'] != null
+          ? (json['export_columns'] as List)
+              .map((e) => TColumn.fromJson(Map<String, dynamic>.from(e as Map)))
+              .toList()
+          : null,
     );
   }
 
@@ -245,6 +265,14 @@ class ActionD extends HiveObject {
       'copy_value': copyValue,
       'target_variable': targetVariable,
       'value': value,
+      'export_format': exportFormat,
+      'export_columns': exportColumns
+          ?.map((e) => {
+                'header': e.header,
+                'body': e.body,
+                'width': e.width,
+              })
+          .toList(),
     };
   }
 
@@ -261,6 +289,8 @@ class ActionD extends HiveObject {
       case ActionType.showConfirmationDialog:
       case ActionType.http:
         return DataAction.confirm;
+      case ActionType.export:
+        return DataAction.export;
       default:
         return DataAction.none;
     }
