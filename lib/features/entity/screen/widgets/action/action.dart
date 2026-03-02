@@ -10,6 +10,9 @@ import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/json_ta
 import 'package:flx_nocode_flutter/features/layout_form/screen/pages/create_page.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
+import 'package:flx_nocode_flutter/src/app/util/picker_file.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
 import 'package:get/get.dart';
 
@@ -292,6 +295,61 @@ extension ActionLogicExtension on ActionD {
             );
           }
         }
+        break;
+
+      case ActionType.export:
+        await showConfirmDialog(
+          context: context,
+          action: action,
+          label: name,
+          confirmationMessageText: confirmMessage,
+          onConfirm: (ctx) async {
+            if (http == null) {
+              Toast(context).fail('No http data found');
+              return;
+            }
+            final response = await http!.execute(data);
+            if (response.statusCode != null &&
+                response.statusCode! >= 200 &&
+                response.statusCode! < 300) {
+              final List<dynamic> rawList = (response.data is Map &&
+                      (response.data as Map)['data'] is List)
+                  ? (response.data as Map)['data']
+                  : (response.data is List ? response.data : []);
+              final list = rawList.cast<Map<String, dynamic>>().toList();
+
+              if (list.isEmpty) {
+                Toast(context).notify('No data to export');
+                return;
+              }
+
+              final fields = exportColumns?.map((e) => e.body).toList() ??
+                  list.first.keys.toList();
+
+              if (exportFormat == 'pdf') {
+                final pdf = pw.Document()
+                  ..addPage(
+                    await pdfGeneral(
+                      data: list,
+                      title: name,
+                      fields: fields,
+                      printedBy: UserRepositoryApp.instance.user?.name ?? '-',
+                    ),
+                  );
+                await Printing.sharePdf(
+                  bytes: await pdf.save(),
+                  filename: '$name.pdf',
+                );
+              } else {
+                final bytes = generalXlsx(context, list, fields);
+                saveFile(bytes, '$name.xlsx');
+              }
+              Toast(context).success('Export success');
+            } else {
+              Toast(context).fail(response.message ?? 'Export failed');
+            }
+          },
+        );
         break;
 
       default:

@@ -113,6 +113,16 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
           );
           break;
 
+        case ActionType.export:
+          await action.executeSingle(
+            entity: widget.entity,
+            context: context,
+            data: widget.filters,
+            parentData: widget.parentData,
+            onSuccessCallback: widget.onSuccess,
+          );
+          break;
+
         case ActionType.openPage:
         default:
           await Navigator.push(

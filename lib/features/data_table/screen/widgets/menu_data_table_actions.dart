@@ -36,7 +36,7 @@ class MenuDataTableActions extends StatelessWidget {
       runAlignment: WrapAlignment.end,
       alignment: WrapAlignment.end,
       children: [
-        _buildButtonExports(),
+        _buildButtonExports(context),
         FilterButton(
           fields: entity.filters.isNotEmpty
               ? entity.filters
@@ -50,6 +50,7 @@ class MenuDataTableActions extends StatelessWidget {
         ..._buildHomeActions(context),
         refreshButton,
         ...entity.actionsHome
+            .where((action) => action.type != ActionType.export)
             .where((action) => action.isVisibleFor(<String, dynamic>{
                   ...filters.toMap(),
                   if (parentData.isNotEmpty) ...parentData.first,
@@ -66,12 +67,30 @@ class MenuDataTableActions extends StatelessWidget {
     );
   }
 
-  Widget _buildButtonExports() {
-    final exportButtons = entity.exports
+  Widget _buildButtonExports(BuildContext context) {
+    final exportButtons = <Widget>[];
+
+    exportButtons.addAll(entity.exports
         .where((e) => e.visibility)
-        .map((e) => e.buildButton(filters: filters))
-        .toList();
+        .map((e) => e.buildButton(filters: filters)));
+
+    exportButtons.addAll(entity.actionsHome
+        .where((e) => e.type == ActionType.export)
+        .where((action) => action.isVisibleFor(<String, dynamic>{
+              ...filters.toMap(),
+              if (parentData.isNotEmpty) ...parentData.first,
+            }))
+        .map((e) => e.buildButtonRegular(
+              context: context,
+              entity: entity,
+              parentData: parentData,
+              filters: filters.toMap(),
+              bypassPermission: bypassPermission,
+              onSuccess: onRefresh,
+            )));
+
     if (exportButtons.isEmpty) return const SizedBox.shrink();
+
     return LightButtonSmallGroup(
       action: DataAction.export,
       childrenList: exportButtons,
