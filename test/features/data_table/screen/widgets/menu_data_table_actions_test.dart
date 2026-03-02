@@ -116,4 +116,61 @@ void main() {
     expect(find.text('Action 1'), findsOneWidget);
     expect(find.text('Action 2'), findsOneWidget);
   });
+
+  testWidgets(
+      'MenuDataTableActions groups home actions with type export into export buttons',
+      (WidgetTester tester) async {
+    final entity = MockEntityCustom();
+
+    final exportAction = ActionD(
+      id: 'export1',
+      name: 'Export Home',
+      type: ActionType.export,
+      isMultiple: false,
+      onSuccess: 'toast',
+      onFailure: 'toast',
+    );
+
+    final regularAction = ActionD(
+      id: 'action1',
+      name: 'Regular Action',
+      type: ActionType.toast,
+      isMultiple: false,
+      onSuccess: 'toast',
+      onFailure: 'toast',
+    );
+
+    when(() => entity.actionsHome).thenReturn([exportAction, regularAction]);
+    when(() => entity.exports).thenReturn([]);
+    when(() => entity.fields).thenReturn([]);
+    when(() => entity.filters).thenReturn([]);
+    when(() => entity.layoutForm).thenReturn([]);
+    when(() => entity.bypassAllPermissions).thenReturn(false);
+    when(() => entity.id).thenReturn('test_entity');
+
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: MenuDataTableActions(
+          entity: entity,
+          parentData: const [],
+          embedded: false,
+          bypassPermission: true,
+          filters: const [],
+          refreshButton: const SizedBox(),
+          onFilterChanged: (_) {},
+          onRefresh: () {},
+        ),
+      ),
+    ));
+
+    // Regular action should be found by its text
+    expect(find.text('Regular Action'), findsOneWidget);
+
+    // Grouping: Tap the Export group button first to open the menu
+    await tester.tap(find.textContaining('Export').last);
+    await tester.pumpAndSettle();
+
+    // Export action should now be found
+    expect(find.textContaining('Export Home'), findsOneWidget);
+  });
 }
