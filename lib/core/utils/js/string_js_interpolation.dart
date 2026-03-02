@@ -16,8 +16,15 @@ extension StringJsInterpolationExtension on String {
   static const bool enableLog = false;
 
   Map<String, dynamic> _prepareVariables([Map<String, dynamic>? variables]) {
-    final config = Configuration.instance;
-    final userRepo = UserRepositoryApp.instance;
+    Configuration? config;
+    try {
+      config = Configuration.instance;
+    } catch (_) {}
+
+    UserRepositoryApp? userRepo;
+    try {
+      userRepo = UserRepositoryApp.instance;
+    } catch (_) {}
 
     final allVars = <String, dynamic>{
       // 1. Load context variables (form, record, etc.)
@@ -36,18 +43,19 @@ extension StringJsInterpolationExtension on String {
       },
 
       // 2. Load custom global variables from config
-      for (final v in config.variables) v.key: v.value,
+      if (config != null)
+        for (final v in config.variables) v.key: v.value,
 
       // 3. System variables (Highest priority, cannot be overwritten by record data)
-      'auth_token': userRepo.token ?? '',
-      'user_id': userRepo.userApp?.id?.toString() ?? '',
-      'backend_host': config.backendHost,
+      'auth_token': userRepo?.token ?? '',
+      'user_id': userRepo?.userApp?.id?.toString() ?? '',
+      'backend_host': config?.backendHost ?? '',
     };
 
     if (enableLog) {
-      debugPrint('  [JS Interpolation] userRepo.userApp: ${userRepo.userApp}');
+      debugPrint('  [JS Interpolation] userRepo.userApp: ${userRepo?.userApp}');
       debugPrint(
-          '  [JS Interpolation] userRepo.userApp.id: ${userRepo.userApp?.id}');
+          '  [JS Interpolation] userRepo.userApp.id: ${userRepo?.userApp?.id}');
       debugPrint('  [JS Interpolation] Final Variables Map:');
       allVars.forEach((k, v) {
         if (k == 'auth_token') {

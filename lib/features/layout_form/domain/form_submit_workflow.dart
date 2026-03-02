@@ -1,212 +1,20 @@
-// DEFAULT JSON STYLE
-// ------------------
-// ✅ Default keys use snake_case (recommended).
-//    (We still accept some legacy camelCase for backward compatibility,
-//     but all examples + generated configs should be snake_case.)
-//
-// INTERPOLATION STYLE
-// -------------------
-// ✅ JS-style interpolation using {{ ... }}
-//
-// SUPPORTED FEATURES
-// ------------------
-// ✔ Multi-step form submit (create / edit)
-// ✔ Multiple HTTP requests (sequential)
-// ✔ Looping (e.g. order → order_detail)
-// ✔ Condition / branching based on runtime data
-// ✔ Try / Catch (rollback, compensation)
-// ✔ Retry policy per HTTP
-// ✔ UI bridge hooks (toast, close modal, refresh)
-//
-// ============================================================================
-//
-// ✅ COMPLEX STUDY CASE
-//
-// Scenario: Sales Order end-to-end (very complex)
-// - validate all steps
-// - customer check, credit check, rate check
-// - create order header
-// - loop items: insert details with retry, optional attachment upload
-// - recalc total, mismatch policy
-// - approval logic
-// - audit log
-//
-// NOTE:
-// - {{ form.* }} refers to ctx.form
-// - {{ record.* }} refers to ctx.record
-// - {{ vars.* }} refers to ctx.vars
-// - {{ http.<name>.status }} / {{ http.<name>.data.* }} refers to saved http results
-//
-// {
-//   "type": "workflow",
-//   "lock_ui_while_submitting": true,
-//   "actions": [
-//     { "type": "validate", "scope": "all" },
-//
-//     { "type": "set_var", "key": "client_total", "value": "{{ sum(form.items, \"qty*price\") }}" },
-//     { "type": "set_var", "key": "failed_items", "value": [] },
-//
-//     {
-//       "type": "http",
-//       "name": "get_customer",
-//       "save_result_to": "http.get_customer",
-//       "http": {
-//         "method": "GET",
-//         "url": "https://api.example.com/customers/{{ form.customer_id }}",
-//         "headers": { "authorization": "Bearer {{ auth.token }}" },
-//         "body": {},
-//         "use_form_data": false
-//       }
-//     },
-//     {
-//       "type": "condition",
-//       "if": "{{ http.get_customer.data.is_active }} != true",
-//       "then_actions": [
-//         { "type": "toast", "variant": "error", "message": "Customer tidak aktif" },
-//         { "type": "stop_workflow" }
-//       ]
-//     },
-//
-//     {
-//       "type": "http",
-//       "name": "create_order",
-//       "save_result_to": "http.create_order",
-//       "http": {
-//         "method": "POST",
-//         "url": "https://api.example.com/orders",
-//         "headers": {
-//           "content-type": "application/json",
-//           "authorization": "Bearer {{ auth.token }}"
-//         },
-//         "body": {
-//           "customer_id": "{{ form.customer_id }}",
-//           "order_date": "{{ form.order_date }}",
-//           "notes": "{{ form.notes }}"
-//         },
-//         "use_form_data": false
-//       }
-//     },
-//     {
-//       "type": "condition",
-//       "if": "{{ http.create_order.status }} < 200 || {{ http.create_order.status }} >= 300",
-//       "then_actions": [
-//         { "type": "toast", "variant": "error", "message": "Gagal membuat order header" },
-//         { "type": "stop_workflow" }
-//       ]
-//     },
-//     { "type": "set_var", "key": "order_id", "value": "{{ http.create_order.data.id }}" },
-//
-//     {
-//       "type": "loop",
-//       "items": "{{ form.items }}",
-//       "item_var": "item",
-//       "index_var": "i",
-//       "actions": [
-//         {
-//           "type": "try_catch",
-//           "try_actions": [
-//             {
-//               "type": "http",
-//               "name": "insert_detail",
-//               "http": {
-//                 "method": "POST",
-//                 "url": "https://api.example.com/orders/{{ vars.order_id }}/items",
-//                 "headers": {
-//                   "content-type": "application/json",
-//                   "authorization": "Bearer {{ auth.token }}"
-//                 },
-//                 "body": {
-//                   "product_id": "{{ vars.item.product_id }}",
-//                   "qty": "{{ vars.item.qty }}",
-//                   "price": "{{ vars.item.price }}"
-//                 },
-//                 "use_form_data": false
-//               },
-//               "retry": { "max": 2, "delay_ms": 400 }
-//             },
-//
-//             {
-//               "type": "condition",
-//               "if": "{{ vars.item.attachment }} != null",
-//               "then_actions": [
-//                 {
-//                   "type": "http",
-//                   "name": "upload_attachment",
-//                   "http": {
-//                     "method": "POST",
-//                     "url": "https://api.example.com/orders/{{ vars.order_id }}/items/{{ vars.item.product_id }}/attachment",
-//                     "headers": { "authorization": "Bearer {{ auth.token }}" },
-//                     "body": { "file": "{{ vars.item.attachment }}" },
-//                     "use_form_data": true
-//                   }
-//                 }
-//               ]
-//             }
-//           ],
-//           "catch_actions": [
-//             {
-//               "type": "append_var",
-//               "key": "failed_items",
-//               "value": {
-//                 "index": "{{ vars.i }}",
-//                 "product_id": "{{ vars.item.product_id }}",
-//                 "message": "detail failed"
-//               }
-//             }
-//           ]
-//         }
-//       ]
-//     },
-//
-//     {
-//       "type": "http",
-//       "name": "audit",
-//       "http": {
-//         "method": "POST",
-//         "url": "https://api.example.com/audit",
-//         "headers": {
-//           "content-type": "application/json",
-//           "authorization": "Bearer {{ auth.token }}"
-//         },
-//         "body": {
-//           "entity": "order",
-//           "entity_id": "{{ vars.order_id }}",
-//           "failed_items": "{{ vars.failed_items }}"
-//         },
-//         "use_form_data": false
-//       }
-//     }
-//
-//   ],
-//   "on_success": [
-//     { "type": "toast", "variant": "success", "message": "Order tersimpan" },
-//     { "type": "close_modal" },
-//     { "type": "refresh", "target": "orders" }
-//   ],
-//   "on_error": [
-//     { "type": "toast", "variant": "error", "message": "Submit gagal" }
-//   ]
-// }
-//
-// ============================================================================
-
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
+export 'workflow_actions/workflow_definition.dart';
+export 'workflow_actions/condition_action.dart';
+export 'workflow_actions/export_action.dart';
+export 'workflow_actions/http_action.dart';
+export 'workflow_actions/loop_action.dart';
+export 'workflow_actions/stop_workflow_action.dart';
+export 'workflow_actions/try_catch_action.dart';
+export 'workflow_actions/ui_actions.dart';
+export 'workflow_actions/validate_action.dart';
+export 'workflow_actions/var_actions.dart';
 import '../../../src/app/model/configuration.dart';
-import 'workflow_actions/condition_action.dart';
-import 'workflow_actions/export_action.dart';
-import 'workflow_actions/http_action.dart';
-import 'workflow_actions/loop_action.dart';
-import 'workflow_actions/stop_workflow_action.dart';
-import 'workflow_actions/try_catch_action.dart';
-import 'workflow_actions/ui_actions.dart';
-import 'workflow_actions/validate_action.dart';
-import 'workflow_actions/var_actions.dart';
 
 typedef WorkflowValidator = Future<void> Function(
     String scope, Map<String, dynamic> form);
@@ -416,7 +224,7 @@ class _WorkflowScopeBuilder {
       'data': _sanitize(ctx.data),
       'vars': _sanitize(ctx.vars),
       'auth': <String, dynamic>{
-        'token': UserRepositoryApp.instance.token ?? '',
+        'token': _safeGetToken(),
         'permissions': ctx.auth.permissions,
       },
       'http': ctx.http.map(
@@ -426,7 +234,7 @@ class _WorkflowScopeBuilder {
           'headers': _sanitize(v.headers),
         }),
       ),
-      'user_id': UserRepositoryApp.instance.userApp?.id?.toString() ?? '',
+      'user_id': _safeGetUserId(),
     };
 
     // Add globals from Configuration
@@ -450,6 +258,22 @@ class _WorkflowScopeBuilder {
     }
 
     return scope;
+  }
+
+  static String _safeGetToken() {
+    try {
+      return UserRepositoryApp.instance.token ?? '';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  static String _safeGetUserId() {
+    try {
+      return UserRepositoryApp.instance.userApp?.id?.toString() ?? '';
+    } catch (_) {
+      return '';
+    }
   }
 
   static dynamic _sanitize(dynamic value) {
@@ -608,352 +432,3 @@ abstract class WorkflowAction {
 /// ============================================================================
 /// CORE ACTIONS
 /// ============================================================================
-
-/// ============================================================================
-/// WORKFLOW DEFINITION
-/// ============================================================================
-class WorkflowDefinition {
-  final bool lockUiWhileSubmitting;
-  final List<WorkflowAction> actions;
-  final List<WorkflowAction> onSuccess;
-  final List<WorkflowAction> onError;
-
-  const WorkflowDefinition({
-    required this.lockUiWhileSubmitting,
-    required this.actions,
-    required this.onSuccess,
-    required this.onError,
-  });
-
-  factory WorkflowDefinition.fromJson(Map<String, dynamic> json) {
-    try {
-      final lockUi = (json['lock_ui_while_submitting'] == true) ||
-          (json['lockUIWhileSubmitting'] == true);
-
-      final actionsJson = _coerceList(
-        json['actions'],
-        field: 'actions',
-        allowNull: false,
-      );
-      final onSuccessJson = _coerceList(
-        json['on_success'] ?? json['onSuccess'],
-        field: 'on_success',
-      );
-      final onErrorJson = _coerceList(
-        json['on_error'] ?? json['onError'],
-        field: 'on_error',
-      );
-
-      return WorkflowDefinition(
-        lockUiWhileSubmitting: lockUi,
-        actions: _mapActions(actionsJson, 'actions'),
-        onSuccess: _mapActions(onSuccessJson, 'on_success'),
-        onError: _mapActions(onErrorJson, 'on_error'),
-      );
-    } catch (e, st) {
-      if (e is WorkflowException) rethrow;
-      throw WorkflowConfigurationException(
-        'Invalid workflow definition: $e',
-        cause: e,
-        stackTrace: st,
-      );
-    }
-  }
-
-  static List<dynamic> _coerceList(
-    dynamic value, {
-    required String field,
-    bool allowNull = true,
-  }) {
-    if (value == null) {
-      if (allowNull) return const [];
-      throw WorkflowConfigurationException('"$field" is required.');
-    }
-    if (value is! List) {
-      throw WorkflowConfigurationException('"$field" must be an array.');
-    }
-    return value;
-  }
-
-  static List<WorkflowAction> _mapActions(List<dynamic> raw, String label) {
-    return raw.asMap().entries.map((entry) {
-      final value = entry.value;
-      if (value is! Map) {
-        throw WorkflowConfigurationException(
-          'Each $label item must be an object (index ${entry.key}).',
-        );
-      }
-      return ActionFactory.fromJson(Map<String, dynamic>.from(value));
-    }).toList();
-  }
-}
-
-/// ============================================================================
-/// ACTION FACTORY (JSON -> ACTION OBJECT)
-/// ============================================================================
-class ActionFactory {
-  static WorkflowAction fromJson(Map<String, dynamic> json) {
-    final type = (json['type'] ?? '').toString().trim();
-    if (type.isEmpty) {
-      throw const WorkflowConfigurationException('Action type is required.');
-    }
-
-    try {
-      switch (type) {
-        case 'validate':
-          return ValidateAction(scope: (json['scope'] ?? 'all').toString());
-
-        case 'stop_workflow':
-          return const StopWorkflowAction();
-
-        case 'set_var':
-          final key = (json['key'] ?? '').toString();
-          if (key.isEmpty) {
-            throw const WorkflowConfigurationException(
-              '"set_var" action requires "key".',
-            );
-          }
-          return SetVarAction(key: key, value: json['value']);
-
-        case 'append_var':
-          final key = (json['key'] ?? '').toString();
-          if (key.isEmpty) {
-            throw const WorkflowConfigurationException(
-              '"append_var" action requires "key".',
-            );
-          }
-          return AppendVarAction(key: key, value: json['value']);
-
-        case 'toast':
-          return ToastAction(
-            variant: (json['variant'] ?? 'info').toString(),
-            message: json['message'] ?? '',
-          );
-
-        case 'close_modal':
-          return const CloseModalAction();
-
-        case 'refresh':
-          return RefreshAction(target: (json['target'] ?? '').toString());
-
-        case 'http':
-          final name = (json['name'] ?? '').toString();
-          final httpJson = json['http'];
-          if (httpJson is! Map) {
-            throw const WorkflowConfigurationException(
-              '"http" action must include an "http" object.',
-            );
-          }
-          final retryJson = json['retry'] as Map?;
-          return HttpAction(
-            name: name.isEmpty
-                ? 'http_${DateTime.now().microsecondsSinceEpoch}'
-                : name,
-            http: HttpData.fromJson(Map<String, dynamic>.from(httpJson)),
-            retry: retryJson == null
-                ? null
-                : RetryPolicy.fromJson(
-                    Map<String, dynamic>.from(retryJson),
-                  ),
-            saveResultTo:
-                (json['save_result_to'] ?? json['saveResultTo'])?.toString(),
-          );
-
-        case 'condition':
-          final condition = (json['if'] ?? '').toString();
-          if (condition.isEmpty) {
-            throw const WorkflowConfigurationException(
-              '"condition" action requires "if" expression.',
-            );
-          }
-
-          final thenActions = _coerceActions(
-            json['then_actions'] ?? json['then'],
-            'then_actions',
-          );
-          final elseActions = _coerceActions(
-            json['else_actions'] ?? json['else'],
-            'else_actions',
-            allowNull: true,
-          );
-          return ConditionAction(
-            ifExpr: condition,
-            thenActions: thenActions,
-            elseActions: elseActions,
-          );
-
-        case 'loop':
-          final itemVar =
-              (json['item_var'] ?? json['itemVar'] ?? 'item').toString().trim();
-          if (itemVar.isEmpty) {
-            throw const WorkflowConfigurationException(
-              '"loop" action requires "item_var".',
-            );
-          }
-
-          final actions = _coerceActions(
-            json['actions'],
-            'actions',
-            allowNull: false,
-          );
-          return LoopAction(
-            items: json['items'],
-            itemVar: itemVar,
-            indexVar: (json['index_var'] ?? json['indexVar'])?.toString(),
-            actions: actions,
-          );
-
-        case 'try_catch':
-          final tryActions = _coerceActions(
-            json['try_actions'] ?? json['try'],
-            'try_actions',
-          );
-          final catchActions = _coerceActions(
-            json['catch_actions'] ?? json['catch'],
-            'catch_actions',
-          );
-          return TryCatchAction(
-            tryActions: tryActions,
-            catchActions: catchActions,
-          );
-
-        case 'export':
-          final format = (json['format'] ?? 'xlsx').toString().trim();
-          final columnsRaw = (json['columns'] as List?) ?? const [];
-          final columns = columnsRaw
-              .whereType<Map<String, dynamic>>()
-              .map((e) => TColumn.fromJson(e))
-              .toList();
-
-          return ExportAction(
-            format: format,
-            columns: columns,
-            saveResultTo:
-                (json['save_result_to'] ?? json['saveResultTo'])?.toString(),
-          );
-
-        default:
-          throw WorkflowConfigurationException(
-            'Unsupported action type "$type".',
-          );
-      }
-    } catch (e, st) {
-      if (e is WorkflowException) rethrow;
-      throw WorkflowConfigurationException(
-        'Invalid "$type" action: $e',
-        cause: e,
-        stackTrace: st,
-      );
-    }
-  }
-
-  static List<WorkflowAction> _coerceActions(
-    dynamic raw,
-    String label, {
-    bool allowNull = false,
-  }) {
-    if (raw == null) {
-      if (allowNull) return const <WorkflowAction>[];
-      throw WorkflowConfigurationException('"$label" is required.');
-    }
-    if (raw is! List) {
-      throw WorkflowConfigurationException('"$label" must be an array.');
-    }
-    return raw.map<WorkflowAction>((e) {
-      if (e is! Map) {
-        throw WorkflowConfigurationException(
-          'Each $label item must be an object.',
-        );
-      }
-      return fromJson(Map<String, dynamic>.from(e));
-    }).toList();
-  }
-}
-
-class _NoopAction implements WorkflowAction {
-  const _NoopAction();
-  @override
-  Future<void> execute(WorkflowContext ctx, UiBridge ui) async {}
-}
-
-/// ============================================================================
-/// WORKFLOW EXECUTOR
-/// ============================================================================
-class WorkflowExecutor {
-  final WorkflowDefinition definition;
-  final UiBridge ui;
-
-  const WorkflowExecutor(
-    this.definition, {
-    this.ui = const _DefaultNoopUiBridge(),
-  });
-
-  Future<WorkflowRunResult> run(WorkflowContext ctx) async {
-    print('[WorkflowExecutor] Run STARTED');
-    try {
-      print('[WorkflowExecutor] Executing main actions...');
-      await _runActions(definition.actions, ctx);
-
-      print(
-          '[WorkflowExecutor] Main actions completed. Stopped: ${ctx.stopped}');
-      if (!ctx.stopped) {
-        print('[WorkflowExecutor] Executing onSuccess actions...');
-        await _runActions(definition.onSuccess, ctx);
-        print('[WorkflowExecutor] Run SUCCESS');
-        return WorkflowRunResult.success(ctx.lastData);
-      }
-
-      print('[WorkflowExecutor] Run STOPPED');
-      return WorkflowRunResult.stopped();
-    } on WorkflowException catch (e) {
-      print('[WorkflowExecutor] Run FAILED (WorkflowException): $e');
-      await _runOnError(ctx);
-      return WorkflowRunResult.failure(e);
-    } catch (e, st) {
-      print('[WorkflowExecutor] Run FAILED (Unexpected): $e\n$st');
-      final err = WorkflowExecutionException(
-        'Unexpected workflow error: $e',
-        cause: e,
-        stackTrace: st,
-      );
-      await _runOnError(ctx);
-      return WorkflowRunResult.failure(err);
-    } finally {
-      print('[WorkflowExecutor] Run ENDED');
-    }
-  }
-
-  Future<void> _runActions(
-    List<WorkflowAction> actions,
-    WorkflowContext ctx,
-  ) async {
-    for (var i = 0; i < actions.length; i++) {
-      final action = actions[i];
-      if (ctx.stopped) {
-        print('[WorkflowExecutor] Action loop stopped at index $i');
-        return;
-      }
-      print(
-          '[WorkflowExecutor] Executing Action #${i + 1} (${action.runtimeType})');
-      await action.execute(ctx, ui);
-    }
-  }
-
-  Future<void> _runOnError(WorkflowContext ctx) async {
-    try {
-      await _runActions(definition.onError, ctx);
-    } catch (_) {
-      // Swallow errors from onError to avoid masking the root cause.
-    }
-  }
-}
-
-class _DefaultNoopUiBridge implements UiBridge {
-  const _DefaultNoopUiBridge();
-  @override
-  Future<void> toast(String variant, String message) async {}
-  @override
-  Future<void> closeModal() async {}
-  @override
-  Future<void> refresh(String target) async {}
-}
