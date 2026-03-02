@@ -196,7 +196,17 @@ import 'dart:convert';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
 import '../../../src/app/model/configuration.dart';
+import 'workflow_actions/condition_action.dart';
+import 'workflow_actions/export_action.dart';
+import 'workflow_actions/http_action.dart';
+import 'workflow_actions/loop_action.dart';
+import 'workflow_actions/stop_workflow_action.dart';
+import 'workflow_actions/try_catch_action.dart';
+import 'workflow_actions/ui_actions.dart';
+import 'workflow_actions/validate_action.dart';
+import 'workflow_actions/var_actions.dart';
 
 typedef WorkflowValidator = Future<void> Function(
     String scope, Map<String, dynamic> form);
@@ -599,310 +609,6 @@ abstract class WorkflowAction {
 /// CORE ACTIONS
 /// ============================================================================
 
-class ValidateAction implements WorkflowAction {
-  final String scope; // "all" | "current_step"
-  const ValidateAction({required this.scope});
-
-  @override
-  Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
-    final validator = ctx.validator;
-    if (validator == null) {
-      throw WorkflowValidationException(
-        'Validation required for scope "$scope" but no validator provided.',
-      );
-    }
-
-    try {
-      print('[ValidateAction] Validating scope "$scope"');
-      await validator(scope, ctx.form);
-      print('[ValidateAction] Validation passed');
-    } catch (e, st) {
-      if (e is WorkflowException) rethrow;
-      throw WorkflowValidationException(
-        'Validation failed for scope "$scope": $e',
-        cause: e,
-        stackTrace: st,
-      );
-    }
-  }
-}
-
-class StopWorkflowAction implements WorkflowAction {
-  const StopWorkflowAction();
-  @override
-  Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
-    ctx.stopped = true;
-  }
-}
-
-class SetVarAction implements WorkflowAction {
-  final String key;
-  final dynamic value;
-  const SetVarAction({required this.key, required this.value});
-
-  @override
-  Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
-    final val = Template.resolve(value, ctx);
-    print('[SetVarAction] Setting var "$key" = $val');
-    ctx.vars[key] = val;
-  }
-}
-
-class AppendVarAction implements WorkflowAction {
-  final String key;
-  final dynamic value;
-  const AppendVarAction({required this.key, required this.value});
-
-  @override
-  Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
-    final list = (ctx.vars[key] as List?) ?? <dynamic>[];
-    final item = Template.resolve(value, ctx);
-    print('[AppendVarAction] Appending to var "$key": $item');
-    list.add(item);
-    ctx.vars[key] = list;
-  }
-}
-
-class ToastAction implements WorkflowAction {
-  final String variant;
-  final dynamic message;
-  const ToastAction({required this.variant, required this.message});
-
-  @override
-  Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
-    final msg = Template.resolve(message, ctx)?.toString() ?? '';
-    await ui.toast(variant, msg);
-  }
-}
-
-class CloseModalAction implements WorkflowAction {
-  const CloseModalAction();
-  @override
-  Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
-    await ui.closeModal();
-  }
-}
-
-class RefreshAction implements WorkflowAction {
-  final String target;
-  const RefreshAction({required this.target});
-
-  @override
-  Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
-    final t = Template.resolve(target, ctx)?.toString() ?? target;
-    await ui.refresh(t);
-  }
-}
-
-class HttpAction implements WorkflowAction {
-  final String name;
-  final HttpData http;
-  final RetryPolicy? retry;
-
-  /// If provided, will save result into ctx.http[name] automatically.
-  /// Additionally supports "save_result_to": "http.some_name"
-  /// but the canonical storage is ctx.http[name].
-  final String? saveResultTo;
-
-  const HttpAction({
-    required this.name,
-    required this.http,
-    this.retry,
-    this.saveResultTo,
-  });
-
-  @override
-  Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
-    int attempt = 0;
-    final actionLabel = name.isEmpty ? 'http' : name;
-    while (true) {
-      try {
-        final resolvedHeaders = Template.resolve(http.headers, ctx);
-        if (resolvedHeaders is! Map) {
-          throw const WorkflowExecutionException(
-            'HTTP headers must resolve to an object.',
-          );
-        }
-
-        final resolvedBody = Template.resolve(http.body, ctx);
-        if (resolvedBody is! Map) {
-          throw const WorkflowExecutionException(
-            'HTTP body must resolve to an object.',
-          );
-        }
-
-        final resolved = HttpData(
-          method:
-              Template.resolve(http.method, ctx)?.toString().toUpperCase() ??
-                  http.method.toUpperCase(),
-          url: Template.resolve(http.url, ctx)?.toString() ?? http.url,
-          headers: resolvedHeaders.map<String, String>(
-            (k, v) => MapEntry(k.toString(), '$v'),
-          ),
-          body: resolvedBody.map<String, dynamic>(
-            (k, v) => MapEntry(k.toString(), v),
-          ),
-          useFormData: http.useFormData,
-          mockEnabled: http.mockEnabled,
-          mockData: Template.resolve(http.mockData, ctx),
-        );
-
-        print('[HttpAction] Executing "$actionLabel":');
-        print('  > Method: ${resolved.method}');
-        print('  > URL: ${resolved.url}');
-        print('  > Body: ${resolved.body}');
-
-        if (resolved.url.isEmpty) {
-          throw WorkflowExecutionException(
-            'HTTP "$actionLabel" is missing a valid URL.',
-          );
-        }
-
-        final result = await ctx.httpExecutor.execute(resolved);
-
-        // Save by name (primary)
-        ctx.http[actionLabel] = result;
-
-        // Optional secondary save path: "http.xxx"
-        if (saveResultTo != null && saveResultTo!.startsWith('http.')) {
-          final alias = saveResultTo!.substring('http.'.length);
-          ctx.http[alias] = result;
-        }
-
-        // If HTTP is not success, throw to let try/catch handle it.
-        if (!result.isSuccess) {
-          throw Exception('HTTP $name failed with status ${result.status}');
-        }
-        ctx.lastData = result.data;
-        return;
-      } catch (e) {
-        print('[HttpAction] Attempt ${attempt + 1} failed: $e');
-        attempt++;
-        if (retry == null || attempt > retry!.max) {
-          if (e is WorkflowException) rethrow;
-          throw WorkflowExecutionException(
-            'HTTP "$actionLabel" failed: $e',
-            cause: e,
-          );
-        }
-        print('[HttpAction] Retrying in ${retry!.delayMs}ms...');
-        await Future.delayed(Duration(milliseconds: retry!.delayMs));
-      }
-    }
-  }
-}
-
-class ConditionAction implements WorkflowAction {
-  final String ifExpr;
-  final List<WorkflowAction> thenActions;
-  final List<WorkflowAction> elseActions;
-
-  const ConditionAction({
-    required this.ifExpr,
-    required this.thenActions,
-    required this.elseActions,
-  });
-
-  @override
-  Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
-    try {
-      final ok = Expr.evalCondition(ifExpr, ctx);
-      print('[ConditionAction] if "$ifExpr" => $ok');
-      final branch = ok ? thenActions : elseActions;
-
-      print(
-          '[ConditionAction] Executing ${branch.length} actions in ${ok ? "THEN" : "ELSE"} branch');
-      for (final a in branch) {
-        if (ctx.stopped) return;
-        await a.execute(ctx, ui);
-      }
-    } catch (e, st) {
-      if (e is WorkflowException) rethrow;
-      throw WorkflowExecutionException(
-        'Condition "$ifExpr" failed: $e',
-        cause: e,
-        stackTrace: st,
-      );
-    }
-  }
-}
-
-class LoopAction implements WorkflowAction {
-  final dynamic items; // list literal OR string with {{ }} OR already List
-  final String itemVar;
-  final String? indexVar;
-  final List<WorkflowAction> actions;
-
-  const LoopAction({
-    required this.items,
-    required this.itemVar,
-    this.indexVar,
-    required this.actions,
-  });
-
-  @override
-  Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
-    final resolved = Template.resolve(items, ctx);
-    print('[LoopAction] Resolving items...');
-    if (resolved == null) {
-      print('[LoopAction] Items resolved to null, skipping loop.');
-      return;
-    }
-    if (resolved is! List) {
-      throw WorkflowExecutionException(
-        'Loop items must resolve to a list, got ${resolved.runtimeType}.',
-      );
-    }
-
-    print('[LoopAction] Starting loop with ${resolved.length} items.');
-    for (var i = 0; i < resolved.length; i++) {
-      if (ctx.stopped) {
-        print('[LoopAction] Loop stopped at index $i');
-        return;
-      }
-      print('[LoopAction] Iteration $i / ${resolved.length}');
-      ctx.vars[itemVar] = resolved[i];
-      if (indexVar != null) ctx.vars[indexVar!] = i;
-
-      for (final a in actions) {
-        if (ctx.stopped) return;
-        await a.execute(ctx, ui);
-      }
-    }
-    print('[LoopAction] Loop completed.');
-  }
-}
-
-class TryCatchAction implements WorkflowAction {
-  final List<WorkflowAction> tryActions;
-  final List<WorkflowAction> catchActions;
-
-  const TryCatchAction({required this.tryActions, required this.catchActions});
-
-  @override
-  Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
-    try {
-      print('[TryCatchAction] Entering TRY block');
-      for (final a in tryActions) {
-        if (ctx.stopped) return;
-        await a.execute(ctx, ui);
-      }
-      print('[TryCatchAction] TRY block completed successfully');
-    } catch (e, st) {
-      print('[TryCatchAction] Caught error: $e');
-      ctx.vars['last_error'] = e is WorkflowException ? e.message : '$e';
-      ctx.vars['last_error_stacktrace'] = st.toString();
-
-      print('[TryCatchAction] Entering CATCH block');
-      for (final a in catchActions) {
-        if (ctx.stopped) return;
-        await a.execute(ctx, ui);
-      }
-      print('[TryCatchAction] CATCH block completed');
-    }
-  }
-}
-
 /// ============================================================================
 /// WORKFLOW DEFINITION
 /// ============================================================================
@@ -1109,6 +815,21 @@ class ActionFactory {
           return TryCatchAction(
             tryActions: tryActions,
             catchActions: catchActions,
+          );
+
+        case 'export':
+          final format = (json['format'] ?? 'xlsx').toString().trim();
+          final columnsRaw = (json['columns'] as List?) ?? const [];
+          final columns = columnsRaw
+              .whereType<Map<String, dynamic>>()
+              .map((e) => TColumn.fromJson(e))
+              .toList();
+
+          return ExportAction(
+            format: format,
+            columns: columns,
+            saveResultTo:
+                (json['save_result_to'] ?? json['saveResultTo'])?.toString(),
           );
 
         default:
