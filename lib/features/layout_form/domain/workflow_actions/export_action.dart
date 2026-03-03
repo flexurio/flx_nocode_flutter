@@ -16,6 +16,24 @@ class ExportAction implements WorkflowAction {
 
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
+    print('[ExportAction] Starting execution...');
+    print('[ExportAction] Format: $format');
+    print('[ExportAction] Columns count: ${columns.length}');
+
+    if (dataSource != null) {
+      final resolvedData = Template.resolve(dataSource, ctx);
+      print('[ExportAction] Resolved dataSource: $resolvedData');
+      if (resolvedData is List) {
+        print(
+            '[ExportAction] Data to export contains ${resolvedData.length} items');
+      } else {
+        print(
+            '[ExportAction] Data to export is not a List: ${resolvedData.runtimeType}');
+      }
+    } else {
+      print('[ExportAction] No dataSource specified, using default (if any)');
+    }
+
     // Note: Actual export logic might depend on how the HTTP action runs,
     // or you might want to fetch data and then generate the file using
     // flx_core_flutter's SimpleExcel. For now, this is a placeholder
@@ -30,11 +48,13 @@ class ExportAction implements WorkflowAction {
 
     // For now, save metadata or mock success
     if (saveResultTo != null) {
+      print('[ExportAction] Saving results to ctx.vars["$saveResultTo"]');
       ctx.vars[saveResultTo!] = {
         'format': format,
         'columns': columns.length,
         'status': 'generated'
       };
     }
+    print('[ExportAction] Execution finished.');
   }
 }
