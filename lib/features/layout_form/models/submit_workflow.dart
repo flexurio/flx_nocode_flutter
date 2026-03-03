@@ -91,6 +91,8 @@ abstract class WorkflowAction {
         return TryCatchAction.fromMap(map);
       case 'stop_workflow':
         return StopWorkflowAction();
+      case 'export':
+        return ExportAction.fromMap(map);
       default:
         throw FormatException('Unknown workflow action type: $type');
     }
@@ -310,6 +312,38 @@ class StopWorkflowAction extends WorkflowAction {
 
   @override
   Map<String, dynamic> toMap() => {'type': 'stop_workflow'};
+}
+
+/// Exports data to a file.
+class ExportAction extends WorkflowAction {
+  final String format; // 'xlsx' | 'csv' | 'pdf'
+  final List<Map<String, dynamic>> columns;
+  final String? saveResultTo;
+
+  ExportAction({
+    required this.format,
+    this.columns = const [],
+    this.saveResultTo,
+  }) : super('export');
+
+  factory ExportAction.fromMap(Map<String, dynamic> map) {
+    return ExportAction(
+      format: map['format'] ?? 'xlsx',
+      columns: (map['columns'] as List?)
+              ?.map((e) => Map<String, dynamic>.from(e))
+              .toList() ??
+          const [],
+      saveResultTo: map['save_result_to'] ?? map['saveResultTo'],
+    );
+  }
+
+  @override
+  Map<String, dynamic> toMap() => {
+        'type': 'export',
+        'format': format,
+        'columns': columns,
+        if (saveResultTo != null) 'save_result_to': saveResultTo,
+      };
 }
 
 /// Configures retry logic for HTTP actions.
