@@ -18,6 +18,7 @@ extension LayoutFormDomainX on LayoutForm {
   bool get isUpdate =>
       id.toLowerCase().trim().startsWith('update') ||
       id.toLowerCase().trim().startsWith('edit');
+  bool get isFilter => id.toLowerCase().trim().contains('filter');
 
   /// Returns (usedFields, availableFields) with unique, ordered entries.
   (List<String> usedFields, List<String> availableFields) getFieldByStatus(
@@ -135,6 +136,7 @@ extension LayoutFormDomainX on LayoutForm {
     if (isUpdate) return DataAction.update;
     if (isView) return DataAction.view;
     if (isCreate) return DataAction.create;
-    return DataAction.none;
+    if (isFilter) return DataAction.submit;
+    return DataAction.submit;
   }
 }

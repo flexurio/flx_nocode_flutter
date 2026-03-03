@@ -196,6 +196,8 @@ class CreateForm extends StatelessWidget {
         return const SizedBox.shrink();
       }
 
+      final submitLabel = layoutForm.submitWorkflow?.submitLabel;
+
       if (layoutForm.multiForms.isNotEmpty) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -221,6 +223,7 @@ class CreateForm extends StatelessWidget {
                 permission: null,
                 isInProgress: inProgress,
                 onPressed: () => controller.submit(context),
+                label: submitLabel,
                 action: layoutForm.isHome
                     ? DataAction.reprocess
                     : controller.action,
@@ -235,13 +238,11 @@ class CreateForm extends StatelessWidget {
         );
       }
 
-      final submitLabel = layoutForm.submitWorkflow?.submitLabel;
-
       return Button.action(
         permission: null,
         isInProgress: inProgress,
         onPressed: () => controller.submit(context),
-        // label: submitLabel,
+        label: submitLabel,
         action: layoutForm.isHome ? DataAction.reprocess : controller.action,
       );
     });
