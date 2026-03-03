@@ -36,7 +36,9 @@ jobs:
           make update-readme-coverage
 
       - name: Run All Analysis
-        run: make analyze-all
+        run: |
+          cat analysis_options_gh.yaml >> analysis_options.yaml
+          make analyze-all
 
       - name: Commit and Push changes
         if: github.event_name == 'push'
