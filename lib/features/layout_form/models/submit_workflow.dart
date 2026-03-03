@@ -318,11 +318,13 @@ class StopWorkflowAction extends WorkflowAction {
 class ExportAction extends WorkflowAction {
   final String format; // 'xlsx' | 'csv' | 'pdf'
   final List<Map<String, dynamic>> columns;
+  final String? dataSource;
   final String? saveResultTo;
 
   ExportAction({
     required this.format,
     this.columns = const [],
+    this.dataSource,
     this.saveResultTo,
   }) : super('export');
 
@@ -333,6 +335,7 @@ class ExportAction extends WorkflowAction {
               ?.map((e) => Map<String, dynamic>.from(e))
               .toList() ??
           const [],
+      dataSource: map['data_source'] ?? map['dataSource'],
       saveResultTo: map['save_result_to'] ?? map['saveResultTo'],
     );
   }
@@ -342,6 +345,7 @@ class ExportAction extends WorkflowAction {
         'type': 'export',
         'format': format,
         'columns': columns,
+        if (dataSource != null) 'data_source': dataSource,
         if (saveResultTo != null) 'save_result_to': saveResultTo,
       };
 }

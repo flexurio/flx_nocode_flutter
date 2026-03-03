@@ -221,6 +221,7 @@ class ActionFactory {
           return ExportAction(
             format: format,
             columns: columns,
+            dataSource: (json['data_source'] ?? json['dataSource'])?.toString(),
             saveResultTo:
                 (json['save_result_to'] ?? json['saveResultTo'])?.toString(),
           );

@@ -4,11 +4,13 @@ import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workf
 class ExportAction implements WorkflowAction {
   final String format; // 'xlsx' | 'csv' | 'pdf'
   final List<TColumn> columns;
+  final String? dataSource;
   final String? saveResultTo;
 
   const ExportAction({
     required this.format,
     required this.columns,
+    this.dataSource,
     this.saveResultTo,
   });
 
