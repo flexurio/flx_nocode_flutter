@@ -24,6 +24,11 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Resolve internal dependencies
+        run: |
+          mkdir -p ../
+          ln -s $GITHUB_WORKSPACE/packages/flx_core_flutter ../flx_core_flutter
+
       - name: Install dependencies
         run: make get
 
