@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flx_core_flutter/flx_core_flutter.dart' hide TColumn;
+import 'package:flx_core_flutter/flx_core_flutter.dart' as fcf;
 import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
 import 'package:download/download.dart';
@@ -56,10 +56,11 @@ class ExportAction implements WorkflowAction {
     if (items.isNotEmpty) {
       print('[ExportAction] Exporting ${items.length} items');
 
-      final List<PColumnHeader> pHeaders =
-          columns.map((e) => PColumnHeader(title: e.header)).toList();
-      final List<PColumnBody<Map<String, dynamic>>> pBody = columns.map((col) {
-        return PColumnBody<Map<String, dynamic>>(
+      final List<fcf.PColumnHeader> pHeaders =
+          columns.map((e) => fcf.PColumnHeader(title: e.header)).toList();
+      final List<fcf.PColumnBody<Map<String, dynamic>>> pBody =
+          columns.map((col) {
+        return fcf.PColumnBody<Map<String, dynamic>>(
           contentBuilder: (item, index) {
             final rowCtx = WorkflowContext(
               form: ctx.form,
@@ -78,7 +79,7 @@ class ExportAction implements WorkflowAction {
           'export_${DateTime.now().millisecondsSinceEpoch}.${format.toLowerCase()}';
 
       if (format.toLowerCase() == 'xlsx') {
-        final excel = SimpleExcelExporter<Map<String, dynamic>>(
+        final excel = fcf.SimpleExcelExporter<Map<String, dynamic>>(
           data: items.cast<Map<String, dynamic>>(),
           headers: pHeaders,
           body: pBody,
