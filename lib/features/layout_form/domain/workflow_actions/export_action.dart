@@ -27,7 +27,13 @@ class ExportAction implements WorkflowAction {
     List items = [];
     if (dataSource != null) {
       final resolvedData = Template.resolve(dataSource, ctx);
-      print('[ExportAction] Resolved dataSource: $resolvedData');
+      final printedData = resolvedData.toString();
+      if (printedData.length > 500) {
+        print(
+            '[ExportAction] Resolved dataSource: ${printedData.substring(0, 500)}...');
+      } else {
+        print('[ExportAction] Resolved dataSource: $printedData');
+      }
 
       if (resolvedData is List) {
         items = resolvedData;
