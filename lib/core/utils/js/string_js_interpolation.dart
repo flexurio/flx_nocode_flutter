@@ -107,29 +107,120 @@ extension StringJsInterpolationExtension on String {
         isJsonWrapper = true;
       }
 
-      final parts = targetExpr.split('.');
-      dynamic current = allVars;
-      bool found = true;
-      for (final part in parts) {
-        if (current is Map && current.containsKey(part)) {
-          current = current[part];
-        } else {
-          found = false;
-          break;
+      // Check for simple expressions (e.g. {{ a + " " + b }}) or new Date(...)
+      dynamic resolvedValue;
+      bool foundByShortcut = false;
+
+      // 1. Check for simple path (old logic)
+      if (!targetExpr.contains('+') &&
+          !targetExpr.contains('(') &&
+          !targetExpr.contains('"') &&
+          !targetExpr.contains("'")) {
+        final parts = targetExpr.split('.');
+        dynamic current = allVars;
+        bool found = true;
+        for (final part in parts) {
+          if (current is Map && current.containsKey(part)) {
+            current = current[part];
+          } else if (part == 'length' &&
+              (current is List || current is String)) {
+            current = current.length;
+          } else {
+            found = false;
+            break;
+          }
+        }
+        if (found) {
+          resolvedValue = current;
+          foundByShortcut = true;
         }
       }
 
-      if (found) {
+      // 2. Check for string concatenation (e.g. date + "T" + time)
+      if (!foundByShortcut &&
+          targetExpr.contains('+') &&
+          !targetExpr.contains('(')) {
+        final parts = targetExpr.split('+').map((e) => e.trim()).toList();
+        String result = '';
+        bool allPartsResolved = true;
+        for (final part in parts) {
+          if ((part.startsWith('"') && part.endsWith('"')) ||
+              (part.startsWith("'") && part.endsWith("'"))) {
+            result += part.substring(1, part.length - 1);
+          } else {
+            // resolve variable
+            final val = _resolveSimplePath(part, allVars);
+            if (val != null) {
+              result += val.toString();
+            } else {
+              allPartsResolved = false;
+              break;
+            }
+          }
+        }
+        if (allPartsResolved) {
+          resolvedValue = result;
+          foundByShortcut = true;
+        }
+      }
+
+      // 3. Special case: {{ new Date(date + "T" + time).toISOString() }}
+      if (!foundByShortcut &&
+          targetExpr.startsWith('new Date(') &&
+          targetExpr.endsWith(').toISOString()')) {
+        final inner = targetExpr
+            .substring('new Date('.length,
+                targetExpr.length - ').toISOString()'.length)
+            .trim();
+
+        // Use our concatenation logic for the inner part
+        String? resolvedInner;
+        if ((inner.startsWith('"') && inner.endsWith('"')) ||
+            (inner.startsWith("'") && inner.endsWith("'"))) {
+          resolvedInner = inner.substring(1, inner.length - 1);
+        } else if (inner.contains('+')) {
+          final parts = inner.split('+').map((e) => e.trim()).toList();
+          String res = '';
+          bool allOk = true;
+          for (final p in parts) {
+            if ((p.startsWith('"') && p.endsWith('"')) ||
+                (p.startsWith("'") && p.endsWith("'"))) {
+              res += p.substring(1, p.length - 1);
+            } else {
+              final v = _resolveSimplePath(p, allVars);
+              if (v != null)
+                res += v.toString();
+              else {
+                allOk = false;
+                break;
+              }
+            }
+          }
+          if (allOk) resolvedInner = res;
+        } else {
+          resolvedInner = _resolveSimplePath(inner, allVars)?.toString();
+        }
+
+        if (resolvedInner != null) {
+          try {
+            final dt = DateTime.parse(resolvedInner);
+            resolvedValue = dt.toUtc().toIso8601String();
+            foundByShortcut = true;
+          } catch (_) {}
+        }
+      }
+
+      if (foundByShortcut) {
         if (isJsonWrapper) {
           try {
-            return jsonEncode(current);
-          } catch (_) {
-            // Fallback to JS if jsonEncode fails (e.g. circular refs)
-          }
+            return jsonEncode(resolvedValue);
+          } catch (_) {}
         } else {
-          if (current == null) return '';
-          if (current is String || current is num || current is bool) {
-            return current.toString();
+          if (resolvedValue == null) return '';
+          if (resolvedValue is String ||
+              resolvedValue is num ||
+              resolvedValue is bool) {
+            return resolvedValue.toString();
           }
         }
       }
@@ -138,7 +229,10 @@ extension StringJsInterpolationExtension on String {
         final script = _buildJsScript(expr, allVars);
         final value = evalJs(script);
 
-        return (value == 'undefined' || value == 'null') ? '' : value;
+        if (value == 'undefined' || value == 'null') {
+          return isJsonWrapper ? value : '';
+        }
+        return value;
       } catch (e) {
         if (enableLog) {
           debugPrint('  ❌ [JS Interpolation] Failed to evaluate: {{ $expr }}');
@@ -302,4 +396,17 @@ extension StringJsInterpolationExtension on String {
 
     return buffer.toString();
   }
+}
+
+dynamic _resolveSimplePath(String path, Map<String, dynamic> vars) {
+  final parts = path.split('.');
+  dynamic current = vars;
+  for (final part in parts) {
+    if (current is Map && current.containsKey(part)) {
+      current = current[part];
+    } else {
+      return null;
+    }
+  }
+  return current;
 }
