@@ -15,6 +15,7 @@ export 'package:flx_nocode_flutter/features/component/models/component_switch.da
 export 'package:flx_nocode_flutter/features/component/models/component_image.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_divider.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_icon_button.dart';
+export 'package:flx_nocode_flutter/features/component/models/component_time_field.dart';
 
 import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
 import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
@@ -33,6 +34,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_switch.da
 import 'package:flx_nocode_flutter/features/component/models/component_image.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_divider.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_icon_button.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_time_field.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
@@ -71,6 +73,8 @@ class Component {
         return ComponentTextField.fromMap(map);
       case ComponentType.datePicker:
         return ComponentDatePicker.fromMap(map);
+      case ComponentType.timeField:
+        return ComponentTimeField.fromMap(map);
       case ComponentType.checkbox:
         return ComponentCheckbox.fromMap(map);
       case ComponentType.dropdown:
@@ -121,6 +125,8 @@ class Component {
         return ComponentTextField.empty(Component._generateId(type));
       case ComponentType.datePicker:
         return ComponentDatePicker.empty(Component._generateId(type));
+      case ComponentType.timeField:
+        return ComponentTimeField.empty(Component._generateId(type));
       case ComponentType.checkbox:
         return ComponentCheckbox.empty(Component._generateId(type));
       case ComponentType.dropdown:
@@ -227,6 +233,7 @@ class Component {
     if (comp is ComponentTextField) return comp.label;
     if (comp is ComponentNumberField) return comp.label;
     if (comp is ComponentDatePicker) return comp.label;
+    if (comp is ComponentTimeField) return comp.label;
     if (comp is ComponentCheckbox) return comp.label;
     if (comp is ComponentDropdown) return comp.label;
     if (comp is ComponentRadio) return comp.label;
@@ -244,6 +251,7 @@ class ComponentType {
   static const String text = 'text';
   static const String textField = 'text_field';
   static const String datePicker = 'date_picker';
+  static const String timeField = 'time_field';
   static const String checkbox = 'checkbox';
   static const String dropdown = 'dropdown';
   static const String radio = 'radio';
@@ -263,6 +271,7 @@ class ComponentType {
     ComponentTypeEntry(id: text, label: 'Text'),
     ComponentTypeEntry(id: textField, label: 'Text Field'),
     ComponentTypeEntry(id: datePicker, label: 'Date Picker'),
+    ComponentTypeEntry(id: timeField, label: 'Time Field'),
     ComponentTypeEntry(id: checkbox, label: 'Checkbox'),
     ComponentTypeEntry(id: dropdown, label: 'Dropdown'),
     ComponentTypeEntry(id: radio, label: 'Radio'),

@@ -17,6 +17,7 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_s
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_image.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_divider.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_icon_button.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_time_field.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
@@ -73,6 +74,8 @@ extension ComponentWidget on Component {
       return (this as ComponentImage).toWidget(fullData);
     } else if (this.type == ComponentDivider.componentId) {
       return (this as ComponentDivider).toWidget(fullData);
+    } else if (this.type == ComponentTimeField.componentId) {
+      return (this as ComponentTimeField).toWidget(fullData);
     }
     return NoCodeError('Unknown component type: ${this.type}');
   }
@@ -112,6 +115,8 @@ extension ComponentWidget on Component {
       return (this as ComponentImage).toMockWidget();
     } else if (this.type == ComponentDivider.componentId) {
       return (this as ComponentDivider).toMockWidget();
+    } else if (this.type == ComponentTimeField.componentId) {
+      return (this as ComponentTimeField).toMockWidget();
     }
     return Text('Mock Widget: $type');
   }
