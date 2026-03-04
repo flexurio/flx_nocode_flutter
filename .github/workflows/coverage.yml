@@ -26,8 +26,9 @@ jobs:
 
       - name: Resolve internal dependencies
         run: |
-          mkdir -p ../
-          ln -s $GITHUB_WORKSPACE/packages/flx_core_flutter ../flx_core_flutter
+          # Use sed to remove the core path override so it falls back to the git dependency in CI
+          # We search for the exact lines in the dependency_overrides section
+          sed -i '/flx_core_flutter:/,+1d' pubspec.yaml
 
       - name: Install dependencies
         run: make get
