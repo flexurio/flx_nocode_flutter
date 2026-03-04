@@ -6,87 +6,44 @@ import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'js_eval.dart';
 
+/// Extension to provide JS interpolation and visibility evaluation on strings.
 extension StringJsInterpolationExtension on String {
   /// Replaces all `{{ ... }}` expressions with evaluated JavaScript.
   ///
-  /// - Each call builds an isolated JS scope using an IIFE:
-  ///   `(function(){ ... return <expr>; })()`
-  /// - [variables] are injected as `const` values inside that scope.
-  /// - Helper `now(format)` and numeric helpers are available.
-  static const bool enableLog = false;
-
-  Map<String, dynamic> _prepareVariables([Map<String, dynamic>? variables]) {
-    Configuration? config;
-    try {
-      config = Configuration.instance;
-    } catch (_) {}
-
-    UserRepositoryApp? userRepo;
-    try {
-      userRepo = UserRepositoryApp.instance;
-    } catch (_) {}
-
-    final allVars = <String, dynamic>{
-      // 1. Load context variables (form, record, etc.)
-      if (variables != null) ...{
-        ...variables,
-        if (!variables.containsKey('form'))
-          'form': variables['form'] ?? variables,
-        if (!variables.containsKey('record'))
-          'record': variables['record'] ?? variables['data'] ?? variables,
-        if (!variables.containsKey('vars')) 'vars': variables['vars'] ?? {},
-        if (!variables.containsKey('data'))
-          'data': variables['data'] ?? variables,
-        if (!variables.containsKey('current'))
-          'current': variables['current'] ?? variables['data'] ?? variables,
-        if (!variables.containsKey('http')) 'http': variables['http'] ?? {},
-      },
-
-      // 2. Load custom global variables from config
-      if (config != null)
-        for (final v in config.variables) v.key: v.value,
-
-      // 3. System variables (Highest priority, cannot be overwritten by record data)
-      'auth_token': userRepo?.token ?? '',
-      'user_id': userRepo?.userApp?.id?.toString() ?? '',
-      'backend_host': config?.backendHost ?? '',
-    };
-
-    if (enableLog) {
-      debugPrint('  [JS Interpolation] userRepo.userApp: ${userRepo?.userApp}');
-      debugPrint(
-          '  [JS Interpolation] userRepo.userApp.id: ${userRepo?.userApp?.id}');
-      debugPrint('  [JS Interpolation] Final Variables Map:');
-      allVars.forEach((k, v) {
-        if (k == 'auth_token') {
-          debugPrint(
-              '    - $k: ${v.toString().substring(0, v.toString().length > 10 ? 10 : v.toString().length)}...');
-        } else {
-          debugPrint('    - $k: $v');
-        }
-      });
-    }
-
-    return allVars;
+  /// - Each call builds an isolated JS scope using an IIFE.
+  /// - Variables are injected as `const` values inside that scope.
+  /// - Helper functions like `now(format)` and numeric helpers are available.
+  String interpolateJavascript([Map<String, dynamic>? variables]) {
+    return _JsInterpolationProcessor().interpolate(this, variables);
   }
 
-  String interpolateJavascript([Map<String, dynamic>? variables]) {
-    final regex = RegExp(r'\{\{\s*((?:(?!\}\}).)*)\s*\}\}', dotAll: true);
-    if (!contains(regex)) return this;
+  /// Evaluates the string as a JavaScript boolean expression.
+  /// If the string is empty, returns true.
+  /// If the string is wrapped in `{{ ... }}`, it strips them before evaluation.
+  bool evaluateVisibility([Map<String, dynamic>? variables]) {
+    return _JsInterpolationProcessor().evaluateBoolean(this, variables);
+  }
+}
 
-    final allVars = _prepareVariables(variables);
+/// Internal processor for JavaScript interpolation and evaluation.
+class _JsInterpolationProcessor {
+  static const bool enableLog = false;
+  final _variableProvider = _JsVariableProvider();
+  final _shortcutEvaluator = _JsShortcutEvaluator();
+  final _scriptBuilder = _JsScriptBuilder();
+
+  /// Interpolates `{{ ... }}` blocks in [text] with evaluated values.
+  String interpolate(String text, [Map<String, dynamic>? variables]) {
+    final regex = RegExp(r'\{\{\s*((?:(?!\}\}).)*)\s*\}\}', dotAll: true);
+    if (!text.contains(regex)) return text;
+
+    final allVars = _variableProvider.prepare(variables);
 
     if (enableLog) {
-      const encoder = JsonEncoder.withIndent('  ');
-      try {
-        debugPrint(
-            '  [JS Interpolation] Variables:\n${encoder.convert(allVars)}');
-      } catch (_) {
-        debugPrint('  [JS Interpolation] Variables: $allVars');
-      }
+      _logVariables(allVars);
     }
 
-    return replaceAllMapped(regex, (match) {
+    return text.replaceAllMapped(regex, (match) {
       final expr = match.group(1)?.trim();
       if (expr == null || expr.isEmpty) return '';
 
@@ -94,143 +51,22 @@ extension StringJsInterpolationExtension on String {
         debugPrint('  [JS Interpolation] Evaluating: {{ $expr }}');
       }
 
-      // Simple fallback for direct variable or path access (e.g. {{backend_host}}, {{form.email}})
-      // This handles the majority of cases without needing JS evaluation.
-      // Special support for JSON.stringify wrapper used by the workflow system.
-      String targetExpr = expr;
-      bool isJsonWrapper = false;
-      if (targetExpr.startsWith('JSON.stringify(') &&
-          targetExpr.endsWith(')')) {
-        targetExpr = targetExpr
-            .substring('JSON.stringify('.length, targetExpr.length - 1)
-            .trim();
-        isJsonWrapper = true;
+      final info = _ExpressionInfo.parse(expr);
+
+      // Try shortcut evaluation (faster, handles common cases)
+      final shortcutResult =
+          _shortcutEvaluator.tryEvaluate(info.targetExpr, allVars);
+      if (shortcutResult.success) {
+        return info.wrapResult(shortcutResult.value);
       }
 
-      // Check for simple expressions (e.g. {{ a + " " + b }}) or new Date(...)
-      dynamic resolvedValue;
-      bool foundByShortcut = false;
-
-      // 1. Check for simple path (old logic)
-      if (!targetExpr.contains('+') &&
-          !targetExpr.contains('(') &&
-          !targetExpr.contains('"') &&
-          !targetExpr.contains("'")) {
-        final parts = targetExpr.split('.');
-        dynamic current = allVars;
-        bool found = true;
-        for (final part in parts) {
-          if (current is Map && current.containsKey(part)) {
-            current = current[part];
-          } else if (part == 'length' &&
-              (current is List || current is String)) {
-            current = current.length;
-          } else {
-            found = false;
-            break;
-          }
-        }
-        if (found) {
-          resolvedValue = current;
-          foundByShortcut = true;
-        }
-      }
-
-      // 2. Check for string concatenation (e.g. date + "T" + time)
-      if (!foundByShortcut &&
-          targetExpr.contains('+') &&
-          !targetExpr.contains('(')) {
-        final parts = targetExpr.split('+').map((e) => e.trim()).toList();
-        String result = '';
-        bool allPartsResolved = true;
-        for (final part in parts) {
-          if ((part.startsWith('"') && part.endsWith('"')) ||
-              (part.startsWith("'") && part.endsWith("'"))) {
-            result += part.substring(1, part.length - 1);
-          } else {
-            // resolve variable
-            final val = _resolveSimplePath(part, allVars);
-            if (val != null) {
-              result += val.toString();
-            } else {
-              allPartsResolved = false;
-              break;
-            }
-          }
-        }
-        if (allPartsResolved) {
-          resolvedValue = result;
-          foundByShortcut = true;
-        }
-      }
-
-      // 3. Special case: {{ new Date(date + "T" + time).toISOString() }}
-      if (!foundByShortcut &&
-          targetExpr.startsWith('new Date(') &&
-          targetExpr.endsWith(').toISOString()')) {
-        final inner = targetExpr
-            .substring('new Date('.length,
-                targetExpr.length - ').toISOString()'.length)
-            .trim();
-
-        // Use our concatenation logic for the inner part
-        String? resolvedInner;
-        if ((inner.startsWith('"') && inner.endsWith('"')) ||
-            (inner.startsWith("'") && inner.endsWith("'"))) {
-          resolvedInner = inner.substring(1, inner.length - 1);
-        } else if (inner.contains('+')) {
-          final parts = inner.split('+').map((e) => e.trim()).toList();
-          String res = '';
-          bool allOk = true;
-          for (final p in parts) {
-            if ((p.startsWith('"') && p.endsWith('"')) ||
-                (p.startsWith("'") && p.endsWith("'"))) {
-              res += p.substring(1, p.length - 1);
-            } else {
-              final v = _resolveSimplePath(p, allVars);
-              if (v != null)
-                res += v.toString();
-              else {
-                allOk = false;
-                break;
-              }
-            }
-          }
-          if (allOk) resolvedInner = res;
-        } else {
-          resolvedInner = _resolveSimplePath(inner, allVars)?.toString();
-        }
-
-        if (resolvedInner != null) {
-          try {
-            final dt = DateTime.parse(resolvedInner);
-            resolvedValue = dt.toUtc().toIso8601String();
-            foundByShortcut = true;
-          } catch (_) {}
-        }
-      }
-
-      if (foundByShortcut) {
-        if (isJsonWrapper) {
-          try {
-            return jsonEncode(resolvedValue);
-          } catch (_) {}
-        } else {
-          if (resolvedValue == null) return '';
-          if (resolvedValue is String ||
-              resolvedValue is num ||
-              resolvedValue is bool) {
-            return resolvedValue.toString();
-          }
-        }
-      }
-
+      // Fallback to full JS evaluation
       try {
-        final script = _buildJsScript(expr, allVars);
+        final script = _scriptBuilder.build(info.targetExpr, allVars);
         final value = evalJs(script);
 
         if (value == 'undefined' || value == 'null') {
-          return isJsonWrapper ? value : '';
+          return info.isJsonWrapper ? value : '';
         }
         return value;
       } catch (e) {
@@ -246,22 +82,23 @@ extension StringJsInterpolationExtension on String {
     });
   }
 
-  /// Evaluates the string as a JavaScript boolean expression.
-  /// If the string is empty, returns true.
-  /// If the string is wrapped in `{{ ... }}`, it strips them before evaluation.
-  bool evaluateVisibility([Map<String, dynamic>? variables]) {
-    final condition = trim();
-    if (condition.isEmpty) return true;
+  /// Evaluates [condition] as a boolean JS expression.
+  bool evaluateBoolean(String condition, [Map<String, dynamic>? variables]) {
+    final sanitizedCondition = condition.trim();
+    if (sanitizedCondition.isEmpty) return true;
 
     try {
-      final allVars = _prepareVariables(variables);
+      final allVars = _variableProvider.prepare(variables);
 
-      String expr = condition;
-      if (condition.startsWith('{{') && condition.endsWith('}}')) {
-        expr = condition.substring(2, condition.length - 2).trim();
+      String expr = sanitizedCondition;
+      if (sanitizedCondition.startsWith('{{') &&
+          sanitizedCondition.endsWith('}}')) {
+        expr = sanitizedCondition
+            .substring(2, sanitizedCondition.length - 2)
+            .trim();
       }
 
-      final script = _buildJsScript(expr, allVars);
+      final script = _scriptBuilder.build(expr, allVars);
       final value = evalJs(script).toLowerCase();
       return value == 'true';
     } catch (e) {
@@ -273,140 +110,300 @@ extension StringJsInterpolationExtension on String {
     }
   }
 
-  /// Builds a self-contained JS snippet:
-  /// (function() {
-  ///   // helpers
-  ///   // injected vars
-  ///   return <expr>;
-  /// })()
-  String _buildJsScript(
-    String expr,
-    Map<String, dynamic> variables,
-  ) {
-    final buffer = StringBuffer();
+  void _logVariables(Map<String, dynamic> vars) {
+    const encoder = JsonEncoder.withIndent('  ');
+    try {
+      debugPrint('  [JS Interpolation] Variables:\n${encoder.convert(vars)}');
+    } catch (_) {
+      debugPrint('  [JS Interpolation] Variables: $vars');
+    }
+  }
+}
 
+/// Information about an expression, including whether it's wrapped in JSON.stringify.
+class _ExpressionInfo {
+  final String targetExpr;
+  final bool isJsonWrapper;
+
+  _ExpressionInfo(this.targetExpr, this.isJsonWrapper);
+
+  factory _ExpressionInfo.parse(String expr) {
+    if (expr.startsWith('JSON.stringify(') && expr.endsWith(')')) {
+      final inner =
+          expr.substring('JSON.stringify('.length, expr.length - 1).trim();
+      return _ExpressionInfo(inner, true);
+    }
+    return _ExpressionInfo(expr, false);
+  }
+
+  String wrapResult(dynamic value) {
+    if (isJsonWrapper) {
+      try {
+        return jsonEncode(value);
+      } catch (_) {
+        return 'null';
+      }
+    }
+    if (value == null) return '';
+    if (value is String || value is num || value is bool) {
+      return value.toString();
+    }
+    return value.toString();
+  }
+}
+
+/// Provides variables from context, configuration, and system state.
+class _JsVariableProvider {
+  Map<String, dynamic> prepare([Map<String, dynamic>? variables]) {
+    Configuration? config;
+    try {
+      config = Configuration.instance;
+    } catch (_) {}
+
+    UserRepositoryApp? userRepo;
+    try {
+      userRepo = UserRepositoryApp.instance;
+    } catch (_) {}
+
+    final allVars = <String, dynamic>{
+      // 1. Context variables
+      if (variables != null) ...{
+        ...variables,
+        if (!variables.containsKey('form'))
+          'form': variables['form'] ?? variables,
+        if (!variables.containsKey('record'))
+          'record': variables['record'] ?? variables['data'] ?? variables,
+        if (!variables.containsKey('vars')) 'vars': variables['vars'] ?? {},
+        if (!variables.containsKey('data'))
+          'data': variables['data'] ?? variables,
+        if (!variables.containsKey('current'))
+          'current': variables['current'] ?? variables['data'] ?? variables,
+        if (!variables.containsKey('http')) 'http': variables['http'] ?? {},
+      },
+
+      // 2. Custom global variables
+      if (config != null)
+        for (final v in config.variables) v.key: v.value,
+
+      // 3. System variables
+      'auth_token': userRepo?.token ?? '',
+      'user_id': userRepo?.userApp?.id?.toString() ?? '',
+      'backend_host': config?.backendHost ?? '',
+    };
+
+    return allVars;
+  }
+}
+
+/// Result of a shortcut evaluation attempt.
+class _EvaluationResult {
+  final dynamic value;
+  final bool success;
+  _EvaluationResult.success(this.value) : success = true;
+  _EvaluationResult.failure()
+      : value = null,
+        success = false;
+}
+
+/// Evaluates common simple patterns without needing the full JS engine.
+class _JsShortcutEvaluator {
+  _EvaluationResult tryEvaluate(String expr, Map<String, dynamic> variables) {
+    // 1. Simple path access
+    if (_isSimplePath(expr)) {
+      final val = _resolvePath(expr, variables);
+      // We check for null specifically because it could be a valid resolved value (or part of 'null' string)
+      if (val != null || expr == 'null') return _EvaluationResult.success(val);
+    }
+
+    // 2. String concatenation
+    if (_isConcatenation(expr)) {
+      final val = _resolveConcatenation(expr, variables);
+      if (val != null) return _EvaluationResult.success(val);
+    }
+
+    // 3. Date ISO string
+    if (expr.startsWith('new Date(') && expr.endsWith(').toISOString()')) {
+      final val = _resolveDateToIso(expr, variables);
+      if (val != null) return _EvaluationResult.success(val);
+    }
+
+    return _EvaluationResult.failure();
+  }
+
+  bool _isSimplePath(String expr) {
+    return !expr.contains('+') &&
+        !expr.contains('(') &&
+        !expr.contains('"') &&
+        !expr.contains("'");
+  }
+
+  bool _isConcatenation(String expr) {
+    return expr.contains('+') && !expr.contains('(');
+  }
+
+  dynamic _resolvePath(String path, Map<String, dynamic> vars) {
+    if (path == 'null') return null;
+    final parts = path.split('.');
+    dynamic current = vars;
+    for (final part in parts) {
+      if (current is Map && current.containsKey(part)) {
+        current = current[part];
+      } else if (part == 'length' && (current is List || current is String)) {
+        current = current.length;
+      } else {
+        return null;
+      }
+    }
+    return current;
+  }
+
+  String? _resolveConcatenation(String expr, Map<String, dynamic> vars) {
+    final parts = expr.split('+').map((e) => e.trim()).toList();
+    String result = '';
+    for (final part in parts) {
+      if ((part.startsWith('"') && part.endsWith('"')) ||
+          (part.startsWith("'") && part.endsWith("'"))) {
+        result += part.substring(1, part.length - 1);
+      } else {
+        final val = _resolvePath(part, vars);
+        if (val == null) return null;
+        result += val.toString();
+      }
+    }
+    return result;
+  }
+
+  String? _resolveDateToIso(String expr, Map<String, dynamic> vars) {
+    final inner = expr
+        .substring('new Date('.length, expr.length - ').toISOString()'.length)
+        .trim();
+    String? resolvedInner;
+    if ((inner.startsWith('"') && inner.endsWith('"')) ||
+        (inner.startsWith("'") && inner.endsWith("'"))) {
+      resolvedInner = inner.substring(1, inner.length - 1);
+    } else if (_isConcatenation(inner)) {
+      resolvedInner = _resolveConcatenation(inner, vars);
+    } else {
+      resolvedInner = _resolvePath(inner, vars)?.toString();
+    }
+
+    if (resolvedInner != null) {
+      try {
+        final dt = DateTime.parse(resolvedInner);
+        return dt.toUtc().toIso8601String();
+      } catch (_) {}
+    }
+    return null;
+  }
+}
+
+/// Builds the JS script containing helper functions and injected variables.
+class _JsScriptBuilder {
+  String build(String expr, Map<String, dynamic> variables) {
+    final buffer = StringBuffer();
     buffer.writeln('(function(){');
 
-    // Helpers
-    buffer.writeln('function pad(n){return n<10?"0"+n:n;}');
+    _appendHelpers(buffer);
+    _appendVariables(buffer, variables);
 
-    buffer.writeln('const MONTH_NAMES=['
+    buffer.writeln('return $expr;');
+    buffer.write('})()');
+    return buffer.toString();
+  }
+
+  void _appendHelpers(StringBuffer buffer) {
+    buffer.writeln('  function pad(n){return n<10?"0"+n:n;}');
+
+    buffer.writeln('  const MONTH_NAMES=['
         '"January","February","March","April","May","June",'
         '"July","August","September","October","November","December"];');
 
-    buffer.writeln('const MONTH_NAMES_SHORT=['
+    buffer.writeln('  const MONTH_NAMES_SHORT=['
         '"Jan","Feb","Mar","Apr","May","Jun",'
         '"Jul","Aug","Sep","Oct","Nov","Dec"];');
 
-    buffer.writeln('function formatDate(date,fmt){'
-        'var f = fmt || "yyyy-MM-dd HH:mm:ss";'
-        'return f'
-        '.replace("yyyy",date.getFullYear())'
-        '.replace("YYYY",date.getFullYear())'
-        '.replace("MMMM",MONTH_NAMES[date.getMonth()])'
-        '.replace("MMM",MONTH_NAMES_SHORT[date.getMonth()])'
-        '.replace("MM",pad(date.getMonth()+1))'
-        '.replace("dd",pad(date.getDate()))'
-        '.replace("DD",pad(date.getDate()))'
-        '.replace("HH",pad(date.getHours()))'
-        '.replace("mm",pad(date.getMinutes()))'
-        '.replace("ss",pad(date.getSeconds()));'
-        '}');
+    buffer.writeln('  function formatDate(date,fmt){'
+        '    var f = fmt || "yyyy-MM-dd HH:mm:ss";'
+        '    return f'
+        '      .replace("yyyy",date.getFullYear())'
+        '      .replace("YYYY",date.getFullYear())'
+        '      .replace("MMMM",MONTH_NAMES[date.getMonth()])'
+        '      .replace("MMM",MONTH_NAMES_SHORT[date.getMonth()])'
+        '      .replace("MM",pad(date.getMonth()+1))'
+        '      .replace("dd",pad(date.getDate()))'
+        '      .replace("DD",pad(date.getDate()))'
+        '      .replace("HH",pad(date.getHours()))'
+        '      .replace("mm",pad(date.getMinutes()))'
+        '      .replace("ss",pad(date.getSeconds()));'
+        '  }');
 
-    buffer.writeln('function now(fmt){'
-        'var d=new Date();'
-        'return formatDate(d,fmt);'
-        '}');
+    buffer.writeln('  function now(fmt){'
+        '    var d=new Date();'
+        '    return formatDate(d,fmt);'
+        '  }');
 
-    // Numeric helpers
-    buffer.writeln('function toNumber(v){'
-        'var n=Number(v);'
-        'return isNaN(n)?0:n;'
-        '}');
+    buffer.writeln('  function toNumber(v){'
+        '    var n=Number(v);'
+        '    return isNaN(n)?0:n;'
+        '  }');
 
-    buffer.writeln('function abs(v){return Math.abs(toNumber(v));}');
+    buffer.writeln('  function abs(v){return Math.abs(toNumber(v));}');
 
-    buffer.writeln('function length(v){'
-        'if(Array.isArray(v)||typeof v==="string") return v.length;'
-        'if(v && typeof v==="object") return Object.keys(v).length;'
-        'return 0;'
-        '}');
+    buffer.writeln('  function length(v){'
+        '    if(Array.isArray(v)||typeof v==="string") return v.length;'
+        '    if(v && typeof v==="object") return Object.keys(v).length;'
+        '    return 0;'
+        '  }');
 
-    buffer.writeln('function contains(container,value){'
-        'if(container===null||container===undefined) return false;'
-        'if(Array.isArray(container)) return container.includes(value);'
-        'if(typeof container==="string") return container.includes(String(value));'
-        'if(typeof container==="object") '
-        'return Object.values(container).some(function(v){return v===value;});'
-        'return false;'
-        '}');
+    buffer.writeln('  function contains(container,value){'
+        '    if(container===null||container===undefined) return false;'
+        '    if(Array.isArray(container)) return container.includes(value);'
+        '    if(typeof container==="string") return container.includes(String(value));'
+        '    if(typeof container==="object") '
+        '      return Object.values(container).some(function(v){return v===value;});'
+        '    return false;'
+        '  }');
 
-    buffer.writeln('function sum(list,formula){'
-        'if(!Array.isArray(list)) return 0;'
-        'if(!formula){'
-        'return list.reduce(function(acc,v){return acc+toNumber(v);},0);'
-        '}'
-        'var expr=String(formula).replace(/\\s+/g,"");'
-        'var parts=expr.split("*");'
-        'if(parts.length!==2) return 0;'
-        'return list.reduce(function(acc,item){'
-        'if(!item||typeof item!=="object") return acc;'
-        'var a=toNumber(item[parts[0]]);'
-        'var b=toNumber(item[parts[1]]);'
-        'return acc+(a*b);'
-        '},0);'
-        '}');
+    buffer.writeln('  function sum(list,formula){'
+        '    if(!Array.isArray(list)) return 0;'
+        '    if(!formula){'
+        '      return list.reduce(function(acc,v){return acc+toNumber(v);},0);'
+        '    }'
+        '    var expr=String(formula).replace(/\\s+/g,"");'
+        '    var parts=expr.split("*");'
+        '    if(parts.length!==2) return 0;'
+        '    return list.reduce(function(acc,item){'
+        '      if(!item||typeof item!=="object") return acc;'
+        '      var a=toNumber(item[parts[0]]);'
+        '      var b=toNumber(item[parts[1]]);'
+        '      return acc+(a*b);'
+        '    },0);'
+        '  }');
+  }
 
-    dynamic sanitize(dynamic value) {
-      if (value == null || value is num || value is bool || value is String) {
-        return value;
-      }
-      if (value is Map) {
-        final result = <String, dynamic>{};
-        value.forEach((k, v) {
-          result[k.toString()] = sanitize(v);
-        });
-        return result;
-      }
-      if (value is List) {
-        return value.map(sanitize).toList();
-      }
-      return null; // Skip non-JSON-encodable types like Controllers
-    }
-
-    // Inject variables as const (local to this IIFE)
+  void _appendVariables(StringBuffer buffer, Map<String, dynamic> variables) {
     variables.forEach((key, value) {
-      // Ensure key is a valid JS identifier
       final safeKey = key.replaceAll(RegExp(r'[^a-zA-Z0-9_$]'), '_');
       if (safeKey.isEmpty) return;
 
       try {
-        final sanitized = sanitize(value);
+        final sanitized = _sanitize(value);
         final jsonValue = jsonEncode(sanitized);
-        buffer.writeln('const $safeKey = $jsonValue;');
-      } catch (e) {
-        if (enableLog) {
-          debugPrint('Skipping variable "$key": $e');
-        }
-      }
+        buffer.writeln('  const $safeKey = $jsonValue;');
+      } catch (_) {}
     });
-
-    buffer.writeln('return $expr;');
-    buffer.write('})()');
-
-    return buffer.toString();
   }
-}
 
-dynamic _resolveSimplePath(String path, Map<String, dynamic> vars) {
-  final parts = path.split('.');
-  dynamic current = vars;
-  for (final part in parts) {
-    if (current is Map && current.containsKey(part)) {
-      current = current[part];
-    } else {
-      return null;
+  dynamic _sanitize(dynamic value) {
+    if (value == null || value is num || value is bool || value is String) {
+      return value;
     }
+    if (value is Map) {
+      return value.map((k, v) => MapEntry(k.toString(), _sanitize(v)));
+    }
+    if (value is List) {
+      return value.map(_sanitize).toList();
+    }
+    return null; // Skip non-JSON-encodable types
   }
-  return current;
 }

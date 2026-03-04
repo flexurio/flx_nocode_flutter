@@ -75,5 +75,24 @@ void main() {
 
       expect(result, 'System: 1801008, Data: John Doe');
     });
+
+    test('evaluateVisibility should handle basic boolean expressions', () {
+      final variables = {
+        'is_visible': true,
+        'user_role': 'admin',
+      };
+
+      expect('{{ is_visible }}'.evaluateVisibility(variables), true);
+      expect('{{ user_role === "admin" }}'.evaluateVisibility(variables), true);
+      expect('{{ user_role === "user" }}'.evaluateVisibility(variables), false);
+    });
+
+    test('evaluateVisibility without braces', () {
+      final variables = {
+        'status': 'active',
+      };
+
+      expect('status === "active"'.evaluateVisibility(variables), true);
+    });
   });
 }
