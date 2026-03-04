@@ -53,14 +53,21 @@ void main() {
       final exportAction = ExportAction(
         format: 'pdf',
         columns: [
-          TColumn(header: 'Col 1', body: 'Column 1'),
-          TColumn(header: 'Col 2', body: 'Column 2'),
+          TColumn(header: 'Col 1', body: '{{ Column 1 }}'),
+          TColumn(header: 'Col 2', body: '{{ Column 2 }}'),
         ],
+        dataSource: '{{ items }}',
         saveResultTo: 'my_export',
       );
 
       final ctx = WorkflowContext(
         form: {},
+        data: {
+          'items': [
+            {'Column 1': 'A', 'Column 2': 'B'},
+            {'Column 1': 'C', 'Column 2': 'D'},
+          ]
+        },
         auth: AuthContext(permissions: []),
         httpExecutor: _NoopHttpExecutor(),
       );
@@ -73,6 +80,7 @@ void main() {
       final result = ctx.vars['my_export'] as Map<String, dynamic>;
       expect(result['format'], 'pdf');
       expect(result['columns'], 2);
+      expect(result['items_count'], 2);
       expect(result['status'], 'generated');
     });
 
