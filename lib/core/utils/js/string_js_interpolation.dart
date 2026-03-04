@@ -270,7 +270,6 @@ extension StringJsInterpolationExtension on String {
       if (value is Map) {
         final result = <String, dynamic>{};
         value.forEach((k, v) {
-          if (k == 'form' || k == 'data' || k == 'current') return;
           result[k.toString()] = sanitize(v);
         });
         return result;
