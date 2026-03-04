@@ -35,7 +35,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y lcov
           make update-readme-coverage
 
-      - name: Run All Analysis
+      - name: Run All Analysis (Standard + DCM)
         run: |
           cat analysis_options_gh.yaml >> analysis_options.yaml
           make analyze-all
@@ -45,6 +45,6 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add README.md lint_report.txt
+          git add README.md lint_report.txt LINT_REPORT.md dcm_report.txt
           git commit -m "docs: update coverage and lint report [skip ci]" || echo "No changes to commit"
           git push

@@ -61,7 +61,17 @@ lint-report: ## Run flutter analyze and generate report
 	echo "Analysis complete: $$ISSUES issues found ($$COLOR)"; \
 	echo "Report saved to lint_report.txt"
 
-analyze-all: lint-report ## Run all analysis
+dcm: ## Run metrics analysis locally using dart_code_linter package
+	@echo "Running metrics analysis..."
+	@dart run dart_code_linter:metrics analyze lib > dcm_report.txt 2>&1 || true
+	@ISSUES=$$(grep -c "•" dcm_report.txt || echo 0); \
+	echo "Metrics Analysis complete: $$ISSUES issues found"; \
+	echo "Report saved to dcm_report.txt"
+
+analyze-all: lint-report dcm ## Run both standard analysis and metrics
+	@chmod +x update_lint_report.sh
+	@./update_lint_report.sh
+	@echo "All analysis complete. Check LINT_REPORT.md for summary."
 
 clean: ## Clean build artifacts
 	flutter clean

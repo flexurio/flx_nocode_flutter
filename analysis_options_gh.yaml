@@ -1,0 +1,17 @@
+# This file is used specifically for CI/GitHub Actions to run additional 
+# checks using Dart Code Metrics (DCM).
+# It extends the base analysis_options.yaml and adds DCM presets.
+
+
+dart_code_linter:
+  extends:
+    - package:dart_code_metrics_presets/all.yaml
+  metrics:
+    cyclomatic-complexity: 20
+    number-of-parameters: 4
+    maximum-nesting-level: 5
+    source-lines-of-code: 50
+  metrics-exclude:
+    - test/**
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
