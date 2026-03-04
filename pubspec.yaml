@@ -55,8 +55,8 @@ dependencies:
   widgetbook: ^3.22.0
 dependency_overrides:
   intl: ^0.20.2
-  flx_core_flutter:
-    path: ../flx_core_flutter
+  # flx_core_flutter:
+  #   path: ../flx_core_flutter
   freezed_annotation: ^3.1.0
 
 dev_dependencies:
