@@ -1,4 +1,4 @@
-.PHONY: build-macos-zip clean bld pub pub-d get test coverage analyze analyze-all update-readme-coverage
+.PHONY: build-macos-zip clean bld pub pub-d get test coverage open-coverage analyze analyze-all update-readme-coverage
 
 get: ## Get dependencies
 	flutter pub get
@@ -9,8 +9,25 @@ bld: ## Run build_runner
 test: ## Run tests
 	flutter test
 
-coverage: ## Run tests with coverage
+coverage: ## Run tests with coverage and generate report
 	flutter test --coverage
+	@if [ -f coverage/lcov.info ]; then \
+		if command -v genhtml >/dev/null 2>&1; then \
+			genhtml coverage/lcov.info -o coverage/html; \
+			echo "Coverage report generated at coverage/html/index.html"; \
+		else \
+			echo "genhtml not found. LCOV info is available at coverage/lcov.info"; \
+		fi \
+	else \
+		echo "Coverage file not generated."; exit 1; \
+	fi
+
+open-coverage: ## Open the code coverage report in the browser
+	@if [ -f coverage/html/index.html ]; then \
+		open coverage/html/index.html; \
+	else \
+		echo "Coverage report not found. Run 'make coverage' first."; \
+	fi
 
 update-readme-coverage: ## Update coverage badge in README
 	@if [ -f coverage/lcov.info ]; then \
