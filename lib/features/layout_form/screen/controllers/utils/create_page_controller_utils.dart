@@ -22,6 +22,7 @@ class CreatePageControllerUtils {
       final initialValue = switch (component) {
         ComponentTextField c => c.initialValue,
         ComponentDatePicker c => c.initialValue,
+        ComponentTimeField c => c.initialValue,
         ComponentNumberField c => c.initialValue,
         ComponentDropdown c => c.initialValue,
         _ => null,

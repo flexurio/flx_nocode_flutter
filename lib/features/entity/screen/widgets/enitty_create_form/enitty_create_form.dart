@@ -60,6 +60,8 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
         _collectComponentIds(c.children, ids);
       } else if (c is ComponentRow) {
         _collectComponentIds(c.children, ids);
+      } else if (c is ComponentContainer && c.child != null) {
+        _collectComponentIds([c.child!], ids);
       }
     }
   }
