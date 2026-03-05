@@ -29,8 +29,18 @@ extension ComponentContainerWidgets on ComponentContainer {
     return Container(
       width: effectiveWidth,
       height: effectiveHeight,
-      padding: padding != null ? EdgeInsets.all(padding!) : null,
-      margin: margin != null ? EdgeInsets.all(margin!) : null,
+      padding: EdgeInsets.fromLTRB(
+        paddingLeft ?? padding ?? 0,
+        paddingTop ?? padding ?? 0,
+        paddingRight ?? padding ?? 0,
+        paddingBottom ?? padding ?? 0,
+      ),
+      margin: EdgeInsets.fromLTRB(
+        marginLeft ?? margin ?? 0,
+        marginTop ?? margin ?? 0,
+        marginRight ?? margin ?? 0,
+        marginBottom ?? margin ?? 0,
+      ),
       decoration: BoxDecoration(
         color: _parseColor(color),
         borderRadius:
@@ -38,7 +48,7 @@ extension ComponentContainerWidgets on ComponentContainer {
         border: (borderColor != null || borderWidth != null)
             ? Border.all(
                 color: _parseColor(borderColor) ?? Colors.transparent,
-                width: borderWidth ?? 1.0,
+                width: borderWidth ?? 0.0,
               )
             : null,
       ),

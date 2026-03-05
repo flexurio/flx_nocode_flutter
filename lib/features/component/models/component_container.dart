@@ -5,7 +5,17 @@ class ComponentContainer extends Component {
   static const String componentId = 'container';
 
   final double? padding;
+  final double? paddingLeft;
+  final double? paddingTop;
+  final double? paddingRight;
+  final double? paddingBottom;
+
   final double? margin;
+  final double? marginLeft;
+  final double? marginTop;
+  final double? marginRight;
+  final double? marginBottom;
+
   final double? width;
   final double? height;
   final String? widthMode; // 'fill', 'hug', 'fixed'
@@ -21,7 +31,15 @@ class ComponentContainer extends Component {
     super.visibilityCondition,
     super.events,
     this.padding,
+    this.paddingLeft,
+    this.paddingTop,
+    this.paddingRight,
+    this.paddingBottom,
     this.margin,
+    this.marginLeft,
+    this.marginTop,
+    this.marginRight,
+    this.marginBottom,
     this.width,
     this.height,
     this.widthMode,
@@ -39,8 +57,8 @@ class ComponentContainer extends Component {
       padding: 16.0,
       color: '#FFFFFF',
       borderRadius: 8.0,
-      borderColor: '#E0E0E0',
-      borderWidth: 1.0,
+      borderColor: null,
+      borderWidth: null,
       widthMode: 'hug',
       heightMode: 'hug',
     );
@@ -74,7 +92,15 @@ class ComponentContainer extends Component {
       visibilityCondition: visibilityCondition,
       events: events,
       padding: parseDouble(map['padding']),
+      paddingLeft: parseDouble(map['paddingLeft']),
+      paddingTop: parseDouble(map['paddingTop']),
+      paddingRight: parseDouble(map['paddingRight']),
+      paddingBottom: parseDouble(map['paddingBottom']),
       margin: parseDouble(map['margin']),
+      marginLeft: parseDouble(map['marginLeft']),
+      marginTop: parseDouble(map['marginTop']),
+      marginRight: parseDouble(map['marginRight']),
+      marginBottom: parseDouble(map['marginBottom']),
       width: parseDouble(map['width']),
       height: parseDouble(map['height']),
       widthMode: map['widthMode']?.toString(),
@@ -91,7 +117,15 @@ class ComponentContainer extends Component {
   JsonMap toMap() => {
         ...super.toMap(),
         'padding': padding,
+        'paddingLeft': paddingLeft,
+        'paddingTop': paddingTop,
+        'paddingRight': paddingRight,
+        'paddingBottom': paddingBottom,
         'margin': margin,
+        'marginLeft': marginLeft,
+        'marginTop': marginTop,
+        'marginRight': marginRight,
+        'marginBottom': marginBottom,
         'width': width,
         'height': height,
         'widthMode': widthMode,
