@@ -118,6 +118,7 @@ class ExportAction implements WorkflowAction {
       }
     } else {
       print('[ExportAction] No items found to export');
+      ui.toast('error', 'No data to export');
     }
 
     // For now, save metadata or mock success

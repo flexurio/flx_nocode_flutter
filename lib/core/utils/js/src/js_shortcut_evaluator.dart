@@ -17,9 +17,8 @@ class JsShortcutEvaluator {
   EvaluationResult tryEvaluate(String expr, Map<String, dynamic> variables) {
     // 1. Simple path access
     if (_isSimplePath(expr)) {
-      final val = _resolvePath(expr, variables);
-      // We check for null specifically because it could be a valid resolved value (or part of 'null' string)
-      if (val != null || expr == 'null') return EvaluationResult.success(val);
+      final res = _tryResolvePath(expr, variables);
+      if (res.success) return res;
     }
 
     // 2. String concatenation
@@ -48,8 +47,8 @@ class JsShortcutEvaluator {
     return expr.contains('+') && !expr.contains('(');
   }
 
-  dynamic _resolvePath(String path, Map<String, dynamic> vars) {
-    if (path == 'null') return null;
+  EvaluationResult _tryResolvePath(String path, Map<String, dynamic> vars) {
+    if (path == 'null') return EvaluationResult.success(null);
     final parts = path.split('.');
     dynamic current = vars;
     for (final part in parts) {
@@ -58,10 +57,15 @@ class JsShortcutEvaluator {
       } else if (part == 'length' && (current is List || current is String)) {
         current = current.length;
       } else {
-        return null;
+        return EvaluationResult.failure();
       }
     }
-    return current;
+    return EvaluationResult.success(current);
+  }
+
+  dynamic _resolvePath(String path, Map<String, dynamic> vars) {
+    final res = _tryResolvePath(path, vars);
+    return res.success ? res.value : null;
   }
 
   String? _resolveConcatenation(String expr, Map<String, dynamic> vars) {
