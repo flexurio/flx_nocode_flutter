@@ -283,28 +283,28 @@ class WorkflowExecutor {
   });
 
   Future<WorkflowRunResult> run(WorkflowContext ctx) async {
-    print('[WorkflowExecutor] Run STARTED');
+    ui.log('🚀 Starting Workflow Run');
     try {
-      print('[WorkflowExecutor] Executing main actions...');
+      ui.log('Executing main actions...');
       await _runActions(definition.actions, ctx);
 
-      print(
-          '[WorkflowExecutor] Main actions completed. Stopped: ${ctx.stopped}');
       if (!ctx.stopped) {
-        print('[WorkflowExecutor] Executing onSuccess actions...');
-        await _runActions(definition.onSuccess, ctx);
-        print('[WorkflowExecutor] Run SUCCESS');
+        if (definition.onSuccess.isNotEmpty) {
+          ui.log('Executing onSuccess actions...');
+          await _runActions(definition.onSuccess, ctx);
+        }
+        ui.log('✅ Workflow completed successfully');
         return WorkflowRunResult.success(ctx.lastData);
       }
 
-      print('[WorkflowExecutor] Run STOPPED');
+      ui.log('⏸ Workflow stopped');
       return WorkflowRunResult.stopped();
     } on WorkflowException catch (e) {
-      print('[WorkflowExecutor] Run FAILED (WorkflowException): $e');
+      ui.log('❌ Workflow failed: ${e.message}');
       await _runOnError(ctx);
       return WorkflowRunResult.failure(e);
     } catch (e, st) {
-      print('[WorkflowExecutor] Run FAILED (Unexpected): $e\\n$st');
+      ui.log('❌ Unexpected error: $e');
       final err = WorkflowExecutionException(
         'Unexpected workflow error: $e',
         cause: e,
@@ -313,7 +313,7 @@ class WorkflowExecutor {
       await _runOnError(ctx);
       return WorkflowRunResult.failure(err);
     } finally {
-      print('[WorkflowExecutor] Run ENDED');
+      ui.log('🏁 Workflow finished');
     }
   }
 
@@ -323,12 +323,8 @@ class WorkflowExecutor {
   ) async {
     for (var i = 0; i < actions.length; i++) {
       final action = actions[i];
-      if (ctx.stopped) {
-        print('[WorkflowExecutor] Action loop stopped at index $i');
-        return;
-      }
-      print(
-          '[WorkflowExecutor] Executing Action #${i + 1} (${action.runtimeType})');
+      if (ctx.stopped) return;
+      ui.log('Executing step ${i + 1}: ${action.runtimeType}');
       await action.execute(ctx, ui);
     }
   }
@@ -350,4 +346,6 @@ class _DefaultNoopUiBridge implements UiBridge {
   Future<void> closeModal() async {}
   @override
   Future<void> refresh(String target) async {}
+  @override
+  void log(String message) {}
 }

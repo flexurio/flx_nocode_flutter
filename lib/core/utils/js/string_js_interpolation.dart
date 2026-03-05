@@ -17,6 +17,12 @@ extension StringJsInterpolationExtension on String {
     return _JsInterpolationProcessor().interpolate(this, variables);
   }
 
+  /// Similar to [interpolateJavascript], but throws if any expression fails to evaluate.
+  String interpolateJavascriptStrict([Map<String, dynamic>? variables]) {
+    return _JsInterpolationProcessor(throwOnError: true)
+        .interpolate(this, variables);
+  }
+
   /// Evaluates the string as a JavaScript boolean expression.
   /// If the string is empty, returns true.
   /// If the string is wrapped in `{{ ... }}`, it strips them before evaluation.
@@ -28,9 +34,13 @@ extension StringJsInterpolationExtension on String {
 /// Internal processor for JavaScript interpolation and evaluation.
 class _JsInterpolationProcessor {
   static const bool enableLog = false;
+  final bool throwOnError;
+
   final _variableProvider = _JsVariableProvider();
   final _shortcutEvaluator = _JsShortcutEvaluator();
   final _scriptBuilder = _JsScriptBuilder();
+
+  _JsInterpolationProcessor({this.throwOnError = false});
 
   /// Interpolates `{{ ... }}` blocks in [text] with evaluated values.
   String interpolate(String text, [Map<String, dynamic>? variables]) {
@@ -70,6 +80,8 @@ class _JsInterpolationProcessor {
         }
         return value;
       } catch (e) {
+        if (throwOnError) rethrow;
+
         if (enableLog) {
           debugPrint('  ❌ [JS Interpolation] Failed to evaluate: {{ $expr }}');
           debugPrint('     Error: $e');
@@ -288,12 +300,15 @@ class _JsShortcutEvaluator {
     }
 
     if (resolvedInner != null) {
+      if (resolvedInner.isEmpty) return "";
       try {
         final dt = DateTime.parse(resolvedInner);
         return dt.toUtc().toIso8601String();
-      } catch (_) {}
+      } catch (_) {
+        return "";
+      }
     }
-    return null;
+    return "";
   }
 }
 
@@ -312,6 +327,51 @@ class _JsScriptBuilder {
   }
 
   void _appendHelpers(StringBuffer buffer) {
+    buffer.writeln('  // Enhanced Date Support');
+    buffer.writeln('  const NativeDate = Date;');
+    buffer.writeln('  const oldIso = NativeDate.prototype.toISOString;');
+    buffer.writeln('  NativeDate.prototype.toISOString = function() {');
+    buffer.writeln('    if (isNaN(this.getTime())) return "";');
+    buffer.writeln(
+        '    try { return oldIso.call(this); } catch(e) { return ""; }');
+    buffer.writeln('  };');
+    buffer.writeln(
+        '  NativeDate.prototype.toJSON = function() { return this.toISOString(); };');
+    buffer.writeln('  ');
+    buffer.writeln('  function EnhancedDate() {');
+    buffer.writeln(
+        '    if (!(this instanceof EnhancedDate)) return NativeDate.apply(null, arguments);');
+    buffer.writeln('    var date;');
+    buffer.writeln('    if (arguments.length === 0) {');
+    buffer.writeln('      date = new NativeDate();');
+    buffer.writeln('    } else if (arguments.length === 1) {');
+    buffer.writeln('      var s = arguments[0];');
+    buffer.writeln('      date = new NativeDate(s);');
+    buffer
+        .writeln('      if (typeof s === "string" && isNaN(date.getTime())) {');
+    buffer.writeln(
+        '        var m = s.match(/([a-zA-Z]+)\\s+(\\d+),?\\s+(\\d+)/);');
+    buffer.writeln('        if (m) {');
+    buffer.writeln('          var mi = MONTH_NAMES.indexOf(m[1]);');
+    buffer.writeln(
+        '          if (mi === -1) mi = MONTH_NAMES_SHORT.indexOf(m[1]);');
+    buffer.writeln(
+        '          if (mi !== -1) date = new NativeDate(m[3], mi, m[2]);');
+    buffer.writeln('        }');
+    buffer.writeln('      }');
+    buffer.writeln('    } else {');
+    buffer.writeln('      var args = Array.prototype.slice.call(arguments);');
+    buffer.writeln(
+        '      date = new (NativeDate.bind.apply(NativeDate, [null].concat(args)))();');
+    buffer.writeln('    }');
+    buffer.writeln('    return date;');
+    buffer.writeln('  }');
+    buffer.writeln('  EnhancedDate.prototype = NativeDate.prototype;');
+    buffer.writeln('  EnhancedDate.now = NativeDate.now;');
+    buffer.writeln('  EnhancedDate.UTC = NativeDate.UTC;');
+    buffer.writeln('  EnhancedDate.parse = NativeDate.parse;');
+    buffer.writeln('  var Date = EnhancedDate;');
+
     buffer.writeln('  function pad(n){return n<10?"0"+n:n;}');
 
     buffer.writeln('  const MONTH_NAMES=['
@@ -323,6 +383,7 @@ class _JsScriptBuilder {
         '"Jul","Aug","Sep","Oct","Nov","Dec"];');
 
     buffer.writeln('  function formatDate(date,fmt){'
+        '    if(!date || isNaN(date.getTime())) return "";'
         '    var f = fmt || "yyyy-MM-dd HH:mm:ss";'
         '    return f'
         '      .replace("yyyy",date.getFullYear())'

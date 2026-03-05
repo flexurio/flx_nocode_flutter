@@ -153,6 +153,7 @@ abstract class UiBridge {
   Future<void> toast(String variant, String message);
   Future<void> closeModal();
   Future<void> refresh(String target);
+  void log(String message);
 }
 
 class NoopUiBridge implements UiBridge {
@@ -164,6 +165,9 @@ class NoopUiBridge implements UiBridge {
 
   @override
   Future<void> refresh(String target) async {}
+
+  @override
+  void log(String message) {}
 }
 
 /// ============================================================================
@@ -202,13 +206,22 @@ class Template {
 
   static String _interpolateInline(String template, WorkflowContext ctx) {
     final scope = _WorkflowScopeBuilder.build(ctx);
-    final interpolated = template.interpolateJavascript(scope);
-    if (_looksUnresolved(interpolated)) {
+    try {
+      final interpolated = template.interpolateJavascriptStrict(scope);
+      if (_looksUnresolved(interpolated)) {
+        throw WorkflowInterpolationException(
+          'Unable to resolve expressions inside "$template".',
+        );
+      }
+      return interpolated;
+    } catch (e) {
+      if (e is WorkflowInterpolationException) rethrow;
+
       throw WorkflowInterpolationException(
-        'Unable to resolve expressions inside "$template".',
+        'Unable to resolve expressions inside "$template": $e',
+        cause: e,
       );
     }
-    return interpolated;
   }
 
   static bool _looksUnresolved(String value) {
@@ -371,28 +384,25 @@ class _JsEvaluator {
     final scope = _WorkflowScopeBuilder.build(ctx);
     final wrappedExpr = 'JSON.stringify($expr)';
     final template = '{{ $wrappedExpr }}';
-    final interpolated = template.interpolateJavascript(scope);
-
-    if (interpolated == template) return null;
-    if (_looksUnresolved(interpolated)) {
-      throw WorkflowInterpolationException(
-        'Unable to resolve expression "$expr".',
-      );
-    }
-
-    final cleaned = interpolated.trim();
-    if (cleaned.isEmpty || cleaned == 'undefined') return null;
-
     try {
+      final interpolated = template.interpolateJavascriptStrict(scope);
+
+      if (interpolated == template) return null;
+      if (_looksUnresolved(interpolated)) {
+        throw WorkflowInterpolationException(
+          'Unable to resolve expression "$expr".',
+        );
+      }
+
+      final cleaned = interpolated.trim();
+      if (cleaned.isEmpty || cleaned == 'undefined') return null;
+
       return jsonDecode(cleaned);
-    } catch (_) {
-      final lower = cleaned.toLowerCase();
-      if (lower == 'null') return null;
-      if (lower == 'true') return true;
-      if (lower == 'false') return false;
-      final n = num.tryParse(cleaned);
-      if (n != null) return n;
-      return cleaned;
+    } catch (e) {
+      if (e is WorkflowException) rethrow;
+      throw WorkflowInterpolationException(
+        'Unable to resolve expression "$expr": $e',
+      );
     }
   }
 

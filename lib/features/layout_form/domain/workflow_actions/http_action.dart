@@ -54,10 +54,13 @@ class HttpAction implements WorkflowAction {
           mockData: Template.resolve(http.mockData, ctx),
         );
 
-        print('[HttpAction] Executing "$actionLabel":');
-        print('  > Method: ${resolved.method}');
-        print('  > URL: ${resolved.url}');
-        print('  > Body: ${resolved.body}');
+        ui.log('Executing "$actionLabel":');
+        ui.log('  > Method: ${resolved.method}');
+        ui.log('  > URL: ${resolved.url}');
+        // Only log body if not empty
+        if (resolved.body.isNotEmpty) {
+          ui.log('  > Body: ${resolved.body}');
+        }
 
         if (resolved.url.isEmpty) {
           throw WorkflowExecutionException(
@@ -83,7 +86,7 @@ class HttpAction implements WorkflowAction {
         ctx.lastData = result.data;
         return;
       } catch (e) {
-        print('[HttpAction] Attempt ${attempt + 1} failed: $e');
+        ui.log('⚠️ Attempt ${attempt + 1} failed: $e');
         attempt++;
         if (retry == null || attempt > retry!.max) {
           if (e is WorkflowException) rethrow;
@@ -92,7 +95,7 @@ class HttpAction implements WorkflowAction {
             cause: e,
           );
         }
-        print('[HttpAction] Retrying in ${retry!.delayMs}ms...');
+        ui.log('Retrying in ${retry!.delayMs}ms...');
         await Future.delayed(Duration(milliseconds: retry!.delayMs));
       }
     }
