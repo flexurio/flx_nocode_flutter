@@ -36,7 +36,7 @@ extension ComponentDatePickerWidgets on ComponentDatePicker {
             ? (data['allControllers'] as Map<String, TextEditingController>)[id]
             : null) ??
         TextEditingController(
-          text: initialDate != null ? initialDate.yMMMMd : initialValue,
+          text: initialDate != null ? initialDate.yyyyMMddDash : initialValue,
         );
 
     return FieldDatePicker(

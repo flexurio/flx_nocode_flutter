@@ -72,7 +72,21 @@ class CreateForm extends StatelessWidget {
 
                   if (!autoBackWhenSuccess && context.mounted) {
                     Toast(context).dataChanged(controller.action, coreEntity);
-                    controller.clearForm();
+
+                    // Avoid clearing form for Export or Filter layouts as users may want to tweak and rerun
+                    final isExport = controller.layoutForm.id
+                            .toLowerCase()
+                            .contains('export') ||
+                        controller.layoutForm.label
+                            .toLowerCase()
+                            .contains('export');
+                    final isFilter = controller.layoutForm.id
+                        .toLowerCase()
+                        .contains('filter');
+
+                    if (!isExport && !isFilter) {
+                      controller.clearForm();
+                    }
                   }
 
                   entityCtrl.reset();
