@@ -2,7 +2,6 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_widget_extension.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
-import 'package:flx_nocode_flutter/src/app/view/widget/entity_create_button_old.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/filter.dart';
 import 'package:flutter/material.dart';
 

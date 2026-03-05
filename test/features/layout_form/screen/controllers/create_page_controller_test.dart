@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';

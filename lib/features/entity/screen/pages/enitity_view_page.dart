@@ -4,7 +4,6 @@ import 'package:flx_nocode_flutter/features/view/screen/widgets/view.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/src/app/view/page/entity_view/widget/delete_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
