@@ -18,49 +18,26 @@ class JsScriptBuilder {
 
   void _appendHelpers(StringBuffer buffer) {
     buffer.writeln('  // Enhanced Date Support');
-    buffer.writeln('  const NativeDate = Date;');
-    buffer.writeln('  const oldIso = NativeDate.prototype.toISOString;');
-    buffer.writeln('  NativeDate.prototype.toISOString = function() {');
-    buffer.writeln('    if (isNaN(this.getTime())) return "";');
     buffer.writeln(
-        '    try { return oldIso.call(this); } catch(e) { return ""; }');
-    buffer.writeln('  };');
-    buffer.writeln(
-        '  NativeDate.prototype.toJSON = function() { return this.toISOString(); };');
-    buffer.writeln('  ');
+        '  var _NativeDate = (typeof globalThis !== "undefined" ? globalThis.Date : Date);');
     buffer.writeln('  function EnhancedDate() {');
+    buffer.writeln('    if (!_NativeDate) return null;');
     buffer.writeln(
-        '    if (!(this instanceof EnhancedDate)) return NativeDate.apply(null, arguments);');
-    buffer.writeln('    var date;');
-    buffer.writeln('    if (arguments.length === 0) {');
-    buffer.writeln('      date = new NativeDate();');
-    buffer.writeln('    } else if (arguments.length === 1) {');
-    buffer.writeln('      var s = arguments[0];');
-    buffer.writeln('      date = new NativeDate(s);');
-    buffer
-        .writeln('      if (typeof s === "string" && isNaN(date.getTime())) {');
+        '    if (!(this instanceof EnhancedDate)) return _NativeDate.apply(null, arguments);');
+    buffer.writeln('    if (arguments.length === 0) return new _NativeDate();');
     buffer.writeln(
-        '        var m = s.match(/([a-zA-Z]+)\\s+(\\d+),?\\s+(\\d+)/);');
-    buffer.writeln('        if (m) {');
-    buffer.writeln('          var mi = MONTH_NAMES.indexOf(m[1]);');
+        '    if (arguments.length === 1) return new _NativeDate(arguments[0]);');
+    buffer.writeln('    var args = Array.prototype.slice.call(arguments);');
     buffer.writeln(
-        '          if (mi === -1) mi = MONTH_NAMES_SHORT.indexOf(m[1]);');
-    buffer.writeln(
-        '          if (mi !== -1) date = new NativeDate(m[3], mi, m[2]);');
-    buffer.writeln('        }');
-    buffer.writeln('      }');
-    buffer.writeln('    } else {');
-    buffer.writeln('      var args = Array.prototype.slice.call(arguments);');
-    buffer.writeln(
-        '      date = new (NativeDate.bind.apply(NativeDate, [null].concat(args)))();');
-    buffer.writeln('    }');
-    buffer.writeln('    return date;');
+        '    return new (_NativeDate.bind.apply(_NativeDate, [null].concat(args)))();');
     buffer.writeln('  }');
-    buffer.writeln('  EnhancedDate.prototype = NativeDate.prototype;');
-    buffer.writeln('  EnhancedDate.now = NativeDate.now;');
-    buffer.writeln('  EnhancedDate.UTC = NativeDate.UTC;');
-    buffer.writeln('  EnhancedDate.parse = NativeDate.parse;');
-    buffer.writeln('  var Date = EnhancedDate;');
+    buffer.writeln('  if (_NativeDate) {');
+    buffer.writeln('    EnhancedDate.prototype = _NativeDate.prototype;');
+    buffer.writeln('    EnhancedDate.now = _NativeDate.now;');
+    buffer.writeln('    EnhancedDate.UTC = _NativeDate.UTC;');
+    buffer.writeln('    EnhancedDate.parse = _NativeDate.parse;');
+    buffer.writeln('    var Date = EnhancedDate;');
+    buffer.writeln('  }');
 
     buffer.writeln('  function pad(n){return n<10?"0"+n:n;}');
 

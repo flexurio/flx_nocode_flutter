@@ -397,7 +397,11 @@ class _JsEvaluator {
       final cleaned = interpolated.trim();
       if (cleaned.isEmpty || cleaned == 'undefined') return null;
 
-      return jsonDecode(cleaned);
+      try {
+        return jsonDecode(cleaned);
+      } catch (_) {
+        return cleaned;
+      }
     } catch (e) {
       if (e is WorkflowException) rethrow;
       throw WorkflowInterpolationException(
