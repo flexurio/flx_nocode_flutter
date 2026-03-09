@@ -5,6 +5,7 @@ class ComponentTimeField extends Component {
   final String label;
   final String initialValue;
   final bool required;
+  final bool enabled;
   final String? widthMode; // 'fill', 'hug', 'fixed'
   final double? width;
   final int? flex;
@@ -14,6 +15,7 @@ class ComponentTimeField extends Component {
     required this.label,
     required this.initialValue,
     this.required = false,
+    this.enabled = true,
     this.widthMode,
     this.width,
     this.flex,
@@ -29,6 +31,7 @@ class ComponentTimeField extends Component {
       label: 'Time Field',
       initialValue: '',
       required: false,
+      enabled: true,
       widthMode: 'fill',
     );
   }
@@ -41,12 +44,14 @@ class ComponentTimeField extends Component {
     final label = map['label']?.toString().trim() ?? 'Time Field';
     final initialValue = map['initialValue']?.toString().trim() ?? '';
     final required = map['required'] == true;
+    final enabled = map['enabled'] != false;
 
     return ComponentTimeField(
       id: id,
       label: label,
       initialValue: initialValue,
       required: required,
+      enabled: enabled,
       widthMode: map['widthMode']?.toString(),
       width: map['width'] != null
           ? double.tryParse(map['width'].toString())
@@ -63,6 +68,7 @@ class ComponentTimeField extends Component {
         'label': label,
         'initialValue': initialValue,
         'required': required,
+        'enabled': enabled,
         'widthMode': widthMode,
         'width': width,
         'flex': flex,
