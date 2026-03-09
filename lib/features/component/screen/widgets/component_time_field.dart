@@ -28,6 +28,7 @@ extension ComponentTimeFieldWidgets on ComponentTimeField {
       controller: controller,
       labelText: label,
       hintText: '00:00',
+      enabled: enabled,
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'[0-9:]')),
         TimeFormatter(),
