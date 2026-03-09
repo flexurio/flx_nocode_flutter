@@ -200,11 +200,6 @@ class ComponentDropdownController extends GetxController {
         displayedValue.value =
             options.firstWhere((o) => o['key'] == selectedValue.value);
       }
-    } else if (options.isNotEmpty && component.httpData == null) {
-      final firstKey = options.first['key'];
-      selectedValue.value = firstKey;
-      displayedValue.value = options.first;
-      _updateTargetController(firstKey);
     }
   }
 
