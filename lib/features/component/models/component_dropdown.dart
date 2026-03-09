@@ -63,7 +63,7 @@ class ComponentDropdown extends Component {
       for (final o in rawOptions) {
         if (o == null) continue;
         final value = o.toString().trim();
-        if (value.isNotEmpty) options.add(value);
+        options.add(value);
       }
     }
     if (options.isEmpty) {
