@@ -1,7 +1,7 @@
 # FLX No-Code Flutter Framework
 
-[![Coverage](https://img.shields.io/badge/coverage-0%25-red?style=for-the-badge)](coverage/lcov.info)
-[![Lints](https://img.shields.io/badge/lints-analyzing-yellow?style=for-the-badge)](analysis_options.yaml)
+[![Coverage](https://img.shields.io/badge/coverage-18.5%25-red?style=for-the-badge)](coverage/lcov.info)
+[![Lints](https://img.shields.io/badge/lints-361%20issues-red?style=for-the-badge)](analysis_options.yaml)
 
 
 A dynamic Flutter framework for building data-driven applications where the user interface and features are defined by a JSON configuration file.
