@@ -1,65 +1,78 @@
 // lib/core/utils/js/src/js_shortcut_evaluator.dart
 
-import 'package:intl/intl.dart';
+import 'js_date_helper.dart';
 
 /// Result of a shortcut evaluation attempt.
 class EvaluationResult {
+  /// The evaluated value.
   final dynamic value;
+
+  /// Whether the shortcut evaluation was successful.
   final bool success;
+
   EvaluationResult.success(this.value) : success = true;
   EvaluationResult.failure()
       : value = null,
         success = false;
 }
 
-/// Evaluates common simple patterns without needing the full JS engine.
+/// Evaluates common simple JavaScript-like patterns without needing a full JS engine.
+/// This provides a significant performance boost for simple expressions and
+/// avoids dependencies on native JS libraries in testing/CI environments.
 class JsShortcutEvaluator {
+  /// Attempts to evaluate the [expr] using simple pattern matching.
+  /// Returns [EvaluationResult.success] with the result if patterns were matched,
+  /// otherwise returns [EvaluationResult.failure].
   EvaluationResult tryEvaluate(String expr, Map<String, dynamic> variables) {
     final trimmed = expr.trim();
     if (trimmed.isEmpty) return EvaluationResult.success('');
 
-    // 1. Simple path access
+    // 1. Simple path access (e.g. "form.name") or literals (e.g. "null", "true", "'Hello'")
     if (_isSimplePath(trimmed)) {
       final res = _tryResolvePath(trimmed, variables);
       if (res.success) return res;
     }
 
-    // 2. String concatenation (simple)
+    // 2. Simple string concatenation (e.g. "'Hello ' + form.name")
     if (_isConcatenation(trimmed)) {
       final val = _resolveConcatenation(trimmed, variables);
       if (val != null) return EvaluationResult.success(val);
     }
 
-    // 3. formatDate helper
+    // 3. Date Formatting Helper (e.g. "formatDate(new Date(date), 'yyyy-MM-dd')")
     if (trimmed.startsWith('formatDate(')) {
-      final val = _resolveFormatDate(trimmed, variables);
+      final val =
+          JsDateHelper.resolveFormatDate(trimmed, variables, _resolvePath);
       if (val != null) return EvaluationResult.success(val);
     }
 
-    // 4. now helper
+    // 4. Current Time Helper (e.g. "now('HH:mm')")
     if (trimmed.startsWith('now(')) {
-      final val = _resolveNow(trimmed, variables);
+      final val = JsDateHelper.resolveNow(trimmed);
       if (val != null) return EvaluationResult.success(val);
     }
 
-    // 5. Date methods and ISO
+    // 5. Date Methods (e.g. "new Date().toISOString()" or ".getFullYear()")
     if (trimmed.startsWith('new Date(')) {
       if (trimmed.endsWith('.toISOString()')) {
-        final val = _resolveDateToIso(trimmed, variables);
+        final val =
+            JsDateHelper.resolveDateToIso(trimmed, variables, _resolvePath);
         if (val != null) return EvaluationResult.success(val);
       } else if (trimmed.endsWith('.getFullYear()')) {
-        final val = _resolveDateGetFullYear(trimmed, variables);
+        final val = JsDateHelper.resolveDateGetFullYear(
+            trimmed, variables, _resolvePath);
         if (val != null) return EvaluationResult.success(val);
       }
     }
 
-    // 6. Simple subtraction (for date difference in hours etc)
+    // 6. Date Arithmetic (e.g. time difference constants)
     if (trimmed.contains('-') && trimmed.contains('new Date(')) {
-      final val = _resolveDateMath(trimmed, variables);
+      final val =
+          JsDateHelper.resolveDateMath(trimmed, variables, _resolvePath);
       if (val != null) return EvaluationResult.success(val);
     }
 
-    // 7. Simple ternary (condition ? trueVal : falseVal)
+    // 7. Ternary Expressions (e.g. "condition ? 'yes' : 'no'")
     if (trimmed.contains('?') && trimmed.contains(':')) {
       final val = _resolveTernary(trimmed, variables);
       if (val != null) return EvaluationResult.success(val);
@@ -68,7 +81,9 @@ class JsShortcutEvaluator {
     return EvaluationResult.failure();
   }
 
+  /// Checks if the expression looks like a simple path or a literal.
   bool _isSimplePath(String expr) {
+    if (_isQuoted(expr)) return true;
     return !expr.contains('+') &&
         !expr.contains('-') &&
         !expr.contains('*') &&
@@ -79,17 +94,35 @@ class JsShortcutEvaluator {
         !expr.contains("'");
   }
 
+  /// Checks if a string is a quoted literal.
+  bool _isQuoted(String s) {
+    if (s.length < 2) return false;
+    return (s.startsWith("'") && s.endsWith("'")) ||
+        (s.startsWith('"') && s.endsWith('"'));
+  }
+
+  /// Checks if the expression looks like a simple string concatenation.
   bool _isConcatenation(String expr) {
     return expr.contains('+') && !expr.contains('(') && !expr.contains('new ');
   }
 
+  /// Resolves a simple path or literal.
   EvaluationResult _tryResolvePath(String path, Map<String, dynamic> vars) {
     if (path == 'null') return EvaluationResult.success(null);
     if (path == 'true') return EvaluationResult.success(true);
     if (path == 'false') return EvaluationResult.success(false);
+    if (path == 'undefined') return EvaluationResult.success(null);
+
+    // Handle string literals
+    if (_isQuoted(path)) {
+      return EvaluationResult.success(path.substring(1, path.length - 1));
+    }
+
+    // Handle numeric literals
     final numVal = num.tryParse(path);
     if (numVal != null) return EvaluationResult.success(numVal);
 
+    // Handle object paths (e.g. a.b.c)
     final parts = path.split('.');
     dynamic current = vars;
     for (final part in parts) {
@@ -100,7 +133,7 @@ class JsShortcutEvaluator {
       } else if (current is Map &&
           !current.containsKey(part) &&
           vars.containsKey(part)) {
-        // Fallback to root (should ideally be handled by scope builder but just in case)
+        // Fallback to top-level if not found in nested context
         current = vars[part];
       } else {
         return EvaluationResult.failure();
@@ -109,18 +142,19 @@ class JsShortcutEvaluator {
     return EvaluationResult.success(current);
   }
 
+  /// Helper for internal components to resolve paths.
   dynamic _resolvePath(String path, Map<String, dynamic> vars) {
     final res = _tryResolvePath(path.trim(), vars);
     return res.success ? res.value : null;
   }
 
+  /// Resolves simple string concatenation.
   String? _resolveConcatenation(String expr, Map<String, dynamic> vars) {
     final parts = expr.split('+');
     String result = '';
     for (final part in parts) {
       final trimmed = part.trim();
-      if ((trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-          (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+      if (_isQuoted(trimmed)) {
         result += trimmed.substring(1, trimmed.length - 1);
       } else {
         final val = _resolvePath(trimmed, vars);
@@ -131,170 +165,31 @@ class JsShortcutEvaluator {
     return result;
   }
 
-  DateTime? _parseDateExpr(String expr, Map<String, dynamic> vars) {
-    final trimmed = expr.trim();
-    if (trimmed.startsWith('new Date(') && trimmed.endsWith(')')) {
-      final inner = trimmed.substring(9, trimmed.length - 1).trim();
-      if (inner.isEmpty) return DateTime.now();
-
-      // Handle new Date(y, m, d, ...)
-      if (inner.contains(',')) {
-        final parts = inner.split(',').map((e) => e.trim()).toList();
-        if (parts.length >= 2) {
-          final y = int.tryParse(parts[0]) ?? 0;
-          final m = (int.tryParse(parts[1]) ?? 0) +
-              1; // JS 0-indexed to Dart 1-indexed
-          final d = parts.length > 2 ? (int.tryParse(parts[2]) ?? 1) : 1;
-          final h = parts.length > 3 ? (int.tryParse(parts[3]) ?? 0) : 0;
-          final min = parts.length > 4 ? (int.tryParse(parts[4]) ?? 0) : 0;
-          final s = parts.length > 5 ? (int.tryParse(parts[5]) ?? 0) : 0;
-          return DateTime(y, m, d, h, min, s);
-        }
-      }
-
-      // Handle new Date("string") or new Date(variable)
-      String? resolvedInner;
-      if ((inner.startsWith('"') && inner.endsWith('"')) ||
-          (inner.startsWith("'") && inner.endsWith("'"))) {
-        resolvedInner = inner.substring(1, inner.length - 1);
-      } else {
-        final val = _resolvePath(inner, vars);
-        if (val != null) {
-          resolvedInner = val.toString();
-        }
-      }
-
-      if (resolvedInner != null && resolvedInner.isNotEmpty) {
-        return DateTime.tryParse(resolvedInner) ?? _parseCustom(resolvedInner);
-      }
-    }
-    return null;
-  }
-
-  String? _resolveFormatDate(String expr, Map<String, dynamic> vars) {
-    // format: formatDate(dateExpr, 'format')
-    final match = RegExp(
-            r"formatDate\s*\((.*),\s*['" + '"' + r"](.*?)['" + '"' + r"]\s*\)")
-        .firstMatch(expr);
-    if (match == null) return null;
-
-    final dateExpr = match.group(1)!.trim();
-    final fmt = match.group(2)!;
-
-    final dt = _parseDateExpr(dateExpr, vars);
-    if (dt == null) return "";
-
-    return _formatDate(dt, fmt);
-  }
-
-  String? _resolveNow(String expr, Map<String, dynamic> vars) {
-    // format: now('format') or now()
-    final match =
-        RegExp(r"now\s*\(\s*(?:['" + '"' + r"](.*?)['" + '"' + r"]\s*)?\s*\)")
-            .firstMatch(expr);
-    if (match == null) return null;
-
-    final fmt = match.group(1) ?? "yyyy-MM-dd HH:mm:ss";
-    return _formatDate(DateTime.now(), fmt);
-  }
-
-  String _formatDate(DateTime dt, String format) {
-    final months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December"
-    ];
-    final monthsShort = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
-    ];
-
-    String res = format;
-    res = res.replaceAll('yyyy', dt.year.toString());
-    res = res.replaceAll('YYYY', dt.year.toString());
-    res = res.replaceAll('MMMM', months[dt.month - 1]);
-    res = res.replaceAll('MMM', monthsShort[dt.month - 1]);
-    res = res.replaceAll('MM', dt.month.toString().padLeft(2, '0'));
-    res = res.replaceAll('dd', dt.day.toString().padLeft(2, '0'));
-    res = res.replaceAll('DD', dt.day.toString().padLeft(2, '0'));
-    res = res.replaceAll('HH', dt.hour.toString().padLeft(2, '0'));
-    res = res.replaceAll('mm', dt.minute.toString().padLeft(2, '0'));
-    res = res.replaceAll('ss', dt.second.toString().padLeft(2, '0'));
-    return res;
-  }
-
-  String? _resolveDateToIso(String expr, Map<String, dynamic> vars) {
-    final dateExpr = expr.substring(0, expr.lastIndexOf('.toISOString()'));
-    final dt = _parseDateExpr(dateExpr, vars);
-    return dt?.toUtc().toIso8601String();
-  }
-
-  int? _resolveDateGetFullYear(String expr, Map<String, dynamic> vars) {
-    final dateExpr = expr.substring(0, expr.lastIndexOf('.getFullYear()'));
-    final dt = _parseDateExpr(dateExpr, vars);
-    return dt?.year;
-  }
-
-  dynamic _resolveDateMath(String expr, Map<String, dynamic> vars) {
-    // format: (new Date(end) - new Date(start)) / (1000 * 60 * 60)
-    final match = RegExp(
-            r"^\s*\(\s*(new Date\(.*?\))\s*-\s*(new Date\(.*?\))\s*\)\s*/\s*\(\s*(\d+)\s*\*\s*(\d+)\s*\*\s*(\d+)\s*\)\s*$")
-        .firstMatch(expr);
-    if (match != null) {
-      final dt1 = _parseDateExpr(match.group(1)!, vars);
-      final dt2 = _parseDateExpr(match.group(2)!, vars);
-      if (dt1 != null && dt2 != null) {
-        final diffMs = dt1.difference(dt2).inMilliseconds;
-        final factor = int.parse(match.group(3)!) *
-            int.parse(match.group(4)!) *
-            int.parse(match.group(5)!);
-        final result = diffMs / factor;
-        if (result == result.toInt()) {
-          return result.toInt();
-        }
-        return result;
-      }
-    }
-    return null;
-  }
-
+  /// Resolves ternary expressions: condition ? trueVal : falseVal
   dynamic _resolveTernary(String expr, Map<String, dynamic> vars) {
-    // format: condition ? trueVal : falseVal
-    final parts = expr.split('?');
-    if (parts.length != 2) return null;
-    final condition = parts[0].trim();
-    final remaining = parts[1].split(':');
-    if (remaining.length != 2) return null;
-    final trueValExpr = remaining[0].trim();
-    final falseValExpr = remaining[1].trim();
+    final qmarkIndex = expr.indexOf('?');
+    if (qmarkIndex == -1) return null;
 
-    final conditionMatch = _resolvePath(condition, vars);
-    final bool conditionResult = _asBool(conditionMatch);
+    final condition = expr.substring(0, qmarkIndex).trim();
+    final remaining = expr.substring(qmarkIndex + 1);
+
+    final colonIndex = remaining.lastIndexOf(':');
+    if (colonIndex == -1) return null;
+
+    final trueValExpr = remaining.substring(0, colonIndex).trim();
+    final falseValExpr = remaining.substring(colonIndex + 1).trim();
+
+    final conditionValue = _resolvePath(condition, vars);
+    final bool conditionResult = _asBool(conditionValue);
 
     final targetExpr = conditionResult ? trueValExpr : falseValExpr;
+
+    // Recursively try to evaluate the selected branch
     final res = tryEvaluate(targetExpr, vars);
     return res.success ? res.value : _resolvePath(targetExpr, vars);
   }
 
+  /// Converts a value to boolean according to JS-like rules.
   bool _asBool(dynamic value) {
     if (value == null) return false;
     if (value is bool) return value;
@@ -307,38 +202,5 @@ class JsShortcutEvaluator {
       return true;
     }
     return true;
-  }
-
-  DateTime? _parseCustom(String value) {
-    try {
-      if (value.contains('T')) {
-        final parts = value.split('T');
-        final datePart = parts[0].trim();
-        final timePart = parts[1].trim();
-        final dt = _parseDateOnly(datePart);
-        if (dt != null) {
-          final timeParts = timePart.split(':');
-          final hour = int.tryParse(timeParts[0]) ?? 0;
-          final minute =
-              timeParts.length > 1 ? (int.tryParse(timeParts[1]) ?? 0) : 0;
-          final sec =
-              timeParts.length > 2 ? (int.tryParse(timeParts[2]) ?? 0) : 0;
-          return DateTime(dt.year, dt.month, dt.day, hour, minute, sec);
-        }
-      }
-      return _parseDateOnly(value);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  DateTime? _parseDateOnly(String value) {
-    try {
-      return DateTime.tryParse(value) ??
-          DateFormat.yMMMMd().tryParse(value) ??
-          DateFormat.yMMMd().tryParse(value);
-    } catch (_) {
-      return null;
-    }
   }
 }
