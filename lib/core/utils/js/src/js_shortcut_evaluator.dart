@@ -144,8 +144,15 @@ class JsShortcutEvaluator {
 
   /// Helper for internal components to resolve paths.
   dynamic _resolvePath(String path, Map<String, dynamic> vars) {
-    final res = _tryResolvePath(path.trim(), vars);
-    return res.success ? res.value : null;
+    final trimmed = path.trim();
+    final res = _tryResolvePath(trimmed, vars);
+    if (res.success) return res.value;
+
+    // If not a simple path, it might be a concatenation (e.g. inside new Date())
+    if (_isConcatenation(trimmed)) {
+      return _resolveConcatenation(trimmed, vars);
+    }
+    return null;
   }
 
   /// Resolves simple string concatenation.

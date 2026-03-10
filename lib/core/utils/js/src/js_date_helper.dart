@@ -92,17 +92,9 @@ class JsDateHelper {
         }
       }
 
-      // Handle new Date("string") or new Date(variable)
-      String? resolvedInner;
-      if ((inner.startsWith('"') && inner.endsWith('"')) ||
-          (inner.startsWith("'") && inner.endsWith("'"))) {
-        resolvedInner = inner.substring(1, inner.length - 1);
-      } else {
-        final val = pathResolver(inner, vars);
-        if (val != null) {
-          resolvedInner = val.toString();
-        }
-      }
+      // Handle new Date("string") or new Date(variable) or new Date(concatenation)
+      final val = pathResolver(inner, vars);
+      final String? resolvedInner = val?.toString();
 
       if (resolvedInner != null && resolvedInner.isNotEmpty) {
         return DateTime.tryParse(resolvedInner) ?? _parseCustom(resolvedInner);
