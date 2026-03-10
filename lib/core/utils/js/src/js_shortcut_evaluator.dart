@@ -78,7 +78,43 @@ class JsShortcutEvaluator {
       if (val != null) return EvaluationResult.success(val);
     }
 
+    // 8. Basic Equality Comparisons (e.g. "a === b")
+    if (trimmed.contains('==') || trimmed.contains('!=')) {
+      final val = _resolveComparison(trimmed, variables);
+      if (val != null) return EvaluationResult.success(val);
+    }
+
     return EvaluationResult.failure();
+  }
+
+  bool? _resolveComparison(String expr, Map<String, dynamic> vars) {
+    String? op;
+    if (expr.contains('===')) {
+      op = '===';
+    } else if (expr.contains('!==')) {
+      op = '!==';
+    } else if (expr.contains('==')) {
+      op = '==';
+    } else if (expr.contains('!=')) {
+      op = '!=';
+    }
+
+    if (op == null) return null;
+
+    final parts = expr.split(op);
+    if (parts.length != 2) return null;
+
+    final leftExpr = parts[0].trim();
+    final rightExpr = parts[1].trim();
+
+    final left = _resolvePath(leftExpr, vars);
+    final right = _resolvePath(rightExpr, vars);
+
+    if (op == '===' || op == '==') {
+      return left == right;
+    } else {
+      return left != right;
+    }
   }
 
   /// Checks if the expression looks like a simple path or a literal.
@@ -187,7 +223,7 @@ class JsShortcutEvaluator {
     final falseValExpr = remaining.substring(colonIndex + 1).trim();
 
     final conditionValue = _resolvePath(condition, vars);
-    final bool conditionResult = _asBool(conditionValue);
+    final bool conditionResult = asBool(conditionValue);
 
     final targetExpr = conditionResult ? trueValExpr : falseValExpr;
 
@@ -197,15 +233,16 @@ class JsShortcutEvaluator {
   }
 
   /// Converts a value to boolean according to JS-like rules.
-  bool _asBool(dynamic value) {
+  bool asBool(dynamic value) {
     if (value == null) return false;
     if (value is bool) return value;
     if (value is num) return value != 0;
     if (value is String) {
-      if (value.isEmpty) return false;
-      if (value.toLowerCase() == 'false') return false;
-      if (value.toLowerCase() == 'null') return false;
-      if (value.toLowerCase() == 'undefined') return false;
+      final s = value.toLowerCase();
+      if (s.isEmpty) return false;
+      if (s == 'false') return false;
+      if (s == 'null') return false;
+      if (s == 'undefined') return false;
       return true;
     }
     return true;

@@ -86,6 +86,12 @@ class JsInterpolationProcessor {
             .trim();
       }
 
+      // Try shortcut evaluation first
+      final shortcutResult = _shortcutEvaluator.tryEvaluate(expr, allVars);
+      if (shortcutResult.success) {
+        return _shortcutEvaluator.asBool(shortcutResult.value);
+      }
+
       final script = _scriptBuilder.build(expr, allVars);
       final value = evalJs(script).toLowerCase();
       return value == 'true';
