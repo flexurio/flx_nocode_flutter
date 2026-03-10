@@ -58,6 +58,7 @@ dependency_overrides:
   # flx_core_flutter:
   #   path: ../flx_core_flutter
   freezed_annotation: ^3.1.0
+  analyzer: ^9.0.0
 
 dev_dependencies:
   bloc_test: ^10.0.0
