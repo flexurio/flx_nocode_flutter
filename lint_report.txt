@@ -3,6 +3,7 @@ Analyzing flx_nocode_flutter...
 warning • The option 'ignore# This file is used specifically for CI/GitHub Actions to run additional' isn't supported by 'errors' • analysis_options.yaml:13:32 • unsupported_option
    info • 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre • lib/features/component/screen/widgets/component_radio.dart:155:13 • deprecated_member_use
    info • 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre • lib/features/component/screen/widgets/component_radio.dart:156:13 • deprecated_member_use
+warning • The library 'package:flx_core_flutter/flx_core_flutter.dart' doesn't export a member with the hidden name 'TColumn' • lib/features/component/screen/widgets/component_table.dart:2:62 • undefined_hidden_name
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:119:62 • deprecated_member_use
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:208:51 • deprecated_member_use
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:211:53 • deprecated_member_use
@@ -15,6 +16,7 @@ warning • The option 'ignore# This file is used specifically for CI/GitHub Act
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:378:41 • deprecated_member_use
    info • 'scale' is deprecated and shouldn't be used. Use scaleByVector3, scaleByVector4, or scaleByDouble instead • lib/features/configuration/screen/pages/configuration_error_page.dart:409:40 • deprecated_member_use
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:426:44 • deprecated_member_use
+warning • The library 'package:flx_core_flutter/flx_core_flutter.dart' doesn't export a member with the hidden name 'TColumn' • lib/features/entity/models/action.dart:1:62 • undefined_hidden_name
 warning • Dead code • lib/features/entity/screen/widgets/action/action_widget_extension.dart:64:24 • dead_code
 warning • Dead code • lib/features/entity/screen/widgets/action/action_widget_extension.dart:72:22 • dead_code
 warning • Dead code • lib/features/entity/screen/widgets/action/action_widget_extension.dart:82:22 • dead_code
@@ -97,10 +99,6 @@ warning • The type argument(s) of the function 'expand' can't be inferred • 
    info • 'list' is deprecated and shouldn't be used. Use `knobs.object.dropdown` instead • packages/flx_authentication_flutter/lib/src/app/view/page/login/login_page.widgetbook.dart:27:30 • deprecated_member_use
    info • 'list' is deprecated and shouldn't be used. Use `knobs.object.dropdown` instead • packages/flx_authentication_flutter/lib/src/app/view/page/login/login_page.widgetbook.dart:56:30 • deprecated_member_use
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_authentication_flutter/lib/src/app/view/widget/f_text_phone_field.dart:99:57 • deprecated_member_use
-   info • The value of the argument is redundant because it matches the default value • packages/flx_authentication_flutter/lib/src/app/view/widget/login_logo.dart:31:29 • avoid_redundant_argument_values
-   info • The value of the argument is redundant because it matches the default value • packages/flx_authentication_flutter/lib/src/app/view/widget/login_logo.dart:45:29 • avoid_redundant_argument_values
-   info • The value of the argument is redundant because it matches the default value • packages/flx_authentication_flutter/lib/src/app/view/widget/login_logo.dart:69:29 • avoid_redundant_argument_values
-   info • The value of the argument is redundant because it matches the default value • packages/flx_authentication_flutter/lib/src/app/view/widget/login_logo.dart:86:29 • avoid_redundant_argument_values
    info • 'DeviceFrameAddon' is deprecated and shouldn't be used. The [DeviceFrameAddon] is deprecated and will be removed in a future version. Please use the [ViewportAddon] instead. More info: https://docs.widgetbook.io/addons/viewport-addon • packages/flx_authentication_flutter/lib/widgetbook.dart:67:9 • deprecated_member_use
    info • Dependencies not sorted alphabetically • packages/flx_authentication_flutter/pubspec.yaml:17:3 • sort_pub_dependencies
    info • Dependencies not sorted alphabetically • packages/flx_authentication_flutter/pubspec.yaml:47:3 • sort_pub_dependencies
@@ -246,6 +244,10 @@ warning • The URI 'package:flutter_lints/flutter.yaml' included in '/home/runn
    info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • packages/flx_core_flutter/lib/src/app/util/pdf/header.dart:29:55 • deprecated_member_use
    info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • packages/flx_core_flutter/lib/src/app/util/pdf/header.dart:31:55 • deprecated_member_use
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/util/pdf_view.dart:81:59 • deprecated_member_use
+  error • Target of URI doesn't exist: 'package:syncfusion_flutter_xlsio/xlsio.dart' • packages/flx_core_flutter/lib/src/app/util/simple_excel.dart:3:8 • uri_does_not_exist
+  error • The function 'Workbook' isn't defined • packages/flx_core_flutter/lib/src/app/util/simple_excel.dart:25:20 • undefined_function
+  error • Undefined name 'HAlignType' • packages/flx_core_flutter/lib/src/app/util/simple_excel.dart:41:31 • undefined_identifier
+  error • Undefined name 'HAlignType' • packages/flx_core_flutter/lib/src/app/util/simple_excel.dart:62:33 • undefined_identifier
    info • Unnecessary duplication of receiver • packages/flx_core_flutter/lib/src/app/util/simple_excel_exporter.dart:102:9 • cascade_invocations
    info • Unnecessary duplication of receiver • packages/flx_core_flutter/lib/src/app/util/simple_excel_exporter.dart:179:7 • cascade_invocations
    info • Unnecessary duplication of receiver • packages/flx_core_flutter/lib/src/app/util/simple_excel_exporter.dart:180:7 • cascade_invocations
@@ -260,8 +262,19 @@ warning • The URI 'package:flutter_lints/flutter.yaml' included in '/home/runn
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/util/theme.dart:43:34 • deprecated_member_use
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/util/toast.dart:77:37 • deprecated_member_use
    info • Don't use 'BuildContext's across async gaps • packages/flx_core_flutter/lib/src/app/util/toast.dart:150:36 • use_build_context_synchronously
+  error • Target of URI doesn't exist: 'package:flx_core_flutter/src/app/view/page/menu/menu_side_nav.dart' • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_page.dart:5:8 • uri_does_not_exist
+  error • Target of URI doesn't exist: 'package:flx_core_flutter/src/app/view/page/menu/widget/menu_content.dart' • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_page.dart:6:8 • uri_does_not_exist
+  error • The method 'MenuContent' isn't defined for the type '_MenuPageState' • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_page.dart:123:9 • undefined_method
+  error • The method 'MenuSideNav' isn't defined for the type '_MenuPageState' • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_page.dart:187:27 • undefined_method
+  error • The method 'MenuSideNav' isn't defined for the type '_MenuPageState' • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_page.dart:221:16 • undefined_method
+  error • Target of URI doesn't exist: 'package:flx_core_flutter/src/app/view/page/menu/widget/menu_level_1.dart' • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_side_nav.dart:6:8 • uri_does_not_exist
    info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_side_nav.dart:101:81 • lines_longer_than_80_chars
+  error • The method 'MenuLevel1' isn't defined for the type '_MenuSideNavState' • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_side_nav.dart:113:40 • undefined_method
    info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_side_nav.dart:118:81 • lines_longer_than_80_chars
+  error • Target of URI doesn't exist: 'package:flx_core_flutter/src/app/view/page/menu/widget/menu_level_2.dart' • packages/flx_core_flutter/lib/src/app/view/page/menu/widget/menu_level_1.dart:5:8 • uri_does_not_exist
+  error • The method 'buildMenuLevel2' isn't defined for the type 'MenuLevel1' • packages/flx_core_flutter/lib/src/app/view/page/menu/widget/menu_level_1.dart:38:25 • undefined_method
+  error • Target of URI doesn't exist: 'package:flx_core_flutter/src/app/view/page/menu/widget/menu_level_3.dart' • packages/flx_core_flutter/lib/src/app/view/page/menu/widget/menu_level_2.dart:4:8 • uri_does_not_exist
+  error • The function 'MenuLevel3' isn't defined • packages/flx_core_flutter/lib/src/app/view/page/menu/widget/menu_level_2.dart:21:20 • undefined_function
    info • Don't use 'BuildContext's across async gaps • packages/flx_core_flutter/lib/src/app/view/widget/account_button.dart:195:29 • use_build_context_synchronously
 warning • The generic type 'FlavorConfig<dynamic>' should have explicit type arguments but doesn't • packages/flx_core_flutter/lib/src/app/view/widget/app.dart:7:12 • strict_raw_type
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/block_note.dart:28:36 • deprecated_member_use
@@ -281,10 +294,11 @@ warning • The generic type 'FlavorConfig<dynamic>' should have explicit type a
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/container_glass.dart:35:24 • deprecated_member_use
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/container_glass.dart:36:24 • deprecated_member_use
    info • Don't invoke 'print' in production code • packages/flx_core_flutter/lib/src/app/view/widget/data_list_view.dart:85:11 • avoid_print
+  error • Target of URI doesn't exist: 'package:flx_core_flutter/src/app/view/page/menu/menu_page.dart' • packages/flx_core_flutter/lib/src/app/view/widget/data_set_action.dart:5:8 • uri_does_not_exist
    info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/data_set_action.dart:43:81 • lines_longer_than_80_chars
-warning • The type of the right operand ('DataTableSearchMode') isn't a subtype or a supertype of the left operand ('DataTableSearchMode') • packages/flx_core_flutter/lib/src/app/view/widget/data_set_action.dart:117:49 • unrelated_type_equality_checks
-warning • The type of the right operand ('DataTableSearchMode') isn't a subtype or a supertype of the left operand ('DataTableSearchMode') • packages/flx_core_flutter/lib/src/app/view/widget/data_set_action.dart:119:51 • unrelated_type_equality_checks
-warning • The type of the right operand ('DataTableSearchMode') isn't a subtype or a supertype of the left operand ('DataTableSearchMode') • packages/flx_core_flutter/lib/src/app/view/widget/data_set_action.dart:122:49 • unrelated_type_equality_checks
+  error • Undefined name 'MenuPage' • packages/flx_core_flutter/lib/src/app/view/widget/data_set_action.dart:117:24 • undefined_identifier
+  error • Undefined name 'MenuPage' • packages/flx_core_flutter/lib/src/app/view/widget/data_set_action.dart:119:26 • undefined_identifier
+  error • Undefined name 'MenuPage' • packages/flx_core_flutter/lib/src/app/view/widget/data_set_action.dart:122:24 • undefined_identifier
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/data_table/widget/pagination_control.dart:63:36 • deprecated_member_use
    info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/data_table_set_backend.dart:93:81 • lines_longer_than_80_chars
    info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/data_table_set_backend.dart:101:81 • lines_longer_than_80_chars
@@ -354,12 +368,14 @@ warning • The member 'setState' can only be used within instance members of su
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/time_line.dart:25:58 • deprecated_member_use
    info • Don't invoke 'print' in production code • packages/flx_core_flutter/lib/src/app/view/widget/visibility_permission.dart:38:9 • avoid_print
    info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/visibility_permission.dart:39:81 • lines_longer_than_80_chars
+  error • Target of URI doesn't exist: 'package:flx_core_flutter/src/app/view/page/menu/menu_page.dart' • packages/flx_core_flutter/lib/src/app/view/widget/yuhu_table/yuhu_table.dart:5:8 • uri_does_not_exist
+  error • Undefined name 'MenuPage' • packages/flx_core_flutter/lib/src/app/view/widget/yuhu_table/yuhu_table.dart:57:33 • undefined_identifier
    info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/yuhu_table/yuhu_table.dart:237:57 • deprecated_member_use
    info • Dependencies not sorted alphabetically • packages/flx_core_flutter/pubspec.yaml:13:3 • sort_pub_dependencies
    info • Dependencies not sorted alphabetically • packages/flx_core_flutter/pubspec.yaml:61:3 • sort_pub_dependencies
    info • Dependencies not sorted alphabetically • packages/flx_core_flutter/pubspec.yaml:64:3 • sort_pub_dependencies
 warning • The value of the local variable 'expectedUtc' isn't used • packages/flx_core_flutter/test/flx_date_format_test.dart:20:13 • unused_local_variable
-warning • The asset directory 'asset/configuration/entity/' doesn't exist • pubspec.yaml:83:7 • asset_directory_does_not_exist
-warning • The asset directory 'asset/configuration/' doesn't exist • pubspec.yaml:84:7 • asset_directory_does_not_exist
+warning • The asset directory 'asset/configuration/entity/' doesn't exist • pubspec.yaml:88:7 • asset_directory_does_not_exist
+warning • The asset directory 'asset/configuration/' doesn't exist • pubspec.yaml:89:7 • asset_directory_does_not_exist
 
-361 issues found. (ran in 39.8s)
+377 issues found. (ran in 35.0s)
