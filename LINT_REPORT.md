@@ -1,16 +1,16 @@
 # 📊 Lint Report
 
-*Last updated: 2026-03-10*
+*Last updated: 2026-03-11*
 
 ## 📈 Summary
-- **Total Issues (Combined)**: 361
-- **Standard Analyzer Issues**: 361
+- **Total Issues (Combined)**: 377
+- **Standard Analyzer Issues**: 377
 - **DCM Issues (Presets)**: 0
 
 ### 🔍 Standard Analyzer Breakdown
-- **Errors**: 0
-- **Warnings**: 31
-- **Infos**: 330
+- **Errors**: 21
+- **Warnings**: 30
+- **Infos**: 326
 
 ### 🛠️ Tooling Status
 - **Standard Analyzer**: Active
