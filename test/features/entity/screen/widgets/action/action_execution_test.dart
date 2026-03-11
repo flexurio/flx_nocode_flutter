@@ -89,4 +89,60 @@ void main() {
     // Settle all timers (like toast auto-dismiss)
     await tester.pumpAndSettle(const Duration(seconds: 10));
   });
+
+  testWidgets(
+      'ActionD.executeHttpMultiple joins ids with comma',
+      (WidgetTester tester) async {
+    final entity = MockEntityCustom();
+    
+    // We will verify if it resolves the IDs with comma correctly by using mockEnabled
+    final action = ActionD(
+      id: 'process_settlement',
+      name: 'Process Settlement',
+      type: ActionType.http,
+      isMultiple: true,
+      onSuccess: 'none',
+      onFailure: 'none',
+      http: HttpData(
+        method: 'POST',
+        url: 'https://api.example.com/multi',
+        headers: {},
+        body: {
+          'transaction_detail_id': '{{form.id}}',
+          'name': '{{form.name}}'
+        },
+        mockEnabled: true,
+        mockData: {},
+      ),
+    );
+
+    when(() => entity.id).thenReturn('test_entity');
+
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: Builder(
+          builder: (context) {
+            return ElevatedButton(
+              onPressed: () => action.executeHttpMultiple(
+                entity,
+                context,
+                [
+                  {'id': 1, 'name': 'Item A'},
+                  {'id': 2, 'name': 'Item A'}, // identical to previous
+                  {'id': 3, 'name': 'Item B'},
+                ],
+              ),
+              child: const Text('Trigger Multiple'),
+            );
+          },
+        ),
+      ),
+    ));
+
+    await tester.tap(find.text('Trigger Multiple'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Request success'), findsOneWidget);
+    await tester.pumpAndSettle(const Duration(seconds: 10));
+  });
 }

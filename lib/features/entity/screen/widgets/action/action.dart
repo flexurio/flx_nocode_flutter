@@ -422,8 +422,27 @@ extension ActionLogicExtension on ActionD {
     }
 
     try {
-      final first = data.first;
-      final response = await http!.execute(first);
+      final mergedData = <String, dynamic>{};
+      mergedData.addAll(data.first);
+      
+      final allKeys = data.expand((e) => e.keys).toSet();
+      for (final key in allKeys) {
+        final uniqueValues = data
+            .map((e) => e[key]?.toString() ?? '')
+            .where((e) => e.isNotEmpty)
+            .toSet()
+            .toList();
+            
+        if (uniqueValues.length == 1) {
+          mergedData[key] = uniqueValues.first;
+        } else if (uniqueValues.length > 1) {
+          mergedData[key] = uniqueValues.join(',');
+        } else {
+          mergedData[key] = '';
+        }
+      }
+
+      final response = await http!.execute(mergedData);
       final statusCode = response.statusCode ?? 0;
       final isSuccess = statusCode >= 200 && statusCode < 300;
 
