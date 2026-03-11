@@ -192,6 +192,64 @@ extension HttpDataExtension on HttpData {
     );
   }
 
+  /// Build HttpRequestConfig dari HttpData untuk banyak data (List).
+  HttpRequestConfig toRequestConfigMultiple(List<Map<String, dynamic>> data) {
+    final merged = _mergeData(data);
+    String processedUrl =
+        url.replaceStringWithValuesMultiple(data).interpolateJavascript(merged);
+
+    final interpolatedBody = body.map((key, value) {
+      if (value is String) {
+        final processed = value
+            .replaceStringWithValuesMultiple(data)
+            .interpolateJavascript(merged);
+        return MapEntry(key, processed);
+      }
+      return MapEntry(key, value);
+    });
+
+    final interpolatedHeaders = headers.map((key, value) {
+      final processed = value
+          .replaceStringWithValuesMultiple(data)
+          .interpolateJavascript(merged);
+      return MapEntry(key, processed);
+    });
+
+    return HttpRequestConfig(
+      method: method.toUpperCase(),
+      url: processedUrl,
+      headers: interpolatedHeaders,
+      body: interpolatedBody,
+      asFormData: useFormData,
+      mockEnabled: mockEnabled,
+      mockData: mockData,
+    );
+  }
+
+  Map<String, dynamic> _mergeData(List<Map<String, dynamic>> data) {
+    if (data.isEmpty) return {};
+    final merged = <String, dynamic>{};
+    merged.addAll(data.first);
+
+    final allKeys = data.expand((e) => e.keys).toSet();
+    for (final key in allKeys) {
+      final uniqueValues = data
+          .map((e) => e[key]?.toString() ?? '')
+          .where((e) => e.isNotEmpty)
+          .toSet()
+          .toList();
+
+      if (uniqueValues.length == 1) {
+        merged[key] = uniqueValues.first;
+      } else if (uniqueValues.length > 1) {
+        merged[key] = uniqueValues.join(',');
+      } else {
+        merged[key] = '';
+      }
+    }
+    return merged;
+  }
+
   Map<String, String> _interpolateHeaders(JsonMap data) {
     return headers.map((key, value) {
       final processed = value.renderWithData(data).interpolateJavascript(data);
@@ -222,6 +280,16 @@ extension HttpDataExtension on HttpData {
   }) async {
     final exec = executor ?? HttpRequestExecutor();
     final config = toRequestConfig(data);
+    return exec.execute(config);
+  }
+
+  /// Eksekusi dengan banyak data.
+  Future<HttpRequestResult> executeMultiple(
+    List<Map<String, dynamic>> data, {
+    HttpRequestExecutor? executor,
+  }) async {
+    final exec = executor ?? HttpRequestExecutor();
+    final config = toRequestConfigMultiple(data);
     return exec.execute(config);
   }
 }

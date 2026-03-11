@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:flx_core_flutter/flx_core_flutter.dart' as fcf;
+import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
+import 'package:flx_nocode_flutter/src/app/util/general_xlsx.dart';
 import 'package:download/download.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -62,38 +63,36 @@ class ExportAction implements WorkflowAction {
     if (items.isNotEmpty) {
       print('[ExportAction] Exporting ${items.length} items');
 
-      final List<fcf.PColumnHeader> pHeaders =
-          columns.map((e) => fcf.PColumnHeader(title: e.header)).toList();
-      final List<fcf.PColumnBody<Map<String, dynamic>>> pBody =
-          columns.map((col) {
-        return fcf.PColumnBody<Map<String, dynamic>>(
-          contentBuilder: (item, index) {
-            final rowCtx = WorkflowContext(
-              form: ctx.form,
-              record: ctx.record,
-              data: item,
-              vars: ctx.vars,
-              auth: ctx.auth,
-              httpExecutor: ctx.httpExecutor,
-            );
-            return Template.resolve(col.body, rowCtx)?.toString() ?? '';
-          },
-        );
-      }).toList();
-
       final fileName =
           'export_${DateTime.now().millisecondsSinceEpoch}.${format.toLowerCase()}';
 
       if (format.toLowerCase() == 'xlsx') {
-        final excel = fcf.SimpleExcelExporter<Map<String, dynamic>>(
-          data: items.cast<Map<String, dynamic>>(),
-          headers: pHeaders,
-          body: pBody,
-          title: 'Export',
-          printedBy: 'System',
-        );
+        final List<String> fields = columns.map((e) => e.header).toList();
 
-        final bytes = excel.export();
+        // Safely attempt to get BuildContext. WorkflowContext usually doesn't have it,
+        // but some implementations might inject it. ui bridge might have it too.
+        BuildContext? context;
+        try {
+          context = (ctx as dynamic).buildContext as BuildContext?;
+        } catch (_) {}
+
+        if (context == null) {
+          try {
+            context = (ui as dynamic).context as BuildContext?;
+          } catch (_) {}
+        }
+
+        if (context == null) {
+          print('[ExportAction] Error: BuildContext not found in ctx or ui');
+          ui.toast('error', 'Export failed: System context missing');
+          return;
+        }
+
+        final bytes = generalXlsx(
+          context,
+          items.cast<Map<String, dynamic>>(),
+          fields,
+        );
 
         if (!kIsWeb) {
           try {

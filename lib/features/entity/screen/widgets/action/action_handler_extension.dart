@@ -3,6 +3,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/features/export/screen/widgets/export_to_pdf.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
+import 'package:flx_nocode_flutter/src/app/util/string.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
 extension ActionSuccessHandlerExtension on ActionD {
@@ -49,11 +50,22 @@ extension ActionSuccessHandlerExtension on ActionD {
         }
         print('[ActionLogic] 💎 Interpolation vars: $vars');
 
-        final titleText =
-            (successTitle ?? 'Success').interpolateJavascript(vars);
-        final messageText = (successMessage ?? '').interpolateJavascript(vars);
-        final copyLabelText = (copyLabel ?? 'Copy').interpolateJavascript(vars);
-        final copyValueText = (copyValue ?? '').interpolateJavascript(vars);
+        final isMultiple = data['_is_multiple_context'] == true;
+        final originalList = (data['_original_list'] as List?)?.cast<Map<String, dynamic>>();
+
+        String interpolate(String? text) {
+          if (text == null) return '';
+          var result = text;
+          if (isMultiple && originalList != null) {
+            result = result.replaceStringWithValuesMultiple(originalList);
+          }
+          return result.interpolateJavascript(vars).renderWithData(data);
+        }
+
+        final titleText = interpolate(successTitle ?? 'Success');
+        final messageText = interpolate(successMessage);
+        final copyLabelText = interpolate(copyLabel ?? 'Copy');
+        final copyValueText = interpolate(copyValue);
 
         print('[ActionLogic] 💎 titleText: "$titleText"');
         print('[ActionLogic] 💎 messageText: "$messageText"');
@@ -132,11 +144,31 @@ extension ActionSuccessHandlerExtension on ActionD {
     VoidCallback? onSuccessCallback,
   }) async {
     if (data.isNotEmpty) {
+      // Merge data for interpolation (e.g. for {selected.id})
+      final mergedData = <String, dynamic>{};
+      final allKeys = data.expand((e) => e.keys).toSet();
+      for (final key in allKeys) {
+        final uniqueValues = data
+            .map((e) => e[key]?.toString() ?? '')
+            .where((e) => e.isNotEmpty)
+            .toSet()
+            .toList();
+        if (uniqueValues.length == 1) {
+          mergedData[key] = uniqueValues.first;
+        } else if (uniqueValues.length > 1) {
+          mergedData[key] = uniqueValues.join(',');
+        }
+      }
+
+      // Track that this is a multiple context for specific interpolation logic
+      mergedData['_is_multiple_context'] = true;
+      mergedData['_original_list'] = data;
+
       await handleOnSuccessSingle(
         entity: entity,
         context: context,
         responseData: responseData,
-        data: data.first,
+        data: mergedData,
         onSuccessCallback: onSuccessCallback,
       );
     }
