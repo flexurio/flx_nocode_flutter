@@ -88,7 +88,7 @@ class ExportAction implements WorkflowAction {
           return;
         }
 
-        final bytes = generalXlsx(
+        final bytes = generalXlsxNoCode(
           context,
           items.cast<Map<String, dynamic>>(),
           fields,

@@ -1,7 +1,7 @@
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 
-List<int> generalXlsx(
+List<int> generalXlsxNoCode(
   BuildContext context,
   List<Map<String, dynamic>> data,
   List<String> fields,

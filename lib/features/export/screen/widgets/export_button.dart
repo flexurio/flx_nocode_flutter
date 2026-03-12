@@ -48,7 +48,7 @@ class ButtonExport extends StatelessWidget {
                   filename: '${export.name}.pdf',
                 );
               } else {
-                final bytes = generalXlsx(context, data.data, export.fields);
+                final bytes = generalXlsxNoCode(context, data.data, export.fields);
                 final filename = '${export.name}.xlsx';
                 saveFile(bytes, filename);
               }

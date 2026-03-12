@@ -314,7 +314,7 @@ extension ActionExecutionExtension on ActionD {
                   filename: '$name.pdf',
                 );
               } else {
-                final bytes = generalXlsx(context, list, fields);
+                final bytes = generalXlsxNoCode(context, list, fields);
                 saveFile(bytes, '$name.xlsx');
               }
               Toast(context).success('Export success');

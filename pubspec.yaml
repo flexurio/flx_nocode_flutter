@@ -56,12 +56,8 @@ dependencies:
   excel: ^4.0.6
 dependency_overrides:
   intl: ^0.20.2
-  # flx_core_flutter:
-  #   path: ../flx_core_flutter
   flx_core_flutter:
-    git:
-      url: https://github.com/flexurio/flx_core_flutter.git
-      ref: dev
+    path: ../flx_core_flutter
   freezed_annotation: ^3.1.0
   analyzer: ^9.0.0
 
