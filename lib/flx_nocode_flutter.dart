@@ -1,4 +1,6 @@
 export 'features/component/models/component.dart';
+export 'core/network/models/http_data.dart';
+
 export 'features/data_table/screen/widgets/entity_data_table.dart';
 export 'features/entity/screen/pages/enitity_view_page.dart';
 export 'features/export/screen/models/export.dart';
