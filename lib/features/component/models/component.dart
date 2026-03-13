@@ -16,6 +16,7 @@ export 'package:flx_nocode_flutter/features/component/models/component_image.dar
 export 'package:flx_nocode_flutter/features/component/models/component_divider.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_icon_button.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_time_field.dart';
+export 'package:flx_nocode_flutter/features/component/models/component_donut_chart.dart';
 
 import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
 import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
@@ -35,6 +36,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_image.dar
 import 'package:flx_nocode_flutter/features/component/models/component_divider.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_icon_button.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_time_field.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_donut_chart.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
@@ -101,6 +103,8 @@ class Component {
         return ComponentImage.fromMap(map);
       case ComponentType.divider:
         return ComponentDivider.fromMap(map);
+      case ComponentType.donutChart:
+        return ComponentDonutChart.fromMap(map);
       default:
         throw FormatException('Unknown component type "$type"');
     }
@@ -153,6 +157,8 @@ class Component {
         return ComponentImage.empty(Component._generateId(type));
       case ComponentType.divider:
         return ComponentDivider.empty(Component._generateId(type));
+      case ComponentType.donutChart:
+        return ComponentDonutChart.empty(Component._generateId(type));
       default:
         throw FormatException('Unknown component type "$type"');
     }
@@ -265,6 +271,7 @@ class ComponentType {
   static const String switchType = 'switch';
   static const String image = 'image';
   static const String divider = 'divider';
+  static const String donutChart = 'donut_chart';
 
   static const List<ComponentTypeEntry> values = [
     ComponentTypeEntry(id: table, label: 'Table'),
@@ -285,6 +292,7 @@ class ComponentType {
     ComponentTypeEntry(id: switchType, label: 'Switch'),
     ComponentTypeEntry(id: image, label: 'Image'),
     ComponentTypeEntry(id: divider, label: 'Divider'),
+    ComponentTypeEntry(id: donutChart, label: 'Donut Chart'),
   ];
 
   static String labelOf(String type) => values

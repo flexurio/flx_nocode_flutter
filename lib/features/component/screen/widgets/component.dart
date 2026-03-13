@@ -18,6 +18,7 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_i
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_divider.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_icon_button.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_time_field.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_donut_chart.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
@@ -76,6 +77,8 @@ extension ComponentWidget on Component {
       return (this as ComponentDivider).toWidget(fullData);
     } else if (this.type == ComponentTimeField.componentId) {
       return (this as ComponentTimeField).toWidget(fullData);
+    } else if (this.type == ComponentDonutChart.componentId) {
+      return (this as ComponentDonutChart).toWidget(data: fullData);
     }
     return NoCodeError('Unknown component type: ${this.type}');
   }
@@ -117,6 +120,8 @@ extension ComponentWidget on Component {
       return (this as ComponentDivider).toMockWidget();
     } else if (this.type == ComponentTimeField.componentId) {
       return (this as ComponentTimeField).toMockWidget();
+    } else if (this.type == ComponentDonutChart.componentId) {
+      return (this as ComponentDonutChart).toMockWidget();
     }
     return Text('Mock Widget: $type');
   }
