@@ -70,6 +70,7 @@ class MenuDataTableCustomTableView extends StatelessWidget {
                   entity: entity,
                   parentData: parentData,
                   bypassPermission: bypassPermission,
+                  onSuccess: () => onRefresh(),
                 );
               },
         columns: [

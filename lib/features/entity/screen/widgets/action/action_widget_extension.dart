@@ -40,6 +40,7 @@ extension ActionListWidgetExtension on List<ActionD> {
     required JsonList data,
     required JsonList parentData,
     bool? bypassPermission,
+    VoidCallback? onSuccessCallback,
   }) {
     return where((action) => action.isVisibleForList(data))
         .map((e) => e.buttonMultiple(
@@ -48,6 +49,7 @@ extension ActionListWidgetExtension on List<ActionD> {
               data,
               parentData,
               bypassPermission: bypassPermission,
+              onSuccessCallback: onSuccessCallback,
             ))
         .toList();
   }
@@ -172,6 +174,7 @@ extension ActionWidgetExtension on ActionD {
     JsonList parentData, {
     bool? bypassPermission,
     bool expanded = false,
+    VoidCallback? onSuccessCallback,
   }) {
     const actionType = DataAction.print;
 
@@ -193,7 +196,24 @@ extension ActionWidgetExtension on ActionD {
           action: actionType,
           label: name,
           confirmationMessageText: confirmMessage,
-          onConfirm: (ctx) => executeHttpMultiple(entity, ctx, data),
+          onConfirm: (ctx) async {
+            if (http != null) {
+              await executeHttpMultiple(
+                entity,
+                ctx,
+                data,
+                onSuccessCallback: onSuccessCallback,
+              );
+            } else {
+              await handleOnSuccessMultiple(
+                entity: entity,
+                context: ctx,
+                responseData: null,
+                data: data,
+                onSuccessCallback: onSuccessCallback,
+              );
+            }
+          },
         );
       },
       iconOverride: actionIcon(this),
