@@ -32,6 +32,25 @@ Widget buildMenuCustomUseCase(BuildContext context) {
             "column_width": 10
         }
     ],
+    "actions": [
+        {
+            "id": "edit",
+            "name": "Edit",
+            "type": "open_page",
+            "layout_form_id": "view",
+            "icon": "edit",
+            "is_multiple": false
+        },
+        {
+            "id": "delete",
+            "name": "Delete",
+            "type": "http",
+            "icon": "delete",
+            "is_multiple": false,
+            "confirm_title": "Confirm Delete",
+            "confirm_message": "Are you sure you want to delete this user?"
+        }
+    ],
     "layout_table": {
         "id": 10,
         "name": 10,
@@ -42,10 +61,16 @@ Widget buildMenuCustomUseCase(BuildContext context) {
             "method": "GET",
             "url": "/users",
             "mock_enabled": true,
-            "mock_data": [
-                {"id": 1, "name": "Antigravity AI", "email": "ai@google.com"},
-                {"id": 2, "name": "Suhal", "email": "suhal@dev.com"}
-            ]
+            "mock_data": {
+                "total_data": 5,
+                "data": [
+                    {"id": 1, "name": "Antigravity AI", "email": "ai@google.com"},
+                    {"id": 2, "name": "Suhal", "email": "suhal@dev.com"},
+                    {"id": 3, "name": "Flutter Dev", "email": "dev@flutter.io"},
+                    {"id": 4, "name": "Jane Doe", "email": "jane@example.com"},
+                    {"id": 5, "name": "John Smith", "email": "john@smith.net"}
+                ]
+            }
         }
     }
 }

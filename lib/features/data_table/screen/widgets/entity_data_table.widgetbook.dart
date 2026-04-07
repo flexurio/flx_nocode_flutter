@@ -45,6 +45,25 @@ Widget buildMenuDataTableCustomFromJsonUseCase(BuildContext context) {
             "allow_update": true
         }
     ],
+    "actions": [
+        {
+            "id": "edit",
+            "name": "Edit",
+            "type": "open_page",
+            "layout_form_id": "view",
+            "icon": "edit",
+            "is_multiple": false
+        },
+        {
+            "id": "delete",
+            "name": "Delete",
+            "type": "http",
+            "icon": "delete",
+            "is_multiple": false,
+            "confirm_title": "Confirm Delete",
+            "confirm_message": "Are you sure you want to delete this user?"
+        }
+    ],
     "layout_table": {
         "id": 10,
         "name": 10,
@@ -56,11 +75,14 @@ Widget buildMenuDataTableCustomFromJsonUseCase(BuildContext context) {
             "method": "GET",
             "url": "/flx_users",
             "mock_enabled": true,
-            "mock_data": [
-                {"id": 1, "name": "Antigravity AI", "email": "ai@google.com", "phone": "08123456789"},
-                {"id": 2, "name": "Suhal", "email": "suhal@dev.com", "phone": "081122334455"},
-                {"id": 3, "name": "Flutter Developer", "email": "flutter@dart.dev", "phone": "089988776655"}
-            ]
+            "mock_data": {
+                "total_data": 3,
+                "data": [
+                    {"id": 1, "name": "Antigravity AI", "email": "ai@google.com", "phone": "08123456789"},
+                    {"id": 2, "name": "Suhal", "email": "suhal@dev.com", "phone": "081122334455"},
+                    {"id": 3, "name": "Flutter Developer", "email": "flutter@dart.dev", "phone": "089988776655"}
+                ]
+            }
         }
     }
 }
