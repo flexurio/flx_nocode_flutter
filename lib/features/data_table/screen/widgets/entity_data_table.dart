@@ -148,9 +148,14 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           return NoCodeError('layout_list_tile is null');
         }
         return layoutListTile.build(
+          context: context,
           entity: widget.entity,
           data: data,
           onTap: () => _handleItemTap(data, parentData),
+          parentData: parentData,
+          onRefresh: (ctx) => _fetch(),
+          filters: _filters.toMap(),
+          bypassPermission: widget.bypassPermission,
         );
       },
     );

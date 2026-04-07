@@ -1,4 +1,6 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/entity_action_bottom_sheet.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_page.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce/hive.dart';
@@ -15,9 +17,14 @@ class LayoutListTile extends HiveObject {
   });
 
   Widget build({
+    required BuildContext context,
     required EntityCustom entity,
     required VoidCallback onTap,
     required Map<String, dynamic> data,
+    required List<Map<String, dynamic>> parentData,
+    required Map<String, dynamic> filters,
+    required void Function(BuildContext) onRefresh,
+    required bool bypassPermission,
   }) {
     return ListTileItem(
       onTap: onTap,
@@ -25,15 +32,39 @@ class LayoutListTile extends HiveObject {
           ? null
           : Text(
               getValue(data[title]),
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
       subtitle: subtitle == null ? null : Text(getValue(data[subtitle])),
-      trailing: trailing == null
-          ? null
-          : Text(
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (trailing != null) ...[
+            Text(
               getValue(data[trailing]),
-              style: TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 14),
             ),
+            const SizedBox(width: 8),
+          ],
+          IconButton(
+            icon: const Icon(Icons.more_vert),
+            onPressed: () {
+              EntityActionBottomSheet.show(
+                context: context,
+                title: getValue(data[title]),
+                actions: EntityViewPage.actionsLarge(
+                  context: context,
+                  data: data,
+                  parentData: parentData,
+                  filters: filters,
+                  entity: entity,
+                  onRefresh: onRefresh,
+                  bypassPermission: bypassPermission,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 

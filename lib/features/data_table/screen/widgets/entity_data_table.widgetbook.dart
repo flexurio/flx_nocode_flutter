@@ -70,6 +70,11 @@ Widget buildMenuDataTableCustomFromJsonUseCase(BuildContext context) {
         "email": 10,
         "phone": 10
     },
+    "layout_list_tile": {
+        "title": "name",
+        "subtitle": "email",
+        "trailing": "id"
+    },
     "backend": {
         "read_all": {
             "method": "GET",
