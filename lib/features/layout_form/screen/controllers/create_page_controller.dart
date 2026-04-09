@@ -234,7 +234,10 @@ class CreatePageController extends GetxController {
       Get.find<EntityController>(tag: 'entity_ctrl_$layoutFormId')
           .submitWorkflow(
         form: currentData,
-        data: initialDataInput ?? {},
+        data: {
+          ...initialDataInput ?? {},
+          if (parentData.isNotEmpty) 'parent': parentData.last,
+        },
         workflow: layoutForm.submitWorkflow!.toMap(),
       );
     } else {

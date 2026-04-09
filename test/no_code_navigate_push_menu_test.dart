@@ -49,10 +49,11 @@ void main() {
                 "name": "Submit Form",
                 "http": {
                   "method": "POST",
-                  "url": "/employees/create",
+                  "url": "/employees/create?form_name={{ form.name }}&parent_name={{ parent.name }}",
                   "body": {
                     "nik": "{{ form.nik }}",
-                    "name": "{{ form.name }}"
+                    "name": "{{ form.name }}",
+                    "parent_nik": "{{ parent.nik }}"
                   },
                   "mock_enabled": true,
                   "mock_data": {"status": "success", "message": "Employee created"}
@@ -244,10 +245,10 @@ void main() {
       // Create page title should be gone
       expect(find.textContaining(RegExp('Create', caseSensitive: false)), findsNothing);
 
-      // Verify HTTP Request Body
+      // Verify HTTP Request Body and URL (with query params)
       final captured = verify(() => EntityCustomRepository.instance.modify(
         accessToken: any(named: 'accessToken'),
-        path: '/employees/create',
+        path: captureAny(named: 'path'),
         method: 'POST',
         headers: any(named: 'headers'),
         data: captureAny(named: 'data'),
@@ -255,9 +256,15 @@ void main() {
         mockData: any(named: 'mockData'),
       )).captured;
 
-      final body = captured.first as Map<String, dynamic>;
+      final url = captured[0] as String;
+      final body = captured[1] as Map<String, dynamic>;
+
+      expect(url, contains('form_name=John Doe'));
+      expect(url, contains('parent_name=John Doe'));
+
       expect(body['nik'], '12345');
       expect(body['name'], 'John Doe');
+      expect(body['parent_nik'], '12345');
     });
   });
 }
