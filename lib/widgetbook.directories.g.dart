@@ -18,6 +18,8 @@ import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_pag
     as _flx_nocode_flutter_features_entity_screen_pages_enitity_view_page_widgetbook;
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.widgetbook.dart'
     as _flx_nocode_flutter_src_app_view_widget_entity_home_widgetbook;
+import 'package:flx_nocode_flutter/src/app/view/widget/no_code_navigate_push_menu.widgetbook.dart'
+    as _flx_nocode_flutter_src_app_view_widget_no_code_navigate_push_menu_widgetbook;
 import 'package:widgetbook/widgetbook.dart' as _widgetbook;
 
 final directories = <_widgetbook.WidgetbookNode>[
@@ -38,7 +40,13 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _flx_nocode_flutter_src_app_view_widget_entity_home_widgetbook
                             .buildMenuCustomUseCase,
-                  )
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Navigate Push Menu (Initial Value Test)',
+                    builder:
+                        _flx_nocode_flutter_src_app_view_widget_no_code_navigate_push_menu_widgetbook
+                            .buildNavigatePushMenuUseCase,
+                  ),
                 ],
               )
             ],
