@@ -15,7 +15,7 @@ import 'package:get/get.dart' hide Response, FormData;
 part 'entity_controller.freezed.dart';
 
 @freezed
-class EntityState with _$EntityState {
+abstract class EntityState with _$EntityState {
   const factory EntityState.initial() = Initial;
   const factory EntityState.loading() = Loading;
   const factory EntityState.success(Map<String, dynamic>? data) = Success;

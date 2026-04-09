@@ -11,7 +11,7 @@ import '../backend_other.dart';
 part 'entity_custom_query_bloc.freezed.dart';
 
 @freezed
-class EntityCustomQueryState with _$EntityCustomQueryState {
+abstract class EntityCustomQueryState with _$EntityCustomQueryState {
   const factory EntityCustomQueryState.initial() = _Initial;
   const factory EntityCustomQueryState.loading(
     PageOptions<Map<String, dynamic>> pageOptions,
@@ -23,7 +23,7 @@ class EntityCustomQueryState with _$EntityCustomQueryState {
 }
 
 @freezed
-class EntityCustomQueryEvent with _$EntityCustomQueryEvent {
+abstract class EntityCustomQueryEvent with _$EntityCustomQueryEvent {
   const factory EntityCustomQueryEvent.fetch({
     PageOptions<Map<String, dynamic>>? pageOptions,
     List<Filter>? filters,
@@ -32,6 +32,7 @@ class EntityCustomQueryEvent with _$EntityCustomQueryEvent {
     required int? cachedDurationSeconds,
     bool? mockEnabled,
     Object? mockData,
+    @Default([]) List<Map<String, dynamic>> parentData,
   }) = _Fetch;
   const factory EntityCustomQueryEvent.fetchById({
     required String id,
@@ -39,6 +40,7 @@ class EntityCustomQueryEvent with _$EntityCustomQueryEvent {
     required String url,
     bool? mockEnabled,
     Object? mockData,
+    @Default([]) List<Map<String, dynamic>> parentData,
   }) = _FetchById;
 }
 
@@ -48,15 +50,17 @@ class EntityCustomQueryBloc
     on<EntityCustomQueryEvent>(
       (event, emit) async {
         await event.when(
-          fetchById: (id, method, url, mockEnabled, mockData) async {
+          fetchById: (id, method, url, mockEnabled, mockData, parentData) async {
             print(
                 'EntityCustomQueryBloc.fetchById: id=$id, method=$method, url=$url');
             emit(_Loading(_pageOptions));
             try {
-              final interpolatedUrl = url.interpolateJavascript();
+              final scope = <String, dynamic>{
+                if (parentData.isNotEmpty) 'parent': parentData.last,
+              };
+              final interpolatedUrl = url.interpolateJavascript(scope);
               final finalUrl = urlWithValuesReplace(interpolatedUrl, {});
-              final headers =
-                  <String, String>{}; // Currently null/empty in fetchById
+              final headers = <String, String>{};
               print(
                   'EntityCustomQueryBloc.fetchById: calling repository with path: $finalUrl, headers: $headers');
               final data = await EntityCustomRepository.instance.fetchById(
@@ -83,6 +87,7 @@ class EntityCustomQueryBloc
             cachedDurationSeconds,
             mockEnabled,
             mockData,
+            parentData,
           ) async {
             print(
                 'EntityCustomQueryBloc.fetch: method=$method, url=$url, cachedDurationSeconds=$cachedDurationSeconds');
@@ -97,7 +102,10 @@ class EntityCustomQueryBloc
                 filterMap.addAll(f.getBackendParams());
               }
 
-              final interpolatedUrl = url.interpolateJavascript();
+              final scope = <String, dynamic>{
+                if (parentData.isNotEmpty) 'parent': parentData.last,
+              };
+              final interpolatedUrl = url.interpolateJavascript(scope);
               final finalUrl = urlWithValuesReplace(interpolatedUrl, {});
               print(
                   'EntityCustomQueryBloc.fetch: calling repository with path: $finalUrl, filterMap=$filterMap');

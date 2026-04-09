@@ -1,3 +1,4 @@
+// dart format width=80
 // coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_import, prefer_relative_imports, directives_ordering
@@ -20,6 +21,32 @@ import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.widgetbook.da
 import 'package:widgetbook/widgetbook.dart' as _widgetbook;
 
 final directories = <_widgetbook.WidgetbookNode>[
+  _widgetbook.WidgetbookFolder(
+    name: 'app',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'view',
+        children: [
+          _widgetbook.WidgetbookFolder(
+            name: 'widget',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'MenuCustom',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Default',
+                    builder:
+                        _flx_nocode_flutter_src_app_view_widget_entity_home_widgetbook
+                            .buildMenuCustomUseCase,
+                  )
+                ],
+              )
+            ],
+          )
+        ],
+      )
+    ],
+  ),
   _widgetbook.WidgetbookFolder(
     name: 'features',
     children: [
@@ -78,7 +105,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                         builder:
                             _flx_nocode_flutter_features_data_table_screen_widgets_entity_data_table_widgetbook
                                 .buildMenuDataTableCustomFromJsonUseCase,
-                      ),
+                      )
                     ],
                   )
                 ],
@@ -104,7 +131,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                         builder:
                             _flx_nocode_flutter_features_entity_screen_pages_enitity_view_page_widgetbook
                                 .buildEntityViewPageUseCase,
-                      ),
+                      )
                     ],
                   )
                 ],
@@ -112,38 +139,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           )
         ],
-      )
+      ),
     ],
   ),
-  _widgetbook.WidgetbookFolder(
-    name: 'src',
-    children: [
-      _widgetbook.WidgetbookFolder(
-        name: 'app',
-        children: [
-          _widgetbook.WidgetbookFolder(
-            name: 'view',
-            children: [
-              _widgetbook.WidgetbookFolder(
-                name: 'widget',
-                children: [
-                  _widgetbook.WidgetbookComponent(
-                    name: 'MenuCustom',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Default',
-                        builder:
-                            _flx_nocode_flutter_src_app_view_widget_entity_home_widgetbook
-                                .buildMenuCustomUseCase,
-                      ),
-                    ],
-                  )
-                ],
-              )
-            ],
-          )
-        ],
-      )
-    ],
-  )
 ];

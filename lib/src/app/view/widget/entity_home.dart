@@ -232,6 +232,7 @@ class NoCodePageLoader extends StatefulWidget {
   final Configuration Function()? getConfiguration;
   final bool bypassPermission;
   final String? basePath;
+  final List<Map<String, dynamic>> parentData;
 
   const NoCodePageLoader({
     super.key,
@@ -244,6 +245,7 @@ class NoCodePageLoader extends StatefulWidget {
     this.getConfiguration,
     this.basePath,
     required this.bypassPermission,
+    this.parentData = const [],
   });
 
   @override
@@ -283,7 +285,7 @@ class _NoCodePageLoaderState extends State<NoCodePageLoader> {
           }
 
           return MenuCustom(
-            parentData: [],
+            parentData: widget.parentData,
             entity: entity,
             breadcrumbList: widget.breadcrumbList,
             embedded: widget.embedded,

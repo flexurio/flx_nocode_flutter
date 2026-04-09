@@ -81,6 +81,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             url: readAll.url,
             mockEnabled: readAll.mockEnabled,
             mockData: readAll.mockData,
+            parentData: widget.parentData,
           ),
         );
   }
