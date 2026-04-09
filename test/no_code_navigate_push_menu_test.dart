@@ -8,6 +8,10 @@ import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
+
+class MockEntityCustomRepository extends Mock implements EntityCustomRepository {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +41,28 @@ void main() {
           "id": layoutFormId,
           "label": "Create Employee",
           "action": "create",
+          "submit_workflow": {
+            "submit_label": "Submit",
+            "actions": [
+              {
+                "type": "http",
+                "name": "Submit Form",
+                "http": {
+                  "method": "POST",
+                  "url": "/employees/create",
+                  "body": {
+                    "nik": "{{ form.nik }}",
+                    "name": "{{ form.name }}"
+                  },
+                  "mock_enabled": true,
+                  "mock_data": {"status": "success", "message": "Employee created"}
+                }
+              },
+              {
+                "type": "close_modal"
+              }
+            ]
+          },
           "components": [
             {
               "id": "nik",
@@ -91,7 +117,27 @@ void main() {
         if (key.contains('asset/translation/en.json') || key.contains('asset/translation/id.json')) {
           return ByteData.view(utf8.encode(jsonEncode({})).buffer);
         }
+        if (key.contains('packages/flutter_js/assets/js/')) {
+          return ByteData.view(utf8.encode('// dummy').buffer);
+        }
         return null;
+      });
+
+      // Register default mock behavior
+      final mockRepo = MockEntityCustomRepository();
+      EntityCustomRepository.instance = mockRepo;
+      
+      when(() => mockRepo.modify(
+        accessToken: any(named: 'accessToken'),
+        path: any(named: 'path'),
+        method: any(named: 'method'),
+        headers: any(named: 'headers'),
+        data: any(named: 'data'),
+        mockEnabled: any(named: 'mockEnabled'),
+        mockData: any(named: 'mockData'),
+      )).thenAnswer((invocation) async {
+        final mockData = invocation.namedArguments[#mockData];
+        return (mockData as Map<String, dynamic>?) ?? {};
       });
     });
 
@@ -177,6 +223,41 @@ void main() {
 
       expect(nikController?.text, '12345');
       expect(nameController?.text, 'John Doe');
+
+      // 6. Click Submit button
+      final submitButton = find.textContaining(RegExp('Submit', caseSensitive: false));
+      expect(submitButton, findsOneWidget);
+      await tester.tap(submitButton);
+      
+      // Wait for workflow execution and navigation back
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
+
+      // 7. Verify we are back at the Menu page (Employee title should be present)
+      await tester.pumpAndSettle();
+      
+      // Wait for the toast auto-dismiss timer (7s) to clear to avoid pending timer error
+      await tester.pump(const Duration(seconds: 8)); 
+
+      expect(find.text('Employee'), findsAtLeast(1));
+      // Create page title should be gone
+      expect(find.textContaining(RegExp('Create', caseSensitive: false)), findsNothing);
+
+      // Verify HTTP Request Body
+      final captured = verify(() => EntityCustomRepository.instance.modify(
+        accessToken: any(named: 'accessToken'),
+        path: '/employees/create',
+        method: 'POST',
+        headers: any(named: 'headers'),
+        data: captureAny(named: 'data'),
+        mockEnabled: true,
+        mockData: any(named: 'mockData'),
+      )).captured;
+
+      final body = captured.first as Map<String, dynamic>;
+      expect(body['nik'], '12345');
+      expect(body['name'], 'John Doe');
     });
   });
 }

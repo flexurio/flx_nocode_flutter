@@ -11,10 +11,13 @@ class EntityCustomRepository extends Repository {
   });
 
   /// Singleton instance
-  static final EntityCustomRepository instance = EntityCustomRepository(
+  static EntityCustomRepository _instance = EntityCustomRepository(
     dio: Api.dio,
-    onUnauthorized: () {}, // You can replace with auth handler
+    onUnauthorized: () {},
   );
+
+  static EntityCustomRepository get instance => _instance;
+  static set instance(EntityCustomRepository value) => _instance = value;
 
   /// Internal request handler
   Future<Response<T>> _request<T>({
@@ -240,6 +243,12 @@ class EntityCustomRepository extends Repository {
         print('──────────────────────────────────────────────────');
         print('[EntityCustomRepository] 🎭 MOCK MODIFY REQUEST');
         print('📂 Path  : $path');
+        if (data != null) {
+          print('📦 Body  :');
+          data.forEach((key, value) {
+            print('   👉 $key: $value');
+          });
+        }
         print('──────────────────────────────────────────────────');
         return (mockData as Map<String, dynamic>?) ?? {};
       }
