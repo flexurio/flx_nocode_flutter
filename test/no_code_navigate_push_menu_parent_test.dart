@@ -8,13 +8,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
+import 'package:flx_nocode_flutter/src/app/model/theme.dart';
 
 class MockEntityCustomRepository extends Mock implements EntityCustomRepository {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('EntityHome Parent Data URL Test', () {
+  group('NoCode.navigatePushMenu Parent Data Test', () {
     const entityId = 'employee';
     
     final mockEntityJson = {
@@ -48,6 +49,12 @@ void main() {
     setUpAll(() async {
       registerFallbackValue(core.PageOptions<Map<String, dynamic>>.empty());
       SharedPreferences.setMockInitialValues({});
+      
+      // Initialize configuration for FlavorConfig
+      Configuration.instance = Configuration.empty().copyWith(
+        theme: ThemeC(color: '#03A9F4', colorSoft: '#B3E5FC'),
+      );
+
       await EasyLocalization.ensureInitialized();
 
       final binaryMessenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
@@ -94,32 +101,31 @@ void main() {
         mockEnabled: any(named: 'mockEnabled'),
         mockData: any(named: 'mockData'),
       )).thenAnswer((invocation) async {
-        final mockData = invocation.namedArguments[#mockData];
         final pageOptions = invocation.namedArguments[#pageOptions] as core.PageOptions<Map<String, dynamic>>;
         return pageOptions.copyWith(data: []);
       });
     });
 
-    testWidgets('should interpolate parent.id in read_all URL', (WidgetTester tester) async {
-      final parentData = [
-        {'id': 'dept_001', 'name': 'IT Department'}
-      ];
+    testWidgets('should interpolate parent.id in read_all URL via NoCode.navigatePushMenu', (WidgetTester tester) async {
+      final pageData = {'id': 'dept_001', 'name': 'IT Department'};
 
       await tester.pumpWidget(
         MaterialApp(
-          home: EasyLocalization(
-            supportedLocales: const [Locale('en'), Locale('id')],
-            path: 'asset/translation',
-            fallbackLocale: const Locale('en'),
-            child: NoCodePageLoader(
-              entityId: entityId,
-              parentData: parentData,
-              bypassPermission: true,
+          home: Builder(
+            builder: (context) => ElevatedButton(
+              onPressed: () => NoCode.navigatePushMenu(
+                context: context,
+                entityId: entityId,
+                pageData: pageData,
+              ),
+              child: const Text('Navigate'),
             ),
           ),
         ),
       );
 
+      // Trigger navigation
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle();
 
       // Verify repository was called with the correctly interpolated URL
