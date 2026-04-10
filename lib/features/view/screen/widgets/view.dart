@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
@@ -27,13 +28,13 @@ extension DViewWidget on DView {
             child: Row(
               mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
-              children: const [
-                SizedBox(
+              children: [
+                const SizedBox(
                   width: 18,
                   height: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
-                Gap(8),
+                const Gap(8),
               ],
             ),
           );
