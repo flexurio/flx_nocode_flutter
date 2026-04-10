@@ -16,15 +16,25 @@ extension DViewWidget on DView {
       future: EntityCustom.getEntity(entity),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const SizedBox(
-            width: 24,
-            height: 24,
-            child: Center(
-              child: SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
+          return Container(
+            width: expanded ? double.infinity : 120,
+            height: 48,
+            decoration: BoxDecoration(
+              color: Theme.of(context).disabledColor.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: const [
+                SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                Gap(8),
+              ],
             ),
           );
         }

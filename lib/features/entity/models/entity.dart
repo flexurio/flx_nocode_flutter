@@ -217,6 +217,9 @@ class EntityCustom extends HiveObject {
     );
   }
 
+  /// A static cache to store loaded entity configurations.
+  static final Map<String, EntityCustom> _entityCache = {};
+
   /// Generates a map of dummy data based on the entity's fields.
   ///
   /// This is useful for testing or populating forms with placeholder values.
@@ -258,6 +261,11 @@ class EntityCustom extends HiveObject {
     bool useFileSystem = false,
     String? basePath,
   }) async {
+    // Check cache first
+    if (_entityCache.containsKey(id) && !useFileSystem) {
+      return _entityCache[id];
+    }
+
     try {
       print('[EntityCustom] getEntity "$id"');
       final data = await loadFromAssetOrFile(
@@ -268,7 +276,10 @@ class EntityCustom extends HiveObject {
         useFileSystem: useFileSystem,
         overrideBasePath: basePath,
       );
-      return EntityCustom.fromJson(json.decode(data));
+      final entity = EntityCustom.fromJson(json.decode(data));
+      // Store in cache
+      _entityCache[id] = entity;
+      return entity;
     } on Exception {
       rethrow;
     } catch (e, stackTrace) {
