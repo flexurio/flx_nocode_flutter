@@ -16,6 +16,8 @@ import 'package:flx_nocode_flutter/features/data_table/screen/widgets/entity_dat
     as _flx_nocode_flutter_features_data_table_screen_widgets_entity_data_table_widgetbook;
 import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_page.widgetbook.dart'
     as _flx_nocode_flutter_features_entity_screen_pages_enitity_view_page_widgetbook;
+import 'package:flx_nocode_flutter/features/view/screen/widgets/view.widgetbook.dart'
+    as _flx_nocode_flutter_features_view_screen_widgets_view_widgetbook;
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.widgetbook.dart'
     as _flx_nocode_flutter_src_app_view_widget_entity_home_widgetbook;
 import 'package:flx_nocode_flutter/src/app/view/widget/no_code_navigate_push_menu.widgetbook.dart'
@@ -142,6 +144,33 @@ final directories = <_widgetbook.WidgetbookNode>[
                       )
                     ],
                   )
+                ],
+              )
+            ],
+          )
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'view',
+        children: [
+          _widgetbook.WidgetbookFolder(
+            name: 'models',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'DView',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Large Button',
+                    builder:
+                        _flx_nocode_flutter_features_view_screen_widgets_view_widgetbook
+                            .buildDViewButtonLargeUseCase,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Loading',
+                    builder:
+                        _flx_nocode_flutter_features_view_screen_widgets_view_widgetbook
+                            .buildDViewButtonLoadingUseCase,
+                  ),
                 ],
               )
             ],

@@ -12,32 +12,30 @@ extension DViewWidget on DView {
     bool bypassPermission, {
     bool expanded = false,
     VoidCallback? onRefresh,
+    EntityCustom? entityOverride,
+    bool forceLoading = false,
   }) {
+    if (forceLoading) {
+      return _buildLoading(context, expanded);
+    }
+
+    if (entityOverride != null) {
+      return _buildButton(
+        context,
+        entityOverride,
+        data,
+        parentData,
+        bypassPermission,
+        expanded,
+        onRefresh,
+      );
+    }
+
     return FutureBuilder<EntityCustom?>(
       future: EntityCustom.getEntity(entity),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Container(
-            width: expanded ? double.infinity : 120,
-            height: 48,
-            decoration: BoxDecoration(
-              color: Theme.of(context).disabledColor.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-                const Gap(8),
-              ],
-            ),
-          );
+          return _buildLoading(context, expanded);
         }
 
         final e = snapshot.data;
@@ -46,29 +44,59 @@ extension DViewWidget on DView {
           return NoCodeError('Entity not found! Id: $entity');
         }
 
-        return LightButton(
-          action: DataAction.view,
-          title: label,
-          permission: null,
-          onPressed: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MenuCustom.fromId(
-                  parentData: List.from(parentData)..add(data),
-                  breadcrumbList: [e.label],
-                  entityId: this.entity,
-                  initialFilters: filters(e, data),
-                  bypassPermission: bypassPermission,
-                ),
-              ),
-            );
-            onRefresh?.call();
-          },
-          iconOverride: Icons.visibility,
-          expanded: expanded,
+        return _buildButton(
+          context,
+          e,
+          data,
+          parentData,
+          bypassPermission,
+          expanded,
+          onRefresh,
         );
       },
+    );
+  }
+
+  Widget _buildButton(
+    BuildContext context,
+    EntityCustom e,
+    Map<String, dynamic> data,
+    List<Map<String, dynamic>> parentData,
+    bool bypassPermission,
+    bool expanded,
+    VoidCallback? onRefresh,
+  ) {
+    return LightButton(
+      action: DataAction.view,
+      title: label,
+      permission: null,
+      onPressed: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MenuCustom.fromId(
+              parentData: List.from(parentData)..add(data),
+              breadcrumbList: [e.label],
+              entityId: entity,
+              initialFilters: filters(e, data),
+              bypassPermission: bypassPermission,
+            ),
+          ),
+        );
+        onRefresh?.call();
+      },
+      expanded: expanded,
+    );
+  }
+
+  Widget _buildLoading(BuildContext context, bool expanded) {
+    return LightButton(
+      permission: null,
+      action: DataAction.view,
+      title: label,
+      isInProgress: true,
+      expanded: expanded,
+      onPressed: () {},
     );
   }
 }
