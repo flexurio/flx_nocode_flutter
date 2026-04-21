@@ -12,6 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_dropdown.widgetbook.dart'
     as _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook;
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table.widgetbook.dart'
+    as _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook;
 import 'package:flx_nocode_flutter/features/data_table/screen/widgets/entity_data_table.widgetbook.dart'
     as _flx_nocode_flutter_features_data_table_screen_widgets_entity_data_table_widgetbook;
 import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_page.widgetbook.dart'
@@ -64,6 +66,28 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'component',
         children: [
           _widgetbook.WidgetbookFolder(
+            name: 'models',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'ComponentTable',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Live Widget (Local Data)',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
+                            .mockComponentTableLive,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Mock Design',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
+                            .mockComponentTableDesign,
+                  ),
+                ],
+              )
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
             name: 'screen',
             children: [
               _widgetbook.WidgetbookFolder(
@@ -90,12 +114,24 @@ final directories = <_widgetbook.WidgetbookNode>[
                             _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
                                 .mockComponentDropdownHug,
                       ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Live Widget (Local Data)',
+                        builder:
+                            _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
+                                .mockComponentDropdownLive,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Mock Design (From JSON)',
+                        builder:
+                            _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
+                                .mockComponentDropdownDesign,
+                      ),
                     ],
                   )
                 ],
               )
             ],
-          )
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(

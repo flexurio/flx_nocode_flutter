@@ -1,8 +1,50 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_dropdown.dart';
 import 'component_dropdown.dart';
 import 'component_dropdown_widget.dart';
+
+@UseCase(name: 'Mock Design (From JSON)', type: ComponentDropdownWidget)
+Widget mockComponentDropdownDesign(BuildContext context) {
+  const jsonRaw = '''
+  {
+    "id": "design_dropdown",
+    "label": "Gender",
+    "options": ["Male", "Female", "Other"],
+    "widthMode": "fixed",
+    "width": 250
+  }
+  ''';
+
+  final map = json.decode(jsonRaw) as Map<String, dynamic>;
+  final component = ComponentDropdown.fromMap(map);
+
+  return Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: component.toMockWidget(),
+  );
+}
+
+@UseCase(name: 'Live Widget (Local Data)', type: ComponentDropdownWidget)
+Widget mockComponentDropdownLive(BuildContext context) {
+  const jsonRaw = '''
+  {
+    "id": "live_dropdown",
+    "label": "Role Selection",
+    "options": ["Admin", "Editor", "Viewer"],
+    "widthMode": "fill"
+  }
+  ''';
+
+  final map = json.decode(jsonRaw) as Map<String, dynamic>;
+  final component = ComponentDropdown.fromMap(map);
+
+  return Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: component.toWidget({}),
+  );
+}
 
 @UseCase(name: 'Fill Width', type: ComponentDropdownWidget)
 Widget mockComponentDropdownFill(BuildContext context) {
