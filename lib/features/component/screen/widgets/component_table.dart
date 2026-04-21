@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' hide TColumn;
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:get/get.dart';
 import 'component_table_controller.dart';
@@ -59,7 +60,7 @@ extension ComponentTableWidgets on ComponentTable {
           // Placeholder Rows
           for (var i = 0; i < 2; i++)
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
               decoration: BoxDecoration(
                 border: i == 0
                     ? Border(bottom: BorderSide(color: Colors.grey.shade100))
@@ -74,13 +75,15 @@ extension ComponentTableWidgets on ComponentTable {
                               child: Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 8),
-                                child: Text(
-                                  'Data ${i + 1}',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                ),
+                                child: c.component != null
+                                    ? c.component!.toMockWidget()
+                                    : Text(
+                                        'Data ${i + 1}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
                               ),
                             ))
                         .toList(),
@@ -164,6 +167,16 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
           title: c.header,
           width: c.width,
           builder: (row, index) {
+            if (c.component != null) {
+              return c.component!.toWidget(
+                isSmall: true,
+                data: {
+                  ...widget.data,
+                  "current": row,
+                  "row": row,
+                },
+              );
+            }
             final text = _buildCellText(row, c);
             return Text(
               text.interpolateJavascript({

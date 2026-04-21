@@ -4,10 +4,11 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 import 'component_dropdown_widget.dart';
 
 extension ComponentDropdownWidgets on ComponentDropdown {
-  Widget toWidget(JsonMap data) {
+  Widget toWidget(JsonMap data, {bool isSmall = false}) {
     return ComponentDropdownWidget(
       component: this,
       data: data,
+      isSmall: isSmall,
     );
   }
 

@@ -141,6 +141,7 @@ class ComponentTable extends Component {
                   'header': e.header,
                   'body': e.body,
                   'width': e.width,
+                  if (e.component != null) 'component': e.component!.toMap(),
                 })
             .toList(),
       };
@@ -176,8 +177,9 @@ class TColumn {
   final String body;
 
   final double? width;
+  final Component? component;
 
-  TColumn({required this.header, required this.body, this.width});
+  TColumn({required this.header, required this.body, this.width, this.component});
 
   /// Creates a [TColumn] from a JSON-compatible map.
   ///
@@ -187,6 +189,9 @@ class TColumn {
       header: json['header']?.toString().trim() ?? '',
       body: json['body']?.toString().trim() ?? '',
       width: json['width']?.toDouble(),
+      component: json['component'] != null
+          ? Component.fromMap(json['component'] as Map<String, dynamic>)
+          : null,
     );
   }
 }

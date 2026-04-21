@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/filter.dart';
 
 extension ComponentTextFieldWidgets on ComponentTextField {
-  Widget toWidget(Map<String, dynamic> data) {
+  Widget toWidget(Map<String, dynamic> data, {bool isSmall = false}) {
     final controller = data['controller'] as TextEditingController? ??
         (data['allControllers'] != null
             ? (data['allControllers'] as Map<String, TextEditingController>)[id]
             : null);
+    if (isSmall) {
+      return FTextFieldSmall(
+        controller: controller ?? TextEditingController(),
+        hintText: label,
+        onChanged: (val) {
+          // controller manages text
+        },
+      );
+    }
+
     // Simple text field rendering with label and constraints
     return FTextFormField(
       controller: controller,

@@ -8,11 +8,13 @@ import 'component_dropdown_controller.dart';
 class ComponentDropdownWidget extends StatefulWidget {
   final ComponentDropdown component;
   final JsonMap data;
+  final bool isSmall;
 
   const ComponentDropdownWidget({
     super.key,
     required this.component,
     required this.data,
+    this.isSmall = false,
   });
 
   @override
@@ -27,7 +29,7 @@ class _ComponentDropdownWidgetState extends State<ComponentDropdownWidget> {
   @override
   void initState() {
     super.initState();
-    tag = widget.component.id;
+    tag = '${widget.component.id}_${identityHashCode(this)}';
 
     // Initialize or Update existing controller
     if (Get.isRegistered<ComponentDropdownController>(tag: tag)) {
@@ -71,25 +73,39 @@ class _ComponentDropdownWidgetState extends State<ComponentDropdownWidget> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          FDropDownSearch<Map<String, dynamic>>(
-            status: status,
-            items: controller.options,
-            initialValue: controller.displayedValue.value,
-            labelText: widget.component.label,
-            enabled: !controller.isLoading.value,
-            validator: widget.component.required
-                ? (value) {
-                    if (value == null || value.isEmpty) {
-                      return '${widget.component.label} is required';
+          if (widget.isSmall)
+            FDropDownSearchSmall<Map<String, dynamic>>(
+              status: status,
+              items: controller.options,
+              initialValue: controller.displayedValue.value,
+              labelText: widget.component.label,
+              enabled: !controller.isLoading.value,
+              itemAsString: (item) => item['label']?.toString() ?? '',
+              onChanged: (val) {
+                controller.onSelectionChanged(val);
+              },
+              iconField: Icons.list,
+            )
+          else
+            FDropDownSearch<Map<String, dynamic>>(
+              status: status,
+              items: controller.options,
+              initialValue: controller.displayedValue.value,
+              labelText: widget.component.label,
+              enabled: !controller.isLoading.value,
+              validator: widget.component.required
+                  ? (value) {
+                      if (value == null || value.isEmpty) {
+                        return '${widget.component.label} is required';
+                      }
+                      return null;
                     }
-                    return null;
-                  }
-                : null,
-            itemAsString: (item) => item['label']?.toString() ?? '',
-            onChanged: (val) {
-              controller.onSelectionChanged(val);
-            },
-          ),
+                  : null,
+              itemAsString: (item) => item['label']?.toString() ?? '',
+              onChanged: (val) {
+                controller.onSelectionChanged(val);
+              },
+            ),
           if (controller.error.value != null)
             Padding(
               padding: const EdgeInsets.only(top: 4),

@@ -30,6 +30,7 @@ extension ComponentWidget on Component {
     Map<String, TextEditingController>? controllers,
     List<Map<String, dynamic>>? parentData,
     DataAction? dataAction,
+    bool isSmall = false,
   }) {
     final fullData = {
       ...data,
@@ -52,13 +53,13 @@ extension ComponentWidget on Component {
     } else if (this.type == ComponentColumn.componentId) {
       return (this as ComponentColumn).toWidget(fullData);
     } else if (this.type == ComponentTextField.componentId) {
-      return (this as ComponentTextField).toWidget(fullData);
+      return (this as ComponentTextField).toWidget(fullData, isSmall: isSmall);
     } else if (this.type == ComponentDatePicker.componentId) {
       return (this as ComponentDatePicker).toWidget(fullData);
     } else if (this.type == ComponentCheckbox.componentId) {
       return (this as ComponentCheckbox).toWidget(fullData);
     } else if (this.type == ComponentDropdown.componentId) {
-      return (this as ComponentDropdown).toWidget(fullData);
+      return (this as ComponentDropdown).toWidget(fullData, isSmall: isSmall);
     } else if (this.type == ComponentRadio.componentId) {
       return (this as ComponentRadio).toWidget(fullData);
     } else if (this.type == ComponentButton.componentId) {
