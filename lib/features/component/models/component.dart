@@ -19,6 +19,7 @@ export 'package:flx_nocode_flutter/features/component/models/component_time_fiel
 export 'package:flx_nocode_flutter/features/component/models/component_donut_chart.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_pie_chart.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_bar_chart.dart';
+export 'package:flx_nocode_flutter/features/component/models/component_chart.dart';
 
 import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
 import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
@@ -41,6 +42,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_time_fiel
 import 'package:flx_nocode_flutter/features/component/models/component_donut_chart.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_pie_chart.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_bar_chart.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_chart.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
@@ -259,6 +261,7 @@ class Component {
     if (comp is ComponentButton) return comp.text;
     if (comp is ComponentIconButton) return comp.icon;
     if (comp is ComponentText) return comp.value;
+    if (comp is ComponentChart) return comp.title.isNotEmpty ? comp.title : id;
 
     return id;
   }
