@@ -2,9 +2,9 @@ import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_chart.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
-/// A donut chart component that retrieves its data from an HTTP endpoint or other data source.
-class ComponentDonutChart extends ComponentChart {
-  ComponentDonutChart({
+/// A pie chart component that retrieves its data from an HTTP endpoint or other data source.
+class ComponentPieChart extends ComponentChart {
+  ComponentPieChart({
     required super.id,
     required super.http,
     required super.labelKey,
@@ -15,11 +15,11 @@ class ComponentDonutChart extends ComponentChart {
     super.referenceId,
     super.visibilityCondition,
     super.events = const {},
-  }) : super(type: 'donut_chart');
+  }) : super(type: 'pie_chart');
 
-  /// Creates an empty [ComponentDonutChart] with default values.
-  factory ComponentDonutChart.empty(String id) {
-    return ComponentDonutChart(
+  /// Creates an empty [ComponentPieChart] with default values.
+  factory ComponentPieChart.empty(String id) {
+    return ComponentPieChart(
       id: id,
       http: HttpData.empty(),
       labelKey: 'label',
@@ -28,16 +28,16 @@ class ComponentDonutChart extends ComponentChart {
   }
 
   /// Static component type identifier.
-  static String get componentId => 'donut_chart';
+  static String get componentId => 'pie_chart';
 
-  /// Creates a [ComponentDonutChart] instance from a JSON-compatible map.
-  factory ComponentDonutChart.fromMap(Map<String, dynamic> map) {
+  /// Creates a [ComponentPieChart] instance from a JSON-compatible map.
+  factory ComponentPieChart.fromMap(Map<String, dynamic> map) {
     final id = map['id']?.toString().trim();
     if (id == null || id.isEmpty) {
       throw const FormatException('Component "id" is required');
     }
 
-    return ComponentDonutChart(
+    return ComponentPieChart(
       id: id,
       http: map['http'] == null
           ? HttpData.empty()

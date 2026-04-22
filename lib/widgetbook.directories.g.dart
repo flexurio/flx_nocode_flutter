@@ -10,6 +10,8 @@
 // **************************************************************************
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_chart.widgetbook.dart'
+    as _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook;
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_dropdown.widgetbook.dart'
     as _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook;
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table.widgetbook.dart'
@@ -69,6 +71,50 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'models',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'ComponentBarChart',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Bar Chart',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook
+                            .barChartUseCase,
+                  )
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ComponentChart',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Chart Mocks',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook
+                            .chartMocksUseCase,
+                  )
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ComponentDonutChart',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Donut Chart',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook
+                            .donutChartUseCase,
+                  )
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ComponentPieChart',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Pie Chart',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook
+                            .pieChartUseCase,
+                  )
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'ComponentTable',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -96,7 +142,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                             .mockComponentTableWithActions,
                   ),
                 ],
-              )
+              ),
             ],
           ),
           _widgetbook.WidgetbookFolder(

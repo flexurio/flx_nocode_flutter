@@ -155,3 +155,11 @@ General purpose box with styling.
 | `date_picker` | Date selection | `label`, `initialValue`, `dateFormat`, `minDate`, `maxDate` |
 | `divider` | Visual separator | `thickness`, `indent`, `endIndent` |
 | `field_display` | Read-only labeled value | `label`, `value` |
+
+---
+
+## 6. Chart Components
+
+Charts allow visualizing data from dynamic or local sources.
+
+**See the dedicated [Charts Documentation](./charts.md) for full details.**
