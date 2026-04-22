@@ -120,7 +120,7 @@ class _ComponentBarChartWidgetState extends State<_ComponentBarChartWidget> {
       return SizedBox(
         width: widget.component.width,
         height: widget.component.height,
-        child: BarChart(
+        child: FlxBarChart(
           title: widget.component.title,
           dataSource: controller.chartData,
         ),

@@ -120,7 +120,7 @@ class _ComponentDonutChartWidgetState extends State<_ComponentDonutChartWidget> 
       return SizedBox(
         width: widget.component.width,
         height: widget.component.height,
-        child: DonutChart(
+        child: FlxDonutChart(
           title: widget.component.title,
           dataSource: controller.chartData,
         ),

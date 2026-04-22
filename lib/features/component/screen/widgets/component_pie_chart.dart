@@ -120,7 +120,7 @@ class _ComponentPieChartWidgetState extends State<_ComponentPieChartWidget> {
       return SizedBox(
         width: widget.component.width,
         height: widget.component.height,
-        child: PieChart(
+        child: FlxPieChart(
           title: widget.component.title,
           dataSource: controller.chartData,
         ),
