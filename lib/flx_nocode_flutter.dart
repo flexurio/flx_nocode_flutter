@@ -26,3 +26,7 @@ export 'features/field/models/type.dart';
 export 'features/component/models/component_button.dart';
 export 'features/component/models/component_text_field.dart';
 export 'features/component/models/component_table.dart';
+export 'features/component/models/component_chart.dart';
+export 'features/component/models/component_pie_chart.dart';
+export 'features/component/models/component_bar_chart.dart';
+export 'features/component/models/component_donut_chart.dart';

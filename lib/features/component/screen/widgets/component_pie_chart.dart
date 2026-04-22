@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:get/get.dart';
-import 'package:flx_core_flutter/src/app/view/widget/chart.dart';
 import 'component_pie_chart_controller.dart';
 
 extension ComponentPieChartWidgets on ComponentPieChart {
