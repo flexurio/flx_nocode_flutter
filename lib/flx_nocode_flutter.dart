@@ -1,5 +1,6 @@
 export 'features/component/models/component.dart';
 export 'core/network/models/http_data.dart';
+export 'shared/services/http_request_executor.dart';
 
 export 'features/data_table/screen/widgets/entity_data_table.dart';
 export 'features/entity/screen/pages/enitity_view_page.dart';

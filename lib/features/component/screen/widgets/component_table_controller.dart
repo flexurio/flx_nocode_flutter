@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
+import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 
 class ComponentTableController extends GetxController {
@@ -66,7 +67,10 @@ class ComponentTableController extends GetxController {
       debugPrint('Headers: ${requestConfig.headers}');
       debugPrint('Body: ${requestConfig.body}');
 
-      final result = await httpData.execute(contextData);
+      final executor = Get.isRegistered<HttpRequestExecutor>()
+          ? Get.find<HttpRequestExecutor>()
+          : null;
+      final result = await httpData.execute(contextData, executor: executor);
 
       debugPrint('--- ComponentTable HTTP Response ---');
       debugPrint('Is Success: ${result.isSuccess}');

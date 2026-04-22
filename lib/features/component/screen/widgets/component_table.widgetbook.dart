@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
+import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
+import 'package:get/get.dart';
+import 'package:mocktail/mocktail.dart';
 import 'component_table.dart';
 
 @UseCase(name: 'Mock Design', type: ComponentTable)
@@ -67,12 +70,56 @@ Widget mockComponentTableLive(BuildContext context) {
   );
 }
 
+class MockHttpRequestExecutor extends Mock implements HttpRequestExecutor {}
+
+class HttpRequestConfigFake extends Fake implements HttpRequestConfig {}
+
 @UseCase(name: 'With Dropdown Component', type: ComponentTable)
 Widget mockComponentTableWithDropdown(BuildContext context) {
+  // 1. Setup Mock Executor
+  if (!Get.isRegistered<HttpRequestExecutor>()) {
+    final mockExecutor = MockHttpRequestExecutor();
+
+    // Register fallback for any() to work with HttpRequestConfig
+    registerFallbackValue(HttpRequestConfigFake());
+
+    when(() => mockExecutor.execute(any())).thenAnswer((_) async {
+      // Simulate network delay
+      await Future.delayed(const Duration(milliseconds: 2000));
+
+      return HttpRequestResult.success(
+        statusCode: 200,
+        data: [
+          {
+            "name": "Alice Smith",
+            "status": "Active",
+            "email": "alice@example.com"
+          },
+          {
+            "name": "Bob Jones",
+            "status": "Inactive",
+            "email": "bob@example.com"
+          },
+          {
+            "name": "Charlie Brown",
+            "status": "Pending",
+            "email": "charlie@example.com"
+          },
+          {
+            "name": "David Wilson",
+            "status": "Active",
+            "email": "david@example.com"
+          },
+        ],
+      );
+    });
+
+    Get.put<HttpRequestExecutor>(mockExecutor);
+  }
+
   const jsonRaw = '''
   {
-    "id": "component_table",
-    "reference_id": "users",
+    "id": "component_table_dropdown",
     "width": 800,
     "columns": [
       { "header": "User Name", "body": "name", "width": 200 },
@@ -89,31 +136,33 @@ Widget mockComponentTableWithDropdown(BuildContext context) {
           "widthMode": "fill"
         }
       },
-      { "header": "Email", "body": "email", "width": 200 }
+      { "header": "Email", "body": "email", "width": 250 }
     ],
-    "http": { "method": "GET", "url": "" }
+    "http": { 
+      "method": "GET", 
+      "url": "https://api.example.com/users" 
+    }
   }
   ''';
 
   final map = json.decode(jsonRaw) as Map<String, dynamic>;
   final component = ComponentTable.fromMap(map);
 
-  final contextData = {
-    "users": [
-      {"name": "Alice Smith", "status": "Active", "email": "alice@example.com"},
-      {"name": "Bob Jones", "status": "Inactive", "email": "bob@example.com"},
-      {"name": "Charlie Brown", "status": "Pending", "email": "charlie@example.com"}
-    ]
-  };
-
   return Padding(
     padding: const EdgeInsets.all(16.0),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Table with nested Dropdown component:", style: TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 10),
-        component.toWidget(contextData),
+        const Text("Table with nested Dropdown (Data from Mocked HTTP):",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        const SizedBox(height: 4),
+        const Text(
+            "This use case uses Get.put<HttpRequestExecutor> with mocktail.",
+            style: TextStyle(color: Colors.grey, fontSize: 12)),
+        const SizedBox(height: 16),
+        Expanded(
+          child: component.toWidget({}),
+        ),
       ],
     ),
   );
