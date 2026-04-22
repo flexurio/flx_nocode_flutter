@@ -1,7 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' hide TColumn;
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
+import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_widget_extension.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:get/get.dart';
 import 'component_table_controller.dart';
@@ -140,18 +143,6 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
     }
   }
 
-  String _buildCellText(JsonMap row, TColumn column) {
-    final key = column.body;
-
-    // simple mode: body = nama field di row
-    if (row.containsKey(key)) {
-      final v = row[key];
-      return v?.toString() ?? '';
-    }
-
-    // fallback: tampilkan apa adanya
-    return key;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,6 +152,14 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
       }
 
       final rows = controller.rows;
+
+      // Optimize: prepare the current data once per build
+      final currentData = widget.data.map((key, value) {
+        if (value is TextEditingController) {
+          return MapEntry(key, value.text);
+        }
+        return MapEntry(key, value);
+      });
 
       var tableColumns = widget.component.columns.map((c) {
         return TableColumn<JsonMap>(
@@ -177,21 +176,44 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
                 },
               );
             }
-            final text = _buildCellText(row, c);
+
+            final rawValue = controller.resolveValue(row, c.body);
+            final text = rawValue?.toString() ?? c.body;
+
             return Text(
               text.interpolateJavascript({
-                "current": widget.data.map((key, value) {
-                  if (value is TextEditingController) {
-                    return MapEntry(key, value.text);
-                  }
-                  return MapEntry(key, value);
-                }),
+                "current": currentData,
                 "row": row,
               }),
             );
           },
         );
       }).toList();
+
+      if (widget.component.actions.isNotEmpty) {
+        final parentDataRaw = widget.data['parentData'];
+        final List<Map<String, dynamic>> parentData = parentDataRaw is List
+            ? parentDataRaw.cast<Map<String, dynamic>>()
+            : [];
+
+        tableColumns.add(
+          TableColumn<JsonMap>(
+            title: widget.component.actionsColumnTitle,
+            width: 150,
+            builder: (row, index) {
+              return ActionsButton(
+                children: widget.component.actions.buildButtonsSingleRow(
+                  entity: controller.tableEntity,
+                  context: context,
+                  data: row,
+                  parentData: parentData,
+                  onSuccessCallback: () => controller.loadData(),
+                ),
+              );
+            },
+          ),
+        );
+      }
 
       if (tableColumns.isEmpty) {
         tableColumns = [

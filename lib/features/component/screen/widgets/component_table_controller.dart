@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 
 class ComponentTableController extends GetxController {
   final ComponentTable component;
@@ -22,10 +23,32 @@ class ComponentTableController extends GetxController {
   final isLoading = true.obs;
   final error = RxnString();
 
+  /// Pre-built dummy entity for row actions
+  late final EntityCustom tableEntity = component.dummyEntity.copyWith(
+    bypassAllPermissions: contextData['bypassPermission'] == true,
+  );
+
   @override
   void onInit() {
     super.onInit();
     loadData();
+  }
+
+  /// Robustly resolves a value from a row using dot notation or direct key.
+  dynamic resolveValue(JsonMap row, String path) {
+    if (path.isEmpty) return null;
+    if (row.containsKey(path)) return row[path];
+
+    final parts = path.split('.');
+    dynamic current = row;
+    for (final part in parts) {
+      if (current is Map && current.containsKey(part)) {
+        current = current[part];
+      } else {
+        return null;
+      }
+    }
+    return current;
   }
 
   Future<void> loadData() async {
@@ -37,51 +60,24 @@ class ComponentTableController extends GetxController {
       if (component.referenceId != null && component.referenceId!.isNotEmpty) {
         final localData = contextData[component.referenceId];
         if (localData is List) {
-          rows.value = localData
-              .where((e) => e is Map)
-              .map<JsonMap>((e) => Map<String, dynamic>.from(e as Map))
-              .toList();
+          rows.value = _parseRows(localData);
           isLoading.value = false;
-          // If we have local data, we usually don't need HTTP unless explicitly configured differently.
-          // For now, return if local data is found.
           return;
         }
       }
 
       final httpData = component.http;
       if (httpData.url.isEmpty) {
-        // No URL and no local data
         rows.value = [];
         isLoading.value = false;
         return;
       }
 
-      // We want to see the interpolated values
-      final requestConfig = httpData.toRequestConfig(contextData);
-
-      // Debug prints
-      debugPrint('--- ComponentTable HTTP Request ---');
-      debugPrint('ID: ${component.id}');
-      debugPrint('Method: ${requestConfig.method}');
-      debugPrint('URL: ${requestConfig.url}');
-      debugPrint('Headers: ${requestConfig.headers}');
-      debugPrint('Body: ${requestConfig.body}');
-
       final executor = Get.isRegistered<HttpRequestExecutor>()
           ? Get.find<HttpRequestExecutor>()
           : null;
+      
       final result = await httpData.execute(contextData, executor: executor);
-
-      debugPrint('--- ComponentTable HTTP Response ---');
-      debugPrint('Is Success: ${result.isSuccess}');
-      debugPrint('Status Code: ${result.statusCode}');
-
-      if (result.isSuccess) {
-        debugPrint('Data Type: ${result.data?.runtimeType}');
-      } else {
-        debugPrint('Error Message: ${result.message}');
-        debugPrint('Raw Error Data: ${result.raw}');
-      }
 
       if (!result.isSuccess) {
         error.value = result.message ?? 'Request failed';
@@ -89,34 +85,27 @@ class ComponentTableController extends GetxController {
       }
 
       final data = result.data;
-
       if (data is List) {
-        rows.value = data
-            .where((e) => e is Map)
-            .map<JsonMap>((e) => Map<String, dynamic>.from(e as Map))
-            .toList();
+        rows.value = _parseRows(data);
       } else if (data is Map) {
         final map = Map<String, dynamic>.from(data);
         final inner = map['data'];
-        if (inner is List) {
-          rows.value = inner
-              .where((e) => e is Map)
-              .map<JsonMap>((e) => Map<String, dynamic>.from(e as Map))
-              .toList();
-        } else {
-          // If it's a single object, wrap it in a list?
-          // Usually tables expect a list.
-          rows.value = [map];
-        }
+        rows.value = (inner is List) ? _parseRows(inner) : [map];
       } else {
         rows.value = const <JsonMap>[];
       }
     } catch (e) {
-      debugPrint('--- ComponentTable HTTP Error ---');
-      debugPrint(e.toString());
+      debugPrint('[ComponentTableController] Error: $e');
       error.value = e.toString();
     } finally {
       isLoading.value = false;
     }
+  }
+
+  List<JsonMap> _parseRows(List data) {
+    return data
+        .whereType<Map>()
+        .map<JsonMap>((e) => Map<String, dynamic>.from(e))
+        .toList();
   }
 }

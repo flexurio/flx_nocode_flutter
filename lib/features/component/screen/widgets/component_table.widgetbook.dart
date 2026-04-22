@@ -167,3 +167,70 @@ Widget mockComponentTableWithDropdown(BuildContext context) {
     ),
   );
 }
+
+@UseCase(name: 'With Row Actions', type: ComponentTable)
+Widget mockComponentTableWithActions(BuildContext context) {
+  const jsonRaw = '''
+  {
+    "id": "table_with_actions",
+    "reference_id": "users",
+    "width": 900,
+    "columns": [
+      { "header": "Name", "body": "name", "width": 200 },
+      { "header": "Role", "body": "role", "width": 150 },
+      { "header": "Last Login", "body": "last_login", "width": 200 }
+    ],
+    "actions": [
+      {
+        "id": "edit",
+        "type": "open_page",
+        "name": "Edit",
+        "icon": "edit",
+        "layout_form_id": "user_form"
+      },
+      {
+        "id": "delete",
+        "type": "http",
+        "name": "Delete",
+        "icon": "delete",
+        "http": {
+          "method": "DELETE",
+          "url": "https://api.example.com/users/\${id}"
+        },
+        "on_success": "refresh"
+      }
+    ],
+    "http": {
+      "method": "GET",
+      "url": ""
+    }
+  }
+  ''';
+
+  final map = json.decode(jsonRaw) as Map<String, dynamic>;
+  final component = ComponentTable.fromMap(map);
+
+  final contextData = {
+    "bypassPermission": true,
+    "users": [
+      {"id": 1, "name": "Ahmad", "role": "Admin", "last_login": "2024-03-20"},
+      {"id": 2, "name": "Budi", "role": "User", "last_login": "2024-03-19"},
+      {"id": 3, "name": "Citra", "role": "User", "last_login": "2024-03-18"}
+    ]
+  };
+
+  return Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("Table with Row Actions:",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        const SizedBox(height: 16),
+        Expanded(
+          child: component.toWidget(contextData),
+        ),
+      ],
+    ),
+  );
+}

@@ -89,6 +89,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                         _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
                             .mockComponentTableWithDropdown,
                   ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'With Row Actions',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
+                            .mockComponentTableWithActions,
+                  ),
                 ],
               )
             ],

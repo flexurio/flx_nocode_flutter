@@ -1,5 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/entity/models/action.dart';
+import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 /// A table component that retrieves its data from an HTTP endpoint.
@@ -46,6 +49,7 @@ class ComponentTable extends Component {
     required super.id,
     required this.http,
     required this.width,
+    this.actions = const [],
     this.referenceId,
     super.visibilityCondition,
     super.events = const {},
@@ -60,6 +64,7 @@ class ComponentTable extends Component {
       columns: [],
       http: HttpData.empty(),
       width: 1000,
+      actions: [],
     );
   }
 
@@ -81,6 +86,9 @@ class ComponentTable extends Component {
   /// describing how to extract a value from a row.
   final List<TColumn> columns;
 
+  /// List of actions available for each row.
+  final List<ActionD> actions;
+
   final String? referenceId;
 
   /// Creates a [ComponentTable] instance from a JSON-compatible map.
@@ -100,12 +108,17 @@ class ComponentTable extends Component {
     }
 
     final List columnsMap = map['columns'] as List? ?? [];
+    final List actionsMap = map['actions'] as List? ?? [];
 
     final columns = columnsMap.map((e) => TColumn.fromJson(e)).toList();
+    final actions = actionsMap
+        .map((e) => ActionD.fromJson(Map<String, dynamic>.from(e as Map)))
+        .toList();
 
     return ComponentTable(
       id: id,
       columns: columns,
+      actions: actions,
       http: map['http'] == null
           ? HttpData.empty()
           : HttpData.fromJson(
@@ -144,7 +157,18 @@ class ComponentTable extends Component {
                   if (e.component != null) 'component': e.component!.toMap(),
                 })
             .toList(),
+        'actions': actions.map((e) => e.toJson()).toList(),
       };
+
+  /// Returns a dummy [EntityCustom] that represents this table.
+  /// Useful for reusing action logic that requires an entity context.
+  EntityCustom get dummyEntity => EntityCustom.empty().copyWith(
+        id: id,
+        bypassAllPermissions: false,
+      );
+
+  /// Returns the localized title for the actions column.
+  String get actionsColumnTitle => 'actions'.tr();
 }
 
 /// Defines a single column in a [ComponentTable].
@@ -179,7 +203,8 @@ class TColumn {
   final double? width;
   final Component? component;
 
-  TColumn({required this.header, required this.body, this.width, this.component});
+  TColumn(
+      {required this.header, required this.body, this.width, this.component});
 
   /// Creates a [TColumn] from a JSON-compatible map.
   ///
