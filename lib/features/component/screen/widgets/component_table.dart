@@ -35,29 +35,43 @@ extension ComponentTableWidgets on ComponentTable {
               border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
             ),
             child: Row(
-              children: columns.isEmpty
-                  ? [
-                      const Text('No Columns',
-                          style: TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.w600))
-                    ]
-                  : columns
-                      .map((c) => Expanded(
-                            flex: (c.width ?? 100).toInt(),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
-                              child: Text(
-                                c.header,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black87,
-                                ),
-                              ),
+              children: [
+                if (columns.isEmpty && actions.isEmpty)
+                  const Text('No Columns',
+                      style:
+                          TextStyle(fontSize: 12, fontWeight: FontWeight.w600))
+                else ...[
+                  ...columns.map((c) => Expanded(
+                        flex: (c.width ?? 100).toInt(),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Text(
+                            c.header,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
                             ),
-                          ))
-                      .toList(),
+                          ),
+                        ),
+                      )),
+                  if (actions.isNotEmpty)
+                    Expanded(
+                      flex: 150,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          actionsColumnTitle,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ],
             ),
           ),
           // Placeholder Rows
@@ -70,26 +84,42 @@ extension ComponentTableWidgets on ComponentTable {
                     : null,
               ),
               child: Row(
-                children: columns.isEmpty
-                    ? [const Text('-', style: TextStyle(fontSize: 12))]
-                    : columns
-                        .map((c) => Expanded(
-                              flex: (c.width ?? 100).toInt(),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8),
-                                child: c.component != null
-                                    ? c.component!.toMockWidget()
-                                    : Text(
-                                        'Data ${i + 1}',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey.shade600,
-                                        ),
-                                      ),
-                              ),
-                            ))
-                        .toList(),
+                children: [
+                  if (columns.isEmpty && actions.isEmpty)
+                    const Text('-', style: TextStyle(fontSize: 12))
+                  else ...[
+                    ...columns.map((c) => Expanded(
+                          flex: (c.width ?? 100).toInt(),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: c.component != null
+                                ? c.component!.toMockWidget()
+                                : Text(
+                                    'Data ${i + 1}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                          ),
+                        )),
+                    if (actions.isNotEmpty)
+                      const Expanded(
+                        flex: 150,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Icon(
+                              Icons.more_vert,
+                              size: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ],
               ),
             ),
         ],
@@ -142,7 +172,6 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
       controller.loadData();
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
