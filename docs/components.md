@@ -83,7 +83,7 @@ Renders static or dynamic text without a label.
 | `value` | String | `Text` | The text content. |
 
 ### `table`
-Displays a set of data in a grid.
+Displays a set of data in a grid. Supports dynamic fetching, deep data paths, and nested components.
 
 | Key | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -92,7 +92,7 @@ Displays a set of data in a grid.
 | `width` | Double | No | Total table width. |
 | `reference_id` | String | No | Optional reference ID for external data syncing. |
 
-**`TColumn` Fields:** `header` (label), `body` (data path), `width` (pixels).
+**See the dedicated [ComponentTable Documentation](./component_table.md) for full details.**
 
 ### `image`
 Displays an image from a URL.
