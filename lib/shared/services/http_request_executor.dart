@@ -1,6 +1,7 @@
 // core/network/http_request_executor.dart
 
 import 'package:dio/dio.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
 typedef Json = Map<String, dynamic>;
 
@@ -20,12 +21,20 @@ class HttpRequestConfig {
   /// akan dikonversi ke [FormData.fromMap].
   final bool asFormData;
 
+  /// Whether to use mock data instead of calling the actual API.
+  final bool mockEnabled;
+
+  /// The data to return when [mockEnabled] is true.
+  final Object? mockData;
+
   const HttpRequestConfig({
     required this.method,
     required this.url,
     required this.headers,
     this.body,
     this.asFormData = false,
+    this.mockEnabled = false,
+    this.mockData,
   });
 }
 
@@ -69,17 +78,16 @@ class HttpRequestResult {
   }
 }
 
-/// Tanggung jawab: HANYA handle request HTTP (Dio, logging, parsing error).
 class HttpRequestExecutor {
   HttpRequestExecutor({Dio? dio}) : _dio = dio ?? Dio();
+
+  static const bool enableLog = true;
 
   final Dio _dio;
 
   Future<HttpRequestResult> execute(HttpRequestConfig config) async {
     final String methodUpper = config.method.toUpperCase();
 
-    // Menyamakan behaviour lama:
-    // body hanya dikirim untuk POST, PUT, PATCH
     const methodsWithBody = {'POST', 'PUT', 'PATCH'};
     final bool hasBody = methodsWithBody.contains(methodUpper);
 
@@ -94,32 +102,69 @@ class HttpRequestExecutor {
           dataBody = config.body;
         }
       } else if (config.body is Map<String, dynamic>) {
-        // Untuk GET/DELETE dkk, kalau body Map -> jadi queryParameters
         queryParameters = Map<String, dynamic>.from(
           config.body as Map<String, dynamic>,
         );
       } else {
-        // Fallback: kirim sebagai body juga
         dataBody = config.body;
       }
     }
 
+    final processedUrl = config.url.interpolateJavascript();
+
+    // Sanitize headers: Remove forbidden browser headers that can cause CORS/Security errors
+    final forbiddenHeaders = {
+      'connection',
+      'user-agent',
+      'host',
+      'origin',
+      'referer',
+      'sec-fetch-dest',
+      'sec-fetch-mode',
+      'sec-fetch-site',
+      'sec-gpc',
+      'sec-ch-ua',
+      'sec-ch-ua-mobile',
+      'sec-ch-ua-platform',
+      'accept-encoding',
+      'content-length',
+    };
+
+    final sanitizedHeaders = <String, String>{};
+    config.headers.forEach((k, v) {
+      if (!forbiddenHeaders.contains(k.toLowerCase())) {
+        sanitizedHeaders[k.interpolateJavascript()] = v.interpolateJavascript();
+      }
+    });
+
     final options = Options(
       method: methodUpper,
-      headers: config.headers,
+      headers: sanitizedHeaders,
     );
+
+    if (config.mockEnabled) {
+      _logMockRequest(
+        method: methodUpper,
+        url: processedUrl,
+        data: config.mockData,
+      );
+      return HttpRequestResult.success(
+        statusCode: 200,
+        data: config.mockData,
+      );
+    }
 
     _logHttpRequest(
       method: methodUpper,
-      url: config.url,
-      headers: config.headers,
+      url: processedUrl,
+      headers: sanitizedHeaders,
       body: config.body,
       asFormData: config.asFormData,
     );
 
     try {
       final Response<Object?> response = await _dio.request<Object?>(
-        config.url,
+        processedUrl,
         data: dataBody,
         queryParameters: queryParameters,
         options: options,
@@ -156,7 +201,8 @@ class HttpRequestExecutor {
       );
       final String message = _extractErrorMessage(
         e.response?.data,
-        fallback: e.message ?? 'Unknown error occurred',
+        fallback:
+            e.message ?? 'Network error or CORS policy blocked the request',
       );
       return HttpRequestResult.failure(
         statusCode: e.response?.statusCode,
@@ -174,6 +220,20 @@ class HttpRequestExecutor {
   }
 
   // --------------------------- LOGGING -------------------------------------
+  void _logMockRequest({
+    required String method,
+    required String url,
+    required Object? data,
+  }) {
+    if (enableLog) {
+      print('================ HTTP MOCK REQUEST ============');
+      print('→ Method     : $method');
+      print('→ URL        : $url');
+      print('→ Mock Data  : $data');
+      print('==============================');
+    }
+  }
+
   void _logHttpRequest({
     required String method,
     required String url,
@@ -181,23 +241,27 @@ class HttpRequestExecutor {
     required Object? body,
     required bool asFormData,
   }) {
-    print('================ HTTP REQUEST ================');
-    print('→ Method     : $method');
-    print('→ URL        : $url');
-    print('→ Headers    : $headers');
-    print('→ Body       : ${body ?? '{}'}');
-    print('→ AsFormData : $asFormData');
-    print('==============================================');
+    if (enableLog) {
+      print('================ HTTP REQUEST ================');
+      print('→ Method     : $method');
+      print('→ URL        : $url');
+      print('→ Headers    : $headers');
+      print('→ Body       : ${body ?? '{}'}');
+      print('→ AsFormData : $asFormData');
+      print('==============================================');
+    }
   }
 
   void _logHttpResponse({
     required int? statusCode,
     required Object? data,
   }) {
-    print('================ HTTP RESPONSE ===============');
-    print('← Status : $statusCode');
-    print('← Data   : $data');
-    print('==============================================');
+    if (enableLog) {
+      print('================ HTTP RESPONSE ===============');
+      print('← Status : $statusCode');
+      print('← Data   : $data');
+      print('==============================================');
+    }
   }
 
   void _logHttpError({
@@ -205,17 +269,21 @@ class HttpRequestExecutor {
     required String message,
     required Object? response,
   }) {
-    print('================ HTTP ERROR ==================');
-    print('❌ Type     : $type');
-    print('❌ Message  : $message');
-    print('❌ Response : $response');
-    print('==============================================');
+    if (enableLog) {
+      print('================ HTTP ERROR ==================');
+      print('❌ Type     : $type');
+      print('❌ Message  : $message');
+      print('❌ Response : $response');
+      print('==============================================');
+    }
   }
 
   void _logUnexpectedError(Object error) {
-    print('================ UNEXPECTED ERROR ============');
-    print('❌ $error');
-    print('==============================================');
+    if (enableLog) {
+      print('================ UNEXPECTED ERROR ============');
+      print('❌ $error');
+      print('==============================================');
+    }
   }
 
   // ------------------------ ERROR PARSER ------------------------------------

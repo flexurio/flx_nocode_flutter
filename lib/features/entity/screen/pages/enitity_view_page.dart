@@ -1,13 +1,9 @@
-import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_widget_extension.dart';
-import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_display.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/layout_form.dart';
 import 'package:flx_nocode_flutter/features/view/screen/widgets/view.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
-import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/src/app/view/page/entity_view/widget/delete_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
@@ -95,7 +91,7 @@ class EntityViewPage extends StatelessWidget {
             entity: entity.coreEntity,
             size: SingleFormPanelSize.large,
             children: [
-              entity.layoutForm.getByType(FormType.view)?.toWidget(data) ??
+              entity.layoutForm.view?.toWidget(data) ??
                   NoCodeError('Layout not found'),
             ],
           );
@@ -130,8 +126,14 @@ class EntityViewPage extends StatelessWidget {
       parentData,
       embedded,
     );
-    return entity.buttonViews(context, data, entity, embedded, parentData)
-      ..addAll(modifyActions);
+    return entity.buttonViews(
+      context,
+      data,
+      entity,
+      embedded,
+      parentData,
+      onSuccess: () => onRefresh(context),
+    )..addAll(modifyActions);
   }
 
   static List<Widget> actionsLarge({
@@ -148,6 +150,9 @@ class EntityViewPage extends StatelessWidget {
       context: context,
       data: data,
       parentData: parentData,
+      bypassPermission: bypassPermission,
+      expanded: true,
+      onSuccessCallback: () => onRefresh(context),
     );
     final modifyActions = _buildEntityCustomActionsLarge(
       entity: entity,
@@ -160,14 +165,16 @@ class EntityViewPage extends StatelessWidget {
     );
 
     return [
+      ...actions,
       ...entity.views.buildButtons(
         context,
         data,
         parentData,
         bypassPermission,
+        expanded: true,
+        onRefresh: () => onRefresh(context),
       ),
       ...modifyActions,
-      ...actions,
     ];
   }
 
@@ -180,38 +187,7 @@ class EntityViewPage extends StatelessWidget {
     required bool bypassPermission,
     required List<Map<String, dynamic>> parentData,
   }) {
-    return [
-      ...entity.exports.buildSingleButtons(data),
-      if (entity.allowUpdate)
-        ...entity.layoutForm.updateForms.map(
-          (e) => LightButton(
-            permission: bypassPermission ? null : '${entity.id}_write',
-            action: DataAction.edit,
-            title: e.label,
-            onPressed: () async {
-              Navigator.push(
-                context,
-                EntityCreatePage.route(
-                  parentData: parentData,
-                  layoutForm: e,
-                  filters: filters,
-                  embedded: false,
-                  entity: entity,
-                  data: data,
-                  onSuccess: () => onRefresh(context),
-                ),
-              );
-            },
-          ),
-        ),
-      if (entity.allowDelete)
-        EntityDeleteButton.prepare(
-          bypassPermission: bypassPermission,
-          entity: entity,
-          data: data,
-          onSuccess: () => onRefresh(context),
-        ),
-    ];
+    return entity.exports.buildSingleButtons(data, expanded: true);
   }
 
   static List<ActionButtonItem> _buildEntityCustomActions(
@@ -233,14 +209,14 @@ class EntityViewPage extends StatelessWidget {
             onPressed: () async {
               Navigator.push(
                 context,
-                EntityCreatePage.route(
+                EntityCreatePageOld.route(
                   parentData: parentData,
                   layoutForm: e,
                   embedded: embedded,
                   entity: entity,
                   data: data,
                   filters: filters,
-                  onSuccess: () => onRefresh(context),
+                  onSuccess: (_) => onRefresh(context),
                 ),
               );
             },
@@ -253,7 +229,8 @@ class EntityViewPage extends StatelessWidget {
             label: DataAction.delete.title,
             onPressed: () async {
               BackendOther.showConfirmationDialog(
-                event: EntityEvent.delete(id: data['id'].toString()),
+                onConfirm: (controller) =>
+                    controller.delete(data['id'].toString()),
                 title: DataAction.delete.title,
                 context: context,
                 onSuccess: () => Navigator.pop(context),
@@ -279,71 +256,10 @@ class EntityViewPage extends StatelessWidget {
             id: data['id'].toString(),
             method: entity.backend.read!.method,
             url: entity.backend.read!.url,
+            mockEnabled: entity.backend.read!.mockEnabled,
+            mockData: entity.backend.read!.mockData,
+            parentData: parentData,
           ),
         );
   }
-
-  Widget _buildData(Map<String, dynamic> data) {
-    List<Widget> children = [];
-    final entityForm = entity.layoutForm.getByType(FormType.view);
-    if (entityForm == null) return SizedBox.shrink();
-
-    final groups = entityForm.groups;
-
-    for (final group in groups) {
-      final rows = group.rows;
-      List<Widget> childrenRows = [];
-      for (final row in rows) {
-        final c = row.columns;
-        final fields = row.fields;
-        final chunks = _chunk<String>(fields, c);
-        for (final chunk in chunks) {
-          final fields = chunk.map<Widget>((field) {
-            return TileDataVertical(
-              label: entity.getField(field)?.label ?? field,
-              child: EntityFieldDisplay.build(
-                entity,
-                field,
-                data[field],
-              ),
-            );
-          }).toList();
-          final remainingFields = c - fields.length;
-          for (int i = 0; i < remainingFields; i++) {
-            fields.add(
-              SizedBox.shrink(),
-            );
-          }
-
-          childrenRows.add(RowFields(children: fields));
-        }
-      }
-
-      children.addAll([
-        Text(
-          group.title,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        ...childrenRows
-      ]);
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: children,
-    );
-  }
-}
-
-List<List<T>> _chunk<T>(List<T> items, int maxSize) {
-  if (maxSize <= 0) {
-    throw ArgumentError('maxSize must be greater than 0');
-  }
-
-  final List<List<T>> chunks = [];
-  for (var i = 0; i < items.length; i += maxSize) {
-    final end = (i + maxSize < items.length) ? i + maxSize : items.length;
-    chunks.add(items.sublist(i, end));
-  }
-  return chunks;
 }

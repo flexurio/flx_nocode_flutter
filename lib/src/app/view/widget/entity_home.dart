@@ -17,8 +17,11 @@ class MenuCustom extends StatelessWidget {
     this.initialFilters = const [],
     this.breadcrumbList = const [],
     required this.bypassPermission,
+    this.configuration,
+    this.assetBasePath,
   });
 
+  final String? assetBasePath;
   final bool firstPage;
   final bool embedded;
   final EntityCustom entity;
@@ -26,6 +29,7 @@ class MenuCustom extends StatelessWidget {
   final List<String> breadcrumbList;
   final bool bypassPermission;
   final List<Map<String, dynamic>> parentData;
+  final Configuration? configuration;
 
   static Widget fromId({
     required String entityId,
@@ -65,6 +69,7 @@ class MenuCustom extends StatelessWidget {
             firstPage: firstPage,
             initialFilters: initialFilters,
             bypassPermission: bypassPermission,
+            assetBasePath: EntityCustom.assetBasePath,
           );
         } else {
           return const Center(child: CircularProgressIndicator());
@@ -75,6 +80,13 @@ class MenuCustom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (configuration != null) {
+      Configuration.instance = configuration!;
+      flavorConfig = configuration!.flavorConfig;
+    }
+    if (assetBasePath != null) {
+      EntityCustom.assetBasePath = assetBasePath!;
+    }
     print(
         '[MenuCustom] level: ${parentData.length + 1}, parentData: ${parentData.length}');
     return Scaffold(
@@ -220,6 +232,7 @@ class NoCodePageLoader extends StatefulWidget {
   final Configuration Function()? getConfiguration;
   final bool bypassPermission;
   final String? basePath;
+  final List<Map<String, dynamic>> parentData;
 
   const NoCodePageLoader({
     super.key,
@@ -232,6 +245,7 @@ class NoCodePageLoader extends StatefulWidget {
     this.getConfiguration,
     this.basePath,
     required this.bypassPermission,
+    this.parentData = const [],
   });
 
   @override
@@ -269,8 +283,9 @@ class _NoCodePageLoaderState extends State<NoCodePageLoader> {
               child: NoCodeError('Entity not found! Id: ${widget.entityId}'),
             );
           }
+
           return MenuCustom(
-            parentData: [],
+            parentData: widget.parentData,
             entity: entity,
             breadcrumbList: widget.breadcrumbList,
             embedded: widget.embedded,

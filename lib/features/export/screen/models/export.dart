@@ -39,8 +39,11 @@ class Export extends HiveObject {
   /// The page orientation for PDF exports ('portrait' or 'landscape'). Defaults to 'portrait'.
   final String orientation;
 
+  /// Control whether this export should be shown in the UI.
+  final bool visibility;
+
   /// A static list of supported export file types.
-  static List<String> allowedTypes = ['pdf', 'xlsx'];
+  static List<String> allowedTypes = ['pdf', 'xlsx', 'csv'];
 
   Export({
     required this.uuid,
@@ -52,6 +55,7 @@ class Export extends HiveObject {
     this.template,
     this.paperSize = 'A4',
     this.orientation = 'portrait',
+    this.visibility = true,
   })  : assert(uuid.isNotEmpty, 'uuid cannot be empty'),
         assert(name.isNotEmpty, 'name cannot be empty'),
         assert(
@@ -72,7 +76,7 @@ class Export extends HiveObject {
     }
 
     return Export(
-      uuid: json['uuid'] ?? '',
+      uuid: json['uuid'] ?? json['name'] ?? '',
       name: json['name'] ?? '',
       backend: json['backend'] ?? '',
       type: type,
@@ -83,6 +87,7 @@ class Export extends HiveObject {
           : null,
       paperSize: json['paper_size'] ?? 'A4',
       orientation: json['orientation'] ?? 'portrait',
+      visibility: json['visibility'] ?? true,
     );
   }
 
@@ -95,6 +100,7 @@ class Export extends HiveObject {
         'fields': fields,
         'paper_size': paperSize,
         'orientation': orientation,
+        'visibility': visibility,
         if (typeMode != null) 'type_mode': typeMode,
         if (template != null) 'template': template!.toJson(),
       };
@@ -124,10 +130,11 @@ extension ExportList on List<Export> {
   /// Filters the list to find exports that are of `typeMode` 'single' and
   /// have a valid template, then creates a button for each to trigger the
   /// PDF export action for the given [data] record.
-  List<Widget> buildSingleButtons(Map<String, dynamic> data) {
+  List<Widget> buildSingleButtons(Map<String, dynamic> data,
+      {bool expanded = false}) {
     final buttons = <Widget>[];
     for (final e in this) {
-      if (!e.isSingle || e.template == null) continue;
+      if (!e.visibility || !e.isSingle || e.template == null) continue;
       final button = LightButton(
         action: DataAction.exportPdf,
         title: e.name,
@@ -141,6 +148,7 @@ extension ExportList on List<Export> {
           );
         },
         permission: null,
+        expanded: expanded,
       );
       buttons.add(button);
     }

@@ -1,51 +1,63 @@
 # Action JSON Documentation
 
-This document outlines the structure and fields of an `Action` object, which is used to define dynamic actions that can be triggered from the UI.
+This document outlines the structure of the `Action` object (`ActionD`), used to define dynamic behaviors triggered from the UI (buttons, table rows, etc.).
 
-## Action Object
+## Action Properties
 
 | Key | Type | Required | Description |
 | --- | --- | --- | --- |
 | `id` | String | Yes | Unique identifier for the action. |
-| `type` | String | Yes | The type of action, e.g., "print", "approve". |
-| `name` | String | Yes | Display name shown on UI elements like buttons. |
-| `http` | Object | No | Optional HTTP configuration for network-based actions. See [HttpData Object](#httpdata-object). |
-| `on_success` | String | Yes | Defines behavior on success, e.g., "refresh", "toast". Defaults to `toast`. |
-| `on_failure` | String | Yes | Defines behavior on failure, e.g., "show_error_dialog", "toast". Defaults to `toast`. |
-| `is_multiple`| Boolean | No | Whether the action can be applied to multiple items. Defaults to `false`. |
-| `reference` | String | No | A reference, particularly for `list_json_view_as_table` type. |
+| `type` | String | Yes | The type of behavior (see [Supported Types](#supported-types)). |
+| `name` | String | Yes | Display text for the action button. |
+| `icon` | String | No | Icon name (e.g., `check`, `print`). |
+| `icon_color` | String | No | Hex color code for the icon. |
+| `http` | Object | No | `HttpData` config if the action involves a network request. |
+| `on_success` | String | No | Behavior on success: `toast`, `refresh`, `navigate_back`, etc. |
+| `on_failure` | String | No | Behavior on failure: `toast`, `show_error_dialog`. |
+| `is_multiple`| Boolean | No | If `true`, this action is enabled when multiple items are selected. |
+| `rule` | Object | No | A `Rule` to determine if this action is visible for a specific row. |
+| `confirm_title`| String | No | Title for the confirmation dialog (if type is `show_confirmation_dialog`). |
+| `confirm_message`| String| No | Message for the confirmation dialog. |
+| `layout_form_id`| String| No | The ID of the form to open (for `open_page` or `show_dialog`). |
+| `target_variable`| String| No | Name of the variable to store the result in. |
+| `value` | String | No | The value to set (for `set_variable`). |
 
 ---
 
-## Nested Objects
+## Supported Types
 
-### HttpData Object
-
-Defines the properties of an HTTP request for an action.
-
-| Key | Type | Required | Description |
-| --- | --- | --- | --- |
-| `path` | String | Yes | The URL path for the endpoint. |
-| `method` | String | Yes | The HTTP method (e.g., "GET", "POST"). |
-| `headers` | Object | No | A map of HTTP headers. |
-| `body` | Object | No | The request body. |
-| `query_params`| Object | No | A map of URL query parameters. |
+| Type | Description |
+| --- | --- |
+| `http` | Executes a network request defined in the `http` property. |
+| `open_page` | Navigates to a new page using the form specified in `layout_form_id`. |
+| `show_dialog` | Opens a modal dialog using the form specified in `layout_form_id`. |
+| `show_confirmation_dialog` | Shows a Yes/No dialog before proceeding. |
+| `toast` | Shows a simple notification. |
+| `refresh` | Reloads the current entity data. |
+| `navigate_home` | Returns the user to the dashboard. |
+| `navigate_back` | Navigates to the previous screen. |
+| `print` | Triggers a print operation for the selected item. |
+| `list_json_view_as_table` | Renders a nested JSON list as a secondary table. |
+| `show_success_dialog_with_data` | Shows a detailed success modal with copyable data. |
+| `set_variable` | Updates a value in the local state. |
 
 ---
 
-## Example `action.json`
+## Example Action
 
 ```json
 {
-  "id": "approve_item",
-  "type": "approve",
+  "id": "approve_request",
+  "type": "show_confirmation_dialog",
   "name": "Approve",
+  "icon": "check",
+  "icon_color": "#4CAF50",
+  "confirm_title": "Approve Request?",
+  "confirm_message": "Are you sure you want to approve this document?",
   "http": {
-    "path": "/items/:id/approve",
-    "method": "POST"
+    "method": "POST",
+    "path": "/api/requests/:id/approve"
   },
-  "on_success": "refresh",
-  "on_failure": "show_error_dialog",
-  "is_multiple": false
+  "on_success": "refresh"
 }
 ```

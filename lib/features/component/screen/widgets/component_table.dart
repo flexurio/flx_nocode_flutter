@@ -1,18 +1,135 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' hide TColumn;
-import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
+import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_widget_extension.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:get/get.dart';
+import 'component_table_controller.dart';
 
 extension ComponentTableWidgets on ComponentTable {
   Widget toWidget(JsonMap data) {
-    return _ComponentTableHttpWidget(component: this, data: data);
+    return _ComponentTableWidget(component: this, data: data);
+  }
+
+  Widget toMockWidget() {
+    return Container(
+      width: width,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(8)),
+              border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+            ),
+            child: Row(
+              children: [
+                if (columns.isEmpty && actions.isEmpty)
+                  const Text('No Columns',
+                      style:
+                          TextStyle(fontSize: 12, fontWeight: FontWeight.w600))
+                else ...[
+                  ...columns.map((c) => Expanded(
+                        flex: (c.width ?? 100).toInt(),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Text(
+                            c.header,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      )),
+                  if (actions.isNotEmpty)
+                    Expanded(
+                      flex: 150,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          actionsColumnTitle,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ],
+            ),
+          ),
+          // Placeholder Rows
+          for (var i = 0; i < 2; i++)
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+              decoration: BoxDecoration(
+                border: i == 0
+                    ? Border(bottom: BorderSide(color: Colors.grey.shade100))
+                    : null,
+              ),
+              child: Row(
+                children: [
+                  if (columns.isEmpty && actions.isEmpty)
+                    const Text('-', style: TextStyle(fontSize: 12))
+                  else ...[
+                    ...columns.map((c) => Expanded(
+                          flex: (c.width ?? 100).toInt(),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: c.component != null
+                                ? c.component!.toMockWidget()
+                                : Text(
+                                    'Data ${i + 1}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                          ),
+                        )),
+                    if (actions.isNotEmpty)
+                      const Expanded(
+                        flex: 150,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Icon(
+                              Icons.more_vert,
+                              size: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }
 
-class _ComponentTableHttpWidget extends StatefulWidget {
-  const _ComponentTableHttpWidget({
+class _ComponentTableWidget extends StatefulWidget {
+  const _ComponentTableWidget({
     required this.component,
     required this.data,
   });
@@ -21,132 +138,149 @@ class _ComponentTableHttpWidget extends StatefulWidget {
   final JsonMap data;
 
   @override
-  State<_ComponentTableHttpWidget> createState() =>
-      _ComponentTableHttpWidgetState();
+  State<_ComponentTableWidget> createState() => _ComponentTableWidgetState();
 }
 
-class _ComponentTableHttpWidgetState extends State<_ComponentTableHttpWidget> {
-  late Future<List<JsonMap>> _future;
+class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
+  late String tag;
+  late ComponentTableController controller;
 
   @override
   void initState() {
     super.initState();
-    _future = _loadData(widget.data);
+    tag = 'table_${widget.component.id}_${identityHashCode(this)}';
+    controller = Get.put(
+      ComponentTableController(
+        component: widget.component,
+        contextData: widget.data,
+      ),
+      tag: tag,
+    );
   }
 
-  Future<List<JsonMap>> _loadData(JsonMap item) async {
-    final httpData = widget.component.http;
-    final result = await httpData.execute(item);
-
-    if (!result.isSuccess) {
-      throw Exception(result.message ?? 'Request failed');
-    }
-
-    final data = result.data;
-
-    if (data is List) {
-      return data
-          .where((e) => e is Map)
-          .map<JsonMap>((e) => Map<String, dynamic>.from(e as Map))
-          .toList();
-    }
-
-    if (data is Map) {
-      final map = Map<String, dynamic>.from(data);
-      final inner = map['data'];
-      if (inner is List) {
-        return inner
-            .where((e) => e is Map)
-            .map<JsonMap>((e) => Map<String, dynamic>.from(e as Map))
-            .toList();
-      }
-    }
-
-    return const <JsonMap>[];
+  @override
+  void dispose() {
+    Get.delete<ComponentTableController>(tag: tag);
+    super.dispose();
   }
 
-  String _buildCellText(JsonMap row, TColumn column) {
-    final key = column.body;
-
-    // simple mode: body = nama field di row
-    if (row.containsKey(key)) {
-      final v = row[key];
-      return v?.toString() ?? '';
+  @override
+  void didUpdateWidget(covariant _ComponentTableWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.data != widget.data) {
+      controller.updateContextData(widget.data);
+      controller.loadData();
     }
-
-    // fallback: tampilkan apa adanya
-    return key;
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<JsonMap>>(
-      future: _future,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      final rows = controller.rows;
+
+      // Optimize: prepare the current data once per build
+      final currentData = widget.data.map((key, value) {
+        if (value is TextEditingController) {
+          return MapEntry(key, value.text);
         }
+        return MapEntry(key, value);
+      });
 
-        final rows = snapshot.data ?? const <JsonMap>[];
+      var tableColumns = widget.component.columns.map((c) {
+        return TableColumn<JsonMap>(
+          title: c.header,
+          width: c.width,
+          builder: (row, index) {
+            if (c.component != null) {
+              return c.component!.toWidget(
+                isSmall: true,
+                data: {
+                  ...widget.data,
+                  "current": row,
+                  "row": row,
+                },
+              );
+            }
 
-        var tableColumns = widget.component.columns.map((c) {
-          return TableColumn<JsonMap>(
-            title: c.header,
-            width: c.width,
+            final rawValue = controller.resolveValue(row, c.body);
+            final text = rawValue?.toString() ?? c.body;
+
+            return Text(
+              text.interpolateJavascript({
+                "current": currentData,
+                "row": row,
+              }),
+            );
+          },
+        );
+      }).toList();
+
+      if (widget.component.actions.isNotEmpty) {
+        final parentDataRaw = widget.data['parentData'];
+        final List<Map<String, dynamic>> parentData = parentDataRaw is List
+            ? parentDataRaw.cast<Map<String, dynamic>>()
+            : [];
+
+        tableColumns.add(
+          TableColumn<JsonMap>(
+            title: widget.component.actionsColumnTitle,
+            width: 150,
             builder: (row, index) {
-              final text = _buildCellText(row, c);
-              return Text(
-                text.interpolateJavascript(
-                  {
-                    "current": widget.data,
-                    "row": row,
-                  },
+              return ActionsButton(
+                children: widget.component.actions.buildButtonsSingleRow(
+                  entity: controller.tableEntity,
+                  context: context,
+                  data: row,
+                  parentData: parentData,
+                  onSuccessCallback: () => controller.loadData(),
                 ),
               );
             },
-          );
-        }).toList();
-
-        if (tableColumns.isEmpty) {
-          tableColumns = [
-            TableColumn<JsonMap>(
-              title: 'No Columns',
-              width: 200,
-              builder: (_, __) => const Text('-'),
-            ),
-          ];
-        }
-
-        final table = YuhuTable<JsonMap>(
-          width: widget.component.width,
-          data: rows,
-          columns: tableColumns,
+          ),
         );
+      }
 
-        if (snapshot.hasError) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Tooltip(
-                  message: 'Failed to load data: ${snapshot.error}',
-                  child: Icon(
-                    Icons.error,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
+      if (tableColumns.isEmpty) {
+        tableColumns = [
+          TableColumn<JsonMap>(
+            title: 'No Columns',
+            width: 200,
+            builder: (_, __) => const Text('-'),
+          ),
+        ];
+      }
+
+      final table = YuhuTable<JsonMap>(
+        width: widget.component.width,
+        data: rows,
+        columns: tableColumns,
+      );
+
+      if (controller.error.value != null) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Tooltip(
+                message: 'Failed to load data: ${controller.error.value}',
+                child: Icon(
+                  Icons.error,
+                  color: Theme.of(context).colorScheme.error,
                 ),
               ),
-              table,
-            ],
-          );
-        }
+            ),
+            table,
+          ],
+        );
+      }
 
-        return table;
-      },
-    );
+      return table;
+    });
   }
 }

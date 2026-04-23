@@ -1,6 +1,5 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:uuid/uuid.dart';
 
 /// A horizontal container component that renders its children inside a row.
 ///
@@ -46,20 +45,34 @@ class ComponentRow extends Component {
   /// - stretch
   final String yAlign;
 
+  /// Horizontal gap between children.
+  final double horizontalGap;
+
+  final String? widthMode; // 'fill', 'hug'
+  final String? heightMode; // 'fill', 'hug'
+
   ComponentRow({
     required super.id,
+    super.visibilityCondition,
+    super.events,
     this.children = const [],
     this.xAlign = 'left',
     this.yAlign = 'top',
+    this.horizontalGap = 12.0,
+    this.widthMode,
+    this.heightMode,
   }) : super(type: 'row');
 
   /// Creates an empty [ComponentRow] with default values.
-  factory ComponentRow.empty() {
+  factory ComponentRow.empty(String id) {
     return ComponentRow(
-      id: Uuid().v4(),
+      id: id,
       children: const [],
       xAlign: 'left',
       yAlign: 'top',
+      horizontalGap: 12.0,
+      widthMode: 'fill',
+      heightMode: 'hug',
     );
   }
 
@@ -68,6 +81,11 @@ class ComponentRow extends Component {
     if (id == null || id.isEmpty) {
       throw const FormatException('Component "id" is required');
     }
+
+    final visibilityCondition = map['visibilityCondition']?.toString();
+    final events = map['events'] is Map
+        ? Map<String, dynamic>.from(map['events'])
+        : const <String, dynamic>{};
 
     // Parse children
     final rawChildren = map['children'];
@@ -84,18 +102,26 @@ class ComponentRow extends Component {
 
     return ComponentRow(
       id: id,
+      visibilityCondition: visibilityCondition,
+      events: events,
       children: parsedChildren,
       xAlign: map['x_align']?.toString().trim() ?? 'left',
       yAlign: map['y_align']?.toString().trim() ?? 'top',
+      horizontalGap:
+          double.tryParse(map['horizontal_gap']?.toString() ?? '') ?? 12.0,
+      widthMode: map['widthMode']?.toString(),
+      heightMode: map['heightMode']?.toString(),
     );
   }
 
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
+        ...super.toMap(),
         'x_align': xAlign,
         'y_align': yAlign,
+        'horizontal_gap': horizontalGap,
+        'widthMode': widthMode,
+        'heightMode': heightMode,
         'children': children.map((e) => e.toMap()).toList(growable: false),
       };
 }

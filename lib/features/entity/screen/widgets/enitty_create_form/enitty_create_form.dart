@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/controller.dart';
-import 'package:gap/gap.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/group_builder.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
 
 import '../../../../../flx_nocode_flutter.dart';
 
@@ -14,6 +14,7 @@ class EntityCreateForm extends StatefulWidget {
     required this.controllers,
     required this.layoutForm,
     required this.parentData,
+    this.initialData = const {},
   });
 
   final DataAction dataAction;
@@ -21,6 +22,7 @@ class EntityCreateForm extends StatefulWidget {
   final Map<String, TextEditingController> controllers;
   final LayoutForm layoutForm;
   final List<Map<String, dynamic>> parentData;
+  final Map<String, dynamic> initialData;
 
   @override
   State<EntityCreateForm> createState() => _EntityCreateFormState();
@@ -28,16 +30,48 @@ class EntityCreateForm extends StatefulWidget {
 
 class _EntityCreateFormState extends State<EntityCreateForm> {
   late final FormStateController _formState;
+  final Map<String, TextEditingController> _localControllers = {};
 
   @override
   void initState() {
     super.initState();
-    _formState = FormStateController(widget.controllers);
+    _initializeControllers();
+    _formState = FormStateController({
+      ...widget.controllers,
+      ..._localControllers,
+    });
+  }
+
+  void _initializeControllers() {
+    final ids = <String>{};
+    _collectComponentIds(widget.layoutForm.components, ids);
+
+    for (final id in ids) {
+      if (!widget.controllers.containsKey(id)) {
+        _localControllers[id] = TextEditingController();
+      }
+    }
+  }
+
+  void _collectComponentIds(List<Component> components, Set<String> ids) {
+    for (final c in components) {
+      ids.add(c.id);
+      if (c is ComponentColumn) {
+        _collectComponentIds(c.children, ids);
+      } else if (c is ComponentRow) {
+        _collectComponentIds(c.children, ids);
+      } else if (c is ComponentContainer && c.child != null) {
+        _collectComponentIds([c.child!], ids);
+      }
+    }
   }
 
   @override
   void dispose() {
     _formState.dispose();
+    for (final controller in _localControllers.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -48,31 +82,49 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
       builder: (context, _) {
         final state = _formState.state;
 
+        // Debugging
+        print(
+            'EntityCreateForm build. InitialData keys: ${widget.initialData.keys.toList()}');
+
         final formVisible = widget.layoutForm.isVisible(state);
         if (!formVisible) {
           return const SizedBox.shrink();
         }
 
-        final visibleGroups = widget.layoutForm.groups
-            .where((g) => g.isVisible(state))
-            .toList(growable: false);
-
-        final children = <Widget>[];
-        for (var i = 0; i < visibleGroups.length; i++) {
-          final group = visibleGroups[i];
-          children.add(
-            GroupBuilder(
-              parentData: widget.parentData,
-              group: group,
-              entity: widget.entity,
-              dataAction: widget.dataAction,
-              controllers: widget.controllers,
-              formState: _formState,
-            ),
+        if (widget.layoutForm.components.isEmpty) {
+          return NoCodeError(
+            'Empty Layout Form',
+            debugInfo:
+                'Entity: ${widget.entity.label}, Layout: ${widget.layoutForm.id}',
+            description:
+                'The layout form for this entity does not contain any components to display.',
+            suggestion:
+                'Please add components to the layout form in the entity configuration.',
           );
-          if (i < visibleGroups.length - 1) children.add(const Gap(24));
         }
 
+        final allControllers = {
+          ...widget.controllers,
+          ..._localControllers,
+        };
+
+        final children = widget.layoutForm.components.map((c) {
+          return c.toWidget(
+            data: {
+              ...widget.initialData,
+              ...state,
+              'form': state,
+              'current': state,
+              'entity': widget.entity,
+              'layoutFormId': widget.layoutForm.id,
+              if (widget.parentData.isNotEmpty)
+                'parent': widget.parentData.last,
+            },
+            controllers: allControllers,
+            parentData: widget.parentData,
+            dataAction: widget.dataAction,
+          );
+        }).toList();
         return Column(children: children);
       },
     );

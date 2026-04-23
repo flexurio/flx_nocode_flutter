@@ -1,9 +1,9 @@
-import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
+import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
 import 'package:flutter/material.dart';
 
 class DView extends HiveObject {
@@ -11,20 +11,25 @@ class DView extends HiveObject {
   final String label;
   final String entity;
   final Map<String, String> filter;
+  final Rule? rule;
 
   DView({
     required this.label,
     required this.entity,
     required this.filter,
     required this.id,
+    this.rule,
   });
 
   factory DView.fromJson(Map<String, dynamic> json) {
     return DView(
-      id: json['id'],
-      label: json['label'],
-      entity: json['entity'],
-      filter: Map<String, String>.from(json['filter']),
+      id: json['id'] ?? json['label'] ?? '',
+      label: json['label'] ?? '',
+      entity: json['entity'] ?? '',
+      filter: (json['filter'] as Map?)
+              ?.map((k, v) => MapEntry(k.toString(), v.toString())) ??
+          {},
+      rule: json['rule'] != null ? Rule.fromMap(json['rule']) : null,
     );
   }
 
@@ -32,19 +37,23 @@ class DView extends HiveObject {
       : id = '',
         label = '',
         entity = '',
-        filter = {};
+        filter = {},
+        rule = null;
 
   DView copyWith({
     String? id,
     String? label,
     String? entity,
     Map<String, String>? filter,
+    Rule? rule,
+    bool clearRule = false,
   }) {
     return DView(
       id: id ?? this.id,
       label: label ?? this.label,
       entity: entity ?? this.entity,
       filter: filter ?? this.filter,
+      rule: clearRule ? null : (rule ?? this.rule),
     );
   }
 
@@ -54,6 +63,7 @@ class DView extends HiveObject {
       'label': label,
       'entity': entity,
       'filter': filter,
+      if (rule != null) 'rule': rule!.toMap(),
     };
   }
 
@@ -79,16 +89,18 @@ class DView extends HiveObject {
     Map<String, dynamic> data,
     List<Map<String, dynamic>> parentData,
     EntityCustom entity,
-    bool embedded,
-  ) {
+    bool embedded, {
+    VoidCallback? onSuccess,
+  }) {
     return ActionButtonItem(
       color: DataAction.view.color,
       icon: DataAction.view.icon,
       label: '${DataAction.view.title} $label',
       onPressed: () async {
         if (embedded) {
-          Future.delayed(const Duration(milliseconds: 200), () {
-            Navigator.push(
+          await Future.delayed(const Duration(milliseconds: 200));
+          if (context.mounted) {
+            await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => MenuCustom.fromId(
@@ -99,7 +111,8 @@ class DView extends HiveObject {
                 ),
               ),
             );
-          });
+            onSuccess?.call();
+          }
         } else {
           MenuBloc.instance.add(
             Menu3Selected(

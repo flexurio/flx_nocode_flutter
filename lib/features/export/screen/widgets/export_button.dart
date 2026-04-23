@@ -6,6 +6,7 @@ import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_cust
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/src/app/util/picker_file.dart';
+import 'package:flx_nocode_flutter/src/app/util/general_xlsx.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
@@ -47,7 +48,7 @@ class ButtonExport extends StatelessWidget {
                   filename: '${export.name}.pdf',
                 );
               } else {
-                final bytes = generalXlsx(context, data.data, export.fields);
+                final bytes = generalXlsxNoCode(context, data.data, export.fields);
                 final filename = '${export.name}.xlsx';
                 saveFile(bytes, filename);
               }

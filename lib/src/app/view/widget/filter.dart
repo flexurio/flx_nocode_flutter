@@ -56,6 +56,7 @@ class FilterButton extends StatelessWidget {
               } else {
                 filters = await showDialog<List<Filter>?>(
                   context: context,
+                  useRootNavigator: false,
                   builder: (context) => Dialog(
                     child: Container(
                       padding: const EdgeInsets.all(24),

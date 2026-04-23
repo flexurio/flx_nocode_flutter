@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:hive_ce/hive.dart';
 
 /// Represents a single field definition in a dynamic entity configuration.
@@ -11,7 +12,12 @@ class EntityField extends HiveObject {
   /// Unique reference/key for the field.
   final String reference;
 
-  /// Field type (e.g. "text", "number", "date", "select", etc).
+  /// Field type string.
+  ///
+  /// Supported patterns (see `EntityFieldDomainX` helpers):
+  /// - `text`, `select`, `bool`, `permission`
+  /// - `number` or `number(<decimal>)` → use `decimal` getter
+  /// - `date` or `datetime(<format>)` → use `isDateTime`/`dateTimeFormat`
   final String type;
 
   /// Optional width of the column when rendered in tables/grids.
@@ -200,5 +206,16 @@ class FieldOptions extends HiveObject {
       'label_field': labelField,
       'value_field': valueField,
     };
+  }
+}
+
+extension EntityFieldIconX on EntityField {
+  IconData get icon {
+    if (type.contains('number')) return Icons.tag;
+    if (type == 'bool') return Icons.toggle_on;
+    if (type.contains('datetime') || type == 'date') return Icons.date_range;
+    if (type == 'select') return Icons.arrow_drop_down_circle;
+    if (type == 'permission') return Icons.security;
+    return Icons.text_fields;
   }
 }

@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/data_table/screen/widgets/action_row_multiple.dart';
-import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_display.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
 
-/// Table view terpisah dari MenuDataTableCustom agar lebih modular & mudah diuji.
 class MenuDataTableCustomTableView extends StatelessWidget {
   const MenuDataTableCustomTableView({
     super.key,
@@ -34,17 +33,9 @@ class MenuDataTableCustomTableView extends StatelessWidget {
   final List<Map<String, dynamic>> parentData;
   final bool bypassPermission;
   final Map<String, dynamic> filtersMap;
-
-  /// tombol/komponen sisi kiri di atas tabel (mis. chips filter info)
   final List<Widget> actionLeft;
-
-  /// builder untuk action kanan (menerima refreshButton dari DataTableBackend)
   final List<Widget> Function(Widget refreshButton) actionRightBuilder;
-
-  /// callback ketika pagination/sort/filter berubah
   final void Function(PageOptions<Map<String, dynamic>>?) onChanged;
-
-  /// callback untuk refresh manual (pull-to-refresh / tombol refresh)
   final FutureOr<void> Function([PageOptions<Map<String, dynamic>>?]) onRefresh;
 
   @override
@@ -78,6 +69,8 @@ class MenuDataTableCustomTableView extends StatelessWidget {
                   rows: selectedRows,
                   entity: entity,
                   parentData: parentData,
+                  bypassPermission: bypassPermission,
+                  onSuccess: () => onRefresh(),
                 );
               },
         columns: [
@@ -116,20 +109,30 @@ class MenuDataTableCustomTableView extends StatelessWidget {
             entity,
             field.reference,
             row[field.reference],
-            onTap: index != 0
+            onTap: index != 0 || entity.actionPrimary == null
                 ? null
                 : () async {
-                    await Navigator.push(
-                      context,
-                      EntityViewPage.route(
-                        parentData: parentData,
-                        embedded: embedded,
+                    if (entity.actionPrimary != null) {
+                      await entity.actionPrimary!.executeSingle(
                         entity: entity,
+                        context: context,
                         data: row,
-                        filters: filtersMap,
-                      ),
-                    );
-                    onRefresh();
+                        parentData: parentData,
+                        onSuccessCallback: () => onRefresh(),
+                      );
+                    } else {
+                      await Navigator.push(
+                        context,
+                        EntityViewPage.route(
+                          parentData: parentData,
+                          embedded: embedded,
+                          entity: entity,
+                          data: row,
+                          filters: filtersMap,
+                        ),
+                      );
+                      onRefresh();
+                    }
                   },
           ),
         ),
@@ -137,7 +140,6 @@ class MenuDataTableCustomTableView extends StatelessWidget {
     });
   }
 
-  /// builder untuk action kanan (menerima refreshButton dari DataTableBackend)
   List<DTColumn<Map<String, dynamic>>> _buildRowActions(BuildContext context) {
     return [
       DTColumn(

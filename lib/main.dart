@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:flx_nocode_flutter/features/configuration/screen/pages/configuration_error_page.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
@@ -18,11 +20,13 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
 
-  final runtimeConfigurationFsBasePath =
-      (Platform.environment['CONFIGURATION_FS_BASE_PATH'] ?? '').trim();
-  final resolvedConfigurationFsBasePath = runtimeConfigurationFsBasePath.isNotEmpty
-      ? runtimeConfigurationFsBasePath
-      : _cliConfigurationFileSystemBasePath;
+  final runtimeConfigurationFsBasePath = kIsWeb
+      ? ''
+      : (Platform.environment['CONFIGURATION_FS_BASE_PATH'] ?? '').trim();
+  final resolvedConfigurationFsBasePath =
+      runtimeConfigurationFsBasePath.isNotEmpty
+          ? runtimeConfigurationFsBasePath
+          : _cliConfigurationFileSystemBasePath;
 
   if (resolvedConfigurationFsBasePath.isNotEmpty) {
     Configuration.fileSystemBasePath = resolvedConfigurationFsBasePath;
@@ -59,20 +63,21 @@ Future<void> main() async {
       final entity = await EntityCustom.getEntity(entityRegistration);
       if (entity != null) {
         signUpPage = ({required VoidCallback onSuccess}) {
-          return EntityCreatePage.prepare(
+          return EntityCreatePageOld.prepare(
             parentData: [],
-            layoutForm: entity.layoutForm.getByType(FormType.create),
+            layoutForm: entity.layoutForm.create,
             entity: entity,
             embedded: true,
             noHeader: true,
             filters: {},
-            onSuccess: onSuccess,
+            onSuccess: (_) => onSuccess(),
             autoBackWhenSuccess: false,
           );
         };
       }
     } catch (e) {
-      print('[main] error loading entity registration "$entityRegistration": $e');
+      print(
+          '[main] error loading entity registration "$entityRegistration": $e');
       runApp(
         MaterialApp(
           home: ConfigurationErrorPage(error: e),

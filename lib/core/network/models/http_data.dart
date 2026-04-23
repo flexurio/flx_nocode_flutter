@@ -4,7 +4,6 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 import 'package:hive/hive.dart';
 import 'package:flx_nocode_flutter/src/app/util/string.dart';
-import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart'; // untuk JsonList
 
 /// Represents HTTP request configuration data used by actions.
 ///
@@ -23,12 +22,12 @@ import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.
 ///   "method": "POST",
 ///   "url": "https://api.example.com/customers",
 ///   "headers": {
-///     "Authorization": "Bearer \${token}",
+///     "Authorization": "Bearer ${token}",
 ///     "Content-Type": "application/json"
 ///   },
 ///   "body": {
-///     "name": "\${customer_name}",
-///     "email": "\${customer_email}"
+///     "name": "${customer_name}",
+///     "email": "${customer_email}"
 ///   },
 ///   "use_form_data": false
 /// }
@@ -44,16 +43,16 @@ class HttpData extends HiveObject {
 
   /// Target endpoint URL for the request.
   ///
-  /// Can contain template placeholders (e.g. `https://api.com/users/\${id}`),
+  /// Can contain template placeholders (e.g. `https://api.com/users/${id}`),
   /// which should be resolved before calling [execute].
   final String url;
 
   /// HTTP headers to be sent with the request.
   ///
-  /// Values may contain template placeholders such as `\${token}`.
+  /// Values may contain template placeholders such as `${token}`.
   final Map<String, String> headers;
 
-  /// JSON request body, can contain template variables such as `\${id}`.
+  /// JSON request body, can contain template variables such as `${id}`.
   ///
   /// - For `GET` / non-body methods, this will be converted to query parameters.
   /// - For `POST`, `PUT`, `PATCH`, this will be sent as body
@@ -66,6 +65,12 @@ class HttpData extends HiveObject {
   /// form-encoded / multipart payload instead of raw JSON.
   final bool useFormData;
 
+  /// Whether to use mock data instead of calling the actual API.
+  final bool mockEnabled;
+
+  /// The data to return when [mockEnabled] is true.
+  final Object? mockData;
+
   /// Creates a new immutable [HttpData] instance.
   HttpData({
     required this.method,
@@ -73,6 +78,8 @@ class HttpData extends HiveObject {
     required this.headers,
     required this.body,
     this.useFormData = false,
+    this.mockEnabled = false,
+    this.mockData,
   });
 
   /// Creates a modified copy of this [HttpData].
@@ -82,7 +89,7 @@ class HttpData extends HiveObject {
   ///
   /// ```dart
   /// final updated = httpData.copyWith(
-  ///   url: 'https://api.example.com/users/\$id',
+  ///   url: 'https://api.example.com/users/$id',
   /// );
   /// ```
   HttpData copyWith({
@@ -91,6 +98,8 @@ class HttpData extends HiveObject {
     Map<String, String>? headers,
     Map<String, dynamic>? body,
     bool? useFormData,
+    bool? mockEnabled,
+    Object? mockData,
   }) {
     return HttpData(
       method: method ?? this.method,
@@ -98,6 +107,8 @@ class HttpData extends HiveObject {
       headers: headers ?? this.headers,
       body: body ?? this.body,
       useFormData: useFormData ?? this.useFormData,
+      mockEnabled: mockEnabled ?? this.mockEnabled,
+      mockData: mockData ?? this.mockData,
     );
   }
 
@@ -108,8 +119,8 @@ class HttpData extends HiveObject {
   /// {
   ///   "method": "GET",
   ///   "url": "https://api.example.com",
-  ///   "headers": { "Authorization": "Bearer \${token}" },
-  ///   "body": { "id": "\${id}" },
+  ///   "headers": { "Authorization": "Bearer ${token}" },
+  ///   "body": { "id": "${id}" },
   ///   "use_form_data": false
   /// }
   /// ```
@@ -120,6 +131,8 @@ class HttpData extends HiveObject {
       headers: Map<String, String>.from(json['headers'] ?? const {}),
       body: Map<String, dynamic>.from(json['body'] ?? const {}),
       useFormData: json['use_form_data'] ?? false,
+      mockEnabled: json['mock_enabled'] ?? false,
+      mockData: json['mock_data'],
     );
   }
 
@@ -139,10 +152,10 @@ class HttpData extends HiveObject {
   ///   "method": "POST",
   ///   "url": "https://api.example.com/customers",
   ///   "headers": {
-  ///     "Authorization": "Bearer \${token}"
+  ///     "Authorization": "Bearer ${token}"
   ///   },
   ///   "body": {
-  ///     "name": "\${customer_name}"
+  ///     "name": "${customer_name}"
   ///   },
   ///   "use_form_data": false
   /// }
@@ -154,6 +167,8 @@ class HttpData extends HiveObject {
       'headers': headers,
       'body': body,
       'use_form_data': useFormData,
+      'mock_enabled': mockEnabled,
+      'mock_data': mockData,
     };
   }
 }
@@ -161,15 +176,96 @@ class HttpData extends HiveObject {
 extension HttpDataExtension on HttpData {
   /// Build HttpRequestConfig dari HttpData.
   HttpRequestConfig toRequestConfig(JsonMap data) {
+    // String interpolation for URL and body.
+    // Query parameters are assumed to be part of the URL string.
+    String processedUrl = url.renderWithData(data).interpolateJavascript(data);
+    final interpolatedBody = _interpolateBody(data);
+
     return HttpRequestConfig(
       method: method.toUpperCase(),
-      url: url.interpolateJavascript({
-        "current": data,
-      }),
-      headers: headersReplaceStringWithValues(data),
-      body: bodyReplaceStringWithValues(data),
+      url: processedUrl,
+      headers: _interpolateHeaders(data),
+      body: interpolatedBody,
       asFormData: useFormData,
+      mockEnabled: mockEnabled,
+      mockData: mockData,
     );
+  }
+
+  /// Build HttpRequestConfig dari HttpData untuk banyak data (List).
+  HttpRequestConfig toRequestConfigMultiple(List<Map<String, dynamic>> data) {
+    final merged = _mergeData(data);
+    String processedUrl =
+        url.replaceStringWithValuesMultiple(data).interpolateJavascript(merged);
+
+    final interpolatedBody = body.map((key, value) {
+      if (value is String) {
+        final processed = value
+            .replaceStringWithValuesMultiple(data)
+            .interpolateJavascript(merged);
+        return MapEntry(key, processed);
+      }
+      return MapEntry(key, value);
+    });
+
+    final interpolatedHeaders = headers.map((key, value) {
+      final processed = value
+          .replaceStringWithValuesMultiple(data)
+          .interpolateJavascript(merged);
+      return MapEntry(key, processed);
+    });
+
+    return HttpRequestConfig(
+      method: method.toUpperCase(),
+      url: processedUrl,
+      headers: interpolatedHeaders,
+      body: interpolatedBody,
+      asFormData: useFormData,
+      mockEnabled: mockEnabled,
+      mockData: mockData,
+    );
+  }
+
+  Map<String, dynamic> _mergeData(List<Map<String, dynamic>> data) {
+    if (data.isEmpty) return {};
+    final merged = <String, dynamic>{};
+    merged.addAll(data.first);
+
+    final allKeys = data.expand((e) => e.keys).toSet();
+    for (final key in allKeys) {
+      final uniqueValues = data
+          .map((e) => e[key]?.toString() ?? '')
+          .where((e) => e.isNotEmpty)
+          .toSet()
+          .toList();
+
+      if (uniqueValues.length == 1) {
+        merged[key] = uniqueValues.first;
+      } else if (uniqueValues.length > 1) {
+        merged[key] = uniqueValues.join(',');
+      } else {
+        merged[key] = '';
+      }
+    }
+    return merged;
+  }
+
+  Map<String, String> _interpolateHeaders(JsonMap data) {
+    return headers.map((key, value) {
+      final processed = value.renderWithData(data).interpolateJavascript(data);
+      return MapEntry(key, processed);
+    });
+  }
+
+  Map<String, dynamic> _interpolateBody(JsonMap data) {
+    return body.map((key, value) {
+      if (value is String) {
+        final processed =
+            value.renderWithData(data).interpolateJavascript(data);
+        return MapEntry(key, processed);
+      }
+      return MapEntry(key, value);
+    });
   }
 
   /// Eksekusi tanpa parameter.
@@ -178,37 +274,22 @@ extension HttpDataExtension on HttpData {
   /// ```dart
   /// final result = await httpData.execute();
   /// ```
-  Future<HttpRequestResult> execute(JsonMap data) async {
-    final executor = HttpRequestExecutor();
+  Future<HttpRequestResult> execute(
+    JsonMap data, {
+    HttpRequestExecutor? executor,
+  }) async {
+    final exec = executor ?? HttpRequestExecutor();
     final config = toRequestConfig(data);
-    return executor.execute(config);
+    return exec.execute(config);
   }
 
-  Map<String, dynamic> bodyReplaceStringWithValues(
-    Map<String, dynamic> data,
-  ) {
-    return body.map((key, value) {
-      if (value is String) {
-        return MapEntry(key, value.replaceStringWithValues(data));
-      }
-      return MapEntry(key, value);
-    });
-  }
-
-  Map<String, dynamic> bodyReplaceStringWithValuesMultiple(JsonList data) {
-    return body.map((key, value) {
-      if (value is String) {
-        return MapEntry(key, value.replaceStringWithValuesMultiple(data));
-      }
-      return MapEntry(key, value);
-    });
-  }
-
-  Map<String, String> headersReplaceStringWithValues(
-    Map<String, dynamic> data,
-  ) {
-    return headers.map((key, value) {
-      return MapEntry(key, value.replaceStringWithValues(data));
-    });
+  /// Eksekusi dengan banyak data.
+  Future<HttpRequestResult> executeMultiple(
+    List<Map<String, dynamic>> data, {
+    HttpRequestExecutor? executor,
+  }) async {
+    final exec = executor ?? HttpRequestExecutor();
+    final config = toRequestConfigMultiple(data);
+    return exec.execute(config);
   }
 }

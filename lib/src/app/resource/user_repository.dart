@@ -18,8 +18,10 @@ class UserRepositoryApp extends UserRepository {
     token = accessToken;
     final userPayload = extractPayloadFromJwt(accessToken);
     userApp = UserApp.fromJson(userPayload);
-    permissions = permission;
-    setPermissions(permission);
+    if (permission.isNotEmpty) {
+      permissions = permission;
+      setPermissions(permission);
+    }
   }
 
   Future<void> setPermissions(List<String> permission) async {

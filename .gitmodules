@@ -1,6 +1,6 @@
 [submodule "packages/flx_core_flutter"]
 	path = packages/flx_core_flutter
-	url = https://gitlab.com/VNEU/flexurio-erp-core.git
+	url = https://github.com/flexurio/flx_core_flutter.git
 [submodule "packages/flx_authentication_flutter"]
 	path = packages/flx_authentication_flutter
-	url = https://gitlab.com/VNEU/flexurio-chiron-authentication.git
+	url = https://github.com/flexurio/flx_authentication_flutter.git

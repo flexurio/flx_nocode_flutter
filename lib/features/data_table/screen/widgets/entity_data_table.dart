@@ -1,14 +1,18 @@
+import 'dart:async';
+
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/features/data_table/screen/widgets/inline_filter.dart';
+import 'package:gap/gap.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_custom_query_bloc.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
-import 'package:flx_nocode_flutter/src/app/view/widget/entity_create_button.dart';
-import 'package:flx_nocode_flutter/src/app/view/widget/filter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:screen_identifier/screen_identifier.dart';
 
 import '../../../../src/app/view/widget/error.dart';
+import 'menu_data_table_actions.dart';
 import 'menu_data_table_custom_table_view.dart';
 
 class MenuDataTableCustom extends StatefulWidget {
@@ -51,23 +55,33 @@ class MenuDataTableCustom extends StatefulWidget {
 
 class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   var _filters = <Filter>[];
+  late final PageOptions<Map<String, dynamic>> _initialPageOptions;
 
   @override
   void initState() {
     super.initState();
     _filters.addAll(widget.initialFilters);
-    _fetch();
+    _initialPageOptions = PageOptions<Map<String, dynamic>>.empty(
+      sortBy: widget.entity.paginationOption.sortBy,
+      ascending: widget.entity.paginationOption.ascending,
+    );
+    _fetch(_initialPageOptions);
   }
 
   void _fetch([PageOptions<Map<String, dynamic>>? pageOptions]) {
-    if (widget.entity.backend.readAll == null) return;
+    final readAll = widget.entity.backend.readAll;
+    if (readAll == null) return;
+
     context.read<EntityCustomQueryBloc>().add(
           EntityCustomQueryEvent.fetch(
             cachedDurationSeconds: null,
             pageOptions: pageOptions,
             filters: _filters,
-            method: widget.entity.backend.readAll!.method,
-            url: widget.entity.backend.readAll!.url,
+            method: readAll.method,
+            url: readAll.url,
+            mockEnabled: readAll.mockEnabled,
+            mockData: readAll.mockData,
+            parentData: widget.parentData,
           ),
         );
   }
@@ -76,20 +90,21 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   Widget build(BuildContext context) {
     return BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
       builder: (context, state) {
+        final status = state.map(
+          initial: (_) => Status.progress,
+          loading: (_) => Status.progress,
+          loaded: (_) => Status.loaded,
+          error: (_) => Status.error,
+        );
+
+        final pageOptions = state.maybeWhen(
+          loaded: (data) => data,
+          loading: (data) => data,
+          orElse: PageOptions<Map<String, dynamic>>.empty,
+        );
+
         return ScreenIdentifierBuilder(
           builder: (context, screenIdentifier) {
-            final status = state.maybeWhen(
-              loading: (_) => Status.progress,
-              loaded: (_) => Status.loaded,
-              orElse: () => Status.error,
-            );
-
-            final pageOptions = state.maybeWhen(
-              loaded: (data) => data,
-              loading: (data) => data,
-              orElse: PageOptions<Map<String, dynamic>>.empty,
-            );
-
             return screenIdentifier.conditions(
               md: MenuDataTableCustomTableView(
                 entity: widget.entity,
@@ -129,120 +144,143 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       status: status,
       pageOptions: pageOptions,
       builder: (data) {
-        if (widget.entity.layoutListTile == null) {
+        final layoutListTile = widget.entity.layoutListTile;
+        if (layoutListTile == null) {
           return NoCodeError('layout_list_tile is null');
         }
-        return widget.entity.layoutListTile!.build(
+        return layoutListTile.build(
+          context: context,
           entity: widget.entity,
           data: data,
-          onTap: () async {
-            Navigator.push(
-              context,
-              EntityViewPage.route(
-                parentData: parentData,
-                embedded: true,
-                entity: widget.entity,
-                data: data,
-                filters: Map.fromEntries(
-                  _filters.map((e) => MapEntry(e.reference, e.value)).toList(),
-                ),
-              ),
-            ).then((value) => _fetch());
-          },
+          onTap: () => _handleItemTap(data, parentData),
+          parentData: parentData,
+          onRefresh: (ctx) => _fetch(),
+          filters: _filters.toMap(),
+          bypassPermission: widget.bypassPermission,
         );
       },
     );
   }
 
-  List<Widget> _buildActionLeft() {
-    if (_filters.isEmpty) return const <Widget>[];
-    return [
-      _buildFilterInformation(Theme.of(context).colorScheme.primary),
-    ];
+  Future<void> _handleItemTap(
+    Map<String, dynamic> data,
+    List<Map<String, dynamic>> parentData,
+  ) async {
+    final actionPrimary = widget.entity.actionPrimary;
+
+    if (actionPrimary != null) {
+      await actionPrimary.executeSingle(
+        entity: widget.entity,
+        context: context,
+        data: data,
+        parentData: parentData,
+        onSuccessCallback: () => _fetch(),
+      );
+      return;
+    }
+
+    await Navigator.push(
+      context,
+      EntityViewPage.route(
+        parentData: parentData,
+        embedded: true,
+        entity: widget.entity,
+        data: data,
+        filters: _filters.toMap(),
+      ),
+    );
+    _fetch();
   }
 
-  List<Widget> _buildHomeActions() {
-    final buttons = <Widget>[];
-    final actions = widget.entity.layoutForm.homeActionForms;
-    for (final action in actions) {
-      buttons.add(
-        LightButtonSmall(
-          title: action.label,
-          action: DataAction.reprocess,
-          permissions: null,
-          onPressed: () async {
-            await Navigator.push(
-              context,
-              EntityCreatePage.route(
-                layoutForm: action,
-                entity: widget.entity,
-                onSuccess: () => _fetch(),
-                embedded: false,
-                parentData: widget.parentData,
-                filters: {},
-              ),
-            );
-          },
-        ),
-      );
+  List<Widget> _buildActionLeft() {
+    final widgets = <Widget>[];
+
+    if (widget.entity.filters.isNotEmpty) {
+      for (final f in widget.entity.filters) {
+        final fieldRef = f.reference;
+        final field = widget.entity.getField(fieldRef);
+        if (field == null) continue;
+
+        Filter? currentFilter;
+        try {
+          currentFilter = _filters.firstWhere((f) => f.reference == fieldRef);
+        } catch (_) {}
+
+        widgets.add(
+          InlineFilter(
+            key: ValueKey('filter_$fieldRef'),
+            field: field,
+            config: f.config,
+            initialValue: currentFilter?.value,
+            onChanged: (val) => _onInlineFilterChanged(fieldRef, val),
+          ),
+        );
+        widgets.add(const Gap(12));
+      }
     }
-    return buttons;
+
+    if (_filters.isNotEmpty) {
+      widgets
+          .add(_buildFilterInformation(Theme.of(context).colorScheme.primary));
+    }
+
+    return widgets;
+  }
+
+  void _onInlineFilterChanged(String ref, String? val) {
+    setState(() {
+      _filters.removeWhere((f) => f.reference == ref);
+      if (val != null && val.isNotEmpty) {
+        _filters.add(Filter(reference: ref, value: val));
+      }
+    });
+    _fetch();
   }
 
   List<Widget> _buildActionRight(Widget refreshButton) {
     return [
-      _buildButtonExports(),
-      FilterButton(
-        fields: widget.entity.fields,
-        currentFilters: _filters,
+      MenuDataTableActions(
+        entity: widget.entity,
+        parentData: widget.parentData,
+        embedded: widget.embedded,
+        bypassPermission: widget.bypassPermission,
+        filters: _filters,
+        refreshButton: refreshButton,
         onFilterChanged: (filters) {
           _filters = filters;
           _fetch();
         },
+        onRefresh: _fetch,
       ),
-      ..._buildHomeActions(),
-      refreshButton,
-      if (widget.entity.allowCreate)
-        EntityCreateButton(
-          parentData: widget.parentData,
-          layoutForm: widget.entity.layoutForm.getByType(FormType.create),
-          embedded: widget.embedded,
-          entity: widget.entity,
-          filters: _filters.toMap(),
-          bypassPermission: widget.bypassPermission,
-          onSuccess: () => _fetch(),
-        ),
     ];
   }
 
-  Widget _buildButtonExports() {
-    final exportButtons = widget.entity.exports
-        .map((e) => e.buildButton(filters: _filters))
-        .toList();
-    if (exportButtons.isEmpty) return const SizedBox();
-    return LightButtonSmallGroup(
-      action: DataAction.export,
-      childrenList: exportButtons,
-    );
-  }
-
   Widget _buildFilterInformation(Color primaryColor) {
+    if (_filters.isEmpty) return const SizedBox.shrink();
+
     return Wrap(
       spacing: 12,
-      children: _filters
-          .map(
-            (e) => Chip(
-              side: BorderSide.none,
-              backgroundColor: primaryColor,
-              label: Text(
-                '${e.getLabel(widget.entity)}: ${e.value}',
-                style: const TextStyle(color: Colors.white),
-              ),
-              iconTheme: const IconThemeData(color: Colors.white),
-              onDeleted: () => setState(() => _filters.remove(e)),
-            ),
-          )
-          .toList(),
+      children: _filters.map((filter) {
+        // Skip showing chips for inline filters to avoid duplication
+        if (widget.entity.filters.any((e) => e.reference == filter.reference)) {
+          return const SizedBox.shrink();
+        }
+
+        final label = filter.getLabel(widget.entity);
+        return Chip(
+          side: BorderSide.none,
+          backgroundColor: primaryColor,
+          label: Text(
+            '$label: ${filter.value}',
+            style: const TextStyle(color: Colors.white),
+          ),
+          iconTheme: const IconThemeData(color: Colors.white),
+          onDeleted: () {
+            setState(() => _filters.remove(filter));
+            _fetch();
+          },
+        );
+      }).toList(),
     );
   }
 }

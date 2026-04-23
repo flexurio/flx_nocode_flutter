@@ -11,10 +11,37 @@ extension ComponentFieldDisplayWidgets on ComponentFieldDisplay {
       child: Text(
         this.value.interpolateJavascript(
           {
+            ...data,
             "current": data,
           },
         ),
       ),
+    );
+  }
+
+  Widget toMockWidget() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.black87,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -67,6 +67,8 @@ Defines the properties of a single API endpoint.
 | --- | --- | --- | --- |
 | `path` | String | Yes | The URL path for the endpoint (e.g., "/users", "/users/:id"). |
 | `method` | String | Yes | The HTTP method (e.g., "GET", "POST", "PUT", "DELETE"). |
+| `mock_enabled` | Boolean | No | Whether to use mock data instead of calling the actual API. Defaults to `false`. |
+| `mock_data` | Object \| Array | No | The data to return when `mock_enabled` is true. |
 
 ### Layout Form Object
 

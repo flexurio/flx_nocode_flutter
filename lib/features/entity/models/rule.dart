@@ -1,3 +1,4 @@
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 class Rule {
@@ -76,6 +77,23 @@ class Rule {
     }
     return result;
   }
+
+  String get description {
+    final parts = <String>[];
+    if (all.isNotEmpty) {
+      if (parts.isNotEmpty) parts.add('AND');
+      parts.add(all.map((c) => c.description).join(' AND '));
+    }
+    if (any.isNotEmpty) {
+      if (parts.isNotEmpty) parts.add('OR');
+      parts.add('(${any.map((c) => c.description).join(' OR ')})');
+    }
+    if (not != null) {
+      if (parts.isNotEmpty) parts.add('AND');
+      parts.add('NOT (${not!.description})');
+    }
+    return parts.join(' ');
+  }
 }
 
 class Condition {
@@ -109,35 +127,76 @@ class Condition {
       };
 
   bool evaluate(Map<String, dynamic> state) {
-    final lhs = state[field];
+    final lhs = _resolveLhs(state);
+    final rhs = _resolveValue(state);
 
     switch (op) {
       case '=':
-        return _equals(lhs, value);
+        return _equals(lhs, rhs);
       case '!=':
-        return !_equals(lhs, value);
+        return !_equals(lhs, rhs);
       case '>':
-        return _compare(lhs, value) > 0;
+        return _compare(lhs, rhs) > 0;
       case '>=':
-        return _compare(lhs, value) >= 0;
+        return _compare(lhs, rhs) >= 0;
       case '<':
-        return _compare(lhs, value) < 0;
+        return _compare(lhs, rhs) < 0;
       case '<=':
-        return _compare(lhs, value) <= 0;
+        return _compare(lhs, rhs) <= 0;
       case 'in':
-        return value is Iterable ? value.contains(lhs) : false;
+        return rhs is Iterable ? rhs.contains(lhs) : false;
       case 'not_in':
-        return value is Iterable ? !value.contains(lhs) : true;
-      case 'empty':
+        return rhs is Iterable ? !rhs.contains(lhs) : true;
+      case 'is_empty':
         return _isEmpty(lhs);
-      case 'not_empty':
+      case 'is_not_empty':
         return !_isEmpty(lhs);
+      case 'is_null':
+        return lhs == null;
+      case 'is_not_null':
+        return lhs != null;
       case 'contains':
-        if (lhs is Iterable) return lhs.contains(value);
-        if (lhs is String && value is String) return lhs.contains(value);
+        if (lhs is Iterable) return lhs.contains(rhs);
+        if (lhs is String && rhs is String) return lhs.contains(rhs);
         return false;
       default:
         throw FormatException('Unsupported operator "$op" in visible_if');
+    }
+  }
+
+  dynamic _resolveLhs(Map<String, dynamic> state) {
+    if (field.contains('{{')) {
+      return _resolveStringExpression(field, state);
+    }
+    return state[field];
+  }
+
+  dynamic _resolveValue(Map<String, dynamic> state) {
+    if (value is String && (value as String).contains('{{')) {
+      return _resolveStringExpression(value as String, state);
+    }
+
+    if (value is String) {
+      final numVal = num.tryParse(value as String);
+      if (numVal != null) return numVal;
+    }
+
+    return value;
+  }
+
+  dynamic _resolveStringExpression(String input, Map<String, dynamic> state) {
+    try {
+      final interpolated = input.interpolateJavascript(state);
+      final lowered = interpolated.toLowerCase();
+      if (lowered == 'true' || lowered == 'false') {
+        return lowered == 'true';
+      }
+      final numVal = num.tryParse(interpolated);
+      if (numVal != null) return numVal;
+      return interpolated;
+    } catch (_) {
+      // Fallback to raw value if interpolation fails
+      return input;
     }
   }
 
@@ -161,6 +220,40 @@ class Condition {
     if (v is Iterable) return v.isEmpty;
     if (v is Map) return v.isEmpty;
     return false;
+  }
+
+  String get description {
+    final cleanField = field.replaceAll(RegExp(r'[{}]'), '').trim();
+    switch (op) {
+      case '=':
+        return '$cleanField == $value';
+      case '!=':
+        return '$cleanField != $value';
+      case '>':
+        return '$cleanField > $value';
+      case '>=':
+        return '$cleanField >= $value';
+      case '<':
+        return '$cleanField < $value';
+      case '<=':
+        return '$cleanField <= $value';
+      case 'in':
+        return '$cleanField in $value';
+      case 'not_in':
+        return '$cleanField not in $value';
+      case 'is_empty':
+        return '$cleanField is empty';
+      case 'is_not_empty':
+        return '$cleanField is not empty';
+      case 'is_null':
+        return '$cleanField is null';
+      case 'is_not_null':
+        return '$cleanField is not null';
+      case 'contains':
+        return '$cleanField contains $value';
+      default:
+        return '$cleanField $op $value';
+    }
   }
 }
 

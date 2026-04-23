@@ -12,8 +12,8 @@ Future<String> loadFromAssetOrFile({
   String? overrideBasePath,
 }) async {
   final shouldUseFileSystem = useFileSystem || preferFileSystem;
-  final resolvedBasePath =
-      overrideBasePath ?? (shouldUseFileSystem ? fileSystemBasePath : assetBasePath);
+  final resolvedBasePath = overrideBasePath ??
+      (shouldUseFileSystem ? fileSystemBasePath : assetBasePath);
   final path = '$resolvedBasePath/$relativePath';
   return shouldUseFileSystem
       ? File(path).readAsString()

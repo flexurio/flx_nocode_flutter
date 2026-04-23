@@ -1,13 +1,11 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
+import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
-import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
-import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
-import 'json_table_viewer.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_button_regular.dart';
+import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
-typedef Json = Map<String, dynamic>;
 typedef JsonList = List<Map<String, dynamic>>;
 
 // ------------------------------------------------------
@@ -17,12 +15,23 @@ extension ActionListWidgetExtension on List<ActionD> {
   List<Widget> buildButtonsSingleRow({
     required EntityCustom entity,
     required BuildContext context,
-    required Json data,
+    required JsonMap data,
     required JsonList parentData,
+    bool? bypassPermission,
+    bool expanded = false,
+    VoidCallback? onSuccessCallback,
   }) {
-    return map(
-      (e) => e.buttonSingle(entity, context, data, parentData),
-    ).toList();
+    return where((action) => action.isVisibleFor(data))
+        .map((e) => e.buttonSingle(
+              entity,
+              context,
+              data,
+              parentData,
+              bypassPermission: bypassPermission,
+              expanded: expanded,
+              onSuccessCallback: onSuccessCallback,
+            ))
+        .toList();
   }
 
   List<Widget> buildButtonsMultiple({
@@ -30,10 +39,19 @@ extension ActionListWidgetExtension on List<ActionD> {
     required BuildContext context,
     required JsonList data,
     required JsonList parentData,
+    bool? bypassPermission,
+    VoidCallback? onSuccessCallback,
   }) {
-    return map(
-      (e) => e.buttonMultiple(entity, context, data, parentData),
-    ).toList();
+    return where((action) => action.isVisibleForList(data))
+        .map((e) => e.buttonMultiple(
+              entity,
+              context,
+              data,
+              parentData,
+              bypassPermission: bypassPermission,
+              onSuccessCallback: onSuccessCallback,
+            ))
+        .toList();
   }
 }
 
@@ -41,155 +59,165 @@ extension ActionListWidgetExtension on List<ActionD> {
 //             EXTENSION ON ACTIOND (WIDGETS)
 // ------------------------------------------------------
 extension ActionWidgetExtension on ActionD {
+  bool isVisibleFor(JsonMap data) {
+    const enableLog = false;
+    try {
+      if (rule == null) {
+        if (enableLog) {
+          print('[Action] "$name" -> SHOW (No Rule)');
+        }
+        return true;
+      }
+
+      final result = rule!.evaluate(data);
+
+      if (enableLog) {
+        print('------------------------------------------------------');
+        print('[Action] Checking Rule for "$name"');
+        print('Result    : ${result ? "✅ MATCH" : "❌ NO MATCH"}');
+        print('Rules     : ${rule?.toMap()}');
+        print('Data      : $data');
+      }
+
+      return result;
+    } catch (e) {
+      if (enableLog) {
+        print('[Action] Rule evaluation failed for "$name": $e');
+      }
+      debugPrint('Action rule evaluation failed: $e');
+      return true; // Fail open to avoid breaking UI
+    }
+  }
+
+  bool isVisibleForList(JsonList data) {
+    if (data.isEmpty) return isVisibleFor({});
+    return data.every(isVisibleFor);
+  }
+
+  Widget buildButtonRegular({
+    required BuildContext context,
+    required EntityCustom entity,
+    required JsonList parentData,
+    required JsonMap filters,
+    bool? bypassPermission,
+    bool expanded = false,
+    required VoidCallback onSuccess,
+  }) {
+    return ActionButtonRegular(
+      actionD: this,
+      entity: entity,
+      parentData: parentData,
+      filters: filters,
+      onSuccess: onSuccess,
+      bypassPermission: bypassPermission,
+      expanded: expanded,
+    );
+  }
+
+  IconData? actionIcon(ActionD action) {
+    if (action.icon != null) {
+      return getIconByName(action.icon);
+    }
+    // We prioritize the named 'icon' property which uses a constant mapping.
+    return null;
+  }
+
+  Color? _parseColor(String? colorStr) {
+    if (colorStr == null || colorStr.isEmpty) return null;
+    try {
+      if (colorStr.startsWith('#')) {
+        var hex = colorStr.replaceFirst('#', '');
+        if (hex.length == 6) hex = 'FF$hex';
+        return Color(int.parse('0x$hex'));
+      }
+      if (colorStr.startsWith('0x')) {
+        return Color(int.parse(colorStr));
+      }
+      return Color(int.parse('0x$colorStr'));
+    } catch (e) {
+      debugPrint('Error parsing color: $colorStr');
+      return null;
+    }
+  }
+
   Widget buttonSingle(
     EntityCustom entity,
     BuildContext context,
-    Json data,
-    JsonList parentData,
-  ) {
-    switch (type) {
-      case ActionType.listJsonViewAsTable:
-        return _buildButtonListJsonViewAsTable(
-          entity: entity,
-          context: context,
-          data: data,
-          reference: reference,
-        );
-      case ActionType.print:
-        return _buildButtonPrint(
-          entity: entity,
-          context: context,
-          data: data,
-        );
-      default:
-        return NoCodeError(
-          'Unhandled ActionType: $type',
-          debugInfo:
-              'ActionType "$type" is not handled in ActionWidgetExtension.buttonSingle.',
-          description:
-              'The action type "$type" is not implemented in ActionWidgetExtension.buttonMultiple. This indicates a missing UI component for this action.',
-          suggestion:
-              'Please ensure all ActionType enum values are handled in the switch statement within ActionWidgetExtension.buttonMultiple.',
-        );
-    }
+    JsonMap data,
+    JsonList parentData, {
+    bool? bypassPermission,
+    bool expanded = false,
+    VoidCallback? onSuccessCallback,
+  }) {
+    return LightButton(
+      title: name,
+      permission: ((bypassPermission ?? false) || entity.bypassAllPermissions)
+          ? null
+          : getPermission(entity.id),
+      iconColor: _parseColor(iconColor),
+      onPressed: () => executeSingle(
+        entity: entity,
+        context: context,
+        data: data,
+        parentData: parentData,
+        onSuccessCallback: onSuccessCallback,
+      ),
+      iconOverride: actionIcon(this),
+      expanded: expanded,
+    );
   }
 
   Widget buttonMultiple(
     EntityCustom entity,
     BuildContext context,
     JsonList data,
-    JsonList parentData,
-  ) {
-    const actionType = DataAction.print;
-
-    return LightButton(
-      title: name,
-      permission: null,
-      action: actionType,
-      onPressed: () async {
-        if (http == null) {
-          Toast(context).fail('No http data found');
-          // Menggunakan method dari action_logic_extension.dart
-          // Note: _handleOnFailure di logic extension bersifat private,
-          // tapi karena kita mengimport filenya, kita sebaiknya memanggil executeHttpMultiple
-          // yang sudah menghandle error. Namun jika ingin manual, logic failure harus dipublic-kan.
-          // Di sini saya panggil return saja karena executeHttpMultiple akan handle validasi.
-          return;
-        }
-
-        // Menggunakan showConfirmDialog dari action_logic_extension.dart
-        await showConfirmDialog(
-          context: context,
-          action: actionType,
-          label: name,
-          onConfirm: (ctx) => executeHttpMultiple(entity, ctx, data),
-        );
-      },
-    );
-  }
-
-  // ------------------------------------------------------
-  //                PRIVATE WIDGET BUILDERS
-  // ------------------------------------------------------
-
-  Widget _buildButtonPrint({
-    required EntityCustom entity,
-    required BuildContext context,
-    required Json data,
+    JsonList parentData, {
+    bool? bypassPermission,
+    bool expanded = false,
+    VoidCallback? onSuccessCallback,
   }) {
     const actionType = DataAction.print;
 
     return LightButton(
       title: name,
-      permission: null,
+      permission: ((bypassPermission ?? false) || entity.bypassAllPermissions)
+          ? null
+          : getPermission(entity.id),
       action: actionType,
+      iconColor: _parseColor(iconColor),
       onPressed: () async {
-        if (http == null) {
+        if (http == null && type != ActionType.showConfirmationDialog) {
           Toast(context).fail('No http data found');
           return;
         }
+
         await showConfirmDialog(
           context: context,
           action: actionType,
           label: name,
-          onConfirm: (ctx) => executeHttp(entity, ctx, data),
+          confirmationMessageText: confirmMessage,
+          onConfirm: (ctx) async {
+            if (http != null) {
+              await executeHttpMultiple(
+                entity,
+                ctx,
+                data,
+                onSuccessCallback: onSuccessCallback,
+              );
+            } else {
+              await handleOnSuccessMultiple(
+                entity: entity,
+                context: ctx,
+                responseData: null,
+                data: data,
+                onSuccessCallback: onSuccessCallback,
+              );
+            }
+          },
         );
       },
-    );
-  }
-
-  Widget _buildButtonListJsonViewAsTable({
-    required EntityCustom entity,
-    required BuildContext context,
-    required Json data,
-    required String? reference,
-  }) {
-    const actionType = DataAction.print;
-
-    return LightButton(
-      title: name,
-      permission: null,
-      action: actionType,
-      onPressed: () async {
-        if (reference == null) {
-          Toast(context).fail('No reference found');
-          return;
-        }
-
-        // Mengambil data dari reference
-        final dynamic rawData = data[reference];
-        dynamic jsonData;
-
-        if (rawData is String) {
-          try {
-            jsonData = jsonDecode(rawData);
-          } catch (e) {
-            jsonData = null;
-          }
-        } else {
-          jsonData = rawData;
-        }
-
-        if (jsonData == null) {
-          await showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-              title: const Text('Error'),
-              content: const Text('JSON tidak valid atau data kosong.'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
-          return;
-        }
-
-        // Memanggil fungsi dari json_table_viewer.dart
-        await showJsonAsTableDialog(context, jsonData);
-      },
+      iconOverride: actionIcon(this),
+      expanded: expanded,
     );
   }
 }

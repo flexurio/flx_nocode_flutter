@@ -38,6 +38,19 @@ class Filter {
     }
     return '$reference.eq';
   }
+
+  Map<String, String> getBackendParams() {
+    if (value.startsWith('__range__')) {
+      final parts = value.replaceFirst('__range__', '').split('|');
+      if (parts.length == 2) {
+        return {
+          '$reference.gte': parts[0],
+          '$reference.lte': parts[1],
+        };
+      }
+    }
+    return {getKeyBackend(): value};
+  }
 }
 
 extension FilterList on List<Filter> {

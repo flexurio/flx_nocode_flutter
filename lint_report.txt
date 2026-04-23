@@ -1,0 +1,381 @@
+Analyzing flx_nocode_flutter...                                 
+
+warning • The option 'ignore# This file is used specifically for CI/GitHub Actions to run additional' isn't supported by 'errors' • analysis_options.yaml:13:32 • unsupported_option
+   info • 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre • lib/features/component/screen/widgets/component_radio.dart:155:13 • deprecated_member_use
+   info • 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre • lib/features/component/screen/widgets/component_radio.dart:156:13 • deprecated_member_use
+warning • The library 'package:flx_core_flutter/flx_core_flutter.dart' doesn't export a member with the hidden name 'TColumn' • lib/features/component/screen/widgets/component_table.dart:2:62 • undefined_hidden_name
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:119:62 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:208:51 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:211:53 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:216:62 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:329:43 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:330:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:354:44 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:355:43 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:377:44 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:378:41 • deprecated_member_use
+   info • 'scale' is deprecated and shouldn't be used. Use scaleByVector3, scaleByVector4, or scaleByDouble instead • lib/features/configuration/screen/pages/configuration_error_page.dart:409:40 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/configuration/screen/pages/configuration_error_page.dart:426:44 • deprecated_member_use
+warning • The library 'package:flx_core_flutter/flx_core_flutter.dart' doesn't export a member with the hidden name 'TColumn' • lib/features/entity/models/action.dart:1:62 • undefined_hidden_name
+warning • Dead code • lib/features/entity/screen/widgets/action/action_widget_extension.dart:64:24 • dead_code
+warning • Dead code • lib/features/entity/screen/widgets/action/action_widget_extension.dart:72:22 • dead_code
+warning • Dead code • lib/features/entity/screen/widgets/action/action_widget_extension.dart:82:22 • dead_code
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/entity/screen/widgets/action/json_table_viewer.dart:51:35 • deprecated_member_use
+warning • The declaration '_NoopAction' isn't referenced • lib/features/layout_form/domain/workflow_actions/workflow_definition.dart:267:7 • unused_element
+warning • Dead code • lib/features/view/screen/widgets/view.dart:71:20 • dead_code
+warning • Dead code • lib/features/view/screen/widgets/view.dart:78:24 • dead_code
+warning • Dead code • lib/features/view/screen/widgets/view.dart:87:22 • dead_code
+warning • Dead code • lib/features/view/screen/widgets/view.dart:98:20 • dead_code
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:266:30 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:267:30 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:268:30 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:287:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:292:51 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:297:53 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:349:42 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:422:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:575:42 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:628:37 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:631:37 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:634:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:675:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:736:33 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:742:31 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:756:35 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:763:56 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/login_page.dart:796:41 • deprecated_member_use
+warning • The value of the local variable 'signUpPage' isn't used • lib/main.dart:58:54 • unused_local_variable
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • lib/src/app/model/backend_other.dart:76:26 • deprecated_member_use
+   info • 'permissions' is deprecated and shouldn't be used. Use permissionProvider instead • lib/src/app/model/configuration.dart:190:29 • deprecated_member_use
+   info • 'dart:html' is deprecated and shouldn't be used. Use package:web and dart:js_interop instead • lib/src/app/util/save_file_web.dart:2:1 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/page/landing/landing_page.dart:169:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/page/landing/landing_page.dart:307:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/page/landing/landing_page.dart:532:33 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/page/landing/landing_page.dart:592:36 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/page/landing/landing_page.dart:597:44 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/page/landing/landing_page.dart:679:33 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/page/landing/landing_page.dart:763:33 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/page/landing/landing_page.dart:798:64 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/page/landing/landing_page.dart:1047:33 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/page/landing/landing_page.dart:1249:63 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/page/landing/landing_page.dart:1306:33 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/page/landing/landing_page.dart:1561:22 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/page/landing/landing_page.dart:1563:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/page/landing/widget/landing_app_bar.dart:144:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/entity_home.dart:174:54 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/entity_home.dart:196:59 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/entity_home.dart:211:62 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:100:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:105:43 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:111:37 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:156:62 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:157:62 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:164:50 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:215:59 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:219:64 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:244:53 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:247:55 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:286:50 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:287:51 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:292:55 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:460:50 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/src/app/view/widget/error.dart:514:34 • deprecated_member_use
+   info • Don't invoke 'print' in production code • packages/flx_authentication_flutter/lib/src/app/bloc/login/login_bloc.dart:45:13 • avoid_print
+   info • Don't invoke 'print' in production code • packages/flx_authentication_flutter/lib/src/app/bloc/verify_code/verify_code_bloc.dart:39:13 • avoid_print
+   info • Don't invoke 'print' in production code • packages/flx_authentication_flutter/lib/src/app/bloc/verify_code/verify_code_bloc.dart:50:13 • avoid_print
+   info • Don't invoke 'print' in production code • packages/flx_authentication_flutter/lib/src/app/bloc/verify_code/verify_code_bloc.dart:61:13 • avoid_print
+   info • Don't invoke 'print' in production code • packages/flx_authentication_flutter/lib/src/app/bloc/verify_code/verify_code_bloc.dart:81:13 • avoid_print
+   info • Don't invoke 'print' in production code • packages/flx_authentication_flutter/lib/src/app/bloc/verify_code/verify_code_bloc.dart:84:13 • avoid_print
+   info • Don't invoke 'print' in production code • packages/flx_authentication_flutter/lib/src/app/resource/authentication_repository.dart:51:7 • avoid_print
+   info • Don't invoke 'print' in production code • packages/flx_authentication_flutter/lib/src/app/resource/authentication_repository.dart:62:7 • avoid_print
+   info • Don't invoke 'print' in production code • packages/flx_authentication_flutter/lib/src/app/resource/authentication_repository.dart:73:7 • avoid_print
+   info • Don't invoke 'print' in production code • packages/flx_authentication_flutter/lib/src/app/resource/authentication_repository.dart:76:7 • avoid_print
+   info • Don't invoke 'print' in production code • packages/flx_authentication_flutter/lib/src/app/resource/authentication_repository.dart:115:7 • avoid_print
+   info • Don't invoke 'print' in production code • packages/flx_authentication_flutter/lib/src/app/resource/authentication_repository.dart:251:7 • avoid_print
+   info • Don't invoke 'print' in production code • packages/flx_authentication_flutter/lib/src/app/resource/authentication_repository.dart:269:7 • avoid_print
+   info • Don't invoke 'print' in production code • packages/flx_authentication_flutter/lib/src/app/resource/authentication_repository.dart:272:7 • avoid_print
+   info • Static method should be a constructor • packages/flx_authentication_flutter/lib/src/app/util/access.dart:51:17 • prefer_constructors_over_static_methods
+warning • The type argument(s) of the function 'expand' can't be inferred • packages/flx_authentication_flutter/lib/src/app/util/access.dart:66:10 • inference_failure_on_function_invocation
+   info • 'list' is deprecated and shouldn't be used. Use `knobs.object.dropdown` instead • packages/flx_authentication_flutter/lib/src/app/view/page/login/login_page.widgetbook.dart:27:30 • deprecated_member_use
+   info • 'list' is deprecated and shouldn't be used. Use `knobs.object.dropdown` instead • packages/flx_authentication_flutter/lib/src/app/view/page/login/login_page.widgetbook.dart:56:30 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_authentication_flutter/lib/src/app/view/widget/f_text_phone_field.dart:99:57 • deprecated_member_use
+   info • 'DeviceFrameAddon' is deprecated and shouldn't be used. The [DeviceFrameAddon] is deprecated and will be removed in a future version. Please use the [ViewportAddon] instead. More info: https://docs.widgetbook.io/addons/viewport-addon • packages/flx_authentication_flutter/lib/widgetbook.dart:67:9 • deprecated_member_use
+   info • Dependencies not sorted alphabetically • packages/flx_authentication_flutter/pubspec.yaml:17:3 • sort_pub_dependencies
+   info • Dependencies not sorted alphabetically • packages/flx_authentication_flutter/pubspec.yaml:47:3 • sort_pub_dependencies
+warning • The URI 'package:flutter_lints/flutter.yaml' included in '/home/runner/work/flx_nocode_flutter/flx_nocode_flutter/packages/flx_core_flutter/example/analysis_options.yaml' can't be found when analyzing '/home/runner/work/flx_nocode_flutter/flx_nocode_flutter' • packages/flx_core_flutter/example/analysis_options.yaml:10:10 • include_file_not_found
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/model/base_api.dart:161:81 • lines_longer_than_80_chars
+   info • 'fileDownload' is deprecated and shouldn't be used. Use "fileArrowDown" instead • packages/flx_core_flutter/lib/src/app/model/data_action.dart:63:41 • deprecated_member_use
+   info • 'fileDownload' is deprecated and shouldn't be used. Use "fileArrowDown" instead • packages/flx_core_flutter/lib/src/app/model/data_action.dart:70:37 • deprecated_member_use
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:25:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:31:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:37:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:39:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:41:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:43:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:48:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:53:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:58:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:63:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:68:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:73:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:78:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:80:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:82:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:88:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:93:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:98:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:100:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:105:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:110:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:115:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:120:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:125:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:130:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:135:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:140:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:145:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:150:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:155:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:160:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:165:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:170:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:175:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:180:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:185:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:190:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:195:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:200:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:208:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:213:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:215:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:220:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:225:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:230:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:235:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:240:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:245:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:250:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:255:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:260:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:265:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:267:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:269:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:274:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:279:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:286:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:291:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:296:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:298:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:303:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:308:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:313:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:318:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:323:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:328:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:333:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:338:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:343:21 • prefer_constructors_over_static_methods
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/model/entity.dart:346:81 • lines_longer_than_80_chars
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:349:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:351:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:353:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:358:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:363:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:368:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:373:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:378:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:383:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:388:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:393:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:395:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:400:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:405:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:410:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:415:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:420:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:425:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:430:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:432:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:437:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:442:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:447:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:452:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:457:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:462:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:467:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:472:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:474:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:476:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:478:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:484:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:487:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:493:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:498:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:500:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:502:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:507:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:512:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:517:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:522:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:527:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:533:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:535:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:540:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:545:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:550:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:556:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:558:21 • prefer_constructors_over_static_methods
+   info • Static method should be a constructor • packages/flx_core_flutter/lib/src/app/model/entity.dart:564:21 • prefer_constructors_over_static_methods
+   info • Don't invoke 'print' in production code • packages/flx_core_flutter/lib/src/app/model/sound.dart:11:7 • avoid_print
+   info • Don't use 'BuildContext's across async gaps • packages/flx_core_flutter/lib/src/app/util/general_export.dart:140:7 • use_build_context_synchronously
+   info • Don't invoke 'print' in production code • packages/flx_core_flutter/lib/src/app/util/general_export.dart:228:5 • avoid_print
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • packages/flx_core_flutter/lib/src/app/util/pdf.dart:22:60 • deprecated_member_use
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/util/pdf.dart:48:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/util/pdf.dart:84:81 • lines_longer_than_80_chars
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • packages/flx_core_flutter/lib/src/app/util/pdf.dart:119:67 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • packages/flx_core_flutter/lib/src/app/util/pdf.dart:128:66 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • packages/flx_core_flutter/lib/src/app/util/pdf.dart:324:50 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • packages/flx_core_flutter/lib/src/app/util/pdf.dart:467:60 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • packages/flx_core_flutter/lib/src/app/util/pdf.dart:517:60 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • packages/flx_core_flutter/lib/src/app/util/pdf.dart:587:60 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • packages/flx_core_flutter/lib/src/app/util/pdf.dart:840:69 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • packages/flx_core_flutter/lib/src/app/util/pdf/header.dart:25:69 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • packages/flx_core_flutter/lib/src/app/util/pdf/header.dart:27:56 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • packages/flx_core_flutter/lib/src/app/util/pdf/header.dart:29:55 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use component accessors like .r or .g, or toARGB32 for an explicit conversion • packages/flx_core_flutter/lib/src/app/util/pdf/header.dart:31:55 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/util/pdf_view.dart:81:59 • deprecated_member_use
+  error • Target of URI doesn't exist: 'package:syncfusion_flutter_xlsio/xlsio.dart' • packages/flx_core_flutter/lib/src/app/util/simple_excel.dart:3:8 • uri_does_not_exist
+  error • The function 'Workbook' isn't defined • packages/flx_core_flutter/lib/src/app/util/simple_excel.dart:25:20 • undefined_function
+  error • Undefined name 'HAlignType' • packages/flx_core_flutter/lib/src/app/util/simple_excel.dart:41:31 • undefined_identifier
+  error • Undefined name 'HAlignType' • packages/flx_core_flutter/lib/src/app/util/simple_excel.dart:62:33 • undefined_identifier
+   info • Unnecessary duplication of receiver • packages/flx_core_flutter/lib/src/app/util/simple_excel_exporter.dart:102:9 • cascade_invocations
+   info • Unnecessary duplication of receiver • packages/flx_core_flutter/lib/src/app/util/simple_excel_exporter.dart:179:7 • cascade_invocations
+   info • Unnecessary duplication of receiver • packages/flx_core_flutter/lib/src/app/util/simple_excel_exporter.dart:180:7 • cascade_invocations
+   info • Unnecessary duplication of receiver • packages/flx_core_flutter/lib/src/app/util/simple_excel_exporter.dart:212:7 • cascade_invocations
+   info • Unnecessary duplication of receiver • packages/flx_core_flutter/lib/src/app/util/simple_excel_exporter.dart:213:7 • cascade_invocations
+   info • Unnecessary duplication of receiver • packages/flx_core_flutter/lib/src/app/util/simple_excel_exporter.dart:367:11 • cascade_invocations
+   info • Unnecessary duplication of receiver • packages/flx_core_flutter/lib/src/app/util/simple_excel_exporter.dart:374:11 • cascade_invocations
+   info • Unnecessary duplication of receiver • packages/flx_core_flutter/lib/src/app/util/simple_excel_exporter.dart:380:9 • cascade_invocations
+   info • Unnecessary duplication of receiver • packages/flx_core_flutter/lib/src/app/util/simple_excel_exporter.dart:468:7 • cascade_invocations
+   info • Unnecessary duplication of receiver • packages/flx_core_flutter/lib/src/app/util/simple_excel_exporter.dart:469:7 • cascade_invocations
+   info • Don't use 'BuildContext's across async gaps • packages/flx_core_flutter/lib/src/app/util/string_extension.dart:78:38 • use_build_context_synchronously
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/util/theme.dart:43:34 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/util/toast.dart:77:37 • deprecated_member_use
+   info • Don't use 'BuildContext's across async gaps • packages/flx_core_flutter/lib/src/app/util/toast.dart:150:36 • use_build_context_synchronously
+  error • Target of URI doesn't exist: 'package:flx_core_flutter/src/app/view/page/menu/menu_side_nav.dart' • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_page.dart:5:8 • uri_does_not_exist
+  error • Target of URI doesn't exist: 'package:flx_core_flutter/src/app/view/page/menu/widget/menu_content.dart' • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_page.dart:6:8 • uri_does_not_exist
+  error • The method 'MenuContent' isn't defined for the type '_MenuPageState' • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_page.dart:123:9 • undefined_method
+  error • The method 'MenuSideNav' isn't defined for the type '_MenuPageState' • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_page.dart:187:27 • undefined_method
+  error • The method 'MenuSideNav' isn't defined for the type '_MenuPageState' • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_page.dart:221:16 • undefined_method
+  error • Target of URI doesn't exist: 'package:flx_core_flutter/src/app/view/page/menu/widget/menu_level_1.dart' • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_side_nav.dart:6:8 • uri_does_not_exist
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_side_nav.dart:101:81 • lines_longer_than_80_chars
+  error • The method 'MenuLevel1' isn't defined for the type '_MenuSideNavState' • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_side_nav.dart:113:40 • undefined_method
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/page/menu/menu_side_nav.dart:118:81 • lines_longer_than_80_chars
+  error • Target of URI doesn't exist: 'package:flx_core_flutter/src/app/view/page/menu/widget/menu_level_2.dart' • packages/flx_core_flutter/lib/src/app/view/page/menu/widget/menu_level_1.dart:5:8 • uri_does_not_exist
+  error • The method 'buildMenuLevel2' isn't defined for the type 'MenuLevel1' • packages/flx_core_flutter/lib/src/app/view/page/menu/widget/menu_level_1.dart:38:25 • undefined_method
+  error • Target of URI doesn't exist: 'package:flx_core_flutter/src/app/view/page/menu/widget/menu_level_3.dart' • packages/flx_core_flutter/lib/src/app/view/page/menu/widget/menu_level_2.dart:4:8 • uri_does_not_exist
+  error • The function 'MenuLevel3' isn't defined • packages/flx_core_flutter/lib/src/app/view/page/menu/widget/menu_level_2.dart:21:20 • undefined_function
+   info • Don't use 'BuildContext's across async gaps • packages/flx_core_flutter/lib/src/app/view/widget/account_button.dart:195:29 • use_build_context_synchronously
+warning • The generic type 'FlavorConfig<dynamic>' should have explicit type arguments but doesn't • packages/flx_core_flutter/lib/src/app/view/widget/app.dart:7:12 • strict_raw_type
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/block_note.dart:28:36 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/block_note.dart:32:32 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/button.dart:216:64 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/button.dart:282:25 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/button.dart:290:61 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/button.dart:397:34 • deprecated_member_use
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/button.dart:428:81 • lines_longer_than_80_chars
+   info • The type name 'LBS_JANGAN_PAKE_INI_LAGI' isn't an UpperCamelCase identifier • packages/flx_core_flutter/lib/src/app/view/widget/button.dart:443:7 • camel_case_types
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/button.dart:489:63 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/button.dart:551:40 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/button.dart:559:63 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/button.dart:585:46 • deprecated_member_use
+   info • 'exclamationTriangle' is deprecated and shouldn't be used. Use "triangleExclamation" instead • packages/flx_core_flutter/lib/src/app/view/widget/card_confirmation_form.dart:56:32 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/chip_type.dart:15:35 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/container_glass.dart:35:24 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/container_glass.dart:36:24 • deprecated_member_use
+   info • Don't invoke 'print' in production code • packages/flx_core_flutter/lib/src/app/view/widget/data_list_view.dart:85:11 • avoid_print
+  error • Target of URI doesn't exist: 'package:flx_core_flutter/src/app/view/page/menu/menu_page.dart' • packages/flx_core_flutter/lib/src/app/view/widget/data_set_action.dart:5:8 • uri_does_not_exist
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/data_set_action.dart:43:81 • lines_longer_than_80_chars
+  error • Undefined name 'MenuPage' • packages/flx_core_flutter/lib/src/app/view/widget/data_set_action.dart:117:24 • undefined_identifier
+  error • Undefined name 'MenuPage' • packages/flx_core_flutter/lib/src/app/view/widget/data_set_action.dart:119:26 • undefined_identifier
+  error • Undefined name 'MenuPage' • packages/flx_core_flutter/lib/src/app/view/widget/data_set_action.dart:122:24 • undefined_identifier
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/data_table/widget/pagination_control.dart:63:36 • deprecated_member_use
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/data_table_set_backend.dart:93:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/data_table_set_backend.dart:101:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/data_table_set_backend.dart:135:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/data_table_set_backend.dart:140:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/data_table_set_backend.dart:149:81 • lines_longer_than_80_chars
+warning • The left operand can't be null, so the right operand is never executed • packages/flx_core_flutter/lib/src/app/view/widget/data_table_set_backend.dart:170:37 • dead_null_aware_expression
+warning • The left operand can't be null, so the right operand is never executed • packages/flx_core_flutter/lib/src/app/view/widget/data_table_set_backend.dart:233:37 • dead_null_aware_expression
+   info • Unnecessary duplication of receiver • packages/flx_core_flutter/lib/src/app/view/widget/data_table_set_backend.dart:254:7 • cascade_invocations
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/data_table_set_backend.dart:291:81 • lines_longer_than_80_chars
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/data_table_set_backend.dart:329:44 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/data_table_set_backend.dart:391:57 • deprecated_member_use
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/drop_down_small/date_range.dart:40:81 • lines_longer_than_80_chars
+warning • The value of the local variable 'theme' isn't used • packages/flx_core_flutter/lib/src/app/view/widget/drop_down_small/drop_down_small_year_month.dart:106:15 • unused_local_variable
+warning • This class (or a class that this class inherits from) is marked as '@immutable', but one or more of its instance fields aren't final: FTextFormField.onChanged, FTextFormField.inputFormatters, FTextFormField.onTapOutside, FTextFormField.onSubmitted • packages/flx_core_flutter/lib/src/app/view/widget/f_text_form_field.dart:19:7 • must_be_immutable
+warning • The member 'setValue' can only be used within instance members of subclasses of 'FormFieldState' • packages/flx_core_flutter/lib/src/app/view/widget/f_text_form_field.dart:85:31 • invalid_use_of_protected_member
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/f_text_form_field.dart:104:81 • lines_longer_than_80_chars
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/f_text_form_field.dart:113:58 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/field_date_picker.dart:132:62 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/field_date_picker.dart:167:54 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/field_date_picker.dart:202:44 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/field_date_time_input.dart:65:39 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/field_time_picker.dart:65:39 • deprecated_member_use
+   info • Don't use 'BuildContext's across async gaps • packages/flx_core_flutter/lib/src/app/view/widget/field_time_picker.dart:75:9 • use_build_context_synchronously
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/field_time_picker.dart:85:41 • deprecated_member_use
+warning • The member 'setValue' can only be used within instance members of subclasses of 'FormFieldState' • packages/flx_core_flutter/lib/src/app/view/widget/glass_text_form_field.dart:42:37 • invalid_use_of_protected_member
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:73:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:119:81 • lines_longer_than_80_chars
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:221:42 • deprecated_member_use
+   info • Use a null-aware invocation of the 'call' method rather than explicitly testing for 'null' • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:339:11 • prefer_null_aware_method_calls
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:353:53 • deprecated_member_use
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:407:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:447:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:467:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:501:81 • lines_longer_than_80_chars
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:505:51 • deprecated_member_use
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:526:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:543:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:586:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:588:81 • lines_longer_than_80_chars
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/hierarchy_dynamic_table.dart:592:51 • deprecated_member_use
+warning • The value of the local variable 'logoNamed' isn't used • packages/flx_core_flutter/lib/src/app/view/widget/logo.dart:22:17 • unused_local_variable
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/multi_form.dart:78:47 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/multi_form.dart:81:48 • deprecated_member_use
+   info • Uncancelled instance of 'StreamSubscription' • packages/flx_core_flutter/lib/src/app/view/widget/offline_indicator.dart:17:49 • cancel_subscriptions
+   info • Use 'late' for private members with a non-nullable type • packages/flx_core_flutter/lib/src/app/view/widget/offline_indicator.dart:17:49 • use_late_for_private_fields_and_variables
+warning • The value of the field '_subscription' isn't used • packages/flx_core_flutter/lib/src/app/view/widget/offline_indicator.dart:17:49 • unused_field
+   info • 'exclamationTriangle' is deprecated and shouldn't be used. Use "triangleExclamation" instead • packages/flx_core_flutter/lib/src/app/view/widget/popup.dart:179:30 • deprecated_member_use
+   info • 'exclamationTriangle' is deprecated and shouldn't be used. Use "triangleExclamation" instead • packages/flx_core_flutter/lib/src/app/view/widget/popup.dart:237:30 • deprecated_member_use
+   info • 'exclamationTriangle' is deprecated and shouldn't be used. Use "triangleExclamation" instead • packages/flx_core_flutter/lib/src/app/view/widget/popup.dart:366:32 • deprecated_member_use
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/popup.dart:410:81 • lines_longer_than_80_chars
+warning • The value of the local variable 'theme' isn't used • packages/flx_core_flutter/lib/src/app/view/widget/popup.dart:437:11 • unused_local_variable
+   info • 'checkCircle' is deprecated and shouldn't be used. Use "circleCheck" instead • packages/flx_core_flutter/lib/src/app/view/widget/popup.dart:442:30 • deprecated_member_use
+   info • Don't use 'BuildContext's across async gaps • packages/flx_core_flutter/lib/src/app/view/widget/popup.dart:466:38 • use_build_context_synchronously
+warning • The value of the field '_selectedItemIndex' isn't used • packages/flx_core_flutter/lib/src/app/view/widget/search_box/item_search_list.dart:30:9 • unused_field
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/search_box/search_box.dart:115:19 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/search_box/search_box_x.dart:59:19 • deprecated_member_use
+warning • The member 'setValue' can only be used within instance members of subclasses of 'FormFieldState' • packages/flx_core_flutter/lib/src/app/view/widget/select_field_chip.dart:112:33 • invalid_use_of_protected_member
+warning • The member 'setState' can only be used within instance members of subclasses of 'State' • packages/flx_core_flutter/lib/src/app/view/widget/select_field_chip.dart:115:33 • invalid_use_of_protected_member
+   info • Field overrides a field inherited from 'FormField' • packages/flx_core_flutter/lib/src/app/view/widget/select_field_chip.dart:150:14 • overridden_fields
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/select_field_chip.dart:178:55 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/select_field_chip.dart:225:54 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/single_form_panel.dart:47:42 • deprecated_member_use
+   info • Invalid use of a private type in a public API • packages/flx_core_flutter/lib/src/app/view/widget/switch_language.dart:8:26 • library_private_types_in_public_api
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/table.dart:188:27 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/time_line.dart:24:57 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/time_line.dart:25:58 • deprecated_member_use
+   info • Don't invoke 'print' in production code • packages/flx_core_flutter/lib/src/app/view/widget/visibility_permission.dart:38:9 • avoid_print
+   info • The line length exceeds the 80-character limit • packages/flx_core_flutter/lib/src/app/view/widget/visibility_permission.dart:39:81 • lines_longer_than_80_chars
+  error • Target of URI doesn't exist: 'package:flx_core_flutter/src/app/view/page/menu/menu_page.dart' • packages/flx_core_flutter/lib/src/app/view/widget/yuhu_table/yuhu_table.dart:5:8 • uri_does_not_exist
+  error • Undefined name 'MenuPage' • packages/flx_core_flutter/lib/src/app/view/widget/yuhu_table/yuhu_table.dart:57:33 • undefined_identifier
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • packages/flx_core_flutter/lib/src/app/view/widget/yuhu_table/yuhu_table.dart:237:57 • deprecated_member_use
+   info • Dependencies not sorted alphabetically • packages/flx_core_flutter/pubspec.yaml:13:3 • sort_pub_dependencies
+   info • Dependencies not sorted alphabetically • packages/flx_core_flutter/pubspec.yaml:61:3 • sort_pub_dependencies
+   info • Dependencies not sorted alphabetically • packages/flx_core_flutter/pubspec.yaml:64:3 • sort_pub_dependencies
+warning • The value of the local variable 'expectedUtc' isn't used • packages/flx_core_flutter/test/flx_date_format_test.dart:20:13 • unused_local_variable
+warning • The asset directory 'asset/configuration/entity/' doesn't exist • pubspec.yaml:88:7 • asset_directory_does_not_exist
+warning • The asset directory 'asset/configuration/' doesn't exist • pubspec.yaml:89:7 • asset_directory_does_not_exist
+
+377 issues found. (ran in 35.0s)

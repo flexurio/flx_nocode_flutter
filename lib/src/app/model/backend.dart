@@ -72,6 +72,7 @@ class Backend extends HiveObject {
       'create': create?.toJson(),
       'update': update?.toJson(),
       'delete': deleteX?.toJson(),
+      'others': others.map((e) => e.toJson()).toList(),
     };
   }
 }
@@ -81,6 +82,7 @@ class BackendEndpoint extends HiveObject {
   final String url;
 
   final Map<String, Object>? data;
+  final Map<String, String>? headers;
 
   /// Whether the response of this endpoint should be cached.
   final bool cached;
@@ -89,13 +91,44 @@ class BackendEndpoint extends HiveObject {
   /// s=seconds, m=minutes, h=hours, d=days
   final String? cacheDuration;
 
+  /// Whether to use mock data instead of calling the actual API.
+  final bool mockEnabled;
+
+  /// The data to return when [mockEnabled] is true.
+  final Object? mockData;
+
   BackendEndpoint({
     required this.method,
     required this.url,
     this.data,
+    this.headers,
     this.cached = false,
     this.cacheDuration,
+    this.mockEnabled = false,
+    this.mockData,
   });
+
+  BackendEndpoint copyWith({
+    String? method,
+    String? url,
+    Map<String, Object>? data,
+    Map<String, String>? headers,
+    bool? cached,
+    String? cacheDuration,
+    bool? mockEnabled,
+    Object? mockData,
+  }) {
+    return BackendEndpoint(
+      method: method ?? this.method,
+      url: url ?? this.url,
+      data: data ?? this.data,
+      headers: headers ?? this.headers,
+      cached: cached ?? this.cached,
+      cacheDuration: cacheDuration ?? this.cacheDuration,
+      mockEnabled: mockEnabled ?? this.mockEnabled,
+      mockData: mockData ?? this.mockData,
+    );
+  }
 
   /// Factory constructor to create [BackendEndpoint] from JSON.
   factory BackendEndpoint.fromJson(Map<String, Object?> json) {
@@ -104,8 +137,11 @@ class BackendEndpoint extends HiveObject {
         method: (json['method'] as String?) ?? '',
         url: (json['url'] as String?) ?? '',
         data: (json['data'] as Map?)?.cast<String, Object>(),
+        headers: (json['headers'] as Map?)?.cast<String, String>(),
         cached: (json['cached'] as bool?) ?? false,
         cacheDuration: json['cache_duration'] as String?,
+        mockEnabled: (json['mock_enabled'] as bool?) ?? false,
+        mockData: json['mock_data'],
       );
     } catch (e) {
       // Hindari print berlebihan di production; ganti dengan logger bila perlu.
@@ -121,8 +157,11 @@ class BackendEndpoint extends HiveObject {
       'method': method,
       'url': url,
       'data': data,
+      'headers': headers,
       'cached': cached,
-      'cacheDuration': cacheDuration,
+      'cache_duration': cacheDuration,
+      'mock_enabled': mockEnabled,
+      'mock_data': mockData,
     };
   }
 }

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flx_nocode_flutter/features/entity/models/action.dart';
+import 'package:flx_nocode_flutter/features/entity/models/pagination_option.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_list_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_field_dummy_value.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
@@ -13,7 +13,7 @@ import 'package:flx_nocode_flutter/src/app/util/resource_loader.dart';
 
 /// Represents a dynamically configured entity.
 ///
-/// An `EntityCustom` object defines the structure, behavior, and layout
+/// An [EntityCustom] object defines the structure, behavior, and layout
 /// of a data model, typically loaded from a JSON configuration file. It includes
 /// everything from data fields and backend endpoints to UI layouts for forms and lists.
 class EntityCustom extends HiveObject {
@@ -41,33 +41,60 @@ class EntityCustom extends HiveObject {
   /// The layout definition for creating and editing forms.
   final List<LayoutForm> layoutForm;
 
+  /// Options for pagination and default sorting.
+  final PaginationOption paginationOption;
+
   /// The layout definition for displaying a single entity instance in a list.
   final LayoutListTile? layoutListTile;
 
   /// A list of custom [ActionD] definitions that can be performed on the entity.
+  /// This typically includes list-level or row-level actions.
   final List<ActionD> actions;
 
+  /// A list of custom [ActionD] definitions displayed on the home or dashboard view.
+  final List<ActionD> actionsHome;
+
+  /// The primary action for this entity, often used in floating action buttons or prominent UI locations.
+  final ActionD? actionPrimary;
+
+  /// Whether to bypass all permission checks for this entity.
+  /// If true, the system will not check for specific user permissions before executing actions.
+  final bool bypassAllPermissions;
+
   /// A map defining the layout of columns in a data table view.
-  /// The key is the field reference, and the value is typically a flex factor.
+  /// The key is the field reference, and the value is typically a flex factor or column width.
   Map<String, int> layoutTable;
+
+  /// The list of filters to be displayed on the home page.
+  List<FilterOption> filters;
 
   /// Creates a new instance of [EntityCustom].
   EntityCustom({
     required this.actions,
+    this.actionsHome = const [],
+    this.actionPrimary,
     required this.id,
     required this.label,
     required this.description,
     required this.fields,
     required this.views,
     required this.backend,
+    required this.paginationOption,
     required this.layoutForm,
     required this.layoutListTile,
     required this.layoutTable,
     required this.exports,
+    this.filters = const [],
+    this.bypassAllPermissions = false,
   });
 
+  /// The base path for entity assets (e.g., 'asset').
   static String assetBasePath = 'asset';
+
+  /// The base directory path for entity files in the file system (e.g., '.').
   static String fileSystemBasePath = '.';
+
+  /// Whether to prefer the file system over assets when loading entity configurations.
   static bool preferFileSystem = false;
 
   /// Creates an [EntityCustom] instance from a JSON map.
@@ -76,196 +103,56 @@ class EntityCustom extends HiveObject {
   /// and constructs an [EntityCustom] object, validating required keys and
   /// handling nested object parsing.
   factory EntityCustom.fromJson(Map<String, dynamic> json) {
-    print("==================================== Parse Entity");
-    print('[EntityCustom] - ID: ${json['id']}');
+    final parser = _EntityCustomJsonParser(json);
+    final id = parser.parseId();
 
-    T requireKey<T>(String key) {
-      if (!json.containsKey(key) || json[key] == null) {
-        throw FormatException("Missing key: '$key' (expected $T).");
-      }
-      final v = json[key];
-      if (v is! T) {
-        throw FormatException(
-          "Invalid type for '$key': expected $T, got ${v.runtimeType}. Value: $v",
-        );
-      }
-      return v;
-    }
-
-    List<T> parseListRequired<T>(
-      String key,
-      T Function(dynamic raw, int index) mapItem,
-    ) {
-      final raw = requireKey<List<dynamic>>(key);
-      final out = <T>[];
-      for (var i = 0; i < raw.length; i++) {
-        try {
-          out.add(mapItem(raw[i], i));
-        } catch (e) {
-          throw FormatException("Error on '$key'[$i]: $e");
-        }
-      }
-      return out;
-    }
-
-    List<T> parseListOptional<T>(
-      String key,
-      T Function(dynamic raw, int index) mapItem,
-    ) {
-      if (!json.containsKey(key) || json[key] == null) return <T>[];
-      final raw = json[key];
-      if (raw is! List) {
-        throw FormatException(
-          "Invalid type for '$key': expected List, got ${raw.runtimeType}.",
-        );
-      }
-      final out = <T>[];
-      for (var i = 0; i < raw.length; i++) {
-        try {
-          out.add(mapItem(raw[i], i));
-        } catch (e) {
-          throw FormatException("Error on '$key'[$i]: $e");
-        }
-      }
-      return out;
-    }
-
-    Map<String, int> parseLayoutTable(String key) {
-      if (!json.containsKey(key) || json[key] == null) return <String, int>{};
-      final raw = json[key];
-      if (raw is! Map) {
-        throw FormatException(
-          "Invalid type for '$key': expected Map, got ${raw.runtimeType}.",
-        );
-      }
-      final result = <String, int>{};
-      for (final entry in raw.entries) {
-        final k = entry.key;
-        final v = entry.value;
-        if (k is! String) {
-          throw FormatException(
-              "Invalid key type in '$key': expected String, got ${k.runtimeType} (key=$k)");
-        }
-        if (v is int) {
-          result[k] = v;
-        } else if (v is num) {
-          result[k] = v.toInt();
-        } else {
-          throw FormatException(
-              "Invalid value type for '$key[$k]': expected int/num, got ${v.runtimeType}. Value: $v");
-        }
-      }
-      return result;
-    }
-
-    String parseId() {
-      final v = json['id'];
-      if (v == null) {
-        throw FormatException("Missing key: 'id'.");
-      }
-      if (v is! String) {
-        throw FormatException(
-            "Invalid type for 'id': expected String, got ${v.runtimeType}. Value: $v");
-      }
-      return v;
-    }
-
-    final id = parseId();
     try {
-      final label = requireKey<String>('label');
-      final description = requireKey<String>('description');
-
-      final fields = parseListRequired<EntityField>(
-        'fields',
-        (raw, i) {
-          return EntityField.fromJson(raw);
-        },
-      );
-
-      final views = parseListOptional<view.DView>(
-        'views',
-        (raw, i) {
-          if (raw is! Map<String, dynamic>) {
-            throw FormatException(
-                "expected Map for 'views'[$i], got ${raw.runtimeType}");
-          }
-          return view.DView.fromJson(raw);
-        },
-      );
-
-      List<LayoutForm> layoutForm;
-      try {
-        layoutForm = parseListOptional<LayoutForm>(
-          'layout_form',
-          (raw, i) {
-            final result = LayoutForm.fromMap(raw);
-            return result;
-          },
-        );
-      } catch (e, st) {
-        print('[EntityCustom] 🔴 layout_form - error :$e,\n$st');
-        layoutForm = <LayoutForm>[];
-      }
-      print('[EntityCustom] layout_form - length: ${layoutForm.length}');
-
-      final backendRaw = requireKey<Map<String, dynamic>>('backend');
-      final backend = Backend.fromJson(backendRaw);
-
-      final exports = parseListOptional<Export>(
-        'exports',
-        (raw, i) {
-          if (raw is! Map<String, dynamic>) {
-            throw FormatException(
-                "expected Map for 'exports'[$i], got ${raw.runtimeType}");
-          }
-          return Export.fromJson(raw);
-        },
-      );
-
-      LayoutListTile? layoutListTile;
-      if (json.containsKey('layout_list_tile') &&
-          json['layout_list_tile'] != null) {
-        final ltRaw = json['layout_list_tile'];
-        if (ltRaw is! Map<String, dynamic>) {
-          throw FormatException(
-              "Invalid type for 'layout_list_tile': expected Map, got ${ltRaw.runtimeType}.");
-        }
-        layoutListTile = LayoutListTile.fromJson(ltRaw);
-      }
-
-      final layoutTable = parseLayoutTable('layout_table');
-
-      final actions = parseListOptional<ActionD>(
-        'actions',
-        (raw, i) {
-          if (raw is! Map<String, dynamic>) {
-            throw FormatException(
-                "expected Map for 'actions'[$i], got ${raw.runtimeType}");
-          }
-          return ActionD.fromJson(raw);
-        },
-      );
-
       return EntityCustom(
         id: id,
-        actions: actions,
-        label: label,
-        description: description,
-        fields: fields,
-        views: views,
-        exports: exports,
-        backend: backend,
-        layoutForm: layoutForm,
-        layoutListTile: layoutListTile,
-        layoutTable: layoutTable,
+        label: parser.requireKey<String>('label'),
+        description: parser.requireKey<String>('description'),
+        fields: parser.parseListRequired<EntityField>(
+          'fields',
+          (raw, _) => EntityField.fromJson(raw),
+        ),
+        views: parser.parseListOptional<view.DView>(
+          'views',
+          (raw, _) => view.DView.fromJson(raw),
+        ),
+        layoutForm: parser.parseListOptional<LayoutForm>(
+          'layout_form',
+          (raw, _) => LayoutForm.fromMap(raw),
+        ),
+        backend: Backend.fromJson(
+            parser.requireKey<Map<String, dynamic>>('backend')),
+        exports: parser.parseListOptional<Export>(
+          'exports',
+          (raw, _) => Export.fromJson(raw),
+        ),
+        layoutListTile: parser.parseLayoutListTile(),
+        layoutTable: parser.parseLayoutTable('layout_table'),
+        actions: parser.parseListOptional<ActionD>(
+          'actions',
+          (raw, _) => ActionD.fromJson(raw),
+        ),
+        actionsHome: parser.parseListOptional<ActionD>(
+          'actions_home',
+          (raw, _) => ActionD.fromJson(raw),
+        ),
+        actionPrimary: parser.parseActionD('action_primary'),
+        paginationOption: parser.parsePaginationOption(),
+        filters: parser.parseFilters(),
+        bypassAllPermissions: parser.parseBypassAllPermissions(),
       );
     } catch (e) {
-      print("[EntityCustom] Entity: $id fromJson error: $e");
+      debugPrint("[EntityCustom] Entity: $id fromJson error: $e");
       rethrow;
     }
   }
 
   /// Creates an empty, uninitialized [EntityCustom] instance.
+  ///
+  /// Useful as a default value or for UI states where no entity is selected.
   EntityCustom.empty()
       : id = '',
         label = '',
@@ -273,13 +160,21 @@ class EntityCustom extends HiveObject {
         fields = [],
         views = [],
         backend = Backend(others: []),
+        paginationOption = const PaginationOption(),
         layoutForm = [],
         layoutListTile = null,
         actions = [],
+        actionsHome = [],
+        actionPrimary = null,
         layoutTable = {},
-        exports = [];
+        exports = [],
+        filters = [],
+        bypassAllPermissions = false;
 
   /// Creates a copy of this [EntityCustom] instance with the given fields replaced.
+  ///
+  /// [clearActionPrimary] if set to true will force [actionPrimary] to be null.
+  /// [clearLayoutListTile] if set to true will force [layoutListTile] to be null.
   EntityCustom copyWith({
     String? id,
     String? label,
@@ -287,47 +182,90 @@ class EntityCustom extends HiveObject {
     List<EntityField>? fields,
     List<view.DView>? views,
     Backend? backend,
+    PaginationOption? paginationOption,
     List<LayoutForm>? layoutForm,
     LayoutListTile? layoutListTile,
     Map<String, int>? layoutTable,
     List<Export>? exports,
     List<ActionD>? actions,
+    List<ActionD>? actionsHome,
+    ActionD? actionPrimary,
+    List<FilterOption>? filters,
+    bool? bypassAllPermissions,
+    bool clearActionPrimary = false,
+    bool clearLayoutListTile = false,
   }) {
     return EntityCustom(
       id: id ?? this.id,
       actions: actions ?? this.actions,
+      actionsHome: actionsHome ?? this.actionsHome,
+      actionPrimary:
+          clearActionPrimary ? null : (actionPrimary ?? this.actionPrimary),
       label: label ?? this.label,
       description: description ?? this.description,
       fields: fields ?? this.fields,
       backend: backend ?? this.backend,
+      paginationOption: paginationOption ?? this.paginationOption,
       views: views ?? this.views,
       layoutForm: layoutForm ?? this.layoutForm,
-      layoutListTile: layoutListTile ?? this.layoutListTile,
+      layoutListTile:
+          clearLayoutListTile ? null : (layoutListTile ?? this.layoutListTile),
       layoutTable: layoutTable ?? this.layoutTable,
       exports: exports ?? this.exports,
+      filters: filters ?? this.filters,
+      bypassAllPermissions: bypassAllPermissions ?? this.bypassAllPermissions,
     );
   }
+
+  /// A static cache to store loaded entity configurations.
+  static final Map<String, EntityCustom> _entityCache = {};
 
   /// Generates a map of dummy data based on the entity's fields.
   ///
   /// This is useful for testing or populating forms with placeholder values.
   Map<String, dynamic> dummy() {
     final data = <String, dynamic>{};
+    data['id'] = 1;
     for (var field in fields) {
       data[field.reference] = field.dummyValue();
     }
     return data;
   }
 
+  /// Retrieves all available permissions for a given entity ID.
+  ///
+  /// [id] is the entity identifier.
+  /// [useFileSystem] if true, attempts to load the entity from the local file system.
+  /// [basePath] optionally overrides the default loading path.
+  static Future<List<String>> getPermissions(
+    String id, {
+    bool useFileSystem = false,
+    String? basePath,
+  }) async {
+    final entity = await getEntity(
+      id,
+      useFileSystem: useFileSystem,
+      basePath: basePath,
+    );
+    return entity?.getAvailablePermissions() ?? [];
+  }
+
   /// Loads and parses an entity definition from a JSON asset file.
   ///
-  /// The [id] corresponds to the filename (e.g., 'my_entity.json').
+  /// [id] corresponds to the filename (e.g., 'my_entity').
+  /// [useFileSystem] if true, attempts to load the entity from the local file system.
+  /// [basePath] optionally overrides the default loading path.
   /// Returns `null` if the asset cannot be found or parsed.
   static Future<EntityCustom?> getEntity(
     String id, {
     bool useFileSystem = false,
     String? basePath,
   }) async {
+    // Check cache first
+    if (_entityCache.containsKey(id) && !useFileSystem) {
+      return _entityCache[id];
+    }
+
     try {
       print('[EntityCustom] getEntity "$id"');
       final data = await loadFromAssetOrFile(
@@ -338,7 +276,10 @@ class EntityCustom extends HiveObject {
         useFileSystem: useFileSystem,
         overrideBasePath: basePath,
       );
-      return EntityCustom.fromJson(json.decode(data));
+      final entity = EntityCustom.fromJson(json.decode(data));
+      // Store in cache
+      _entityCache[id] = entity;
+      return entity;
     } on Exception {
       rethrow;
     } catch (e, stackTrace) {
@@ -357,8 +298,19 @@ class EntityCustom extends HiveObject {
   }
 
   /// Reorders the [layoutTable] map based on old and new indices.
+  ///
+  /// This is used for UI components that allow drag-and-drop reordering of table columns.
   void layoutTableReorder(oldIndex, newIndex) {
     layoutTable = reorderMap(layoutTable, oldIndex, newIndex);
+  }
+
+  /// Reorders the [filters] list based on old and new indices.
+  void filterReorder(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) {
+      newIndex -= 1;
+    }
+    final item = filters.removeAt(oldIndex);
+    filters.insert(newIndex, item);
   }
 
   /// Serializes this [EntityCustom] instance to a JSON map.
@@ -371,10 +323,15 @@ class EntityCustom extends HiveObject {
       'views': views.map((e) => e.toJson()).toList(),
       'exports': exports.map((e) => e.toJson()).toList(),
       'backend': backend.toJson(),
+      'pagination_option': paginationOption.toJson(),
       'layout_form': layoutForm.map((e) => e.toMap()).toList(),
       'layout_list_tile': layoutListTile?.toJson(),
       'layout_table': layoutTable,
       'actions': actions.map((e) => e.toJson()).toList(),
+      'actions_home': actionsHome.map((e) => e.toJson()).toList(),
+      'action_primary': actionPrimary?.toJson(),
+      'filters': filters.map((e) => e.toJson()).toList(),
+      'bypass_all_permissions': bypassAllPermissions,
     };
   }
 
@@ -397,15 +354,35 @@ class EntityCustom extends HiveObject {
   /// Whether the entity is a protected system entity that cannot be modified.
   bool get isProtected => ['flx_roles', 'flx_users'].contains(id);
 
+  /// Retrieves all permission codes defined for the entity's actions.
+  List<String> getAvailablePermissions() {
+    final List<String> permissions = [];
+    for (var action in actions) {
+      permissions.add(action.getPermission(id));
+    }
+    for (var action in actionsHome) {
+      permissions.add(action.getPermission(id));
+    }
+    return permissions.toSet().toList(); // Unique permissions
+  }
+
   /// Builds a list of [ActionButtonItem] widgets for the entity's custom views.
+  ///
+  /// [context] is the build context.
+  /// [data] is the entity instance data.
+  /// [entity] is the current entity configuration.
+  /// [embedded] indicates if the view is embedded within another component.
+  /// [parentData] provides context from parent entities if applicable.
   List<ActionButtonItem> buttonViews(
     BuildContext context,
     Map<String, dynamic> data,
     EntityCustom entity,
     bool embedded,
-    List<Map<String, dynamic>> parentData,
-  ) {
+    List<Map<String, dynamic>> parentData, {
+    VoidCallback? onSuccess,
+  }) {
     return views
+        .where((e) => e.rule == null || e.rule!.evaluate(data))
         .map(
           (e) => e.button(
             context,
@@ -413,9 +390,41 @@ class EntityCustom extends HiveObject {
             parentData,
             entity,
             embedded,
+            onSuccess: onSuccess,
           ),
         )
         .toList();
+  }
+}
+
+class FilterOption {
+  final String reference;
+  final Map<String, dynamic> config;
+
+  FilterOption({required this.reference, this.config = const {}});
+
+  factory FilterOption.fromJson(dynamic json) {
+    if (json is String) {
+      return FilterOption(reference: json);
+    } else if (json is Map<String, dynamic>) {
+      final reference = json['reference'] ?? json['field'];
+      if (reference == null) {
+        throw const FormatException(
+            "FilterOption must have a 'reference' or 'field' key.");
+      }
+      final config = Map<String, dynamic>.from(json);
+      config.remove('reference');
+      config.remove('field');
+      return FilterOption(reference: reference, config: config);
+    }
+    throw FormatException("Invalid FilterOption format: $json");
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'reference': reference,
+      ...config,
+    };
   }
 }
 
@@ -445,6 +454,10 @@ extension EntitiesExtenstion on List<EntityCustom> {
 
 /// A utility function to reorder a map's entries.
 ///
+/// [map] is the map to reorder.
+/// [oldIndex] is the current index of the entry to move.
+/// [newIndex] is the target index for the entry.
+///
 /// Creates a new map with the entry at [oldIndex] moved to [newIndex].
 Map<K, V> reorderMap<K, V>(
   Map<K, V> map,
@@ -461,4 +474,209 @@ Map<K, V> reorderMap<K, V>(
 
   print('[EntityCustom] reorderMap, fields: ${data.keys}');
   return data;
+}
+
+/// A private helper class to handle robust JSON parsing for [EntityCustom].
+///
+/// This encapsulates the logic for type validation and nested object creation,
+/// ensuring that malformed JSON results in descriptive [FormatException]s.
+class _EntityCustomJsonParser {
+  final Map<String, dynamic> json;
+
+  _EntityCustomJsonParser(this.json);
+
+  /// Validates that [key] exists and is of type [T].
+  ///
+  /// Throws a [FormatException] if the key is missing or the type is incorrect.
+  T requireKey<T>(String key) {
+    if (!json.containsKey(key) || json[key] == null) {
+      throw FormatException("Missing key: '$key' (expected $T).");
+    }
+    final v = json[key];
+    if (v is! T) {
+      throw FormatException(
+        "Invalid type for '$key': expected $T, got ${v.runtimeType}. Value: $v",
+      );
+    }
+    return v;
+  }
+
+  /// Parses a required list of items using the provided [mapItem] function.
+  ///
+  /// [key] is the JSON key containing the list.
+  /// [mapItem] is a callback to convert each list element to type [T].
+  ///
+  /// Throws a [FormatException] if the list is missing or if mapping fails.
+  List<T> parseListRequired<T>(
+    String key,
+    T Function(dynamic raw, int index) mapItem,
+  ) {
+    final raw = requireKey<List<dynamic>>(key);
+    return List.generate(raw.length, (i) {
+      try {
+        return mapItem(raw[i], i);
+      } catch (e) {
+        throw FormatException("Error on '$key'[$i]: $e");
+      }
+    });
+  }
+
+  /// Parses an optional list of items, returning an empty list if the key is missing.
+  ///
+  /// [key] is the JSON key containing the list.
+  /// [mapItem] is a callback to convert each list element to type [T].
+  ///
+  /// Throws a [FormatException] if the key exists but is not a list, or if mapping fails.
+  List<T> parseListOptional<T>(
+    String key,
+    T Function(dynamic raw, int index) mapItem,
+  ) {
+    if (!json.containsKey(key) || json[key] == null) return <T>[];
+    final raw = json[key];
+    if (raw is! List) {
+      throw FormatException(
+        "Invalid type for '$key': expected List, got ${raw.runtimeType}.",
+      );
+    }
+    return List.generate(raw.length, (i) {
+      try {
+        return mapItem(raw[i], i);
+      } catch (e) {
+        // Silently handle errors for specific optional lists if needed,
+        // but here we throw to be explicit about configuration errors.
+        throw FormatException("Error on '$key'[$i]: $e");
+      }
+    });
+  }
+
+  /// Specialized parser for the layout table flex map.
+  ///
+  /// [key] is the JSON key (usually 'layout_table').
+  /// Expects a map of field references to numerical values (flex).
+  Map<String, int> parseLayoutTable(String key) {
+    if (!json.containsKey(key) || json[key] == null) return <String, int>{};
+    final raw = json[key];
+    if (raw is! Map) {
+      throw FormatException(
+        "Invalid type for '$key': expected Map, got ${raw.runtimeType}.",
+      );
+    }
+    return raw.map((k, v) {
+      if (k is! String) {
+        throw FormatException(
+            "Invalid key in '$key': expected String, got ${k.runtimeType}");
+      }
+      final val = (v is num)
+          ? v.toInt()
+          : throw FormatException("Invalid value for '$key[$k]': expected num");
+      return MapEntry(k, val);
+    });
+  }
+
+  /// Parses the [filterConfig] map from JSON.
+  Map<String, Map<String, dynamic>> parseFilterConfig(String key) {
+    if (!json.containsKey(key) || json[key] == null)
+      return <String, Map<String, dynamic>>{};
+    final raw = json[key];
+    if (raw is! Map) {
+      throw FormatException(
+        "Invalid type for '$key': expected Map, got ${raw.runtimeType}.",
+      );
+    }
+    return raw.map((k, v) {
+      if (k is! String) {
+        throw FormatException(
+            "Invalid key in '$key': expected String, got ${k.runtimeType}");
+      }
+      if (v is! Map) {
+        throw FormatException(
+            "Invalid value for '$key[$k]': expected Map, got ${v.runtimeType}");
+      }
+      return MapEntry(k, Map<String, dynamic>.from(v));
+    });
+  }
+
+  /// Extracts and validates the entity ID from JSON.
+  ///
+  /// Throws [FormatException] if 'id' is missing or not a String.
+  String parseId() {
+    final v = json['id'];
+    if (v is! String) {
+      throw FormatException(
+          "Missing or invalid 'id': expected String, got ${v.runtimeType}");
+    }
+    return v;
+  }
+
+  /// Parses the [LayoutListTile] configuration from JSON if present.
+  ///
+  /// Returns `null` if the key 'layout_list_tile' is missing.
+  /// Throws [FormatException] if the value is not a Map.
+  LayoutListTile? parseLayoutListTile() {
+    if (!json.containsKey('layout_list_tile') ||
+        json['layout_list_tile'] == null) {
+      return null;
+    }
+    final raw = json['layout_list_tile'];
+    if (raw is! Map<String, dynamic>) {
+      throw FormatException(
+          "Invalid type for 'layout_list_tile': expected Map");
+    }
+    return LayoutListTile.fromJson(raw);
+  }
+
+  /// Parses the [PaginationOption] from JSON or returns defaults.
+  ///
+  /// If 'pagination_option' is missing, returns [PaginationOption] with default values.
+  /// Throws [FormatException] if the value is not a Map.
+  PaginationOption parsePaginationOption() {
+    if (!json.containsKey('pagination_option') ||
+        json['pagination_option'] == null) {
+      return const PaginationOption();
+    }
+    final raw = json['pagination_option'];
+    if (raw is! Map<String, dynamic>) {
+      throw FormatException(
+          "Invalid type for 'pagination_option': expected Map");
+    }
+    return PaginationOption.fromJson(raw);
+  }
+
+  /// Parses the 'bypass_all_permissions' flag from JSON.
+  ///
+  /// Defaults to `true` if the key is missing (for backward compatibility or restrictive-by-default logic context).
+  /// Note: [EntityCustom.fromJson] uses this to initialize the model.
+  bool parseBypassAllPermissions() {
+    if (!json.containsKey('bypass_all_permissions')) return true;
+    return json['bypass_all_permissions'] == true;
+  }
+
+  /// Parses a single [ActionD] from the JSON if present.
+  ///
+  /// [key] is the JSON key for the action.
+  ActionD? parseActionD(String key) {
+    if (!json.containsKey(key) || json[key] == null) return null;
+    return ActionD.fromJson(json[key]);
+  }
+
+  List<FilterOption> parseFilters() {
+    if (json.containsKey('filters')) {
+      return parseListOptional<FilterOption>(
+        'filters',
+        (raw, _) => FilterOption.fromJson(raw),
+      );
+    }
+    // Fallback to filter_option + filter_config
+    final options = parseListOptional<String>(
+      'filter_option',
+      (raw, _) => raw as String,
+    );
+    final configMap = parseFilterConfig('filter_config');
+    return options.map((ref) {
+      return FilterOption(
+        reference: ref,
+        config: configMap[ref] ?? {},
+      );
+    }).toList();
+  }
 }

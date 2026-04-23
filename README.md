@@ -1,5 +1,9 @@
 # FLX No-Code Flutter Framework
 
+[![Coverage](https://img.shields.io/badge/coverage-18.6%25-red?style=for-the-badge)](coverage/lcov.info)
+[![Lints](https://img.shields.io/badge/lints-377%20issues-red?style=for-the-badge)](analysis_options.yaml)
+
+
 A dynamic Flutter framework for building data-driven applications where the user interface and features are defined by a JSON configuration file.
 
 ## About The Project
@@ -25,6 +29,14 @@ A detailed guide to the structure of this file, including all available fields a
 **[➡️ Read the Configuration JSON Documentation](./docs/configuration_docs.md)**
 
 **[➡️ Read the Entity JSON Documentation](./docs/entity.md)**
+
+**[➡️ Read the Variables Documentation](./docs/variables.md)**
+
+**[➡️ Read the Components Documentation](./docs/components.md)**
+
+**[➡️ Read the String Interpolation Documentation](./docs/string_interpolation.md)**
+
+**[➡️ Read the Submit Workflow JSON Documentation](./docs/submit_workflow.md)**
 
 ## Getting Started
 

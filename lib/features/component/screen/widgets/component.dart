@@ -1,38 +1,139 @@
 import 'package:flutter/material.dart';
-import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
-import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_field_display.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_button.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/c_column.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/c_row.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_date_picker.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_checkbox.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_dropdown.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_field_display.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_radio.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_text_field.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_text.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_number_field.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_button.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_container.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_switch.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_image.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_divider.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_icon_button.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_time_field.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_donut_chart.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_pie_chart.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_bar_chart.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
 extension ComponentWidget on Component {
-  Widget convertToWidget(JsonMap data) {
-    // if (this.type == ComponentText.componentId) {
-    //   return (this as ComponentText).toWidget(data);
-    // } else
-    if (this.type == ComponentTable.componentId) {
-      return (this as ComponentTable).toWidget(data);
+  Widget toWidget({
+    required JsonMap data,
+    Map<String, TextEditingController>? controllers,
+    List<Map<String, dynamic>>? parentData,
+    DataAction? dataAction,
+    bool isSmall = false,
+  }) {
+    final fullData = {
+      ...data,
+      if (controllers != null) 'allControllers': controllers,
+      if (parentData != null) 'parentData': parentData,
+      if (dataAction != null) 'dataAction': dataAction,
+    };
+
+    final isVisible = visibilityCondition?.evaluateVisibility(fullData) ?? true;
+    if (!isVisible) return const SizedBox.shrink();
+
+    if (this.type == ComponentText.componentId) {
+      return (this as ComponentText).toWidget(fullData);
+    } else if (this.type == ComponentTable.componentId) {
+      return (this as ComponentTable).toWidget(fullData);
     } else if (this.type == ComponentFieldDisplay.componentId) {
-      return (this as ComponentFieldDisplay).toWidget(data);
+      return (this as ComponentFieldDisplay).toWidget(fullData);
     } else if (this.type == ComponentRow.componentId) {
-      return (this as ComponentRow).toWidget(data);
+      return (this as ComponentRow).toWidget(fullData);
     } else if (this.type == ComponentColumn.componentId) {
-      return (this as ComponentColumn).toWidget(data);
+      return (this as ComponentColumn).toWidget(fullData);
     } else if (this.type == ComponentTextField.componentId) {
-      return (this as ComponentTextField).toWidget(data);
+      return (this as ComponentTextField).toWidget(fullData, isSmall: isSmall);
+    } else if (this.type == ComponentDatePicker.componentId) {
+      return (this as ComponentDatePicker).toWidget(fullData);
+    } else if (this.type == ComponentCheckbox.componentId) {
+      return (this as ComponentCheckbox).toWidget(fullData);
+    } else if (this.type == ComponentDropdown.componentId) {
+      return (this as ComponentDropdown).toWidget(fullData, isSmall: isSmall);
+    } else if (this.type == ComponentRadio.componentId) {
+      return (this as ComponentRadio).toWidget(fullData);
     } else if (this.type == ComponentButton.componentId) {
-      return (this as ComponentButton).toWidget(data);
+      return (this as ComponentButton).toWidget(fullData);
+    } else if (this.type == ComponentIconButton.componentId) {
+      return (this as ComponentIconButton).toWidget(fullData);
+    } else if (this.type == ComponentNumberField.componentId) {
+      return (this as ComponentNumberField).toWidget(fullData);
+    } else if (this.type == ComponentContainer.componentId) {
+      return (this as ComponentContainer).toWidget(data: fullData);
+    } else if (this.type == ComponentSwitch.componentId) {
+      return (this as ComponentSwitch).toWidget(fullData);
+    } else if (this.type == ComponentImage.componentId) {
+      return (this as ComponentImage).toWidget(fullData);
+    } else if (this.type == ComponentDivider.componentId) {
+      return (this as ComponentDivider).toWidget(fullData);
+    } else if (this.type == ComponentTimeField.componentId) {
+      return (this as ComponentTimeField).toWidget(fullData);
+    } else if (this.type == ComponentDonutChart.componentId) {
+      return (this as ComponentDonutChart).toWidget(data: fullData);
+    } else if (this.type == ComponentPieChart.componentId) {
+      return (this as ComponentPieChart).toWidget(data: fullData);
+    } else if (this.type == ComponentBarChart.componentId) {
+      return (this as ComponentBarChart).toWidget(data: fullData);
     }
     return NoCodeError('Unknown component type: ${this.type}');
+  }
+
+  Widget toMockWidget() {
+    if (this.type == ComponentText.componentId) {
+      return (this as ComponentText).toMockWidget();
+    } else if (this.type == ComponentTable.componentId) {
+      return (this as ComponentTable).toMockWidget();
+    } else if (this.type == ComponentFieldDisplay.componentId) {
+      return (this as ComponentFieldDisplay).toMockWidget();
+    } else if (this.type == ComponentRow.componentId) {
+      return (this as ComponentRow).toMockWidget();
+    } else if (this.type == ComponentColumn.componentId) {
+      return (this as ComponentColumn).toMockWidget();
+    } else if (this.type == ComponentTextField.componentId) {
+      return (this as ComponentTextField).toMockWidget();
+    } else if (this.type == ComponentDatePicker.componentId) {
+      return (this as ComponentDatePicker).toMockWidget();
+    } else if (this.type == ComponentCheckbox.componentId) {
+      return (this as ComponentCheckbox).toMockWidget();
+    } else if (this.type == ComponentDropdown.componentId) {
+      return (this as ComponentDropdown).toMockWidget();
+    } else if (this.type == ComponentRadio.componentId) {
+      return (this as ComponentRadio).toMockWidget();
+    } else if (this.type == ComponentButton.componentId) {
+      return (this as ComponentButton).toMockWidget();
+    } else if (this.type == ComponentIconButton.componentId) {
+      return (this as ComponentIconButton).toMockWidget();
+    } else if (this.type == ComponentNumberField.componentId) {
+      return (this as ComponentNumberField).toMockWidget();
+    } else if (this.type == ComponentContainer.componentId) {
+      return (this as ComponentContainer).toMockWidget();
+    } else if (this.type == ComponentSwitch.componentId) {
+      return (this as ComponentSwitch).toMockWidget();
+    } else if (this.type == ComponentImage.componentId) {
+      return (this as ComponentImage).toMockWidget();
+    } else if (this.type == ComponentDivider.componentId) {
+      return (this as ComponentDivider).toMockWidget();
+    } else if (this.type == ComponentTimeField.componentId) {
+      return (this as ComponentTimeField).toMockWidget();
+    } else if (this.type == ComponentDonutChart.componentId) {
+      return (this as ComponentDonutChart).toMockWidget();
+    } else if (this.type == ComponentPieChart.componentId) {
+      return (this as ComponentPieChart).toMockWidget();
+    } else if (this.type == ComponentBarChart.componentId) {
+      return (this as ComponentBarChart).toMockWidget();
+    }
+    return Text('Mock Widget: $type');
   }
 }

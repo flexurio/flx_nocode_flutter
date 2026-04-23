@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_widget_extension.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 
@@ -10,12 +9,16 @@ class ActionRowMultiple extends StatelessWidget {
     required this.entity,
     required this.parentData,
     required this.actions,
+    this.onSuccess,
+    this.bypassPermission = false,
   });
 
   final List<Map<String, dynamic>> rows;
   final List<ActionD> actions;
   final EntityCustom entity;
   final List<Map<String, dynamic>> parentData;
+  final bool bypassPermission;
+  final VoidCallback? onSuccess;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +32,8 @@ class ActionRowMultiple extends StatelessWidget {
             context: context,
             data: rows,
             parentData: parentData,
+            bypassPermission: bypassPermission,
+            onSuccessCallback: onSuccess,
           ),
         ),
       ],

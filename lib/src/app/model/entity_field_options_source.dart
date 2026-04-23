@@ -157,7 +157,10 @@ class OptionsSource {
         method: entity.backend.readAll!.method,
         path: entity.backend.readAll!.urlWithValues,
         filterMap: resolvedQueryParams,
+        headers: entity.backend.readAll!.headers,
         cachedDurationSeconds: entity.backend.readAll!.cacheDurationSeconds,
+        mockEnabled: entity.backend.readAll!.mockEnabled,
+        mockData: entity.backend.readAll!.mockData,
       );
 
       final result = data.data;

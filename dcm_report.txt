@@ -1,0 +1,80 @@
+Failed to build dart_code_linter:metrics:
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/always_remove_listener/always_remove_listener_rule.dart:5:8: Error: Error when reading '../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/dart/element/element2.dart': No such file or directory
+import 'package:analyzer/dart/element/element2.dart';
+       ^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/arguments_ordering/arguments_ordering_rule.dart:6:8: Error: Error when reading '../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/dart/element/element2.dart': No such file or directory
+import 'package:analyzer/dart/element/element2.dart';
+       ^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_border_all/avoid_border_all_rule.dart:5:8: Error: Error when reading '../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/dart/element/element2.dart': No such file or directory
+import 'package:analyzer/dart/element/element2.dart';
+       ^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_initializing_in_on_mount/avoid_initializing_in_on_mount_rule.dart:5:8: Error: Error when reading '../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/dart/element/element2.dart': No such file or directory
+import 'package:analyzer/dart/element/element2.dart';
+       ^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/prefer_const_border_radius/prefer_const_border_radius_rule.dart:5:8: Error: Error when reading '../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/dart/element/element2.dart': No such file or directory
+import 'package:analyzer/dart/element/element2.dart';
+       ^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/always_remove_listener/visitor.dart:123:5: Error: Type 'Element2' not found.
+    Element2? element,
+    ^^^^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/always_remove_listener/visitor.dart:166:5: Error: Type 'Element2' not found.
+    Element2? element,
+    ^^^^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/always_remove_listener/visitor.dart:123:5: Error: 'Element2' isn't a type.
+    Element2? element,
+    ^^^^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/always_remove_listener/visitor.dart:166:5: Error: 'Element2' isn't a type.
+    Element2? element,
+    ^^^^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_border_all/visitor.dart:29:26: Error: 'PropertyAccessorElement2' isn't a type.
+          if (element is PropertyAccessorElement2 &&
+                         ^^^^^^^^^^^^^^^^^^^^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_border_all/visitor.dart:32:33: Error: 'VariableElement2' isn't a type.
+          } else if (element is VariableElement2 && !element.isConst) {
+                                ^^^^^^^^^^^^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_dynamic/visitor.dart:10:44: Error: The getter 'name2' isn't defined for the type 'NamedType'.
+ - 'NamedType' is from 'package:analyzer/src/dart/ast/ast.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/src/dart/ast/ast.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'name2'.
+    if ((node.type is DynamicType) && node.name2.toString() == 'dynamic') {
+                                           ^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_dynamic/visitor.dart:30:47: Error: The getter 'name2' isn't defined for the type 'NamedType'.
+ - 'NamedType' is from 'package:analyzer/src/dart/ast/ast.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/src/dart/ast/ast.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'name2'.
+      if (baseType is Identifier && baseType?.name2.toString() == 'dynamic') {
+                                              ^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_dynamic/visitor.dart:34:41: Error: The getter 'name2' isn't defined for the type 'NamedType'.
+ - 'NamedType' is from 'package:analyzer/src/dart/ast/ast.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/src/dart/ast/ast.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'name2'.
+          if (type is NamedType && type.name2.toString() == 'dynamic') {
+                                        ^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_initializing_in_on_mount/visitor.dart:39:20: Error: 'PropertyAccessorElement2' isn't a type.
+    if (element is PropertyAccessorElement2 &&
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_initializing_in_on_mount/visitor.dart:38:26: Error: The getter 'writeElement2' isn't defined for the type 'AssignmentExpression'.
+ - 'AssignmentExpression' is from 'package:analyzer/src/dart/ast/ast.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/src/dart/ast/ast.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'writeElement2'.
+    final element = node.writeElement2;
+                         ^^^^^^^^^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/no_object_declaration/visitor.dart:28:34: Error: The getter 'name2' isn't defined for the type 'NamedType'.
+ - 'NamedType' is from 'package:analyzer/src/dart/ast/ast.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/src/dart/ast/ast.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'name2'.
+      (type is NamedType && type.name2.lexeme == 'Object');
+                                 ^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/prefer_const_border_radius/visitor.dart:27:24: Error: 'PropertyAccessorElement2' isn't a type.
+        if (element is PropertyAccessorElement2 && element.variable3!.isConst) {
+                       ^^^^^^^^^^^^^^^^^^^^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/use_design_system/visitor.dart:15:50: Error: The getter 'element2' isn't defined for the type 'NamedType'.
+ - 'NamedType' is from 'package:analyzer/src/dart/ast/ast.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/src/dart/ast/ast.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'element2'.
+    final widgetName = node.constructorName.type.element2?.displayName;
+                                                 ^^^^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/use_design_system/visitor.dart:25:54: Error: The getter 'library2' isn't defined for the type 'ConstructorElement'.
+ - 'ConstructorElement' is from 'package:analyzer/dart/element/element.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/dart/element/element.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'library2'.
+    final libraryUri = node.constructorName.element?.library2.toString() ?? '';
+                                                     ^^^^^^^^
+../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/base_visitors/intl_base_visitor.dart:35:44: Error: The getter 'name2' isn't defined for the type 'NamedType'.
+ - 'NamedType' is from 'package:analyzer/src/dart/ast/ast.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/src/dart/ast/ast.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'name2'.
+    if (node.fields.type?.as<NamedType>()?.name2.lexeme != 'String') {
+                                           ^^^^^

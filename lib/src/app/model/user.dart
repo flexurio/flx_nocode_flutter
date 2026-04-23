@@ -8,10 +8,18 @@ class UserApp extends User {
   }) : super();
 
   factory UserApp.fromJson(Map<String, dynamic> json) {
+    final idRaw = json['id'];
+    int parsedId = 0;
+    if (idRaw is int) {
+      parsedId = idRaw;
+    } else if (idRaw is String) {
+      parsedId = int.tryParse(idRaw) ?? 0;
+    }
+
     return UserApp(
-      id: int.parse(json['id'] as String),
-      name: json['nm'] as String,
-      role: json['cs'] as String,
+      id: parsedId,
+      name: (json['nm'] ?? json['name'] ?? '').toString(),
+      role: (json['cs'] ?? json['role'] ?? '').toString(),
     );
   }
 
