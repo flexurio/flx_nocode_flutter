@@ -21,6 +21,7 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_t
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_donut_chart.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_pie_chart.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_bar_chart.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_file_picker.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
@@ -86,6 +87,8 @@ extension ComponentWidget on Component {
       return (this as ComponentPieChart).toWidget(data: fullData);
     } else if (this.type == ComponentBarChart.componentId) {
       return (this as ComponentBarChart).toWidget(data: fullData);
+    } else if (this.type == ComponentFilePicker.componentId) {
+      return (this as ComponentFilePicker).toWidget(fullData);
     }
     return NoCodeError('Unknown component type: ${this.type}');
   }
@@ -133,6 +136,8 @@ extension ComponentWidget on Component {
       return (this as ComponentPieChart).toMockWidget();
     } else if (this.type == ComponentBarChart.componentId) {
       return (this as ComponentBarChart).toMockWidget();
+    } else if (this.type == ComponentFilePicker.componentId) {
+      return (this as ComponentFilePicker).toMockWidget();
     }
     return Text('Mock Widget: $type');
   }

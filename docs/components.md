@@ -58,6 +58,16 @@ Input field for numeric values.
 | `initialValue` | String | - | Initial numeric value as string. |
 | `enabled` | Boolean | `true` | Interaction state. |
 
+### `file_picker`
+A component for selecting files from the local device.
+
+| Key | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | String | `Upload File` | Display label. |
+| `required` | Boolean | `false` | Whether a file must be selected. |
+| `allowedExtensions` | Array<String> | - | Optional list of allowed extensions (e.g., `["pdf", "doc"]`). |
+| `enabled` | Boolean | `true` | Interaction state. |
+
 ### `dropdown`
 A selectable list of options.
 
