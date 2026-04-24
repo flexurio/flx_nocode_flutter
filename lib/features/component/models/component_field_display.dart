@@ -34,10 +34,17 @@ class ComponentFieldDisplay extends Component {
   /// The non-editable value displayed under the label.
   final String value;
 
+  final String? widthMode;
+  final double? width;
+  final int? flex;
+
   ComponentFieldDisplay({
     required super.id,
     required this.label,
     required this.value,
+    this.widthMode,
+    this.width,
+    this.flex,
     super.visibilityCondition,
     super.events = const {},
   }) : super(type: 'field_display');
@@ -64,6 +71,9 @@ class ComponentFieldDisplay extends Component {
       id: id,
       label: label,
       value: value,
+      widthMode: map['widthMode']?.toString(),
+      width: double.tryParse(map['width']?.toString() ?? ''),
+      flex: int.tryParse(map['flex']?.toString() ?? ''),
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
     );
@@ -74,24 +84,18 @@ class ComponentFieldDisplay extends Component {
       id: id,
       label: 'Label',
       value: 'Value',
+      widthMode: 'fill',
     );
   }
 
   /// Converts this component into a JSON-compatible map.
-  ///
-  /// Example output:
-  /// ```json
-  /// {
-  ///   "id": "customer_name",
-  ///   "type": "field_display",
-  ///   "label": "Customer Name",
-  ///   "value": "PT Maju Jaya"
-  /// }
-  /// ```
   @override
   JsonMap toMap() => {
         ...super.toMap(),
         'label': label,
         'value': value,
+        'widthMode': widthMode,
+        'width': width,
+        'flex': flex,
       };
 }

@@ -92,6 +92,16 @@ Renders static or dynamic text without a label.
 | --- | --- | --- | --- |
 | `value` | String | `Text` | The text content. |
 
+### `field_display`
+Renders a read-only labeled value, typically used in summary or detail views.
+
+| Key | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | String | - | The label displayed above the value. |
+| `value` | String | - | The text value to display (supports interpolations). |
+| `widthMode` | String | `hug` | `fill`, `hug`, or `fixed`. |
+| `flex` | Integer | - | Flex factor when inside a row/column. |
+
 ### `table`
 Displays a set of data in a grid. Supports dynamic fetching, deep data paths, and nested components.
 
@@ -126,21 +136,31 @@ Triggers an action when clicked.
 | `icon` | String | `add` | Icon name (for `icon_button`). |
 | `variant` | String | `primary` | `primary`, `secondary`, `outline`, `ghost`, `destructive`. |
 | `size` | String | `medium` | `small`, `medium`, `large`. |
-| `onClick` | Object | - | The action to execute. See [Action Documentation](./actions.md). |
+| `onClick` | Object | - | The action to execute. See [Action Documentation](../logic/actions.md). |
 
 ---
 
 ## 4. Layout Components
 
-### `column` & `row`
-Containers for arranging children.
+### `column`
+Arranges children vertically.
 
 | Key | Type | Default | Description |
 | --- | --- | --- | --- |
 | `children` | Array<Object> | `[]` | Nested components. |
-| `x_align` | String | `left` | Alignment on horizontal axis. |
-| `y_align` | String | `top` | Alignment on vertical axis. |
-| `gap` | Double | `12.0` | Spacing between items. |
+| `x_align` | String | `left` | Horizontal alignment (`left`, `center`, `right`, `stretch`). |
+| `y_align` | String | `top` | Vertical alignment (`top`, `center`, `bottom`, `between`, `around`, `evenly`). |
+| `gap` | Double | `12.0` | Vertical spacing between items. |
+
+### `row`
+Arranges children horizontally.
+
+| Key | Type | Default | Description |
+| --- | --- | --- | --- |
+| `children` | Array<Object> | `[]` | Nested components. |
+| `x_align` | String | `left` | Horizontal alignment (`left`, `center`, `right`, `between`, `around`, `evenly`). |
+| `y_align` | String | `top` | Vertical alignment (`top`, `center`, `bottom`, `stretch`). |
+| `horizontal_gap` | Double | `12.0` | Horizontal spacing between items. |
 
 ### `container`
 General purpose box with styling.
@@ -164,7 +184,6 @@ General purpose box with styling.
 | `radio` | Single choice list | `label`, `options`, `initialValue` |
 | `date_picker` | Date selection | `label`, `initialValue`, `dateFormat`, `minDate`, `maxDate` |
 | `divider` | Visual separator | `thickness`, `indent`, `endIndent` |
-| `field_display` | Read-only labeled value | `label`, `value` |
 
 ---
 

@@ -60,6 +60,10 @@ extension ComponentRowWidgets on ComponentRow {
         widthMode = child.widthMode;
         fixedWidth = child.width;
         flexValue = child.flex;
+      } else if (child is ComponentFieldDisplay) {
+        widthMode = child.widthMode;
+        fixedWidth = child.width;
+        flexValue = child.flex;
       }
 
       final mode = widthMode?.toLowerCase();
@@ -79,7 +83,8 @@ extension ComponentRowWidgets on ComponentRow {
             child is ComponentDatePicker ||
             child is ComponentTextField ||
             child is ComponentNumberField ||
-            child is ComponentButton) {
+            child is ComponentButton ||
+            child is ComponentFieldDisplay) {
           rowChildren.add(SizedBox(width: 200, child: rowChild));
         } else {
           rowChildren.add(rowChild);
@@ -146,6 +151,10 @@ extension ComponentRowWidgets on ComponentRow {
         widthMode = child.widthMode;
         fixedWidth = child.width;
         flexValue = child.flex;
+      } else if (child is ComponentFieldDisplay) {
+        widthMode = child.widthMode;
+        fixedWidth = child.width;
+        flexValue = child.flex;
       }
 
       final mode = widthMode?.toLowerCase();
@@ -162,7 +171,8 @@ extension ComponentRowWidgets on ComponentRow {
             child is ComponentDatePicker ||
             child is ComponentTextField ||
             child is ComponentNumberField ||
-            child is ComponentButton) {
+            child is ComponentButton ||
+            child is ComponentFieldDisplay) {
           rowChildren.add(SizedBox(width: 200, child: rowChild));
         } else {
           rowChildren.add(rowChild);
