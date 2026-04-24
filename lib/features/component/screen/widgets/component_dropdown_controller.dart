@@ -148,14 +148,45 @@ class ComponentDropdownController extends GetxController {
     String label = item.toString();
 
     if (component.optionKey != null && component.optionKey!.isNotEmpty) {
-      key = component.optionKey!.interpolateJavascript(context);
+      key = _resolveValue(item, component.optionKey!, context).toString();
     }
 
     if (component.optionLabel != null && component.optionLabel!.isNotEmpty) {
-      label = component.optionLabel!.interpolateJavascript(context);
+      label = _resolveValue(item, component.optionLabel!, context).toString();
     }
 
     return {'key': key, 'label': label, 'item': item};
+  }
+
+  /// Resolves a value from an item, supporting dot notation and JS templates.
+  dynamic _resolveValue(dynamic item, String path, JsonMap context) {
+    if (path.isEmpty) return '';
+
+    // If it's a template, use interpolation
+    if (path.contains('{{')) {
+      return path.interpolateJavascript(context);
+    }
+
+    // Try to resolve as a direct or nested key in the item
+    if (item is Map) {
+      if (item.containsKey(path)) return item[path] ?? '';
+
+      final parts = path.split('.');
+      dynamic current = item;
+      bool found = true;
+      for (final part in parts) {
+        if (current is Map && current.containsKey(part)) {
+          current = current[part];
+        } else {
+          found = false;
+          break;
+        }
+      }
+      if (found) return current ?? '';
+    }
+
+    // Fallback to interpolation (which returns the string itself if no {{ }} found)
+    return path.interpolateJavascript(context);
   }
 
   void _setInitialValue() {
