@@ -68,6 +68,9 @@ class ActionD extends HiveObject {
   // for type openPage
   final String? layoutFormId;
 
+  // for type print
+  final String? layoutPrintId;
+
   final String? icon;
 
   final int? iconCode;
@@ -105,9 +108,10 @@ class ActionD extends HiveObject {
     required this.onSuccess,
     required this.onFailure,
     required this.id,
-    this.http,
+     this.http,
     this.reference,
     this.layoutFormId,
+    this.layoutPrintId,
     this.icon,
     this.iconCode,
     this.rule,
@@ -130,6 +134,10 @@ class ActionD extends HiveObject {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       assert(layoutFormId != null && layoutFormId!.isNotEmpty,
           'Action "$id" of type "${type.id}" requires a non-empty layoutFormId.');
+    }
+    if (type == ActionType.print) {
+      assert(layoutPrintId != null && layoutPrintId!.isNotEmpty,
+          'Action "$id" of type "${type.id}" requires a non-empty layoutPrintId.');
     }
   }
 
@@ -161,7 +169,7 @@ class ActionD extends HiveObject {
     String? exportFormat,
     List<TColumn>? exportColumns,
   }) {
-    return ActionD(
+     return ActionD(
       exportFormat: exportFormat ?? this.exportFormat,
       exportColumns: exportColumns ?? this.exportColumns,
       value: value ?? this.value,
@@ -175,6 +183,7 @@ class ActionD extends HiveObject {
       onFailure: onFailure ?? this.onFailure,
       reference: reference ?? this.reference,
       layoutFormId: layoutFormId ?? this.layoutFormId,
+      layoutPrintId: layoutPrintId ?? this.layoutPrintId,
       icon: icon ?? this.icon,
       iconCode: iconCode ?? this.iconCode,
       rule: rule ?? this.rule,
@@ -192,13 +201,21 @@ class ActionD extends HiveObject {
 
   /// Factory constructor for parsing from a JSON map.
   factory ActionD.fromJson(Map<String, dynamic> json) {
-    final type = ActionType.fromId(json['type']);
+     final type = ActionType.fromId(json['type']);
     final layoutFormId = json['layout_form_id'];
+    final layoutPrintId = json['layout_print_id'];
 
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       if (layoutFormId == null || layoutFormId.toString().isEmpty) {
         throw FormatException(
             'Action "${json['id'] ?? 'unknown'}" (type: "${type.id}") requires "layout_form_id"');
+      }
+    }
+
+    if (type == ActionType.print) {
+      if (layoutPrintId == null || layoutPrintId.toString().isEmpty) {
+        throw FormatException(
+            'Action "${json['id'] ?? 'unknown'}" (type: "${type.id}") requires "layout_print_id"');
       }
     }
 
@@ -210,8 +227,9 @@ class ActionD extends HiveObject {
       http: json['http'] != null ? HttpData.fromJson(json['http']) : null,
       onSuccess: json['on_success'] ?? 'toast',
       onFailure: json['on_failure'] ?? 'toast',
-      reference: json['reference'],
+       reference: json['reference'],
       layoutFormId: layoutFormId,
+      layoutPrintId: layoutPrintId,
       icon: json['icon'],
       iconCode: json['icon_code'],
       rule: json['rule'] == null
@@ -247,9 +265,10 @@ class ActionD extends HiveObject {
       'name': name,
       'on_success': onSuccess,
       'on_failure': onFailure,
-      'is_multiple': isMultiple,
+       'is_multiple': isMultiple,
       'reference': reference,
       'layout_form_id': layoutFormId,
+      'layout_print_id': layoutPrintId,
       'icon': icon,
       'icon_code': iconCode,
       if (rule != null) 'rule': rule!.toMap(),

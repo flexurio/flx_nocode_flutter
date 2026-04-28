@@ -16,6 +16,7 @@ export 'src/app/model/configuration.dart';
 export 'features/entity/models/entity.dart';
 export 'features/entity/models/action.dart';
 export 'features/entity/models/rule.dart';
+export 'features/print/models/layout_print.dart';
 export 'src/app/model/layout_list_tile.dart';
 export 'src/app/model/no_code.dart';
 export 'src/app/model/theme.dart';

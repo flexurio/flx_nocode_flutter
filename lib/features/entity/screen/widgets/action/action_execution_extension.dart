@@ -14,6 +14,8 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:flx_nocode_flutter/src/app/util/general_xlsx.dart';
 import 'package:flx_nocode_flutter/src/app/util/picker_file.dart';
+import 'package:flx_nocode_flutter/features/print/domain/json_pdf_generator.dart';
+import 'package:flx_nocode_flutter/features/print/models/layout_print.dart';
 
 import 'action_confirm_dialog_extension.dart';
 import 'action_handler_extension.dart';
@@ -64,6 +66,14 @@ extension ActionExecutionExtension on ActionD {
         break;
 
       case ActionType.print:
+        await _handlePrint(
+          entity: entity,
+          context: context,
+          data: data,
+          onSuccessCallback: onSuccessCallback,
+        );
+        break;
+
       case ActionType.http:
         await showConfirmDialog(
           context: context,
@@ -410,10 +420,84 @@ extension ActionExecutionExtension on ActionD {
       final message = e.message ?? 'Request failed';
       Toast(context).fail(message);
       handleOnFailure(context, message, raw: e);
-    } catch (e) {
+     } catch (e) {
       const message = 'Unexpected error';
       Toast(context).fail(message);
       handleOnFailure(context, message, raw: e);
     }
+  }
+
+  Future<void> _handlePrint({
+    required EntityCustom entity,
+    required BuildContext context,
+    required JsonMap data,
+    VoidCallback? onSuccessCallback,
+  }) async {
+    if (layoutPrintId == null) {
+      Toast(context).fail('No print layout specified in action');
+      return;
+    }
+
+    final layout = entity.layoutPrint.findById(layoutPrintId!);
+    if (layout == null) {
+      Toast(context).fail('Print layout "$layoutPrintId" not found');
+      return;
+    }
+
+    await showConfirmDialog(
+      context: context,
+      action: action,
+      label: name,
+      confirmationMessageText: confirmMessage,
+      onConfirm: (ctx) async {
+        try {
+          JsonMap contextData = Map<String, dynamic>.from(data);
+
+          if (http != null) {
+            final response = await http!.execute(data);
+            if (response.statusCode != null &&
+                response.statusCode! >= 200 &&
+                response.statusCode! < 300) {
+              final resData = response.data;
+              if (resData is Map) {
+                contextData.addAll(Map<String, dynamic>.from(resData));
+              } else {
+                contextData['data'] = resData;
+              }
+            } else {
+              Toast(context).fail(response.message ?? 'Failed to fetch print data');
+              return;
+            }
+          }
+
+          // Interpolate the layout JSON with contextData
+          final layoutJson = layout.toMap();
+          final interpolatedJson =
+              _interpolateJson(layoutJson, contextData) as Map<String, dynamic>;
+
+          final pdfBytes = await JsonPdfGenerator.generate(interpolatedJson);
+          await Printing.layout(
+            onLayout: (PdfPageFormat format) async => pdfBytes,
+            name: layout.name,
+          );
+
+          onSuccessCallback?.call();
+        } catch (e) {
+          Toast(context).fail('Print error: $e');
+          debugPrint('Print error: $e');
+        }
+      },
+    );
+  }
+
+  dynamic _interpolateJson(dynamic json, Map<String, dynamic> data) {
+    if (json is String) {
+      return json.interpolateJavascript(data);
+    } else if (json is Map) {
+      return json.map((key, value) => MapEntry(key, _interpolateJson(value, data)));
+    } else if (json is List) {
+      return json.map((item) => _interpolateJson(item, data)).toList();
+    }
+    return json;
   }
 }

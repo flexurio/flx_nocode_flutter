@@ -41,6 +41,9 @@ class EntityCustom extends HiveObject {
   /// The layout definition for creating and editing forms.
   final List<LayoutForm> layoutForm;
 
+  /// The layout definition for generating PDF printouts.
+  final List<LayoutPrint> layoutPrint;
+
   /// Options for pagination and default sorting.
   final PaginationOption paginationOption;
 
@@ -80,7 +83,8 @@ class EntityCustom extends HiveObject {
     required this.views,
     required this.backend,
     required this.paginationOption,
-    required this.layoutForm,
+     required this.layoutForm,
+    this.layoutPrint = const [],
     required this.layoutListTile,
     required this.layoutTable,
     required this.exports,
@@ -119,9 +123,13 @@ class EntityCustom extends HiveObject {
           'views',
           (raw, _) => view.DView.fromJson(raw),
         ),
-        layoutForm: parser.parseListOptional<LayoutForm>(
+         layoutForm: parser.parseListOptional<LayoutForm>(
           'layout_form',
           (raw, _) => LayoutForm.fromMap(raw),
+        ),
+        layoutPrint: parser.parseListOptional<LayoutPrint>(
+          'layout_print',
+          (raw, _) => LayoutPrint.fromMap(raw),
         ),
         backend: Backend.fromJson(
             parser.requireKey<Map<String, dynamic>>('backend')),
@@ -161,7 +169,8 @@ class EntityCustom extends HiveObject {
         views = [],
         backend = Backend(others: []),
         paginationOption = const PaginationOption(),
-        layoutForm = [],
+         layoutForm: [],
+        layoutPrint: [],
         layoutListTile = null,
         actions = [],
         actionsHome = [],
@@ -181,9 +190,10 @@ class EntityCustom extends HiveObject {
     String? description,
     List<EntityField>? fields,
     List<view.DView>? views,
-    Backend? backend,
+     Backend? backend,
     PaginationOption? paginationOption,
     List<LayoutForm>? layoutForm,
+    List<LayoutPrint>? layoutPrint,
     LayoutListTile? layoutListTile,
     Map<String, int>? layoutTable,
     List<Export>? exports,
@@ -206,8 +216,9 @@ class EntityCustom extends HiveObject {
       fields: fields ?? this.fields,
       backend: backend ?? this.backend,
       paginationOption: paginationOption ?? this.paginationOption,
-      views: views ?? this.views,
+       views: views ?? this.views,
       layoutForm: layoutForm ?? this.layoutForm,
+      layoutPrint: layoutPrint ?? this.layoutPrint,
       layoutListTile:
           clearLayoutListTile ? null : (layoutListTile ?? this.layoutListTile),
       layoutTable: layoutTable ?? this.layoutTable,
@@ -325,6 +336,7 @@ class EntityCustom extends HiveObject {
       'backend': backend.toJson(),
       'pagination_option': paginationOption.toJson(),
       'layout_form': layoutForm.map((e) => e.toMap()).toList(),
+      'layout_print': layoutPrint.map((e) => e.toMap()).toList(),
       'layout_list_tile': layoutListTile?.toJson(),
       'layout_table': layoutTable,
       'actions': actions.map((e) => e.toJson()).toList(),
