@@ -132,6 +132,37 @@ class JsonPdfGenerator {
           widget = pw.SizedBox(width: width, height: height);
         }
         break;
+      case 'table':
+        final columns = comp['columns'] as List<dynamic>? ?? [];
+        final data = comp['data'] as List<dynamic>? ?? [];
+        
+        final headers = columns.map((c) => c['header']?.toString() ?? '').toList();
+        final keys = columns.map((c) => c['key']?.toString() ?? '').toList();
+        
+        final tableData = data.map((row) {
+          if (row is! Map<String, dynamic>) return keys.map((_) => '').toList();
+          return keys.map((key) => row[key]?.toString() ?? '').toList();
+        }).toList();
+
+        final columnWidths = <int, pw.TableColumnWidth>{};
+        for (var i = 0; i < columns.length; i++) {
+          final flex = columns[i]['flex'];
+          if (flex is num) {
+            columnWidths[i] = pw.FlexColumnWidth(flex.toDouble());
+          }
+        }
+
+        widget = pw.TableHelper.fromTextArray(
+          headers: headers,
+          data: tableData,
+          columnWidths: columnWidths,
+          border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.5),
+          headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10, color: PdfColors.white),
+          headerDecoration: const pw.BoxDecoration(color: PdfColors.blueGrey),
+          cellStyle: const pw.TextStyle(fontSize: 10),
+          cellPadding: const pw.EdgeInsets.all(4),
+        );
+        break;
       default:
         widget = pw.SizedBox();
     }

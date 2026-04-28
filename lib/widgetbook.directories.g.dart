@@ -42,7 +42,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             builder:
                 _flx_nocode_flutter_features_print_presentation_pdf_print_widgetbook
                     .buildConcertTicketUseCase,
-          )
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Invoice Table (Canvas Mode)',
+            builder:
+                _flx_nocode_flutter_features_print_presentation_pdf_print_widgetbook
+                    .buildInvoiceTableUseCase,
+          ),
         ],
       )
     ],
