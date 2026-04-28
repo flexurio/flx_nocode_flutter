@@ -212,23 +212,37 @@ class JsonPdfGenerator {
         }
 
         // Add data rows
+        int rowIndex = 0;
         for (final row in data) {
           if (row is! Map<String, dynamic>) continue;
           tableRows.add(
             pw.TableRow(
-              children: keys.map((key) {
-                final cellData = row[key];
+              children: List.generate(keys.length, (colIndex) {
+                final key = keys[colIndex];
+                final colConfig = columns[colIndex] as Map;
+                var cellData = row[key];
+                
+                // If the column has a template or templates
+                if (colConfig.containsKey('templates') || colConfig.containsKey('template')) {
+                  final templates = colConfig['templates'] as List<dynamic>?;
+                  final singleTemplate = colConfig['template'] as Map<String, dynamic>?;
+                  
+                  Map<String, dynamic>? selectedTemplate;
+                  if (templates != null && templates.isNotEmpty) {
+                    selectedTemplate = templates[rowIndex % templates.length] as Map<String, dynamic>?;
+                  } else if (singleTemplate != null) {
+                    selectedTemplate = singleTemplate;
+                  }
+                  
+                  if (selectedTemplate != null) {
+                    // Deep copy and interpolate
+                    cellData = _interpolateTemplate(selectedTemplate, row);
+                  }
+                }
+
                 pw.Widget cellWidget;
                 
                 if (cellData is Map<String, dynamic> && cellData.containsKey('type')) {
-                  // If the cell data is a component map, build it!
-                  // Provide width/height constraints if none provided, or wrap it properly.
-                  final parsedWidget = _buildComponent(cellData, defaultUnit, imageCache);
-                  // _buildComponent wraps in Positioned if x/y are provided, but in a table cell we don't want absolute positioning usually.
-                  // However, _buildComponent always wraps in Positioned. Let's extract the child if x/y are 0.
-                  // Actually, let's just make a modified buildComponent or let Positioned exist in a Stack.
-                  // Since _buildComponent returns a Positioned, inside a table cell (which is a flex container), Positioned might break.
-                  // Let's create a helper that returns raw widget.
                   cellWidget = _buildRawComponent(cellData, defaultUnit, imageCache);
                 } else {
                   // It's a plain string/number
@@ -242,9 +256,10 @@ class JsonPdfGenerator {
                   padding: const pw.EdgeInsets.all(4),
                   child: cellWidget,
                 );
-              }).toList(),
+              }),
             ),
           );
+          rowIndex++;
         }
 
         widget = pw.Table(
@@ -387,8 +402,8 @@ class JsonPdfGenerator {
         break;
       case 'container':
         final childJson = comp['child'] as Map<String, dynamic>?;
-        final padding = _convertToPt(comp['padding'], defaultUnit);
-        final margin = _convertToPt(comp['margin'], defaultUnit);
+        final padding = _parseEdgeInsets(comp['padding'], defaultUnit);
+        final margin = _parseEdgeInsets(comp['margin'], defaultUnit);
         final borderColorStr = comp['border_color']?.toString();
         final borderWidth = (comp['border_width'] as num?)?.toDouble();
         final bgColorStr = comp['background_color']?.toString();
@@ -412,8 +427,8 @@ class JsonPdfGenerator {
         widget = pw.Container(
           width: width,
           height: height,
-          padding: padding > 0 ? pw.EdgeInsets.all(padding) : null,
-          margin: margin > 0 ? pw.EdgeInsets.all(margin) : null,
+          padding: padding,
+          margin: margin,
           decoration: decoration,
           child: childWidget ?? pw.SizedBox(),
         );
@@ -447,6 +462,23 @@ class JsonPdfGenerator {
       default:
         return val;
     }
+  }
+
+  static pw.EdgeInsetsGeometry? _parseEdgeInsets(dynamic value, String unit) {
+    if (value == null) return null;
+    if (value is num) {
+      final val = _convertToPt(value, unit);
+      return val > 0 ? pw.EdgeInsets.all(val) : null;
+    }
+    if (value is Map) {
+      return pw.EdgeInsets.only(
+        left: _convertToPt(value['left'] ?? 0, unit),
+        top: _convertToPt(value['top'] ?? 0, unit),
+        right: _convertToPt(value['right'] ?? 0, unit),
+        bottom: _convertToPt(value['bottom'] ?? 0, unit),
+      );
+    }
+    return null;
   }
 
   static void _extractImageUrls(dynamic json, Set<String> urls) {
@@ -494,5 +526,23 @@ class JsonPdfGenerator {
       default:
         return pw.MainAxisAlignment.start;
     }
+  }
+
+  static dynamic _interpolateTemplate(dynamic template, Map<String, dynamic> rowData) {
+    if (template is String) {
+      return template.replaceAllMapped(RegExp(r'\{\{(.*?)\}\}'), (match) {
+        final key = match.group(1)?.trim();
+        return rowData[key]?.toString() ?? '';
+      });
+    } else if (template is Map<String, dynamic>) {
+      final result = <String, dynamic>{};
+      for (final entry in template.entries) {
+        result[entry.key] = _interpolateTemplate(entry.value, rowData);
+      }
+      return result;
+    } else if (template is List) {
+      return template.map((item) => _interpolateTemplate(item, rowData)).toList();
+    }
+    return template;
   }
 }

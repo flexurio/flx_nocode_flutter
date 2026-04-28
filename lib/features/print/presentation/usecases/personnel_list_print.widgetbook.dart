@@ -35,23 +35,38 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
 
   Future<void> _fetchData() async {
     final dio = MockDio();
-    
+
     // Setup Mock
     when(() => dio.get('/api/personnel')).thenAnswer(
       (_) async => Response(
         requestOptions: RequestOptions(path: '/api/personnel'),
         statusCode: 200,
         data: [
-          { "no": "1.", "nama": "Sri Anjariyah", "inisial": "SAH", "paraf": "", "ttd": "1." },
-          { "no": "2.", "nama": "Karina Dwi Lestari", "inisial": "KDL", "paraf": "", "ttd": "       2." },
-          { "no": "3.", "nama": "Bestia Arkiani", "inisial": "BAI", "paraf": "", "ttd": "3." },
-          { "no": "4.", "nama": "Helmy Akbar", "inisial": "HAR", "paraf": "", "ttd": "       4." },
-          { "no": "5.", "nama": "Usha Nandeni", "inisial": "UNI", "paraf": "", "ttd": "5." },
-          { "no": "6.", "nama": "Asep Tatang Sudrajat", "inisial": "ATS", "paraf": "", "ttd": "       6." },
-          { "no": "7.", "nama": "Syahruddin", "inisial": "SRN", "paraf": "", "ttd": "7." },
-          { "no": "8.", "nama": "Dede Mulyadi", "inisial": "DMI", "paraf": "", "ttd": "       8." },
-          { "no": "9.", "nama": "Rheza Firmansyah", "inisial": "RFH", "paraf": "", "ttd": "9." },
-          { "no": "10.", "nama": "Rahmat Hidayat", "inisial": "RDT", "paraf": "", "ttd": "       10." }
+          {"no": "1.", "nama": "Sri Anjariyah", "inisial": "SAH", "paraf": ""},
+          {
+            "no": "2.",
+            "nama": "Karina Dwi Lestari",
+            "inisial": "KDL",
+            "paraf": ""
+          },
+          {"no": "3.", "nama": "Bestia Arkiani", "inisial": "BAI", "paraf": ""},
+          {"no": "4.", "nama": "Helmy Akbar", "inisial": "HAR", "paraf": ""},
+          {"no": "5.", "nama": "Usha Nandeni", "inisial": "UNI", "paraf": ""},
+          {
+            "no": "6.",
+            "nama": "Asep Tatang Sudrajat",
+            "inisial": "ATS",
+            "paraf": ""
+          },
+          {"no": "7.", "nama": "Syahruddin", "inisial": "SRN", "paraf": ""},
+          {"no": "8.", "nama": "Dede Mulyadi", "inisial": "DMI", "paraf": ""},
+          {
+            "no": "9.",
+            "nama": "Rheza Firmansyah",
+            "inisial": "RFH",
+            "paraf": ""
+          },
+          {"no": "10.", "nama": "Rahmat Hidayat", "inisial": "RDT", "paraf": ""}
         ],
       ),
     );
@@ -59,7 +74,7 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
     try {
       // Simulate network delay
       await Future.delayed(const Duration(milliseconds: 500));
-      
+
       // Fetch from API
       final response = await dio.get('/api/personnel');
       final users = response.data as List<dynamic>;
@@ -130,7 +145,23 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
                   { "header": "Nama Personel", "key": "nama", "flex": 5 },
                   { "header": "Inisial", "key": "inisial", "flex": 2 },
                   { "header": "Paraf", "key": "paraf", "flex": 3 },
-                  { "header": "Tanda Tangan", "key": "ttd", "flex": 4 }
+                  { 
+                    "header": "Tanda Tangan", 
+                    "key": "ttd", 
+                    "flex": 4,
+                    "templates": [
+                      { 
+                        "type": "container", 
+                        "padding": { "left": 0 },
+                        "child": { "type": "text", "value": "{{no}}" } 
+                      },
+                      { 
+                        "type": "container", 
+                        "padding": { "left": 23 },
+                        "child": { "type": "text", "value": "{{no}}" } 
+                      }
+                    ]
+                  }
                 ],
                 "data": []
               }
@@ -141,7 +172,7 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
       ''';
 
       final config = jsonDecode(jsonString) as Map<String, dynamic>;
-      
+
       // Inject API data into JSON config
       config['pages'][0]['components'][0]['data'] = users;
 

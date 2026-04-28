@@ -99,8 +99,8 @@ To support *any* format, all components support advanced styling and positioning
 4. **`qrcode`**: Generates a QR Code. Supports `value`, `size`, `fg_color`, `bg_color`.
 5. **`barcode`**: Generates a Barcode (e.g., Code128). Supports `value`, `format`, `show_text`.
 6. **`html`**: Parses a simple HTML string into PDF elements (useful for rich text).
-7. **`table`**: Renders structured tabular data. Supports `columns` (with flex/fixed widths), `data_source_key` for dynamic rows, custom styling, and `show_header` (boolean). **Note:** Table cells can contain plain strings *or* nested component objects (e.g., an `image` or `column` component).
-8. **`container`**: Wrapper component. Supports `width`, `height`, `padding`, `margin`, `background_color`, `border_color`, `border_width`, and a single `child` component. Can be used without a `child` to act as a spacer.
+7. **`table`**: Renders structured tabular data. Supports `columns` (with flex/fixed widths), `data_source_key` for dynamic rows, custom styling, and `show_header` (boolean). **Note:** Table cells can contain plain strings *or* nested component objects. **Advanced:** You can define a `template` (single object) or `templates` (array of objects for alternating/zigzag patterns) in the column configuration. Templates support string interpolation via `{{key}}` to dynamically insert data from the current row.
+8. **`container`**: Wrapper component. Supports `width`, `height`, `padding`, `margin`, `background_color`, `border_color`, `border_width`, and a single `child` component. Can be used without a `child` to act as a spacer. **Advanced:** `padding` and `margin` can be a single number for all sides, or an object specifying individual sides (e.g., `{"left": 10, "top": 5, "right": 0, "bottom": 2}`).
 9. **`column` / `row`**: Group components vertically or horizontally. Supports `children` array, `main_axis_alignment`, and `cross_axis_alignment` (`start`, `center`, `end`, `space_between`, etc.).
 10. **`iterator`** *(Canvas Mode Only)*: Repeats its inner `components` based on a data array in a grid or flex layout (useful for printing multiple labels/tickets on a single A4 page).
 
