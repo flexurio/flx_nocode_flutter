@@ -49,6 +49,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 _flx_nocode_flutter_features_print_presentation_pdf_print_widgetbook
                     .buildInvoiceTableUseCase,
           ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Product Catalog (Table with Images)',
+            builder:
+                _flx_nocode_flutter_features_print_presentation_pdf_print_widgetbook
+                    .buildProductCatalogTableUseCase,
+          ),
         ],
       )
     ],
