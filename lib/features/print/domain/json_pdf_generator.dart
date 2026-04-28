@@ -47,6 +47,9 @@ class JsonPdfGenerator {
       }
     }
 
+    final globalHeader = json['header'] as List<dynamic>? ?? [];
+    final globalFooter = json['footer'] as List<dynamic>? ?? [];
+
     for (final pageJson in pages) {
       if (pageJson is! Map<String, dynamic>) continue;
 
@@ -57,8 +60,14 @@ class JsonPdfGenerator {
           pageFormat: format,
           margin: pw.EdgeInsets.zero, // Canvas mode typically uses 0 margins, everything is absolute
           build: (pw.Context context) {
+            final allComponents = [
+              ...globalHeader,
+              ...components,
+              ...globalFooter,
+            ];
+            
             return pw.Stack(
-              children: components.map((comp) {
+              children: allComponents.map((comp) {
                 if (comp is! Map<String, dynamic>) return pw.SizedBox();
                 return _buildComponent(comp, json['unit'] as String? ?? 'pt', imageCache);
               }).toList(),

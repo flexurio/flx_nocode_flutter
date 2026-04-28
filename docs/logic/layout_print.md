@@ -16,6 +16,8 @@
 | `unit` | String | No | Measurement unit: `"pt"`, `"px"`, `"mm"`, `"cm"`, or `"in"`. Default is `"pt"`. |
 | `page_size` | String/Array | No | Standard sizes (`"A4"`, `"LETTER"`) or custom array `[width, height]`. Default is `"A4"`. |
 | `orientation` | String | No | `"portrait"` or `"landscape"`. Default is `"portrait"`. |
+| `header` | Array | No | Global components that are prepended to *every* page's component list. |
+| `footer` | Array | No | Global components that are appended to *every* page's component list. |
 | `margins` | Object | No | Page margins: `{ "top": 20, "bottom": 20, "left": 20, "right": 20 }`. |
 | `data_sources` | Object | No | Key-value pairs for dynamic data using `HttpData`. |
 | `styles` | Object | No | Reusable style definitions for components (fonts, colors). |
@@ -91,14 +93,16 @@ To support *any* format, all components support advanced styling and positioning
 
 ### Component Types
 
-1. **`text`**: Supports `font_family`, `font_size`, `color`, `bold`, `italic`, `alignment` (left, center, right, justify), `max_lines`.
+1. **`text`**: Supports `font_family`, `font_size`, `color`, `bold`, `is_bold`, `italic`, `alignment` (left, center, right, justify), `max_lines`.
 2. **`image`**: Supports `url`, `base64`, `fit` (cover, contain, fill).
 3. **`shape`**: Draws primitives. Supports `shape_type` (`rect`, `circle`, `line`), `fill_color`, `border_color`, `border_width`, `border_radius`.
 4. **`qrcode`**: Generates a QR Code. Supports `value`, `size`, `fg_color`, `bg_color`.
 5. **`barcode`**: Generates a Barcode (e.g., Code128). Supports `value`, `format`, `show_text`.
 6. **`html`**: Parses a simple HTML string into PDF elements (useful for rich text).
-7. **`table`**: Renders structured tabular data. Supports `columns` (with flex/fixed widths), `data_source_key` for dynamic rows, and custom styling for headers and cells.
-8. **`iterator`** *(Canvas Mode Only)*: Repeats its inner `components` based on a data array in a grid or flex layout (useful for printing multiple labels/tickets on a single A4 page).
+7. **`table`**: Renders structured tabular data. Supports `columns` (with flex/fixed widths), `data_source_key` for dynamic rows, custom styling, and `show_header` (boolean). **Note:** Table cells can contain plain strings *or* nested component objects (e.g., an `image` or `column` component).
+8. **`container`**: Wrapper component. Supports `width`, `height`, `padding`, `margin`, `background_color`, `border_color`, `border_width`, and a single `child` component. Can be used without a `child` to act as a spacer.
+9. **`column` / `row`**: Group components vertically or horizontally. Supports `children` array, `main_axis_alignment`, and `cross_axis_alignment` (`start`, `center`, `end`, `space_between`, etc.).
+10. **`iterator`** *(Canvas Mode Only)*: Repeats its inner `components` based on a data array in a grid or flex layout (useful for printing multiple labels/tickets on a single A4 page).
 
 ---
 
