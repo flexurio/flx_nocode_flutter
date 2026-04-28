@@ -20,6 +20,8 @@ import 'package:flx_nocode_flutter/features/data_table/screen/widgets/entity_dat
     as _flx_nocode_flutter_features_data_table_screen_widgets_entity_data_table_widgetbook;
 import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_page.widgetbook.dart'
     as _flx_nocode_flutter_features_entity_screen_pages_enitity_view_page_widgetbook;
+import 'package:flx_nocode_flutter/features/print/presentation/pdf_print.widgetbook.dart'
+    as _flx_nocode_flutter_features_print_presentation_pdf_print_widgetbook;
 import 'package:flx_nocode_flutter/features/view/screen/widgets/view.widgetbook.dart'
     as _flx_nocode_flutter_features_view_screen_widgets_view_widgetbook;
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.widgetbook.dart'
@@ -29,6 +31,22 @@ import 'package:flx_nocode_flutter/src/app/view/widget/no_code_navigate_push_men
 import 'package:widgetbook/widgetbook.dart' as _widgetbook;
 
 final directories = <_widgetbook.WidgetbookNode>[
+  _widgetbook.WidgetbookCategory(
+    name: 'Print',
+    children: [
+      _widgetbook.WidgetbookComponent(
+        name: 'PdfPreview',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Concert Ticket (Canvas Mode)',
+            builder:
+                _flx_nocode_flutter_features_print_presentation_pdf_print_widgetbook
+                    .buildConcertTicketUseCase,
+          )
+        ],
+      )
+    ],
+  ),
   _widgetbook.WidgetbookFolder(
     name: 'app',
     children: [
