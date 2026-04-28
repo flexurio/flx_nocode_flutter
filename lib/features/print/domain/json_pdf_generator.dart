@@ -82,11 +82,12 @@ class JsonPdfGenerator {
 
     switch (type) {
       case 'text':
+        final isBold = comp['is_bold'] as bool? ?? false;
         widget = pw.Text(
           comp['value']?.toString() ?? '',
           style: pw.TextStyle(
             fontSize: _convertToPt(comp['font_size'] ?? 12, 'pt'), // default pt
-            // Note: Add full style parsing later
+            fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
           ),
         );
         break;
@@ -179,23 +180,27 @@ class JsonPdfGenerator {
           }
         }
 
+        final showHeader = comp['show_header'] as bool? ?? true;
+
         final tableRows = <pw.TableRow>[];
         
-        // Add header row
-        tableRows.add(
-          pw.TableRow(
-            decoration: const pw.BoxDecoration(color: PdfColors.blueGrey),
-            children: headers.map((header) {
-              return pw.Container(
-                padding: const pw.EdgeInsets.all(4),
-                child: pw.Text(
-                  header,
-                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10, color: PdfColors.white),
-                ),
-              );
-            }).toList(),
-          ),
-        );
+        if (showHeader) {
+          // Add header row
+          tableRows.add(
+            pw.TableRow(
+              decoration: const pw.BoxDecoration(color: PdfColors.blueGrey),
+              children: headers.map((header) {
+                return pw.Container(
+                  padding: const pw.EdgeInsets.all(4),
+                  child: pw.Text(
+                    header,
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10, color: PdfColors.white),
+                  ),
+                );
+              }).toList(),
+            ),
+          );
+        }
 
         // Add data rows
         for (final row in data) {
@@ -297,10 +302,12 @@ class JsonPdfGenerator {
 
     switch (type) {
       case 'text':
+        final isBold = comp['is_bold'] as bool? ?? false;
         widget = pw.Text(
           comp['value']?.toString() ?? '',
           style: pw.TextStyle(
             fontSize: _convertToPt(comp['font_size'] ?? 12, 'pt'),
+            fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
           ),
         );
         break;
@@ -350,7 +357,8 @@ class JsonPdfGenerator {
       case 'column':
         final childrenJson = comp['children'] as List<dynamic>? ?? [];
         widget = pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          crossAxisAlignment: _parseCrossAxisAlignment(comp['cross_axis_alignment']?.toString()),
+          mainAxisAlignment: _parseMainAxisAlignment(comp['main_axis_alignment']?.toString()),
           children: childrenJson.map((c) {
             if (c is! Map<String, dynamic>) return pw.SizedBox();
             return _buildRawComponent(c, defaultUnit, imageCache);
@@ -360,7 +368,8 @@ class JsonPdfGenerator {
       case 'row':
         final childrenJson = comp['children'] as List<dynamic>? ?? [];
         widget = pw.Row(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          crossAxisAlignment: _parseCrossAxisAlignment(comp['cross_axis_alignment']?.toString()),
+          mainAxisAlignment: _parseMainAxisAlignment(comp['main_axis_alignment']?.toString()),
           children: childrenJson.map((c) {
             if (c is! Map<String, dynamic>) return pw.SizedBox();
             return _buildRawComponent(c, defaultUnit, imageCache);
@@ -443,6 +452,38 @@ class JsonPdfGenerator {
       for (final value in json) {
         _extractImageUrls(value, urls);
       }
+    }
+  }
+
+  static pw.CrossAxisAlignment _parseCrossAxisAlignment(String? alignment) {
+    switch (alignment) {
+      case 'center':
+        return pw.CrossAxisAlignment.center;
+      case 'end':
+        return pw.CrossAxisAlignment.end;
+      case 'stretch':
+        return pw.CrossAxisAlignment.stretch;
+      case 'start':
+      default:
+        return pw.CrossAxisAlignment.start;
+    }
+  }
+
+  static pw.MainAxisAlignment _parseMainAxisAlignment(String? alignment) {
+    switch (alignment) {
+      case 'center':
+        return pw.MainAxisAlignment.center;
+      case 'end':
+        return pw.MainAxisAlignment.end;
+      case 'space_between':
+        return pw.MainAxisAlignment.spaceBetween;
+      case 'space_around':
+        return pw.MainAxisAlignment.spaceAround;
+      case 'space_evenly':
+        return pw.MainAxisAlignment.spaceEvenly;
+      case 'start':
+      default:
+        return pw.MainAxisAlignment.start;
     }
   }
 }

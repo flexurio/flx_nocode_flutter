@@ -44,6 +44,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                     .buildConcertTicketUseCase,
           ),
           _widgetbook.WidgetbookUseCase(
+            name: 'Daftar Inisial Personel (Complex Table)',
+            builder:
+                _flx_nocode_flutter_features_print_presentation_pdf_print_widgetbook
+                    .buildPersonnelListUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Invoice Table (Canvas Mode)',
             builder:
                 _flx_nocode_flutter_features_print_presentation_pdf_print_widgetbook

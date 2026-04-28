@@ -248,3 +248,108 @@ Widget buildProductCatalogTableUseCase(BuildContext context) {
     ),
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Daftar Inisial Personel (Complex Table)',
+  type: PdfPreview,
+  path: '[Print]',
+)
+Widget buildPersonnelListUseCase(BuildContext context) {
+  const jsonString = '''
+  {
+    "id": "print_personnel_list",
+    "name": "Daftar Inisial Personel",
+    "layout_type": "canvas",
+    "unit": "mm",
+    "page_size": "A4",
+    "orientation": "portrait",
+    "pages": [
+      {
+        "background_color": "#FFFFFF",
+        "components": [
+          {
+            "type": "table",
+            "x": 10, "y": 10,
+            "width": 190,
+            "show_header": false,
+            "columns": [
+              { "header": "", "key": "logo", "flex": 2 },
+              { "header": "", "key": "title", "flex": 6 },
+              { "header": "", "key": "dates", "flex": 3 }
+            ],
+            "data": [
+              {
+                "logo": {
+                  "type": "container",
+                  "padding": 2,
+                  "child": {
+                    "type": "image",
+                    "url": "https://picsum.photos/100",
+                    "width": 30, "height": 30,
+                    "fit": "contain"
+                  }
+                },
+                "title": {
+                  "type": "column",
+                  "cross_axis_alignment": "center",
+                  "children": [
+                    { "type": "container", "height": 12 },
+                    { "type": "text", "value": "DAFTAR INISIAL PERSONEL", "font_size": 18, "is_bold": true },
+                    { "type": "container", "height": 8 },
+                    { "type": "text", "value": "Quality Assurance", "font_size": 10 }
+                  ]
+                },
+                "dates": {
+                  "type": "column",
+                  "children": [
+                    { "type": "text", "value": "Effective Date :", "font_size": 8 },
+                    { "type": "container", "height": 15 },
+                    { "type": "text", "value": "Review Date :", "font_size": 8 }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "type": "table",
+            "x": 10, "y": 45,
+            "width": 190,
+            "columns": [
+              { "header": "No.", "key": "no", "flex": 1 },
+              { "header": "Nama Personel", "key": "nama", "flex": 5 },
+              { "header": "Inisial", "key": "inisial", "flex": 2 },
+              { "header": "Paraf", "key": "paraf", "flex": 3 },
+              { "header": "Tanda Tangan", "key": "ttd", "flex": 4 }
+            ],
+            "data": [
+              { "no": "1.", "nama": "Sri Anjariyah", "inisial": "SAH", "paraf": "", "ttd": "1." },
+              { "no": "2.", "nama": "Karina Dwi Lestari", "inisial": "KDL", "paraf": "", "ttd": "       2." },
+              { "no": "3.", "nama": "Bestia Arkiani", "inisial": "BAI", "paraf": "", "ttd": "3." },
+              { "no": "4.", "nama": "Helmy Akbar", "inisial": "HAR", "paraf": "", "ttd": "       4." },
+              { "no": "5.", "nama": "Usha Nandeni", "inisial": "UNI", "paraf": "", "ttd": "5." },
+              { "no": "6.", "nama": "Asep Tatang Sudrajat", "inisial": "ATS", "paraf": "", "ttd": "       6." },
+              { "no": "7.", "nama": "Syahruddin", "inisial": "SRN", "paraf": "", "ttd": "7." },
+              { "no": "8.", "nama": "Dede Mulyadi", "inisial": "DMI", "paraf": "", "ttd": "       8." },
+              { "no": "9.", "nama": "Rheza Firmansyah", "inisial": "RFH", "paraf": "", "ttd": "9." },
+              { "no": "10.", "nama": "Rahmat Hidayat", "inisial": "RDT", "paraf": "", "ttd": "       10." }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  ''';
+
+  final Map<String, dynamic> config = jsonDecode(jsonString);
+
+  return Scaffold(
+    appBar: AppBar(title: const Text('Daftar Inisial Personel')),
+    body: PdfPreview(
+      build: (format) => JsonPdfGenerator.generate(config),
+      allowPrinting: true,
+      allowSharing: true,
+      canChangeOrientation: false,
+      canChangePageFormat: false,
+    ),
+  );
+}
