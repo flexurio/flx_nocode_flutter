@@ -14,7 +14,11 @@ class LayoutPrint {
   final Map<String, dynamic> dataSources;
   final Map<String, dynamic> styles;
   final List<dynamic> pages;
+  final List<dynamic> content;
   final Map<String, dynamic> bands;
+  final dynamic margin;
+  final double? headerHeight;
+  final double? footerHeight;
   final HttpData? httpData;
 
   LayoutPrint({
@@ -30,7 +34,11 @@ class LayoutPrint {
     this.dataSources = const {},
     this.styles = const {},
     this.pages = const [],
+    this.content = const [],
     this.bands = const {},
+    this.margin,
+    this.headerHeight,
+    this.footerHeight,
     this.httpData,
   });
 
@@ -48,7 +56,11 @@ class LayoutPrint {
       dataSources: map['data_sources'] ?? {},
       styles: map['styles'] ?? {},
       pages: map['pages'] ?? [],
+      content: map['content'] ?? [],
       bands: map['bands'] ?? {},
+      margin: map['margin'],
+      headerHeight: (map['header_height'] as num?)?.toDouble(),
+      footerHeight: (map['footer_height'] as num?)?.toDouble(),
       httpData: map['http_data'] != null
           ? HttpData.fromJson(map['http_data'])
           : null,
@@ -69,7 +81,11 @@ class LayoutPrint {
       'data_sources': dataSources,
       'styles': styles,
       'pages': pages,
+      'content': content,
       'bands': bands,
+      'margin': margin,
+      'header_height': headerHeight,
+      'footer_height': footerHeight,
       'http_data': httpData?.toJson(),
     };
   }

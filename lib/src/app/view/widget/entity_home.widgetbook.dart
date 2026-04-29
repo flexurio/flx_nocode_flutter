@@ -92,7 +92,7 @@ Widget buildMenuCustomUseCase(BuildContext context) {
           {
             "type": "table",
             "x": 0, "y": 0,
-            "width": 190,
+            "width": 170,
             "body": [
               [
                 { 
@@ -143,7 +143,7 @@ Widget buildMenuCustomUseCase(BuildContext context) {
         "content": [
           {
             "type": "table",
-            "width": 190,
+            "width": 170,
             "margin": { "top": 5 },
             "cell_padding": { "top": 3, "bottom": 3, "left": 3, "right": 3 },
             "http_data": {

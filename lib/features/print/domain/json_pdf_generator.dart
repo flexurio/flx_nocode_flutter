@@ -104,30 +104,36 @@ class JsonPdfGenerator {
           },
           build: (pw.Context context) {
             return content.map((comp) {
-              if (comp is! Map) return pw.SizedBox();
-              final Map<String, dynamic> compMap = Map<String, dynamic>.from(comp);
-              
-              // If component has a margin, wrap it
-              final marginVal = compMap['margin'];
-              final type = compMap['type']?.toString();
-              if (type == 'table' && compMap['data'] == null) {
-                compMap['data'] = contextData['data'];
-              }
+              try {
+                if (comp is! Map) return pw.SizedBox();
+                final Map<String, dynamic> compMap =
+                    Map<String, dynamic>.from(comp);
 
-              pw.Widget widget = PdfComponentFactory.buildRawComponent(
-                compMap,
-                unit,
-                imageCache,
-              );
-
-              if (marginVal != null) {
-                final padding = PdfUnitUtils.parseEdgeInsets(marginVal, unit);
-                if (padding != null) {
-                  widget = pw.Padding(padding: padding, child: widget);
+                // If component has a margin, wrap it
+                final marginVal = compMap['margin'];
+                final type = compMap['type']?.toString();
+                if (type == 'table' && compMap['data'] == null) {
+                  compMap['data'] = contextData['data'];
                 }
+
+                pw.Widget widget = PdfComponentFactory.buildRawComponent(
+                  compMap,
+                  unit,
+                  imageCache,
+                );
+
+                if (marginVal != null) {
+                  final padding = PdfUnitUtils.parseEdgeInsets(marginVal, unit);
+                  if (padding != null) {
+                    widget = pw.Padding(padding: padding, child: widget);
+                  }
+                }
+
+                return widget;
+              } catch (e) {
+                print('Error building PDF component: $e');
+                return pw.SizedBox();
               }
-              
-              return widget;
             }).toList();
           },
         ),

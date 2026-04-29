@@ -25,20 +25,34 @@ class PdfPreviewDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      insetPadding: const EdgeInsets.all(20),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          leading: CloseButton(),
-        ),
-        body: PdfPreview(
-          build: (format) => pdfBytes,
-          allowPrinting: true,
-          allowSharing: true,
-          canChangeOrientation: false,
-          canChangePageFormat: false,
-          dynamicLayout: false,
+    return Material(
+      color: Colors.transparent,
+      child: Center(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          height: MediaQuery.of(context).size.height * 0.9,
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(title),
+              leading: const CloseButton(),
+              elevation: 0,
+              backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+            ),
+            body: PdfPreview(
+              build: (format) async => pdfBytes,
+              allowPrinting: true,
+              allowSharing: true,
+              canChangeOrientation: false,
+              canChangePageFormat: false,
+              dynamicLayout: false,
+              loadingWidget: const Center(child: CircularProgressIndicator()),
+            ),
+          ),
         ),
       ),
     );
