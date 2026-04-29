@@ -111,19 +111,23 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
               "mock_enabled": false
             },
             "columns": [
-              { "header": "No.", "value": "{{no}}", "flex": 2 },
+              { "header": "No.", "value": "{{no}}.", "flex": 2 },
               { "header": "Nama Personel", "value": "{{data.name}}", "flex": 5 },
               { "header": "Inisial", "value": "{{data.initial}}", "flex": 2 },
-              { "header": "Role", "value": "{{data.role}}", "flex": 3 },
+              { "header": "Paraf", "value": "", "flex": 3 },
               { 
                 "header": "Tanda Tangan", 
-                "value": "{{data.nip}}", 
                 "flex": 4,
                 "templates": [
                   { 
-                    "type": "container", 
-                    "padding": { "left": 0 },
-                    "child": { "type": "text", "value": "{{data.nip}}" } 
+                    "type": "row", 
+                    "align": "left",
+                    "children": [ { "type": "text", "value": "{{no}}.", "font_size": 10 } ]
+                  },
+                  { 
+                    "type": "row", 
+                    "align": "center",
+                    "children": [ { "type": "text", "value": "{{no}}.", "font_size": 10 } ]
                   }
                 ]
               }

@@ -140,9 +140,9 @@ class PdfComponentFactory {
         final childrenJson = comp['children'] as List<dynamic>? ?? [];
         widget = pw.Column(
           crossAxisAlignment: _parseCrossAxisAlignment(
-              comp['cross_axis_alignment']?.toString()),
-          mainAxisAlignment:
-              _parseMainAxisAlignment(comp['main_axis_alignment']?.toString()),
+              (comp['align'] ?? comp['cross_axis_alignment'])?.toString()),
+          mainAxisAlignment: _parseMainAxisAlignment(
+              (comp['valign'] ?? comp['main_axis_alignment'])?.toString()),
           children: childrenJson.map((c) {
             if (c is! Map) return pw.SizedBox();
             return buildRawComponent(Map<String, dynamic>.from(c), defaultUnit, imageCache);
@@ -152,10 +152,10 @@ class PdfComponentFactory {
       case 'row':
         final childrenJson = comp['children'] as List<dynamic>? ?? [];
         widget = pw.Row(
+          mainAxisAlignment: _parseMainAxisAlignment(
+              (comp['align'] ?? comp['main_axis_alignment'])?.toString()),
           crossAxisAlignment: _parseCrossAxisAlignment(
-              comp['cross_axis_alignment']?.toString()),
-          mainAxisAlignment:
-              _parseMainAxisAlignment(comp['main_axis_alignment']?.toString()),
+              (comp['valign'] ?? comp['cross_axis_alignment'])?.toString()),
           children: childrenJson.map((c) {
             if (c is! Map) return pw.SizedBox();
             return buildRawComponent(Map<String, dynamic>.from(c), defaultUnit, imageCache);
@@ -219,24 +219,36 @@ class PdfComponentFactory {
   }
 
   static pw.CrossAxisAlignment _parseCrossAxisAlignment(String? alignment) {
-    switch (alignment) {
+    if (alignment == null) return pw.CrossAxisAlignment.start;
+    final align = alignment.toLowerCase();
+    switch (align) {
       case 'center':
+      case 'middle':
         return pw.CrossAxisAlignment.center;
       case 'end':
+      case 'right':
+      case 'bottom':
         return pw.CrossAxisAlignment.end;
       case 'stretch':
         return pw.CrossAxisAlignment.stretch;
       case 'start':
+      case 'left':
+      case 'top':
       default:
         return pw.CrossAxisAlignment.start;
     }
   }
 
   static pw.MainAxisAlignment _parseMainAxisAlignment(String? alignment) {
-    switch (alignment) {
+    if (alignment == null) return pw.MainAxisAlignment.start;
+    final align = alignment.toLowerCase();
+    switch (align) {
       case 'center':
+      case 'middle':
         return pw.MainAxisAlignment.center;
       case 'end':
+      case 'right':
+      case 'bottom':
         return pw.MainAxisAlignment.end;
       case 'space_between':
         return pw.MainAxisAlignment.spaceBetween;
@@ -245,6 +257,8 @@ class PdfComponentFactory {
       case 'space_evenly':
         return pw.MainAxisAlignment.spaceEvenly;
       case 'start':
+      case 'left':
+      case 'top':
       default:
         return pw.MainAxisAlignment.start;
     }

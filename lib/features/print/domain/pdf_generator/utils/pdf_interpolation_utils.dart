@@ -12,7 +12,7 @@ class PdfInterpolationUtils {
           if (current is Map && current.containsKey(part)) {
             current = current[part];
           } else {
-            return ''; // Key not found
+            return match.group(0)!; // Key not found, preserve the placeholder
           }
         }
         
