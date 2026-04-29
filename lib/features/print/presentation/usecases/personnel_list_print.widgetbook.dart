@@ -59,7 +59,7 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
             "columns": [
               { "header": "", "key": "logo", "flex": 2, "align": "center" },
               { "header": "", "key": "title", "flex": 6, "align": "center" },
-              { "header": "", "key": "dates", "flex": 3, "align": "center" }
+              { "header": "", "key": "dates", "flex": 3, "align": "left" }
             ],
             "data": [
               {
