@@ -86,6 +86,7 @@ Widget buildMenuCustomUseCase(BuildContext context) {
         "unit": "mm",
         "page_size": "A4",
         "orientation": "portrait",
+        "margin": 20,
         "header_height": 45,
         "footer_height": 20,
         "header": [
@@ -157,11 +158,11 @@ Widget buildMenuCustomUseCase(BuildContext context) {
               "mock_enabled": false
             },
             "header": [
-              { "content": { "type": "text", "value": "No." }, "flex": 2, "align": "center" },
-              { "content": { "type": "text", "value": "Nama Personel" }, "flex": 5 },
-              { "content": { "type": "text", "value": "Inisial" }, "flex": 2, "align": "center" },
-              { "content": { "type": "text", "value": "Paraf" }, "flex": 3 },
-              { "content": { "type": "text", "value": "Tanda Tangan" }, "flex": 4 }
+              { "content": { "type": "text", "value": "No.", "is_bold": true }, "flex": 2, "align": "center" },
+              { "content": { "type": "text", "value": "Nama Personel", "is_bold": true }, "flex": 5 },
+              { "content": { "type": "text", "value": "Inisial", "is_bold": true }, "flex": 2, "align": "center" },
+              { "content": { "type": "text", "value": "Paraf", "is_bold": true }, "flex": 3 },
+              { "content": { "type": "text", "value": "Tanda Tangan", "is_bold": true }, "flex": 4 }
             ],
             "body": [
               { "content": { "type": "text", "value": "{{no}}." }, "align": "center" },
