@@ -11,17 +11,33 @@ class PdfDataUtils {
       if (json['http_data'] != null) {
         try {
           final httpData = HttpData.fromJson(json['http_data']);
-          final result = await httpData.execute(contextData, executor: executor);
+          final result =
+              await httpData.execute(contextData, executor: executor);
           if (result.isSuccess) {
             final resData = result.data;
+            int count = 0;
+            if (resData is List) count = resData.length;
+            if (resData is Map &&
+                resData.containsKey('data') &&
+                resData['data'] is List) {
+              count = (resData['data'] as List).length;
+            }
+            print('HTTP Data Success: ${httpData.url} (Items: $count)');
+
             if (resData is Map) {
               contextData.addAll(Map<String, dynamic>.from(resData));
+              // If the map has a 'data' field which is a list, also make it available as 'data'
+              if (resData['data'] is List) {
+                contextData['data'] = resData['data'];
+              }
             } else if (resData is List) {
               contextData['data'] = resData;
             }
+          } else {
+            print('HTTP Data Error: ${httpData.url} - ${result.message}');
           }
         } catch (e) {
-          // Ignore fetch errors
+          print('HTTP Data Fetch Exception: ${json['http_data']['url']} - $e');
         }
       }
 

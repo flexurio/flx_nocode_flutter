@@ -18,10 +18,10 @@ class PdfInterpolationUtils {
         
         return current?.toString() ?? '';
       });
-    } else if (template is Map<String, dynamic>) {
+    } else if (template is Map) {
       final result = <String, dynamic>{};
       for (final entry in template.entries) {
-        result[entry.key] = interpolate(entry.value, data);
+        result[entry.key.toString()] = interpolate(entry.value, data);
       }
       return result;
     } else if (template is List) {
@@ -51,7 +51,7 @@ class PdfInterpolationUtils {
       }
       return interpolate(json, data);
     } else if (json is Map) {
-      return json.map((key, value) => MapEntry(key, interpolateJson(value, data)));
+      return json.map((key, value) => MapEntry(key.toString(), interpolateJson(value, data)));
     } else if (json is List) {
       return json.map((item) => interpolateJson(item, data)).toList();
     }

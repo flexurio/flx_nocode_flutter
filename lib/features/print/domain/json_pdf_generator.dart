@@ -26,11 +26,11 @@ class JsonPdfGenerator {
     await PdfDataUtils.fetchAllHttpData(json, contextData, executor: executor);
 
     // 3. Interpolate the JSON with the final data context
-    final Map<String, dynamic> processedJson =
-        PdfInterpolationUtils.interpolateJson(json, contextData)
-            as Map<String, dynamic>;
+    final Map<String, dynamic> processedJson = Map<String, dynamic>.from(
+        PdfInterpolationUtils.interpolateJson(json, contextData) as Map);
 
-    final pdf = pw.Document();
+    try {
+      final pdf = pw.Document();
 
     final layoutType = processedJson['layout_type'] as String? ?? 'canvas';
     if (layoutType != 'canvas') {
@@ -65,10 +65,12 @@ class JsonPdfGenerator {
     final globalFooter = processedJson['footer'] as List<dynamic>? ?? [];
     final pages = processedJson['pages'] as List<dynamic>? ?? [];
 
+    int pageCount = 0;
     for (final pageJson in pages) {
-      if (pageJson is! Map<String, dynamic>) continue;
+      if (pageJson is! Map) continue;
+      final Map<String, dynamic> pageMap = Map<String, dynamic>.from(pageJson);
 
-      final components = pageJson['components'] as List<dynamic>? ?? [];
+      final components = pageMap['components'] as List<dynamic>? ?? [];
 
       pdf.addPage(
         pw.Page(
@@ -81,21 +83,33 @@ class JsonPdfGenerator {
               ...globalFooter,
             ];
 
-            return pw.Stack(
-              children: allComponents.map((comp) {
-                if (comp is! Map<String, dynamic>) return pw.SizedBox();
-                return PdfComponentFactory.buildComponent(
-                  comp,
-                  unit,
-                  imageCache,
-                );
-              }).toList(),
+            return pw.SizedBox.expand(
+              child: pw.Stack(
+                children: allComponents.map((comp) {
+                  if (comp is! Map) return pw.SizedBox();
+                  return PdfComponentFactory.buildComponent(
+                    Map<String, dynamic>.from(comp),
+                    unit,
+                    imageCache,
+                  );
+                }).toList(),
+              ),
             );
           },
         ),
       );
+      pageCount++;
+    }
+
+    if (pageCount == 0) {
+      throw Exception('PDF document has no pages. Ensure "pages" is defined in the JSON configuration.');
     }
 
     return pdf.save();
+    } catch (e, stack) {
+      print('PDF Generation Error: $e');
+      print(stack);
+      rethrow;
+    }
   }
 }

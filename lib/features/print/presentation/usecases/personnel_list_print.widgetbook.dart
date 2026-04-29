@@ -28,7 +28,6 @@ class _PersonnelListApiDemo extends StatefulWidget {
 
 class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
   Map<String, dynamic>? _config;
-  final dio = MockDio();
 
   @override
   void initState() {
@@ -37,41 +36,6 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
   }
 
   Future<void> _fetchData() async {
-    // Setup Mock
-    when(() => dio.get('/api/personnel')).thenAnswer(
-      (_) async => Response(
-        requestOptions: RequestOptions(path: '/api/personnel'),
-        statusCode: 200,
-        data: [
-          {"no": "1.", "nama": "Sri Anjariyah", "inisial": "SAH", "paraf": ""},
-          {
-            "no": "2.",
-            "nama": "Karina Dwi Lestari",
-            "inisial": "KDL",
-            "paraf": ""
-          },
-          {"no": "3.", "nama": "Bestia Arkiani", "inisial": "BAI", "paraf": ""},
-          {"no": "4.", "nama": "Helmy Akbar", "inisial": "HAR", "paraf": ""},
-          {"no": "5.", "nama": "Usha Nandeni", "inisial": "UNI", "paraf": ""},
-          {
-            "no": "6.",
-            "nama": "Asep Tatang Sudrajat",
-            "inisial": "ATS",
-            "paraf": ""
-          },
-          {"no": "7.", "nama": "Syahruddin", "inisial": "SRN", "paraf": ""},
-          {"no": "8.", "nama": "Dede Mulyadi", "inisial": "DMI", "paraf": ""},
-          {
-            "no": "9.",
-            "nama": "Rheza Firmansyah",
-            "inisial": "RFH",
-            "paraf": ""
-          },
-          {"no": "10.", "nama": "Rahmat Hidayat", "inisial": "RDT", "paraf": ""}
-        ],
-      ),
-    );
-
     try {
       // Simulate network delay
       await Future.delayed(const Duration(milliseconds: 500));
@@ -139,29 +103,28 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
                 "width": 190,
                 "http_data": {
                   "method": "GET",
-                  "url": "/api/personnel",
-                  "headers": {},
-                  "body": {}
+                  "url": "https://erp-metiska-farma-api-dev.flexurio.com/users?page=1&search=&sort=created_at&ascending=true",
+                  "headers": {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6IjBmNzk4ZmJhLTRjNWMtNDYxMy1hODg5LTBjMWQzMTNjOTZiMiIsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6MTc3ODA0MjMyMywiaWQiOjE4MDEwMDgsIm5hbWUiOiJNdWFsaXAgU3VoYWwiLCJuaXAiOiIxODAxMDA4Iiwicm9sZSI6IkFkbWluaXN0cmF0b3IifQ.8UaBcBG4ClzC42jbiGtKU1fcwJE291gGD2TU0DD42BE"
+                  },
+                  "mock_enabled": false
                 },
                 "columns": [
-                  { "header": "No.", "value": "{{data.no}}", "flex": 1 },
-                  { "header": "Nama Personel", "value": "{{data.nama}}", "flex": 5 },
-                  { "header": "Inisial", "value": "{{data.inisial}}", "flex": 2 },
-                  { "header": "Paraf", "value": "{{data.paraf}}", "flex": 3 },
+                  { "header": "No.", "value": "{{data.nip}}", "flex": 2 },
+                  { "header": "Nama Personel", "value": "{{data.name}}", "flex": 5 },
+                  { "header": "Inisial", "value": "{{data.initial}}", "flex": 2 },
+                  { "header": "Role", "value": "{{data.role}}", "flex": 3 },
                   { 
                     "header": "Tanda Tangan", 
-                    "value": "{{data.no}}", 
+                    "value": "{{data.nip}}", 
                     "flex": 4,
                     "templates": [
                       { 
                         "type": "container", 
                         "padding": { "left": 0 },
-                        "child": { "type": "text", "value": "{{data.no}}" } 
-                      },
-                      { 
-                        "type": "container", 
-                        "padding": { "left": 23 },
-                        "child": { "type": "text", "value": "{{data.no}}" } 
+                        "child": { "type": "text", "value": "{{data.nip}}" } 
                       }
                     ]
                   }
@@ -196,10 +159,7 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
     return Scaffold(
       appBar: AppBar(title: const Text('Daftar Inisial Personel (Full JSON)')),
       body: PdfPreview(
-        build: (format) => JsonPdfGenerator.generate(
-          _config!,
-          executor: HttpRequestExecutor(dio: dio),
-        ),
+        build: (format) => JsonPdfGenerator.generate(_config!),
         allowPrinting: true,
         allowSharing: true,
         canChangeOrientation: false,

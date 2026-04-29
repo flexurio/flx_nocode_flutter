@@ -144,8 +144,8 @@ class PdfComponentFactory {
           mainAxisAlignment:
               _parseMainAxisAlignment(comp['main_axis_alignment']?.toString()),
           children: childrenJson.map((c) {
-            if (c is! Map<String, dynamic>) return pw.SizedBox();
-            return buildRawComponent(c, defaultUnit, imageCache);
+            if (c is! Map) return pw.SizedBox();
+            return buildRawComponent(Map<String, dynamic>.from(c), defaultUnit, imageCache);
           }).toList(),
         );
         break;
@@ -157,8 +157,8 @@ class PdfComponentFactory {
           mainAxisAlignment:
               _parseMainAxisAlignment(comp['main_axis_alignment']?.toString()),
           children: childrenJson.map((c) {
-            if (c is! Map<String, dynamic>) return pw.SizedBox();
-            return buildRawComponent(c, defaultUnit, imageCache);
+            if (c is! Map) return pw.SizedBox();
+            return buildRawComponent(Map<String, dynamic>.from(c), defaultUnit, imageCache);
           }).toList(),
         );
         break;
@@ -210,8 +210,7 @@ class PdfComponentFactory {
           type != 'barcode' &&
           type != 'shape' &&
           type != 'image' &&
-          type != 'container' &&
-          type != 'table') {
+          type != 'container') {
         widget = pw.SizedBox(width: width, height: height, child: widget);
       }
     }

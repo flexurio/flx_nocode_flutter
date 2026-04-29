@@ -18,7 +18,10 @@ class PdfTableComponent {
 
     final columnWidths = <int, pw.TableColumnWidth>{};
     for (var i = 0; i < columns.length; i++) {
-      final flex = columns[i]['flex'];
+      var flex = columns[i]['flex'];
+      if (flex is String) {
+        flex = double.tryParse(flex);
+      }
       if (flex is num) {
         columnWidths[i] = pw.FlexColumnWidth(flex.toDouble());
       }
@@ -52,8 +55,9 @@ class PdfTableComponent {
 
     if (showBody) {
       int rowIndex = 0;
-      for (final row in data) {
-        if (row is! Map<String, dynamic>) continue;
+      for (final rawRow in data) {
+        if (rawRow is! Map) continue;
+        final row = Map<String, dynamic>.from(rawRow);
         tableRows.add(
           pw.TableRow(
             children: List.generate(keys.length, (colIndex) {
@@ -88,8 +92,8 @@ class PdfTableComponent {
               }
 
               pw.Widget cellWidget;
-              if (cellData is Map<String, dynamic> && cellData.containsKey('type')) {
-                cellWidget = buildRawChild(cellData, defaultUnit, imageCache);
+              if (cellData is Map && cellData.containsKey('type')) {
+                cellWidget = buildRawChild(Map<String, dynamic>.from(cellData), defaultUnit, imageCache);
               } else {
                 cellWidget = pw.Text(
                   cellData?.toString() ?? '',

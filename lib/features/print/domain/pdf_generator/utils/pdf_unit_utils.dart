@@ -3,7 +3,12 @@ import 'package:pdf/pdf.dart';
 class PdfUnitUtils {
   static double convertToPt(dynamic value, String unit) {
     if (value == null) return 0.0;
-    double val = (value as num).toDouble();
+    double val = 0.0;
+    if (value is num) {
+      val = value.toDouble();
+    } else if (value is String) {
+      val = double.tryParse(value) ?? 0.0;
+    }
     switch (unit) {
       case 'mm':
         return val * 2.83465;
