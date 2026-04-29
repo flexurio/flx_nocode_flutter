@@ -1,6 +1,6 @@
+import 'package:flx_nocode_flutter/features/print/domain/pdf_generator/models/pdf_component_model.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import '../utils/pdf_unit_utils.dart';
 import '../utils/pdf_interpolation_utils.dart';
 import '../models/pdf_table_model.dart';
 
@@ -9,18 +9,23 @@ class PdfTableComponent {
     Map<String, dynamic> comp,
     String defaultUnit,
     Map<String, pw.ImageProvider> imageCache,
-    Function(Map<String, dynamic>, String, Map<String, pw.ImageProvider>) buildRawChild,
+    Function(Map<String, dynamic>, String, Map<String, pw.ImageProvider>)
+        buildRawChild,
   ) {
     final model = PdfTableModel.fromJson(comp, defaultUnit);
 
     // Derive column widths from any available configs
     final columnWidths = <int, pw.TableColumnWidth>{};
     List<PdfTableColumnModel>? refConfigs;
-    
+
     if (model.header.isNotEmpty) {
-      refConfigs = model.header.first is List ? model.header.first : model.header.cast<PdfTableColumnModel>();
+      refConfigs = model.header.first is List
+          ? model.header.first
+          : model.header.cast<PdfTableColumnModel>();
     } else if (model.body.isNotEmpty) {
-      refConfigs = model.body.first is List ? model.body.first : model.body.cast<PdfTableColumnModel>();
+      refConfigs = model.body.first is List
+          ? model.body.first
+          : model.body.cast<PdfTableColumnModel>();
     }
 
     if (refConfigs != null) {
@@ -36,38 +41,52 @@ class PdfTableComponent {
     final cellPadding = model.cellPadding ?? const pw.EdgeInsets.all(4);
 
     // Helper to render a single row of column models
-    pw.TableRow buildRow(List<PdfTableColumnModel> configs, {PdfColor? bgColor, PdfColor? textColor, Map<String, dynamic>? rowContext}) {
+    pw.TableRow buildRow(List<PdfTableColumnModel> configs,
+        {PdfColor? bgColor,
+        PdfColor? textColor,
+        Map<String, dynamic>? rowContext}) {
       return pw.TableRow(
         decoration: pw.BoxDecoration(color: bgColor),
         children: configs.map((config) {
-          var cellContent = config.content;
+          PdfComponentModel cellContent = config.content;
 
           // Interpolate if we have context (body rows)
           if (rowContext != null) {
-            cellContent = PdfInterpolationUtils.interpolate(cellContent, rowContext);
+            final interpolated = PdfInterpolationUtils.interpolate(
+                cellContent.rawJson, rowContext);
+            cellContent = cellContent
+                .copyWithInterpolatedJson(interpolated as Map<String, dynamic>);
+
             if (config.templates != null || config.template != null) {
-              Map<String, dynamic>? selectedTemplate;
+              PdfComponentModel? selectedTemplate;
               final index = rowContext['index'] as int;
               if (config.templates != null && config.templates!.isNotEmpty) {
-                selectedTemplate = config.templates![index % config.templates!.length] as Map<String, dynamic>?;
+                selectedTemplate =
+                    config.templates![index % config.templates!.length];
               } else if (config.template != null) {
                 selectedTemplate = config.template;
               }
               if (selectedTemplate != null) {
-                cellContent = PdfInterpolationUtils.interpolate(selectedTemplate, rowContext);
+                final interpolatedTemplate = PdfInterpolationUtils.interpolate(
+                    selectedTemplate.rawJson, rowContext);
+                cellContent = selectedTemplate.copyWithInterpolatedJson(
+                    interpolatedTemplate as Map<String, dynamic>);
               }
             }
           }
 
           pw.Widget cellWidget;
-          if (cellContent is Map && cellContent.containsKey('type')) {
-            cellWidget = buildRawChild(Map<String, dynamic>.from(cellContent), defaultUnit, imageCache);
+          final json = cellContent.rawJson;
+          if (json.containsKey('type')) {
+            cellWidget = buildRawChild(
+                Map<String, dynamic>.from(json), defaultUnit, imageCache);
           } else {
             cellWidget = pw.Text(
-              cellContent?.toString() ?? '',
+              json['value']?.toString() ?? '',
               style: pw.TextStyle(
                 fontSize: 10,
-                fontWeight: bgColor != null ? pw.FontWeight.bold : pw.FontWeight.normal,
+                fontWeight:
+                    bgColor != null ? pw.FontWeight.bold : pw.FontWeight.normal,
                 color: textColor ?? PdfColors.black,
               ),
             );
@@ -84,13 +103,16 @@ class PdfTableComponent {
 
     // Render Header
     if (model.header.isNotEmpty) {
-      final textColor = model.headerTextColor ?? (model.headerBgColor != null ? PdfColors.white : PdfColors.black);
+      final textColor = model.headerTextColor ??
+          (model.headerBgColor != null ? PdfColors.white : PdfColors.black);
       if (model.header.first is List) {
         for (final row in model.header) {
-          tableRows.add(buildRow(row as List<PdfTableColumnModel>, bgColor: model.headerBgColor, textColor: textColor));
+          tableRows.add(buildRow(row as List<PdfTableColumnModel>,
+              bgColor: model.headerBgColor, textColor: textColor));
         }
       } else {
-        tableRows.add(buildRow(model.header.cast<PdfTableColumnModel>(), bgColor: model.headerBgColor, textColor: textColor));
+        tableRows.add(buildRow(model.header.cast<PdfTableColumnModel>(),
+            bgColor: model.headerBgColor, textColor: textColor));
       }
     }
 
@@ -98,11 +120,17 @@ class PdfTableComponent {
     if (model.body.isNotEmpty) {
       if (model.data.isNotEmpty) {
         // Dynamic data-driven rows
-        final template = model.body.first is List ? model.body.first as List<PdfTableColumnModel> : model.body.cast<PdfTableColumnModel>();
+        final template = model.body.first is List
+            ? model.body.first as List<PdfTableColumnModel>
+            : model.body.cast<PdfTableColumnModel>();
         int rowIndex = 0;
         for (final rawRow in model.data) {
           if (rawRow is! Map) continue;
-          final context = {'data': rawRow, 'index': rowIndex, 'no': rowIndex + 1};
+          final context = {
+            'data': rawRow,
+            'index': rowIndex,
+            'no': rowIndex + 1
+          };
           tableRows.add(buildRow(template, rowContext: context));
           rowIndex++;
         }

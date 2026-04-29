@@ -1,16 +1,17 @@
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import '../utils/pdf_unit_utils.dart';
+import 'pdf_component_model.dart';
 
 class PdfTableColumnModel {
-  final dynamic content;
+  final PdfComponentModel content;
   final double? flex;
   final String? align;
-  final List<dynamic>? templates;
-  final Map<String, dynamic>? template;
+  final List<PdfComponentModel>? templates;
+  final PdfComponentModel? template;
 
   PdfTableColumnModel({
-    this.content,
+    required this.content,
     this.flex,
     this.align,
     this.templates,
@@ -18,14 +19,19 @@ class PdfTableColumnModel {
   });
 
   factory PdfTableColumnModel.fromJson(Map<String, dynamic> json) {
+    final contentJson = json['content'] ?? json['value'];
+    
+    final templatesList = json['templates'] as List<dynamic>?;
+    final templateMap = json['template'];
+
     return PdfTableColumnModel(
-      content: json['content'] ?? json['value'], // Fallback for transition
+      content: PdfComponentModel.fromJson(contentJson),
       flex: json['flex'] is num
           ? (json['flex'] as num).toDouble()
           : (json['flex'] is String ? double.tryParse(json['flex']) : null),
       align: json['align']?.toString(),
-      templates: json['templates'] as List<dynamic>?,
-      template: json['template'] as Map<String, dynamic>?,
+      templates: templatesList?.map((t) => PdfComponentModel.fromJson(t)).toList(),
+      template: templateMap != null ? PdfComponentModel.fromJson(templateMap) : null,
     );
   }
 }
