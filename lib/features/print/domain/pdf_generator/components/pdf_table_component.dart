@@ -44,8 +44,10 @@ class PdfTableComponent {
     pw.TableRow buildRow(List<PdfTableColumnModel> configs,
         {PdfColor? bgColor,
         PdfColor? textColor,
-        Map<String, dynamic>? rowContext}) {
+        Map<String, dynamic>? rowContext,
+        bool repeat = false}) {
       return pw.TableRow(
+        repeat: repeat,
         decoration: pw.BoxDecoration(color: bgColor),
         children: configs.map((config) {
           PdfComponentModel cellContent = config.content;
@@ -108,11 +110,13 @@ class PdfTableComponent {
       if (model.header.first is List) {
         for (final row in model.header) {
           tableRows.add(buildRow(row as List<PdfTableColumnModel>,
-              bgColor: model.headerBgColor, textColor: textColor));
+              bgColor: model.headerBgColor,
+              textColor: textColor,
+              repeat: true));
         }
       } else {
         tableRows.add(buildRow(model.header.cast<PdfTableColumnModel>(),
-            bgColor: model.headerBgColor, textColor: textColor));
+            bgColor: model.headerBgColor, textColor: textColor, repeat: true));
       }
     }
 
@@ -155,6 +159,11 @@ class PdfTableComponent {
       } else {
         tableRows.add(buildRow(model.footer.cast<PdfTableColumnModel>()));
       }
+    }
+
+    int headerCount = 0;
+    if (model.header.isNotEmpty) {
+      headerCount = model.header.first is List ? model.header.length : 1;
     }
 
     return pw.Table(
