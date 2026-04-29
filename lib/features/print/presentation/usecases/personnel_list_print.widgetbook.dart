@@ -55,43 +55,50 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
             "type": "table",
             "x": 0, "y": 0,
             "width": 190,
-            "show_header": false,
-            "columns": [
-              { "header": "", "key": "logo", "flex": 2, "align": "center" },
-              { "header": "", "key": "title", "flex": 6, "align": "center" },
-              { "header": "", "key": "dates", "flex": 3, "align": "left" }
-            ],
-            "data": [
-              {
-                "logo": {
-                  "type": "container",
-                  "padding": 2,
-                  "child": {
-                    "type": "image",
-                    "url": "https://picsum.photos/100",
-                    "width": 30, "height": 30,
-                    "fit": "contain"
-                  }
+            "body": [
+              [
+                { 
+                  "content": {
+                    "type": "container",
+                    "padding": 2,
+                    "child": {
+                      "type": "image",
+                      "url": "https://picsum.photos/100",
+                      "width": 30, "height": 30,
+                      "fit": "contain"
+                    }
+                  }, 
+                  "flex": 2, 
+                  "align": "center" 
                 },
-                "title": {
-                  "type": "column",
-                  "cross_axis_alignment": "center",
-                  "children": [
-                    { "type": "container", "height": 12 },
-                    { "type": "text", "value": "DAFTAR INISIAL PERSONEL", "font_size": 18, "is_bold": true },
-                    { "type": "container", "height": 8 },
-                    { "type": "text", "value": "Quality Assurance", "font_size": 10 }
-                  ]
+                { 
+                  "content": {
+                    "type": "column",
+                    "align": "center",
+                    "children": [
+                      { "type": "container", "height": 12 },
+                      { "type": "text", "value": "DAFTAR INISIAL PERSONEL", "font_size": 18, "is_bold": true },
+                      { "type": "container", "height": 8 },
+                      { "type": "text", "value": "Quality Assurance", "font_size": 10 }
+                    ]
+                  }, 
+                  "flex": 6, 
+                  "align": "center" 
                 },
-                "dates": {
-                  "type": "column",
-                  "children": [
-                    { "type": "text", "value": "Effective Date :", "font_size": 8 },
-                    { "type": "container", "height": 15 },
-                    { "type": "text", "value": "Review Date :", "font_size": 8 }
-                  ]
+                { 
+                  "content": {
+                    "type": "column",
+                    "align": "left",
+                    "children": [
+                      { "type": "text", "value": "Effective Date :", "font_size": 8 },
+                      { "type": "container", "height": 15 },
+                      { "type": "text", "value": "Review Date :", "font_size": 8 }
+                    ]
+                  }, 
+                  "flex": 3, 
+                  "align": "left" 
                 }
-              }
+              ]
             ]
           }
         ],
@@ -111,14 +118,19 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
               },
               "mock_enabled": false
             },
-            "columns": [
-              { "header": "No.", "value": "{{no}}.", "flex": 2, "align": "center" },
-              { "header": "Nama Personel", "value": "{{data.name}}", "flex": 5 },
-              { "header": "Inisial", "value": "{{data.initial}}", "flex": 2, "align": "center" },
-              { "header": "Paraf", "value": "", "flex": 3 },
+            "header": [
+              { "content": { "type": "text", "value": "No." }, "flex": 2, "align": "center" },
+              { "content": { "type": "text", "value": "Nama Personel" }, "flex": 5 },
+              { "content": { "type": "text", "value": "Inisial" }, "flex": 2, "align": "center" },
+              { "content": { "type": "text", "value": "Paraf" }, "flex": 3 },
+              { "content": { "type": "text", "value": "Tanda Tangan" }, "flex": 4 }
+            ],
+            "body": [
+              { "content": { "type": "text", "value": "{{no}}." }, "align": "center" },
+              { "content": { "type": "text", "value": "{{data.name}}" } },
+              { "content": { "type": "text", "value": "{{data.initial}}" }, "align": "center" },
+              { "content": { "type": "text", "value": "" } },
               { 
-                "header": "Tanda Tangan", 
-                "flex": 4,
                 "templates": [
                   { 
                     "type": "row", 
@@ -132,8 +144,7 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
                   }
                 ]
               }
-            ],
-            "data": "{{data}}"
+            ]
           }
         ]
       }

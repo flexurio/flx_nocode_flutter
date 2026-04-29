@@ -109,6 +109,11 @@ class JsonPdfGenerator {
               
               // If component has a margin, wrap it
               final marginVal = compMap['margin'];
+              final type = compMap['type']?.toString();
+              if (type == 'table' && compMap['data'] == null) {
+                compMap['data'] = contextData['data'];
+              }
+
               pw.Widget widget = PdfComponentFactory.buildRawComponent(
                 compMap,
                 unit,

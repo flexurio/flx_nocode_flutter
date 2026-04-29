@@ -2,6 +2,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import '../utils/pdf_unit_utils.dart';
 import '../utils/pdf_interpolation_utils.dart';
+import '../models/pdf_table_model.dart';
 
 class PdfTableComponent {
   static pw.Widget build(
@@ -10,148 +11,138 @@ class PdfTableComponent {
     Map<String, pw.ImageProvider> imageCache,
     Function(Map<String, dynamic>, String, Map<String, pw.ImageProvider>) buildRawChild,
   ) {
-    final columns = comp['columns'] as List<dynamic>? ?? [];
-    final data = comp['data'] as List<dynamic>? ?? [];
+    final model = PdfTableModel.fromJson(comp, defaultUnit);
 
-    final headers = columns.map((c) => c['header']?.toString() ?? '').toList();
-    final keys = columns.map((c) => c['key']?.toString() ?? '').toList();
-
+    // Derive column widths from any available configs
     final columnWidths = <int, pw.TableColumnWidth>{};
-    for (var i = 0; i < columns.length; i++) {
-      var flex = columns[i]['flex'];
-      if (flex is String) {
-        flex = double.tryParse(flex);
-      }
-      if (flex is num) {
-        columnWidths[i] = pw.FlexColumnWidth(flex.toDouble());
+    List<PdfTableColumnModel>? refConfigs;
+    
+    if (model.header.isNotEmpty) {
+      refConfigs = model.header.first is List ? model.header.first : model.header.cast<PdfTableColumnModel>();
+    } else if (model.body.isNotEmpty) {
+      refConfigs = model.body.first is List ? model.body.first : model.body.cast<PdfTableColumnModel>();
+    }
+
+    if (refConfigs != null) {
+      for (var i = 0; i < refConfigs.length; i++) {
+        final flex = refConfigs[i].flex;
+        if (flex != null) {
+          columnWidths[i] = pw.FlexColumnWidth(flex);
+        }
       }
     }
 
-    final bool showHeader = comp['show_header'] as bool? ?? true;
-    final bool showBody = comp['show_body'] as bool? ?? true;
-
     final tableRows = <pw.TableRow>[];
-    final headerBgColor = comp['header_background_color'] != null
-        ? PdfColor.fromHex(comp['header_background_color'].toString())
-        : null;
-    final headerTextColor = comp['header_text_color'] != null
-        ? PdfColor.fromHex(comp['header_text_color'].toString())
-        : (headerBgColor != null ? PdfColors.white : PdfColors.black);
+    final cellPadding = model.cellPadding ?? const pw.EdgeInsets.all(4);
 
-    final cellPadding = PdfUnitUtils.parseEdgeInsets(comp['cell_padding'], defaultUnit) ??
-        const pw.EdgeInsets.all(4);
+    // Helper to render a single row of column models
+    pw.TableRow buildRow(List<PdfTableColumnModel> configs, {PdfColor? bgColor, PdfColor? textColor, Map<String, dynamic>? rowContext}) {
+      return pw.TableRow(
+        decoration: pw.BoxDecoration(color: bgColor),
+        children: configs.map((config) {
+          var cellContent = config.content;
 
-    if (showHeader) {
-      tableRows.add(
-        pw.TableRow(
-          decoration: pw.BoxDecoration(color: headerBgColor),
-          children: List.generate(columns.length, (colIndex) {
-            final header = headers[colIndex];
-            final colConfig = columns[colIndex] as Map;
-            final colAlign = colConfig['align']?.toString().toLowerCase();
-            
-            pw.Alignment alignment = pw.Alignment.centerLeft;
-            if (colAlign == 'center' || colAlign == 'middle') {
-              alignment = pw.Alignment.center;
-            } else if (colAlign == 'right' || colAlign == 'end') {
-              alignment = pw.Alignment.centerRight;
+          // Interpolate if we have context (body rows)
+          if (rowContext != null) {
+            cellContent = PdfInterpolationUtils.interpolate(cellContent, rowContext);
+            if (config.templates != null || config.template != null) {
+              Map<String, dynamic>? selectedTemplate;
+              final index = rowContext['index'] as int;
+              if (config.templates != null && config.templates!.isNotEmpty) {
+                selectedTemplate = config.templates![index % config.templates!.length] as Map<String, dynamic>?;
+              } else if (config.template != null) {
+                selectedTemplate = config.template;
+              }
+              if (selectedTemplate != null) {
+                cellContent = PdfInterpolationUtils.interpolate(selectedTemplate, rowContext);
+              }
             }
+          }
 
-            return pw.Container(
-              padding: cellPadding,
-              alignment: alignment,
-              child: pw.Text(
-                header,
-                style: pw.TextStyle(
-                  fontWeight: pw.FontWeight.bold,
-                  fontSize: 10,
-                  color: headerTextColor,
-                ),
+          pw.Widget cellWidget;
+          if (cellContent is Map && cellContent.containsKey('type')) {
+            cellWidget = buildRawChild(Map<String, dynamic>.from(cellContent), defaultUnit, imageCache);
+          } else {
+            cellWidget = pw.Text(
+              cellContent?.toString() ?? '',
+              style: pw.TextStyle(
+                fontSize: 10,
+                fontWeight: bgColor != null ? pw.FontWeight.bold : pw.FontWeight.normal,
+                color: textColor ?? PdfColors.black,
               ),
             );
-          }),
-        ),
+          }
+
+          return pw.Container(
+            padding: cellPadding,
+            alignment: _parseAlignment(config.align),
+            child: cellWidget,
+          );
+        }).toList(),
       );
     }
 
-    if (showBody) {
-      int rowIndex = 0;
-      for (final rawRow in data) {
-        if (rawRow is! Map) continue;
-        final row = Map<String, dynamic>.from(rawRow);
-        tableRows.add(
-          pw.TableRow(
-            children: List.generate(keys.length, (colIndex) {
-              final key = keys[colIndex];
-              final colConfig = columns[colIndex] as Map;
-              var cellData = row[key];
+    // Render Header
+    if (model.header.isNotEmpty) {
+      final textColor = model.headerTextColor ?? (model.headerBgColor != null ? PdfColors.white : PdfColors.black);
+      if (model.header.first is List) {
+        for (final row in model.header) {
+          tableRows.add(buildRow(row as List<PdfTableColumnModel>, bgColor: model.headerBgColor, textColor: textColor));
+        }
+      } else {
+        tableRows.add(buildRow(model.header.cast<PdfTableColumnModel>(), bgColor: model.headerBgColor, textColor: textColor));
+      }
+    }
 
-              final rowContext = {
-                'data': row,
-                'index': rowIndex,
-                'no': rowIndex + 1,
-              };
+    // Render Body
+    if (model.body.isNotEmpty) {
+      if (model.data.isNotEmpty) {
+        // Dynamic data-driven rows
+        final template = model.body.first is List ? model.body.first as List<PdfTableColumnModel> : model.body.cast<PdfTableColumnModel>();
+        int rowIndex = 0;
+        for (final rawRow in model.data) {
+          if (rawRow is! Map) continue;
+          final context = {'data': rawRow, 'index': rowIndex, 'no': rowIndex + 1};
+          tableRows.add(buildRow(template, rowContext: context));
+          rowIndex++;
+        }
+      } else {
+        // Static rows
+        if (model.body.first is List) {
+          for (final row in model.body) {
+            tableRows.add(buildRow(row as List<PdfTableColumnModel>));
+          }
+        } else {
+          tableRows.add(buildRow(model.body.cast<PdfTableColumnModel>()));
+        }
+      }
+    }
 
-              if (colConfig.containsKey('value')) {
-                cellData = PdfInterpolationUtils.interpolate(
-                  colConfig['value'],
-                  rowContext,
-                );
-              }
-
-              if (colConfig.containsKey('templates') || colConfig.containsKey('template')) {
-                final templates = colConfig['templates'] as List<dynamic>?;
-                final singleTemplate = colConfig['template'] as Map<String, dynamic>?;
-
-                Map<String, dynamic>? selectedTemplate;
-                if (templates != null && templates.isNotEmpty) {
-                  selectedTemplate = templates[rowIndex % templates.length] as Map<String, dynamic>?;
-                } else if (singleTemplate != null) {
-                  selectedTemplate = singleTemplate;
-                }
-
-                if (selectedTemplate != null) {
-                  cellData = PdfInterpolationUtils.interpolate(
-                    selectedTemplate,
-                    rowContext,
-                  );
-                }
-              }
-
-              pw.Widget cellWidget;
-              if (cellData is Map && cellData.containsKey('type')) {
-                cellWidget = buildRawChild(Map<String, dynamic>.from(cellData), defaultUnit, imageCache);
-              } else {
-                cellWidget = pw.Text(
-                  cellData?.toString() ?? '',
-                  style: const pw.TextStyle(fontSize: 10),
-                );
-              }
-
-              final colAlign = colConfig['align']?.toString().toLowerCase();
-              pw.Alignment alignment = pw.Alignment.centerLeft;
-              if (colAlign == 'center' || colAlign == 'middle') {
-                alignment = pw.Alignment.center;
-              } else if (colAlign == 'right' || colAlign == 'end') {
-                alignment = pw.Alignment.centerRight;
-              }
-
-              return pw.Container(
-                padding: cellPadding,
-                alignment: alignment,
-                child: cellWidget,
-              );
-            }),
-          ),
-        );
-        rowIndex++;
+    // Render Footer
+    if (model.footer.isNotEmpty) {
+      if (model.footer.first is List) {
+        for (final row in model.footer) {
+          tableRows.add(buildRow(row as List<PdfTableColumnModel>));
+        }
+      } else {
+        tableRows.add(buildRow(model.footer.cast<PdfTableColumnModel>()));
       }
     }
 
     return pw.Table(
       columnWidths: columnWidths,
-      border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.5),
+      border: pw.TableBorder.all(color: PdfColors.grey, width: 0.5),
       children: tableRows,
     );
+  }
+
+  static pw.Alignment _parseAlignment(String? align) {
+    final value = align?.toLowerCase();
+    if (value == 'center' || value == 'middle') {
+      return pw.Alignment.center;
+    } else if (value == 'right' || value == 'end') {
+      return pw.Alignment.centerRight;
+    }
+    return pw.Alignment.centerLeft;
   }
 }
