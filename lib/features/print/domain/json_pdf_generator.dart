@@ -116,7 +116,7 @@ class JsonPdfGenerator {
               );
 
               if (marginVal != null) {
-                final padding = PdfComponentFactory.parseEdgeInsets(marginVal, unit);
+                final padding = PdfUnitUtils.parseEdgeInsets(marginVal, unit);
                 if (padding != null) {
                   widget = pw.Padding(padding: padding, child: widget);
                 }

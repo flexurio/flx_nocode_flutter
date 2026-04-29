@@ -38,6 +38,9 @@ class PdfTableComponent {
         ? PdfColor.fromHex(comp['header_text_color'].toString())
         : (headerBgColor != null ? PdfColors.white : PdfColors.black);
 
+    final cellPadding = PdfUnitUtils.parseEdgeInsets(comp['cell_padding'], defaultUnit) ??
+        const pw.EdgeInsets.all(4);
+
     if (showHeader) {
       tableRows.add(
         pw.TableRow(
@@ -55,7 +58,7 @@ class PdfTableComponent {
             }
 
             return pw.Container(
-              padding: const pw.EdgeInsets.all(4),
+              padding: cellPadding,
               alignment: alignment,
               child: pw.Text(
                 header,
@@ -134,7 +137,7 @@ class PdfTableComponent {
               }
 
               return pw.Container(
-                padding: const pw.EdgeInsets.all(4),
+                padding: cellPadding,
                 alignment: alignment,
                 child: cellWidget,
               );

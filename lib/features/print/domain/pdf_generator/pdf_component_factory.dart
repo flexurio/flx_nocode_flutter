@@ -164,8 +164,8 @@ class PdfComponentFactory {
         break;
       case 'container':
         final childJson = comp['child'] as Map<String, dynamic>?;
-        final padding = parseEdgeInsets(comp['padding'], defaultUnit);
-        final margin = parseEdgeInsets(comp['margin'], defaultUnit);
+        final padding = PdfUnitUtils.parseEdgeInsets(comp['padding'], defaultUnit);
+        final margin = PdfUnitUtils.parseEdgeInsets(comp['margin'], defaultUnit);
         final borderColorStr = comp['border_color']?.toString();
         final borderWidth = (comp['border_width'] as num?)?.toDouble();
         final bgColorStr = comp['background_color']?.toString();
@@ -264,20 +264,4 @@ class PdfComponentFactory {
     }
   }
 
-  static pw.EdgeInsetsGeometry? parseEdgeInsets(dynamic value, String unit) {
-    if (value == null) return null;
-    if (value is num) {
-      final val = PdfUnitUtils.convertToPt(value, unit);
-      return val > 0 ? pw.EdgeInsets.all(val) : null;
-    }
-    if (value is Map) {
-      return pw.EdgeInsets.only(
-        left: PdfUnitUtils.convertToPt(value['left'] ?? 0, unit),
-        top: PdfUnitUtils.convertToPt(value['top'] ?? 0, unit),
-        right: PdfUnitUtils.convertToPt(value['right'] ?? 0, unit),
-        bottom: PdfUnitUtils.convertToPt(value['bottom'] ?? 0, unit),
-      );
-    }
-    return null;
-  }
 }

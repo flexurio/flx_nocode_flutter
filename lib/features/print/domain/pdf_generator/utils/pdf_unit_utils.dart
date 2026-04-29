@@ -1,4 +1,5 @@
 import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class PdfUnitUtils {
   static double convertToPt(dynamic value, String unit) {
@@ -37,5 +38,22 @@ class PdfUnitUtils {
       if (size == 'A5') return PdfPageFormat.a5;
     }
     return PdfPageFormat.a4;
+  }
+
+  static pw.EdgeInsetsGeometry? parseEdgeInsets(dynamic value, String unit) {
+    if (value == null) return null;
+    if (value is num) {
+      final val = convertToPt(value, unit);
+      return val > 0 ? pw.EdgeInsets.all(val) : null;
+    }
+    if (value is Map) {
+      return pw.EdgeInsets.only(
+        left: convertToPt(value['left'] ?? 0, unit),
+        top: convertToPt(value['top'] ?? 0, unit),
+        right: convertToPt(value['right'] ?? 0, unit),
+        bottom: convertToPt(value['bottom'] ?? 0, unit),
+      );
+    }
+    return null;
   }
 }

@@ -57,9 +57,9 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
             "width": 190,
             "show_header": false,
             "columns": [
-              { "header": "", "key": "logo", "flex": 2 },
-              { "header": "", "key": "title", "flex": 6 },
-              { "header": "", "key": "dates", "flex": 3 }
+              { "header": "", "key": "logo", "flex": 2, "align": "center" },
+              { "header": "", "key": "title", "flex": 6, "align": "center" },
+              { "header": "", "key": "dates", "flex": 3, "align": "center" }
             ],
             "data": [
               {
@@ -100,6 +100,7 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
             "type": "table",
             "width": 190,
             "margin": { "top": 5 },
+            "cell_padding": { "top": 3, "bottom": 3, "left": 3, "right": 3 },
             "http_data": {
               "method": "GET",
               "url": "https://erp-metiska-farma-api-dev.flexurio.com/users?page=1&search=&sort=created_at&ascending=true",
