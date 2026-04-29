@@ -98,30 +98,26 @@ Widget buildMenuCustomUseCase(BuildContext context) {
               [
                 { 
                   "content": {
-                    "type": "container",
-                    "padding": 2,
-                    "child": {
-                      "type": "image",
-                      "url": "https://picsum.photos/100",
-                      "width": 30, "height": 30,
-                      "fit": "contain"
-                    }
+                    "type": "image",
+                    "url": "https://picsur.org/i/20871fa4-a083-4b71-9134-fac1d1bd11fc.jpg",
+                    "width": 30, "height": 30,
+                    "fit": "contain"
                   }, 
-                  "flex": 2, 
-                  "align": "center" 
+                  "flex": 3, 
+                  "align": "center"
                 },
                 { 
                   "content": {
                     "type": "column",
                     "align": "center",
                     "children": [
-                      { "type": "container", "height": 12 },
+                      { "type": "container", "height": 10 },
                       { "type": "text", "value": "DAFTAR INISIAL PERSONEL", "font_size": 18, "is_bold": true },
                       { "type": "container", "height": 8 },
                       { "type": "text", "value": "Quality Assurance", "font_size": 10 }
                     ]
                   }, 
-                  "flex": 6, 
+                  "flex": 10, 
                   "align": "center" 
                 },
                 { 
@@ -130,12 +126,12 @@ Widget buildMenuCustomUseCase(BuildContext context) {
                     "align": "left",
                     "children": [
                       { "type": "text", "value": "Effective Date :", "font_size": 8 },
-                      { "type": "container", "height": 15 },
+                      { "type": "container", "height": 12 },
                       { "type": "text", "value": "Review Date :", "font_size": 8 }
                     ]
                   }, 
                   "flex": 3, 
-                  "align": "left" 
+                  "align": "top left" 
                 }
               ]
             ]

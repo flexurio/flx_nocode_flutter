@@ -169,17 +169,37 @@ class PdfTableComponent {
     return pw.Table(
       columnWidths: columnWidths,
       border: pw.TableBorder.all(color: PdfColors.grey, width: 0.5),
+      defaultVerticalAlignment: pw.TableCellVerticalAlignment.full,
       children: tableRows,
     );
   }
 
   static pw.Alignment _parseAlignment(String? align) {
-    final value = align?.toLowerCase();
-    if (value == 'center' || value == 'middle') {
-      return pw.Alignment.center;
-    } else if (value == 'right' || value == 'end') {
-      return pw.Alignment.centerRight;
+    final value = align?.toLowerCase() ?? '';
+
+    double x = -1.0; // Default: Left
+    double y = 0.0; // Default: Middle
+
+    if (value.contains('center')) {
+      x = 0.0;
+    } else if (value.contains('right') || value.contains('end')) {
+      x = 1.0;
     }
-    return pw.Alignment.centerLeft;
+
+    if (value.contains('top')) {
+      y = -1.0;
+    } else if (value.contains('bottom')) {
+      y = 1.0;
+    } else if (value.contains('middle')) {
+      y = 0.0;
+    }
+
+    // Special case for 'center' only - assume both horizontal and vertical center
+    if (value == 'center') {
+      x = 0.0;
+      y = 0.0;
+    }
+
+    return pw.Alignment(x, y);
   }
 }
