@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/json_table_viewer.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/pages/create_page.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
+import 'package:flx_nocode_flutter/features/print/presentation/widgets/pdf_preview_dialog.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:get/get.dart';
@@ -15,7 +15,6 @@ import 'package:printing/printing.dart';
 import 'package:flx_nocode_flutter/src/app/util/general_xlsx.dart';
 import 'package:flx_nocode_flutter/src/app/util/picker_file.dart';
 import 'package:flx_nocode_flutter/features/print/domain/json_pdf_generator.dart';
-import 'package:flx_nocode_flutter/features/print/models/layout_print.dart';
 
 import 'action_confirm_dialog_extension.dart';
 import 'action_handler_extension.dart';
@@ -444,48 +443,54 @@ extension ActionExecutionExtension on ActionD {
       return;
     }
 
-    await showConfirmDialog(
-      context: context,
-      action: action,
-      label: name,
-      confirmationMessageText: confirmMessage,
-      onConfirm: (ctx) async {
-        try {
-          JsonMap contextData = Map<String, dynamic>.from(data);
+    final execute = (BuildContext ctx) async {
+      try {
+        JsonMap contextData = Map<String, dynamic>.from(data);
 
-          if (http != null) {
-            final response = await http!.execute(data);
-            if (response.statusCode != null &&
-                response.statusCode! >= 200 &&
-                response.statusCode! < 300) {
-              final resData = response.data;
-              if (resData is Map) {
-                contextData.addAll(Map<String, dynamic>.from(resData));
-              } else {
-                contextData['data'] = resData;
-              }
+        if (http != null) {
+          final response = await http!.execute(data);
+          if (response.statusCode != null &&
+              response.statusCode! >= 200 &&
+              response.statusCode! < 300) {
+            final resData = response.data;
+            if (resData is Map) {
+              contextData.addAll(Map<String, dynamic>.from(resData));
             } else {
-              Toast(context)
-                  .fail(response.message ?? 'Failed to fetch print data');
-              return;
+              contextData['data'] = resData;
             }
+          } else {
+            Toast(context)
+                .fail(response.message ?? 'Failed to fetch print data');
+            return;
           }
-
-          // Generate PDF using dynamic data context
-          final layoutJson = layout.toMap();
-          final pdfBytes =
-              await JsonPdfGenerator.generate(layoutJson, data: contextData);
-          await Printing.layoutPdf(
-            onLayout: (format) async => pdfBytes,
-            name: layout.name,
-          );
-
-          onSuccessCallback?.call();
-        } catch (e) {
-          Toast(context).fail('Print error: $e');
-          debugPrint('Print error: $e');
         }
-      },
-    );
+
+        // Generate PDF using dynamic data context
+        final layoutJson = layout.toMap();
+        final pdfBytes =
+            await JsonPdfGenerator.generate(layoutJson, data: contextData);
+
+        if (context.mounted) {
+          await PdfPreviewDialog.show(context, pdfBytes, layout.name);
+        }
+
+        onSuccessCallback?.call();
+      } catch (e) {
+        Toast(context).fail('Print error: $e');
+        debugPrint('Print error: $e');
+      }
+    };
+
+    if (confirmMessage != null && confirmMessage!.isNotEmpty) {
+      await showConfirmDialog(
+        context: context,
+        action: action,
+        label: name,
+        confirmationMessageText: confirmMessage,
+        onConfirm: execute,
+      );
+    } else {
+      await execute(context);
+    }
   }
 }

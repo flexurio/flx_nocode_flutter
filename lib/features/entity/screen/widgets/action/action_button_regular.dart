@@ -113,6 +113,7 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
           );
           break;
 
+        case ActionType.print:
         case ActionType.export:
           await action.executeSingle(
             entity: widget.entity,
