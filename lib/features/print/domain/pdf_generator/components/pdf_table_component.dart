@@ -31,24 +31,42 @@ class PdfTableComponent {
     final bool showBody = comp['show_body'] as bool? ?? true;
 
     final tableRows = <pw.TableRow>[];
+    final headerBgColor = comp['header_background_color'] != null
+        ? PdfColor.fromHex(comp['header_background_color'].toString())
+        : null;
+    final headerTextColor = comp['header_text_color'] != null
+        ? PdfColor.fromHex(comp['header_text_color'].toString())
+        : (headerBgColor != null ? PdfColors.white : PdfColors.black);
 
     if (showHeader) {
       tableRows.add(
         pw.TableRow(
-          decoration: const pw.BoxDecoration(color: PdfColors.blueGrey),
-          children: headers.map((header) {
+          decoration: pw.BoxDecoration(color: headerBgColor),
+          children: List.generate(columns.length, (colIndex) {
+            final header = headers[colIndex];
+            final colConfig = columns[colIndex] as Map;
+            final colAlign = colConfig['align']?.toString().toLowerCase();
+            
+            pw.Alignment alignment = pw.Alignment.centerLeft;
+            if (colAlign == 'center' || colAlign == 'middle') {
+              alignment = pw.Alignment.center;
+            } else if (colAlign == 'right' || colAlign == 'end') {
+              alignment = pw.Alignment.centerRight;
+            }
+
             return pw.Container(
               padding: const pw.EdgeInsets.all(4),
+              alignment: alignment,
               child: pw.Text(
                 header,
                 style: pw.TextStyle(
                   fontWeight: pw.FontWeight.bold,
                   fontSize: 10,
-                  color: PdfColors.white,
+                  color: headerTextColor,
                 ),
               ),
             );
-          }).toList(),
+          }),
         ),
       );
     }
@@ -107,8 +125,17 @@ class PdfTableComponent {
                 );
               }
 
+              final colAlign = colConfig['align']?.toString().toLowerCase();
+              pw.Alignment alignment = pw.Alignment.centerLeft;
+              if (colAlign == 'center' || colAlign == 'middle') {
+                alignment = pw.Alignment.center;
+              } else if (colAlign == 'right' || colAlign == 'end') {
+                alignment = pw.Alignment.centerRight;
+              }
+
               return pw.Container(
                 padding: const pw.EdgeInsets.all(4),
+                alignment: alignment,
                 child: cellWidget,
               );
             }),

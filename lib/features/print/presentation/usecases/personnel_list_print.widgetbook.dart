@@ -111,9 +111,9 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
               "mock_enabled": false
             },
             "columns": [
-              { "header": "No.", "value": "{{no}}.", "flex": 2 },
+              { "header": "No.", "value": "{{no}}.", "flex": 2, "align": "center" },
               { "header": "Nama Personel", "value": "{{data.name}}", "flex": 5 },
-              { "header": "Inisial", "value": "{{data.initial}}", "flex": 2 },
+              { "header": "Inisial", "value": "{{data.initial}}", "flex": 2, "align": "center" },
               { "header": "Paraf", "value": "", "flex": 3 },
               { 
                 "header": "Tanda Tangan", 
