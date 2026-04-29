@@ -65,10 +65,16 @@ class PdfTableComponent {
               final colConfig = columns[colIndex] as Map;
               var cellData = row[key];
 
+              final rowContext = {
+                'data': row,
+                'index': rowIndex,
+                'no': rowIndex + 1,
+              };
+
               if (colConfig.containsKey('value')) {
                 cellData = PdfInterpolationUtils.interpolate(
                   colConfig['value'],
-                  {'data': row},
+                  rowContext,
                 );
               }
 
@@ -86,7 +92,7 @@ class PdfTableComponent {
                 if (selectedTemplate != null) {
                   cellData = PdfInterpolationUtils.interpolate(
                     selectedTemplate,
-                    {'data': row},
+                    rowContext,
                   );
                 }
               }

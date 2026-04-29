@@ -33,10 +33,6 @@ class JsonPdfGenerator {
       final pdf = pw.Document();
 
     final layoutType = processedJson['layout_type'] as String? ?? 'canvas';
-    if (layoutType != 'canvas') {
-      throw UnimplementedError('Only canvas layout is supported for now');
-    }
-
     final unit = processedJson['unit'] as String? ?? 'pt';
 
     // Parse Page Size & Orientation
@@ -48,7 +44,7 @@ class JsonPdfGenerator {
       format = format.landscape;
     }
 
-    // Pre-load all images to memory because pw.Page build must be synchronous
+    // Pre-load all images...
     final Map<String, pw.ImageProvider> imageCache = {};
     final Set<String> imageUrls = {};
     PdfDataUtils.extractImageUrls(processedJson, imageUrls);
@@ -63,29 +59,23 @@ class JsonPdfGenerator {
 
     final globalHeader = processedJson['header'] as List<dynamic>? ?? [];
     final globalFooter = processedJson['footer'] as List<dynamic>? ?? [];
-    final pages = processedJson['pages'] as List<dynamic>? ?? [];
 
-    int pageCount = 0;
-    for (final pageJson in pages) {
-      if (pageJson is! Map) continue;
-      final Map<String, dynamic> pageMap = Map<String, dynamic>.from(pageJson);
-
-      final components = pageMap['components'] as List<dynamic>? ?? [];
+    if (layoutType == 'document') {
+      final content = processedJson['content'] as List<dynamic>? ?? [];
+      final margin = processedJson['margin'] != null 
+          ? PdfUnitUtils.convertToPt(processedJson['margin'], unit) 
+          : 20.0;
 
       pdf.addPage(
-        pw.Page(
+        pw.MultiPage(
           pageFormat: format,
-          margin: pw.EdgeInsets.zero,
-          build: (pw.Context context) {
-            final allComponents = [
-              ...globalHeader,
-              ...components,
-              ...globalFooter,
-            ];
-
-            return pw.SizedBox.expand(
+          margin: pw.EdgeInsets.all(margin),
+          header: (pw.Context context) {
+            if (globalHeader.isEmpty) return pw.SizedBox();
+            return pw.SizedBox(
+              height: PdfUnitUtils.convertToPt(processedJson['header_height'] ?? 40, unit),
               child: pw.Stack(
-                children: allComponents.map((comp) {
+                children: globalHeader.map((comp) {
                   if (comp is! Map) return pw.SizedBox();
                   return PdfComponentFactory.buildComponent(
                     Map<String, dynamic>.from(comp),
@@ -96,13 +86,88 @@ class JsonPdfGenerator {
               ),
             );
           },
+          footer: (pw.Context context) {
+            if (globalFooter.isEmpty) return pw.SizedBox();
+            return pw.SizedBox(
+              height: PdfUnitUtils.convertToPt(processedJson['footer_height'] ?? 40, unit),
+              child: pw.Stack(
+                children: globalFooter.map((comp) {
+                  if (comp is! Map) return pw.SizedBox();
+                  return PdfComponentFactory.buildComponent(
+                    Map<String, dynamic>.from(comp),
+                    unit,
+                    imageCache,
+                  );
+                }).toList(),
+              ),
+            );
+          },
+          build: (pw.Context context) {
+            return content.map((comp) {
+              if (comp is! Map) return pw.SizedBox();
+              final Map<String, dynamic> compMap = Map<String, dynamic>.from(comp);
+              
+              // If component has a margin, wrap it
+              final marginVal = compMap['margin'];
+              pw.Widget widget = PdfComponentFactory.buildRawComponent(
+                compMap,
+                unit,
+                imageCache,
+              );
+
+              if (marginVal != null) {
+                final padding = PdfComponentFactory.parseEdgeInsets(marginVal, unit);
+                if (padding != null) {
+                  widget = pw.Padding(padding: padding, child: widget);
+                }
+              }
+              
+              return widget;
+            }).toList();
+          },
         ),
       );
-      pageCount++;
-    }
+    } else {
+      // CANVAS Layout
+      final pages = processedJson['pages'] as List<dynamic>? ?? [];
+      int pageCount = 0;
+      for (final pageJson in pages) {
+        if (pageJson is! Map) continue;
+        final Map<String, dynamic> pageMap = Map<String, dynamic>.from(pageJson);
+        final components = pageMap['components'] as List<dynamic>? ?? [];
 
-    if (pageCount == 0) {
-      throw Exception('PDF document has no pages. Ensure "pages" is defined in the JSON configuration.');
+        pdf.addPage(
+          pw.Page(
+            pageFormat: format,
+            margin: pw.EdgeInsets.zero,
+            build: (pw.Context context) {
+              final allComponents = [
+                ...globalHeader,
+                ...components,
+                ...globalFooter,
+              ];
+
+              return pw.SizedBox.expand(
+                child: pw.Stack(
+                  children: allComponents.map((comp) {
+                    if (comp is! Map) return pw.SizedBox();
+                    return PdfComponentFactory.buildComponent(
+                      Map<String, dynamic>.from(comp),
+                      unit,
+                      imageCache,
+                    );
+                  }).toList(),
+                ),
+              );
+            },
+          ),
+        );
+        pageCount++;
+      }
+
+      if (pageCount == 0) {
+        throw Exception('PDF document has no pages. Ensure "pages" is defined in the JSON configuration.');
+      }
     }
 
     return pdf.save();

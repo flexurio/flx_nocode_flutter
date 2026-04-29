@@ -44,14 +44,16 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
       {
         "id": "print_personnel_list",
         "name": "Daftar Inisial Personel",
-        "layout_type": "canvas",
+        "layout_type": "document",
         "unit": "mm",
         "page_size": "A4",
         "orientation": "portrait",
+        "header_height": 45,
+        "footer_height": 20,
         "header": [
           {
             "type": "table",
-            "x": 10, "y": 10,
+            "x": 0, "y": 0,
             "width": 190,
             "show_header": false,
             "columns": [
@@ -93,45 +95,40 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
             ]
           }
         ],
-        "pages": [
+        "content": [
           {
-            "background_color": "#FFFFFF",
-            "components": [
-              {
-                "type": "table",
-                "x": 10, "y": 50,
-                "width": 190,
-                "http_data": {
-                  "method": "GET",
-                  "url": "https://erp-metiska-farma-api-dev.flexurio.com/users?page=1&search=&sort=created_at&ascending=true",
-                  "headers": {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6IjBmNzk4ZmJhLTRjNWMtNDYxMy1hODg5LTBjMWQzMTNjOTZiMiIsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6MTc3ODA0MjMyMywiaWQiOjE4MDEwMDgsIm5hbWUiOiJNdWFsaXAgU3VoYWwiLCJuaXAiOiIxODAxMDA4Iiwicm9sZSI6IkFkbWluaXN0cmF0b3IifQ.8UaBcBG4ClzC42jbiGtKU1fcwJE291gGD2TU0DD42BE"
-                  },
-                  "mock_enabled": false
-                },
-                "columns": [
-                  { "header": "No.", "value": "{{data.nip}}", "flex": 2 },
-                  { "header": "Nama Personel", "value": "{{data.name}}", "flex": 5 },
-                  { "header": "Inisial", "value": "{{data.initial}}", "flex": 2 },
-                  { "header": "Role", "value": "{{data.role}}", "flex": 3 },
+            "type": "table",
+            "width": 190,
+            "margin": { "top": 5 },
+            "http_data": {
+              "method": "GET",
+              "url": "https://erp-metiska-farma-api-dev.flexurio.com/users?page=1&search=&sort=created_at&ascending=true",
+              "headers": {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6IjBmNzk4ZmJhLTRjNWMtNDYxMy1hODg5LTBjMWQzMTNjOTZiMiIsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6MTc3ODA0MjMyMywiaWQiOjE4MDEwMDgsIm5hbWUiOiJNdWFsaXAgU3VoYWwiLCJuaXAiOiIxODAxMDA4Iiwicm9sZSI6IkFkbWluaXN0cmF0b3IifQ.8UaBcBG4ClzC42jbiGtKU1fcwJE291gGD2TU0DD42BE"
+              },
+              "mock_enabled": false
+            },
+            "columns": [
+              { "header": "No.", "value": "{{no}}", "flex": 2 },
+              { "header": "Nama Personel", "value": "{{data.name}}", "flex": 5 },
+              { "header": "Inisial", "value": "{{data.initial}}", "flex": 2 },
+              { "header": "Role", "value": "{{data.role}}", "flex": 3 },
+              { 
+                "header": "Tanda Tangan", 
+                "value": "{{data.nip}}", 
+                "flex": 4,
+                "templates": [
                   { 
-                    "header": "Tanda Tangan", 
-                    "value": "{{data.nip}}", 
-                    "flex": 4,
-                    "templates": [
-                      { 
-                        "type": "container", 
-                        "padding": { "left": 0 },
-                        "child": { "type": "text", "value": "{{data.nip}}" } 
-                      }
-                    ]
+                    "type": "container", 
+                    "padding": { "left": 0 },
+                    "child": { "type": "text", "value": "{{data.nip}}" } 
                   }
-                ],
-                "data": "{{data}}"
+                ]
               }
-            ]
+            ],
+            "data": "{{data}}"
           }
         ]
       }
