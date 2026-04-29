@@ -187,7 +187,7 @@ Widget buildMenuCustomUseCase(BuildContext context) {
     "actions_home": [
       {
         "id": "print_personnel",
-        "name": "Print PDF",
+        "name": "Personnel List",
         "type": "print",
         "layout_print_id": "print_personnel_list",
         "icon": "print",
