@@ -6,6 +6,8 @@ import 'package:dio/dio.dart';
 import 'package:mocktail/mocktail.dart';
 import '../../domain/json_pdf_generator.dart';
 
+import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
+
 class MockDio extends Mock implements Dio {}
 
 @widgetbook.UseCase(
@@ -26,6 +28,7 @@ class _PersonnelListApiDemo extends StatefulWidget {
 
 class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
   Map<String, dynamic>? _config;
+  final dio = MockDio();
 
   @override
   void initState() {
@@ -34,8 +37,6 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
   }
 
   Future<void> _fetchData() async {
-    final dio = MockDio();
-
     // Setup Mock
     when(() => dio.get('/api/personnel')).thenAnswer(
       (_) async => Response(
@@ -74,10 +75,6 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
     try {
       // Simulate network delay
       await Future.delayed(const Duration(milliseconds: 500));
-
-      // Fetch from API
-      final response = await dio.get('/api/personnel');
-      final users = response.data as List<dynamic>;
 
       const jsonString = '''
       {
@@ -140,30 +137,36 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
                 "type": "table",
                 "x": 10, "y": 50,
                 "width": 190,
+                "http_data": {
+                  "method": "GET",
+                  "url": "/api/personnel",
+                  "headers": {},
+                  "body": {}
+                },
                 "columns": [
-                  { "header": "No.", "key": "no", "flex": 1 },
-                  { "header": "Nama Personel", "key": "nama", "flex": 5 },
-                  { "header": "Inisial", "key": "inisial", "flex": 2 },
-                  { "header": "Paraf", "key": "paraf", "flex": 3 },
+                  { "header": "No.", "value": "{{data.no}}", "flex": 1 },
+                  { "header": "Nama Personel", "value": "{{data.nama}}", "flex": 5 },
+                  { "header": "Inisial", "value": "{{data.inisial}}", "flex": 2 },
+                  { "header": "Paraf", "value": "{{data.paraf}}", "flex": 3 },
                   { 
                     "header": "Tanda Tangan", 
-                    "key": "ttd", 
+                    "value": "{{data.no}}", 
                     "flex": 4,
                     "templates": [
                       { 
                         "type": "container", 
                         "padding": { "left": 0 },
-                        "child": { "type": "text", "value": "{{no}}" } 
+                        "child": { "type": "text", "value": "{{data.no}}" } 
                       },
                       { 
                         "type": "container", 
                         "padding": { "left": 23 },
-                        "child": { "type": "text", "value": "{{no}}" } 
+                        "child": { "type": "text", "value": "{{data.no}}" } 
                       }
                     ]
                   }
                 ],
-                "data": []
+                "data": "{{data}}"
               }
             ]
           }
@@ -172,9 +175,6 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
       ''';
 
       final config = jsonDecode(jsonString) as Map<String, dynamic>;
-
-      // Inject API data into JSON config
-      config['pages'][0]['components'][0]['data'] = users;
 
       setState(() {
         _config = config;
@@ -188,15 +188,18 @@ class _PersonnelListApiDemoState extends State<_PersonnelListApiDemo> {
   Widget build(BuildContext context) {
     if (_config == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Loading API Data...')),
+        appBar: AppBar(title: const Text('Loading Config...')),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Daftar Inisial Personel (API)')),
+      appBar: AppBar(title: const Text('Daftar Inisial Personel (Full JSON)')),
       body: PdfPreview(
-        build: (format) => JsonPdfGenerator.generate(_config!),
+        build: (format) => JsonPdfGenerator.generate(
+          _config!,
+          executor: HttpRequestExecutor(dio: dio),
+        ),
         allowPrinting: true,
         allowSharing: true,
         canChangeOrientation: false,

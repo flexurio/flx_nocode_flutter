@@ -66,10 +66,10 @@ class EntityCustom extends HiveObject {
 
   /// A map defining the layout of columns in a data table view.
   /// The key is the field reference, and the value is typically a flex factor or column width.
-  Map<String, int> layoutTable;
+  Map<String, int> layoutTable = {};
 
   /// The list of filters to be displayed on the home page.
-  List<FilterOption> filters;
+  List<FilterOption> filters = [];
 
   /// Creates a new instance of [EntityCustom].
   EntityCustom({
@@ -169,8 +169,8 @@ class EntityCustom extends HiveObject {
         views = [],
         backend = Backend(others: []),
         paginationOption = const PaginationOption(),
-         layoutForm: [],
-        layoutPrint: [],
+        layoutForm = [],
+        layoutPrint = [],
         layoutListTile = null,
         actions = [],
         actionsHome = [],

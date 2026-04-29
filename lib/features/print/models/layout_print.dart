@@ -1,3 +1,4 @@
+import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 
 class LayoutPrint {
@@ -14,6 +15,7 @@ class LayoutPrint {
   final Map<String, dynamic> styles;
   final List<dynamic> pages;
   final Map<String, dynamic> bands;
+  final HttpData? httpData;
 
   LayoutPrint({
     required this.id,
@@ -29,6 +31,7 @@ class LayoutPrint {
     this.styles = const {},
     this.pages = const [],
     this.bands = const {},
+    this.httpData,
   });
 
   factory LayoutPrint.fromMap(Map<String, dynamic> map) {
@@ -46,6 +49,9 @@ class LayoutPrint {
       styles: map['styles'] ?? {},
       pages: map['pages'] ?? [],
       bands: map['bands'] ?? {},
+      httpData: map['http_data'] != null
+          ? HttpData.fromJson(map['http_data'])
+          : null,
     );
   }
 
@@ -64,6 +70,7 @@ class LayoutPrint {
       'styles': styles,
       'pages': pages,
       'bands': bands,
+      'http_data': httpData?.toJson(),
     };
   }
 }
