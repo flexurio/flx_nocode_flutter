@@ -52,7 +52,8 @@ Widget simpleLayoutFormUseCase(BuildContext context) {
             children: [
               Text(
                 form.label,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
               form.toWidget({}),
@@ -95,46 +96,43 @@ Widget wizardLayoutFormUseCase(BuildContext context) {
   final map = json.decode(jsonRaw) as Map<String, dynamic>;
   final form = LayoutForm.fromMap(map);
 
-  return StatefulBuilder(
-    builder: (context, setState) {
-      final List<int> pageRef = [0];
-      
-      return Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            Text(
-              form.label,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: form.toWidget({'page': pageRef[0]}),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: pageRef[0] > 0 
-                    ? () => setState(() => pageRef[0]--) 
+  return StatefulBuilder(builder: (context, setState) {
+    final List<int> pageRef = [0];
+
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        children: [
+          Text(
+            form.label,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 24),
+          Expanded(
+            child: form.toWidget({'page': pageRef[0]}),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed:
+                    pageRef[0] > 0 ? () => setState(() => pageRef[0]--) : null,
+                child: const Text('Back'),
+              ),
+              const SizedBox(width: 16),
+              ElevatedButton(
+                onPressed: pageRef[0] < form.multiForms.length - 1
+                    ? () => setState(() => pageRef[0]++)
                     : null,
-                  child: const Text('Back'),
-                ),
-                const SizedBox(width: 16),
-                ElevatedButton(
-                  onPressed: pageRef[0] < form.multiForms.length - 1 
-                    ? () => setState(() => pageRef[0]++) 
-                    : null,
-                  child: const Text('Next'),
-                ),
-              ],
-            )
-          ],
-        ),
-      );
-    }
-  );
+                child: const Text('Next'),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  });
 }
 
 @UseCase(name: 'Interactive Table Form', type: Column)
@@ -146,33 +144,48 @@ Widget interactiveTableFormUseCase(BuildContext context) {
     "label": "Inventory Manager",
     "components": [
       {
-        "id": "input_section",
-        "type": "row",
+        "id": "main_layout",
+        "type": "column",
+        "gap": 24.0,
         "children": [
-          { "id": "name", "type": "text_field", "label": "Item Name", "flex": 2 },
-          { "id": "qty", "type": "number_field", "label": "Quantity", "flex": 1 }
-        ]
-      },
-      {
-        "id": "add_btn",
-        "type": "button",
-        "text": "Add to Table",
-        "color": "#2196F3",
-        "on_click": {
-          "id": "append_item",
-          "type": "append_variable",
-          "name": "Add",
-          "target_variable": "inventory_list"
-        }
-      },
-      { "id": "divider", "type": "divider" },
-      {
-        "id": "inventory_table",
-        "type": "table",
-        "reference_id": "inventory_list",
-        "columns": [
-          { "header": "Item Name", "body": "name", "width": 200 },
-          { "header": "Quantity", "body": "qty", "width": 100 }
+          {
+            "id": "input_section",
+            "type": "row",
+            "horizontal_gap": 16.0,
+            "children": [
+              { "id": "name", "type": "text_field", "label": "Item Name", "flex": 2 },
+              { "id": "qty", "type": "number_field", "label": "Quantity", "flex": 1 }
+            ]
+          },
+          {
+            "id": "action_row",
+            "type": "row",
+            "x_align": "right",
+            "children": [
+              {
+                "id": "add_btn",
+                "type": "button",
+                "text": "Add to Table",
+                "color": "#2196F3",
+                "on_click": {
+                  "id": "append_item",
+                  "type": "append_variable",
+                  "name": "Add",
+                  "target_variable": "inventory_list",
+                  "on_success": "clear_form"
+                }
+              }
+            ]
+          },
+          {
+            "id": "inventory_table",
+            "type": "table",
+            "reference_id": "inventory_list",
+            "columns": [
+              { "header": "Item Name", "body": "name", "width": 200 },
+              { "header": "Quantity", "body": "qty", "width": 100 }
+            ]
+          }
         ]
       }
     ]
@@ -216,7 +229,8 @@ Widget interactiveTableFormUseCase(BuildContext context) {
                   children: [
                     Text(
                       form.label,
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 24),
                     // Rendering components from JSON

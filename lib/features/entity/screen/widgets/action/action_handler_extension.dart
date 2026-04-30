@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/features/export/screen/widgets/export_to_pdf.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/src/app/util/string.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 
 extension ActionSuccessHandlerExtension on ActionD {
   Future<void> handleOnSuccessSingle({
@@ -51,7 +54,8 @@ extension ActionSuccessHandlerExtension on ActionD {
         print('[ActionLogic] 💎 Interpolation vars: $vars');
 
         final isMultiple = data['_is_multiple_context'] == true;
-        final originalList = (data['_original_list'] as List?)?.cast<Map<String, dynamic>>();
+        final originalList =
+            (data['_original_list'] as List?)?.cast<Map<String, dynamic>>();
 
         String interpolate(String? text) {
           if (text == null) return '';
@@ -98,6 +102,16 @@ extension ActionSuccessHandlerExtension on ActionD {
         print('[ActionLogic] 🏠 Executing onSuccess navigateHome');
         if (Navigator.of(context).canPop()) {
           Navigator.of(context).popUntil((route) => route.isFirst);
+        }
+        break;
+      case ActionType.clearForm:
+        print('[ActionLogic] ✨ Executing onSuccess clearForm');
+        final layoutId = data['layoutFormId'];
+        if (layoutId != null &&
+            Get.isRegistered<CreatePageController>(
+                tag: 'create_page_$layoutId')) {
+          Get.find<CreatePageController>(tag: 'create_page_$layoutId')
+              .clearForm();
         }
         break;
       default:

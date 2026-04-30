@@ -18,11 +18,11 @@ void main() {
   });
 
   testWidgets(
-      'ComponentButton with append_variable should update controller data (Generated from JSON)',
+      'ComponentButton with append_variable and clear_form should update data and reset form',
       (tester) async {
     const layoutId = 'test_layout';
 
-    // 1. Define the form JSON
+    // 1. Define the form JSON with append_variable and clear_form
     final jsonMap = {
       "id": layoutId,
       "label": "Test Form",
@@ -37,7 +37,8 @@ void main() {
             "id": "append_act",
             "type": "append_variable",
             "name": "Append",
-            "target_variable": "items"
+            "target_variable": "items",
+            "on_success": "clear_form"
           }
         }
       ]
@@ -49,7 +50,7 @@ void main() {
       layoutForm: [form],
     );
 
-    // 2. Initialize the controller
+    // 2. Initialize the controller with specific tag
     final controller = Get.put(
       CreatePageController(
         entity: entity,
@@ -60,7 +61,7 @@ void main() {
       tag: 'create_page_$layoutId',
     );
 
-    // 3. Prepare context data
+    // 3. Prepare context data exactly as expected by the framework
     final dataContext = {
       'layoutFormId': layoutId,
       'entity': entity,
@@ -68,28 +69,40 @@ void main() {
       'allControllers': controller.controllers,
     };
 
-    // 4. Build the widget using toWidget extension
+    // 4. Build the widget
     await tester.pumpWidget(
       GetMaterialApp(
         home: Scaffold(
-          body: form.toWidget(dataContext),
+          body: SingleChildScrollView(
+            child: form.toWidget(dataContext),
+          ),
         ),
       ),
     );
 
     await tester.pumpAndSettle();
 
-    // 5. Simulate user input
-    await tester.enterText(find.byType(TextField), 'John Doe');
+    // 5. Simulate user input - find by label to be more specific
+    final textFieldFinder = find.byType(TextField);
+    expect(textFieldFinder, findsOneWidget);
+    await tester.enterText(textFieldFinder, 'John Doe');
     await tester.pumpAndSettle();
 
     // 6. Click the 'Add' button
-    await tester.tap(find.text('Add'));
+    final buttonFinder = find.text('Add');
+    expect(buttonFinder, findsOneWidget);
+    await tester.tap(buttonFinder);
     await tester.pumpAndSettle();
 
-    // 7. Verify the result
+    // 7. Verify Data Append: The 'items' list should have 1 item
     final items = controller.initialData['items'] as List;
-    expect(items.length, 1);
+    expect(items.length, 1, reason: 'Item should be appended to the list');
+    
+    // Note: append_variable spreads controller.initialData into the item, 
+    // so we look for the 'name' key which comes from the form controllers.
     expect(items[0]['name'], 'John Doe');
+
+    // 8. Verify Form Clear: The text field should be empty due to on_success: clear_form
+    expect(controller.controllers['name']?.text, '', reason: 'Form field should be cleared after success');
   });
 }

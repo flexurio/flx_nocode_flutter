@@ -18,7 +18,6 @@ extension ComponentRowWidgets on ComponentRow {
         .toList(growable: false);
 
     if (widgets.isEmpty) return const SizedBox.shrink();
-    if (widgets.length == 1) return widgets.first;
 
     final parentWidthMode = widthMode?.toLowerCase();
     final mainAxisSize =
@@ -109,7 +108,6 @@ extension ComponentRowWidgets on ComponentRow {
         children.map((child) => child.toMockWidget()).toList(growable: false);
 
     if (widgets.isEmpty) return const SizedBox.shrink();
-    if (widgets.length == 1) return widgets.first;
 
     final parentWidthMode = widthMode?.toLowerCase();
     final mainAxisSize =
