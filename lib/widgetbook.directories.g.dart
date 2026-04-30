@@ -324,6 +324,12 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Column',
         useCases: [
           _widgetbook.WidgetbookUseCase(
+            name: 'Interactive Table Form',
+            builder:
+                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
+                    .interactiveTableFormUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Multi-Step Wizard',
             builder:
                 _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook

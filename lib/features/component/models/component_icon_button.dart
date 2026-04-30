@@ -44,7 +44,7 @@ class ComponentIconButton extends Component {
     final visibilityCondition = map['visibilityCondition']?.toString();
     final events = map['events'] as Map<String, dynamic>? ?? {};
 
-    final actionMap = map['onClick'];
+    final actionMap = map['on_click'] ?? map['onClick'];
     final onClick =
         actionMap != null ? ActionD.fromJson(Map.from(actionMap)) : null;
 
@@ -68,7 +68,7 @@ class ComponentIconButton extends Component {
         'color': color,
         'variant': variant,
         'size': size,
-        if (onClick != null) 'onClick': onClick!.toJson(),
+        if (onClick != null) 'on_click': onClick!.toJson(),
         if (visibilityCondition != null)
           'visibilityCondition': visibilityCondition,
         'events': events,

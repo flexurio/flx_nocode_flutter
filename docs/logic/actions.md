@@ -157,3 +157,16 @@ This example shows a "Print Report" action placed in `actions_home` that uses a 
   }
 }
 ```
+
+### Interactive List using `append_variable`
+This example demonstrates how to capture input from a form and append it to a local list variable, which can then be displayed in a table.
+
+```json
+{
+  "id": "add_to_inventory",
+  "type": "append_variable",
+  "name": "Add to List",
+  "target_variable": "inventory_items"
+}
+```
+*Note: The table displaying this data should have `"reference_id": "inventory_items"`.*

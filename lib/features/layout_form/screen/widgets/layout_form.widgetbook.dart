@@ -1,7 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
+import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_button.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table.dart';
 import 'layout_form.dart';
 
 @UseCase(name: 'Simple Form (From JSON)', type: Column)
@@ -92,8 +97,6 @@ Widget wizardLayoutFormUseCase(BuildContext context) {
 
   return StatefulBuilder(
     builder: (context, setState) {
-      // Note: In a real app, this state would be managed by a controller
-      // and 'page' would be part of the context data passed to toWidget.
       final List<int> pageRef = [0];
       
       return Padding(
@@ -131,5 +134,100 @@ Widget wizardLayoutFormUseCase(BuildContext context) {
         ),
       );
     }
+  );
+}
+
+@UseCase(name: 'Interactive Table Form', type: Column)
+Widget interactiveTableFormUseCase(BuildContext context) {
+  const layoutId = 'interactive_inventory';
+  const jsonRaw = '''
+  {
+    "id": "$layoutId",
+    "label": "Inventory Manager",
+    "components": [
+      {
+        "id": "input_section",
+        "type": "row",
+        "children": [
+          { "id": "name", "type": "text_field", "label": "Item Name", "flex": 2 },
+          { "id": "qty", "type": "number_field", "label": "Quantity", "flex": 1 }
+        ]
+      },
+      {
+        "id": "add_btn",
+        "type": "button",
+        "text": "Add to Table",
+        "color": "#2196F3",
+        "on_click": {
+          "id": "append_item",
+          "type": "append_variable",
+          "name": "Add",
+          "target_variable": "inventory_list"
+        }
+      },
+      { "id": "divider", "type": "divider" },
+      {
+        "id": "inventory_table",
+        "type": "table",
+        "reference_id": "inventory_list",
+        "columns": [
+          { "header": "Item Name", "body": "name", "width": 200 },
+          { "header": "Quantity", "body": "qty", "width": 100 }
+        ]
+      }
+    ]
+  }
+  ''';
+
+  final map = json.decode(jsonRaw) as Map<String, dynamic>;
+  final form = LayoutForm.fromMap(map);
+  final entity = EntityCustom.empty().copyWith(
+    id: 'mock_entity',
+    layoutForm: [form],
+  );
+
+  return GetBuilder<CreatePageController>(
+    init: CreatePageController(
+      entity: entity,
+      layoutFormId: layoutId,
+      initialDataInput: {'inventory_list': []},
+      parentData: [],
+    ),
+    tag: 'create_page_$layoutId',
+    builder: (controller) {
+      return Obx(() {
+        // Prepare the data context that widgets expect
+        final dataContext = {
+          'layoutFormId': layoutId,
+          'entity': entity,
+          ...controller.initialData,
+          'allControllers': controller.controllers,
+        };
+
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      form.label,
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 24),
+                    // Rendering components from JSON
+                    form.toWidget(dataContext),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      });
+    },
   );
 }

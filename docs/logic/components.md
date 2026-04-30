@@ -13,7 +13,8 @@ All components share these common properties:
 | `id` | String | Yes | Unique identifier. For fields, this should match the entity reference. |
 | `type` | String | Yes | The type of component (e.g., `text_field`, `row`). |
 | `visibilityCondition` | String | No | A JS expression determining if the component is visible. |
-| `events` | Object | No | Map of event handlers (e.g., `on_click`). |
+| `events` | Object | No | Map of event handlers. |
+| `on_click` | Object | No | Specific to clickable components. Defines an [Action](./actions.md) to execute. |
 
 ---
 
@@ -80,7 +81,23 @@ Boolean or single-selection inputs.
 
 ---
 
-## 4. Display & Data Components
+## 4. Interaction Components
+
+### `button`
+A clickable button that can trigger actions.
+- `text`: The button label.
+- `on_click`: The [Action](./actions.md) to execute.
+- `color`: Hex color (e.g., `#2196F3`).
+- `variant`: `primary`, `secondary`, `outline`, `ghost`, `destructive`.
+
+### `icon_button`
+A compact button displaying only an icon.
+- `icon`: Material icon name.
+- `on_click`: The [Action](./actions.md) to execute.
+
+---
+
+## 5. Display & Data Components
 
 ### `field_display`
 Shows a read-only value with a label.
@@ -91,6 +108,7 @@ Shows a read-only value with a label.
 Renders a data table.
 - `columns`: Array of column definitions.
 - `data`: Source (e.g., `{{current.items}}`).
+- `reference_id`: **(New)** Bind the table to a local state variable (e.g., a list updated via `append_variable`).
 
 ### `text`
 Renders raw or formatted text.
@@ -103,7 +121,7 @@ Displays an image from a URL or asset.
 
 ---
 
-## 5. Charts
+## 6. Charts
 
 Visual data representations.
 - `bar_chart`
