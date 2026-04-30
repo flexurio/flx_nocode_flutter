@@ -26,13 +26,15 @@ class JsonPdfGenerator {
     await PdfDataUtils.fetchAllHttpData(json, contextData, executor: executor);
 
     // 3. Interpolate the JSON with the final data context
-    final Map<String, dynamic> processedJson = Map<String, dynamic>.from(
-        PdfInterpolationUtils.interpolateJson(json, contextData) as Map);
+    final processed = PdfInterpolationUtils.interpolateJson(json, contextData);
+    final Map<String, dynamic> processedJson = processed is Map
+        ? Map<String, dynamic>.from(processed)
+        : Map<String, dynamic>.from(json);
 
     try {
       final pdf = pw.Document();
 
-    final layoutType = processedJson['layout_type'] as String? ?? 'canvas';
+      final layoutType = processedJson['layout_type']?.toString() ?? 'canvas';
     final unit = processedJson['unit'] as String? ?? 'pt';
 
     // Parse Page Size & Orientation
@@ -57,11 +59,14 @@ class JsonPdfGenerator {
       }
     }
 
-    final globalHeader = processedJson['header'] as List<dynamic>? ?? [];
-    final globalFooter = processedJson['footer'] as List<dynamic>? ?? [];
+    final dynamic rawHeader = processedJson['header'];
+    final List<dynamic> globalHeader = rawHeader is List ? rawHeader : [];
+    final dynamic rawFooter = processedJson['footer'];
+    final List<dynamic> globalFooter = rawFooter is List ? rawFooter : [];
 
     if (layoutType == 'document') {
-      final content = processedJson['content'] as List<dynamic>? ?? [];
+      final dynamic rawContent = processedJson['content'];
+      final List<dynamic> content = rawContent is List ? rawContent : [];
       final margin = processedJson['margin'] != null 
           ? PdfUnitUtils.convertToPt(processedJson['margin'], unit) 
           : 20.0;
@@ -140,7 +145,8 @@ class JsonPdfGenerator {
       );
     } else {
       // CANVAS Layout
-      final pages = processedJson['pages'] as List<dynamic>? ?? [];
+      final dynamic rawPages = processedJson['pages'];
+      final List<dynamic> pages = rawPages is List ? rawPages : [];
       int pageCount = 0;
       for (final pageJson in pages) {
         if (pageJson is! Map) continue;

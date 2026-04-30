@@ -75,7 +75,7 @@ class PdfTableModel {
       header: parseSection(json['header']),
       body: parseSection(json['body']),
       footer: parseSection(json['footer']),
-      data: json['data'] as List<dynamic>? ?? [],
+      data: json['data'] is List ? json['data'] as List : [],
       cellPadding: PdfUnitUtils.parseEdgeInsets(json['cell_padding'], defaultUnit),
       headerBgColor: json['header_background_color'] != null
           ? PdfColor.fromHex(json['header_background_color'].toString())

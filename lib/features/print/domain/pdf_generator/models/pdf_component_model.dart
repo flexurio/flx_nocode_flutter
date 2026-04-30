@@ -22,7 +22,7 @@ abstract class PdfComponentModel {
   }
 
   // Helper to recreate model after interpolation
-  PdfComponentModel copyWithInterpolatedJson(Map<String, dynamic> interpolated) {
+  PdfComponentModel copyWithInterpolatedJson(dynamic interpolated) {
     return PdfComponentModel.fromJson(interpolated);
   }
 }

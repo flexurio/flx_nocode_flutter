@@ -57,7 +57,7 @@ class PdfTableComponent {
             final interpolated = PdfInterpolationUtils.interpolate(
                 cellContent.rawJson, rowContext);
             cellContent = cellContent
-                .copyWithInterpolatedJson(interpolated as Map<String, dynamic>);
+                .copyWithInterpolatedJson(interpolated);
 
             if (config.templates != null || config.template != null) {
               PdfComponentModel? selectedTemplate;
@@ -72,7 +72,7 @@ class PdfTableComponent {
                 final interpolatedTemplate = PdfInterpolationUtils.interpolate(
                     selectedTemplate.rawJson, rowContext);
                 cellContent = selectedTemplate.copyWithInterpolatedJson(
-                    interpolatedTemplate as Map<String, dynamic>);
+                    interpolatedTemplate);
               }
             }
           }
