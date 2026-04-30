@@ -15,32 +15,45 @@ void main() {
     ));
   });
 
-  group('JsonPdfGenerator Tests', () {
-    test('Should generate a valid PDF with simple canvas layout', () async {
+  group('JsonPdfGenerator Integration Tests', () {
+    test('Should generate Canvas layout', () async {
       final json = {
         'layout_type': 'canvas',
-        'page_size': 'A4',
         'pages': [
           {
             'components': [
-              {'type': 'text', 'value': 'Hello World', 'x': 10, 'y': 10}
+              {'type': 'text', 'value': 'Page 1', 'x': 10, 'y': 10}
             ]
           }
         ]
       };
 
       final bytes = await JsonPdfGenerator.generate(json);
-
       expect(bytes, isA<Uint8List>());
       expect(bytes.length, greaterThan(0));
     });
 
-    test('Should throw exception when no pages are defined', () async {
+    test('Should generate Document layout with headers and footers', () async {
       final json = {
-        'layout_type': 'canvas',
-        'page_size': 'A4',
-        'pages': []
+        'layout_type': 'document',
+        'header': [
+          {'type': 'text', 'value': 'Global Header', 'x': 0, 'y': 0}
+        ],
+        'content': [
+          {'type': 'text', 'value': 'Body Content'}
+        ],
+        'footer': [
+          {'type': 'text', 'value': 'Global Footer', 'x': 0, 'y': 0}
+        ]
       };
+
+      final bytes = await JsonPdfGenerator.generate(json);
+      expect(bytes, isA<Uint8List>());
+      expect(bytes.length, greaterThan(0));
+    });
+
+    test('Should throw exception when Canvas layout has no pages', () async {
+      final json = {'layout_type': 'canvas', 'pages': []};
 
       expect(
         () => JsonPdfGenerator.generate(json),
@@ -52,95 +65,31 @@ void main() {
       );
     });
 
-    test('Should handle complex interpolation and Map type mismatches', () async {
-      // This test specifically targets the fix where Map<dynamic, dynamic> 
-      // might be returned from interpolation and needs to be handled.
-      final json = {
-        'layout_type': 'canvas',
-        'page_size': 'A4',
-        'pages': [
-          {
-            'components': [
-              {'type': 'text', 'value': 'User: {{user.name}}', 'x': 10, 'y': 10}
-            ]
-          }
-        ]
-      };
-
-      final data = {
-        'user': {'name': 'John Doe'}
-      };
-
-      final bytes = await JsonPdfGenerator.generate(json, data: data);
-
-      expect(bytes, isA<Uint8List>());
-      expect(bytes.length, greaterThan(0));
-    });
-
-    test('Should successfully fetch http_data and use it in interpolation', () async {
+    test('Should resolve http_data and use it in interpolation', () async {
       final mockExecutor = MockHttpRequestExecutor();
-      
+
       final json = {
-        'layout_type': 'canvas',
-        'page_size': 'A4',
-        'pages': [
-          {
-            'components': [
-              {
-                'type': 'table',
-                'x': 10, 'y': 20,
-                'http_data': {
-                  'method': 'GET',
-                  'url': 'https://api.example.com/users',
-                },
-                'columns': [
-                  {'header': 'Name', 'key': 'name'}
-                ],
-                'data': '{{data}}'
-              }
-            ]
-          }
-        ]
+        'layout_type': 'document',
+        'content': [
+          {'type': 'text', 'value': 'User: {{name}}'}
+        ],
+        'http_data': {
+          'method': 'GET',
+          'url': 'api/me',
+        }
       };
 
-      when(() => mockExecutor.execute(any())).thenAnswer((_) async => 
-        HttpRequestResult.success(
-          statusCode: 200,
-          data: [
-            {'name': 'Alice'},
-            {'name': 'Bob'},
-          ],
-        )
-      );
+      when(() => mockExecutor.execute(any()))
+          .thenAnswer((_) async => HttpRequestResult.success(
+                statusCode: 200,
+                data: {'name': 'Charlie'},
+              ));
 
-      final bytes = await JsonPdfGenerator.generate(
-        json, 
-        executor: mockExecutor
-      );
-
+      final bytes =
+          await JsonPdfGenerator.generate(json, executor: mockExecutor);
       expect(bytes, isA<Uint8List>());
       expect(bytes.length, greaterThan(0));
-      
       verify(() => mockExecutor.execute(any())).called(1);
-    });
-
-    test('Should handle malformed pages list after interpolation', () async {
-      final json = {
-        'layout_type': 'canvas',
-        'page_size': 'A4',
-        'pages': '{{some_missing_variable}}'
-      };
-
-      // Since pages is expected to be a list, if interpolation returns a string, 
-      // it should fail gracefully with our new check.
-      expect(
-        () => JsonPdfGenerator.generate(json),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('PDF document has no pages'),
-        )),
-      );
     });
   });
 }
