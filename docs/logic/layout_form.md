@@ -86,10 +86,33 @@ Forms provide a rich context for [Interpolation](./string_interpolation.md):
 - `{{form.id}}`: Access the value of a component in the **current form**.
 - `{{data.id}}`: Access the original record's data (available in `update` and `view` modes).
 - `{{parentData.0.id}}`: Access data from a parent entity if this is a nested sub-form.
+- `{{global.user_id}}`: Access global state variables.
 
 ---
 
-## 6. Full Example: 3-Step Wizard
+## 6. Components & Layout
+
+Forms are composed of various components ranging from simple inputs to complex nested layouts.
+
+- For a full list of available components and their properties, see [UI Components Documentation](./components.md).
+- To understand how to create complex grid layouts using `row`, `column`, and `container`, refer to the [Layout Section in Components](./components.md#2-layout-components).
+
+---
+
+## 7. Submit Workflow (`submit_workflow`)
+
+Defines what happens when the form is submitted.
+
+| Key | Type | Description |
+| --- | --- | --- |
+| `type` | String | Must be `workflow`. |
+| `submitLabel` | String | Custom label for the submit button (e.g., "Save", "Submit Request"). |
+| `showSubmitButton` | Boolean | Whether to show the default submit button. |
+| `actions` | Array | List of actions to execute in order. |
+
+---
+
+## 8. Full Example: 3-Step Wizard
 
 ```json
 {
@@ -120,6 +143,7 @@ Forms provide a rich context for [Interpolation](./string_interpolation.md):
   ],
   "submit_workflow": {
     "type": "workflow",
+    "submitLabel": "Finalize Change",
     "actions": [
       {
         "type": "http",

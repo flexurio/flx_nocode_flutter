@@ -23,7 +23,7 @@ class ComponentDropdown extends Component {
     super.events,
     required this.label,
     required this.options,
-    required this.initialValue,
+    this.initialValue = '',
     this.httpData,
     this.optionKey,
     this.optionLabel,

@@ -20,6 +20,8 @@ import 'package:flx_nocode_flutter/features/data_table/screen/widgets/entity_dat
     as _flx_nocode_flutter_features_data_table_screen_widgets_entity_data_table_widgetbook;
 import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_page.widgetbook.dart'
     as _flx_nocode_flutter_features_entity_screen_pages_enitity_view_page_widgetbook;
+import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/layout_form.widgetbook.dart'
+    as _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook;
 import 'package:flx_nocode_flutter/features/print/presentation/usecases/concert_ticket_print.widgetbook.dart'
     as _flx_nocode_flutter_features_print_presentation_usecases_concert_ticket_print_widgetbook;
 import 'package:flx_nocode_flutter/features/print/presentation/usecases/invoice_table_print.widgetbook.dart'
@@ -313,6 +315,28 @@ final directories = <_widgetbook.WidgetbookNode>[
           )
         ],
       ),
+    ],
+  ),
+  _widgetbook.WidgetbookFolder(
+    name: 'widgets',
+    children: [
+      _widgetbook.WidgetbookComponent(
+        name: 'Column',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Multi-Step Wizard',
+            builder:
+                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
+                    .wizardLayoutFormUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Simple Form (From JSON)',
+            builder:
+                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
+                    .simpleLayoutFormUseCase,
+          ),
+        ],
+      )
     ],
   ),
 ];
