@@ -29,9 +29,13 @@ class PdfDataUtils {
               // If the map has a 'data' field which is a list, also make it available as 'data'
               if (resData['data'] is List) {
                 contextData['data'] = resData['data'];
+                // Also inject into the component itself so it can be used for dynamic rows
+                json['data'] = resData['data'];
               }
             } else if (resData is List) {
               contextData['data'] = resData;
+              // Also inject into the component itself so it can be used for dynamic rows
+              json['data'] = resData;
             }
           } else {
             print('HTTP Data Error: ${httpData.url} - ${result.message}');
