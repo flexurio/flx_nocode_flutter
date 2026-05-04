@@ -150,6 +150,7 @@ class ActionD extends HiveObject {
     bool? isMultiple,
     String? reference,
     String? layoutFormId,
+    String? layoutPrintId,
     String? icon,
     int? iconCode,
     Rule? rule,
