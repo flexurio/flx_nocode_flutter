@@ -1,11 +1,12 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 
 class ComponentNumberField extends Component {
   final String label;
   final String initialValue;
   final bool enabled;
-  final String? widthMode;
+  final ComponentSizeMode? widthMode;
   final double? width;
   final int? flex;
 
@@ -29,7 +30,7 @@ class ComponentNumberField extends Component {
       label: 'Number Field',
       initialValue: '',
       enabled: true,
-      widthMode: 'fill',
+      widthMode: ComponentSizeMode.fill,
     );
   }
 
@@ -54,7 +55,7 @@ class ComponentNumberField extends Component {
       label: label,
       initialValue: initialValue,
       enabled: enabled,
-      widthMode: map['widthMode']?.toString(),
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: double.tryParse(map['width']?.toString() ?? ''),
       flex: int.tryParse(map['flex']?.toString() ?? ''),
       visibilityCondition: map['visibilityCondition']?.toString(),
@@ -68,7 +69,7 @@ class ComponentNumberField extends Component {
         'label': label,
         'initialValue': initialValue,
         'enabled': enabled,
-        'widthMode': widthMode,
+        'widthMode': widthMode?.name,
         'width': width,
         'flex': flex,
       };

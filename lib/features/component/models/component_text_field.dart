@@ -1,5 +1,6 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 
 class ComponentTextField extends Component {
   final String label;
@@ -12,7 +13,7 @@ class ComponentTextField extends Component {
   final String? regex;
   final String? regexErrorMessage;
   final String? helperText;
-  final String? widthMode;
+  final ComponentSizeMode? widthMode;
   final double? width;
   final int? flex;
   final bool obscure;
@@ -52,7 +53,7 @@ class ComponentTextField extends Component {
       regex: null,
       regexErrorMessage: null,
       helperText: null,
-      widthMode: 'fill',
+      widthMode: ComponentSizeMode.fill,
       obscure: false,
     );
   }
@@ -96,7 +97,7 @@ class ComponentTextField extends Component {
       regex: regex,
       regexErrorMessage: regexErrorMessage,
       helperText: helperText,
-      widthMode: map['widthMode']?.toString(),
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: double.tryParse(map['width']?.toString() ?? ''),
       flex: int.tryParse(map['flex']?.toString() ?? ''),
       obscure: obscure,
@@ -119,7 +120,7 @@ class ComponentTextField extends Component {
         if (regex != null) 'regex': regex,
         if (regexErrorMessage != null) 'regexErrorMessage': regexErrorMessage,
         if (helperText != null) 'helperText': helperText,
-        'widthMode': widthMode,
+        'widthMode': widthMode?.name,
         'width': width,
         'flex': flex,
         'obscure': obscure,

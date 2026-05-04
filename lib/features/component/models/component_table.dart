@@ -4,6 +4,7 @@ import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 
 /// A table component that retrieves its data from an HTTP endpoint.
 ///
@@ -49,6 +50,8 @@ class ComponentTable extends Component {
     required super.id,
     required this.http,
     required this.width,
+    this.widthMode,
+    this.flex,
     this.actions = const [],
     this.referenceId,
     super.visibilityCondition,
@@ -64,6 +67,8 @@ class ComponentTable extends Component {
       columns: [],
       http: HttpData.empty(),
       width: 1000,
+      widthMode: ComponentSizeMode.fill,
+      flex: null,
       actions: [],
     );
   }
@@ -79,6 +84,8 @@ class ComponentTable extends Component {
   final HttpData http;
 
   final double? width;
+  final ComponentSizeMode? widthMode;
+  final int? flex;
 
   /// List of table columns.
   ///
@@ -125,6 +132,8 @@ class ComponentTable extends Component {
               map['http'] as Map<String, dynamic>,
             ),
       width: (map['width'] as num?)?.toDouble(),
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
+      flex: int.tryParse(map['flex']?.toString() ?? ''),
       referenceId: map['reference_id']?.toString(),
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
@@ -148,6 +157,8 @@ class ComponentTable extends Component {
         ...super.toMap(),
         'http': http.toJson(),
         'width': width,
+        'widthMode': widthMode?.name,
+        'flex': flex,
         'reference_id': referenceId,
         'columns': columns
             .map((e) => {

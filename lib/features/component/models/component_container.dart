@@ -1,5 +1,6 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 
 class ComponentContainer extends Component {
   static const String componentId = 'container';
@@ -18,8 +19,8 @@ class ComponentContainer extends Component {
 
   final double? width;
   final double? height;
-  final String? widthMode; // 'fill', 'hug', 'fixed'
-  final String? heightMode; // 'fill', 'hug', 'fixed'
+  final ComponentSizeMode? widthMode;
+  final ComponentSizeMode? heightMode;
   final String? color;
   final double? borderRadius;
   final String? borderColor;
@@ -59,8 +60,8 @@ class ComponentContainer extends Component {
       borderRadius: 8.0,
       borderColor: null,
       borderWidth: null,
-      widthMode: 'hug',
-      heightMode: 'hug',
+      widthMode: ComponentSizeMode.hug,
+      heightMode: ComponentSizeMode.hug,
     );
   }
 
@@ -103,8 +104,8 @@ class ComponentContainer extends Component {
       marginBottom: parseDouble(map['marginBottom']),
       width: parseDouble(map['width']),
       height: parseDouble(map['height']),
-      widthMode: map['widthMode']?.toString(),
-      heightMode: map['heightMode']?.toString(),
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
+      heightMode: ComponentSizeMode.fromString(map['heightMode']?.toString()),
       color: map['color']?.toString(),
       borderRadius: parseDouble(map['borderRadius']),
       borderColor: map['borderColor']?.toString(),
@@ -128,8 +129,8 @@ class ComponentContainer extends Component {
         'marginBottom': marginBottom,
         'width': width,
         'height': height,
-        'widthMode': widthMode,
-        'heightMode': heightMode,
+        'widthMode': widthMode?.name,
+        'heightMode': heightMode?.name,
         'color': color,
         'borderRadius': borderRadius,
         'borderColor': borderColor,

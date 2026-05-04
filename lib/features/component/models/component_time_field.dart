@@ -1,4 +1,5 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 class ComponentTimeField extends Component {
@@ -6,7 +7,7 @@ class ComponentTimeField extends Component {
   final String initialValue;
   final bool required;
   final bool enabled;
-  final String? widthMode; // 'fill', 'hug', 'fixed'
+  final ComponentSizeMode? widthMode; // 'fill', 'hug', 'fixed'
   final double? width;
   final int? flex;
 
@@ -32,7 +33,7 @@ class ComponentTimeField extends Component {
       initialValue: '',
       required: false,
       enabled: true,
-      widthMode: 'fill',
+      widthMode: ComponentSizeMode.fill,
     );
   }
 
@@ -52,7 +53,7 @@ class ComponentTimeField extends Component {
       initialValue: initialValue,
       required: required,
       enabled: enabled,
-      widthMode: map['widthMode']?.toString(),
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: map['width'] != null
           ? double.tryParse(map['width'].toString())
           : null,
@@ -69,7 +70,7 @@ class ComponentTimeField extends Component {
         'initialValue': initialValue,
         'required': required,
         'enabled': enabled,
-        'widthMode': widthMode,
+        'widthMode': widthMode?.name,
         'width': width,
         'flex': flex,
       };
