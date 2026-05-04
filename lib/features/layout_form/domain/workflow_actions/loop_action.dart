@@ -13,6 +13,27 @@ class LoopAction implements WorkflowAction {
     required this.actions,
   });
 
+  factory LoopAction.fromJson(Map<String, dynamic> json) {
+    final itemVar =
+        (json['item_var'] ?? json['itemVar'] ?? 'item').toString().trim();
+    if (itemVar.isEmpty) {
+      throw const WorkflowConfigurationException(
+          '"loop" action requires "item_var".');
+    }
+
+    final actions = ActionFactory.coerceActions(
+      json['actions'],
+      'actions',
+      allowNull: false,
+    );
+    return LoopAction(
+      items: json['items'],
+      itemVar: itemVar,
+      indexVar: (json['index_var'] ?? json['indexVar'])?.toString(),
+      actions: actions,
+    );
+  }
+
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
     final resolved = Template.resolve(items, ctx);

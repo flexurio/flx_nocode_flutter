@@ -235,7 +235,7 @@ class CreatePageController extends GetxController {
           .submitWorkflow(
         form: currentData,
         data: {
-          ...initialDataInput ?? {},
+          ...initialData,
           if (parentData.isNotEmpty) 'parent': parentData.last,
         },
         workflow: layoutForm.submitWorkflow!.toMap(),

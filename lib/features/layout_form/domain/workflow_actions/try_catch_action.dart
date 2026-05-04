@@ -6,6 +6,21 @@ class TryCatchAction implements WorkflowAction {
 
   const TryCatchAction({required this.tryActions, required this.catchActions});
 
+  factory TryCatchAction.fromJson(Map<String, dynamic> json) {
+    final tryActions = ActionFactory.coerceActions(
+      json['try_actions'] ?? json['try'],
+      'try_actions',
+    );
+    final catchActions = ActionFactory.coerceActions(
+      json['catch_actions'] ?? json['catch'],
+      'catch_actions',
+    );
+    return TryCatchAction(
+      tryActions: tryActions,
+      catchActions: catchActions,
+    );
+  }
+
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
     try {

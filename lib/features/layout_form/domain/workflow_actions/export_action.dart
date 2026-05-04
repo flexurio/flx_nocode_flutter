@@ -19,6 +19,22 @@ class ExportAction implements WorkflowAction {
     this.saveResultTo,
   });
 
+  factory ExportAction.fromJson(Map<String, dynamic> json) {
+    final format = (json['format'] ?? 'xlsx').toString().trim();
+    final columnsRaw = (json['columns'] as List?) ?? const [];
+    final columns = columnsRaw
+        .whereType<Map<String, dynamic>>()
+        .map((e) => TColumn.fromJson(e))
+        .toList();
+
+    return ExportAction(
+      format: format,
+      columns: columns,
+      dataSource: (json['data_source'] ?? json['dataSource'])?.toString(),
+      saveResultTo: (json['save_result_to'] ?? json['saveResultTo'])?.toString(),
+    );
+  }
+
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
     print('[ExportAction] Starting execution...');

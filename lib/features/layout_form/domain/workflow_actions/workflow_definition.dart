@@ -94,137 +94,40 @@ class ActionFactory {
     try {
       switch (type) {
         case 'validate':
-          return ValidateAction(scope: (json['scope'] ?? 'all').toString());
+          return ValidateAction.fromJson(json);
 
         case 'stop_workflow':
-          return const StopWorkflowAction();
+          return StopWorkflowAction.fromJson(json);
 
         case 'set_var':
-          final key = (json['key'] ?? '').toString();
-          if (key.isEmpty) {
-            throw const WorkflowConfigurationException(
-              '"set_var" action requires "key".',
-            );
-          }
-          return SetVarAction(key: key, value: json['value']);
+          return SetVarAction.fromJson(json);
 
         case 'append_var':
-          final key = (json['key'] ?? '').toString();
-          if (key.isEmpty) {
-            throw const WorkflowConfigurationException(
-              '"append_var" action requires "key".',
-            );
-          }
-          return AppendVarAction(key: key, value: json['value']);
+          return AppendVarAction.fromJson(json);
 
         case 'toast':
-          return ToastAction(
-            variant: (json['variant'] ?? 'info').toString(),
-            message: json['message'] ?? '',
-          );
+          return ToastAction.fromJson(json);
 
         case 'close_modal':
-          return const CloseModalAction();
+          return CloseModalAction.fromJson(json);
 
         case 'refresh':
-          return RefreshAction(target: (json['target'] ?? '').toString());
+          return RefreshAction.fromJson(json);
 
         case 'http':
-          final name = (json['name'] ?? '').toString();
-          final httpJson = json['http'];
-          if (httpJson is! Map) {
-            throw const WorkflowConfigurationException(
-              '"http" action must include an "http" object.',
-            );
-          }
-          final retryJson = json['retry'] as Map?;
-          return HttpAction(
-            name: name.isEmpty
-                ? 'http_${DateTime.now().microsecondsSinceEpoch}'
-                : name,
-            http: HttpData.fromJson(Map<String, dynamic>.from(httpJson)),
-            retry: retryJson == null
-                ? null
-                : RetryPolicy.fromJson(
-                    Map<String, dynamic>.from(retryJson),
-                  ),
-            saveResultTo:
-                (json['save_result_to'] ?? json['saveResultTo'])?.toString(),
-          );
+          return HttpAction.fromJson(json);
 
         case 'condition':
-          final condition = (json['if'] ?? '').toString();
-          if (condition.isEmpty) {
-            throw const WorkflowConfigurationException(
-              '"condition" action requires "if" expression.',
-            );
-          }
-
-          final thenActions = _coerceActions(
-            json['then_actions'] ?? json['then'],
-            'then_actions',
-          );
-          final elseActions = _coerceActions(
-            json['else_actions'] ?? json['else'],
-            'else_actions',
-            allowNull: true,
-          );
-          return ConditionAction(
-            ifExpr: condition,
-            thenActions: thenActions,
-            elseActions: elseActions,
-          );
+          return ConditionAction.fromJson(json);
 
         case 'loop':
-          final itemVar =
-              (json['item_var'] ?? json['itemVar'] ?? 'item').toString().trim();
-          if (itemVar.isEmpty) {
-            throw const WorkflowConfigurationException(
-              '"loop" action requires "item_var".',
-            );
-          }
-
-          final actions = _coerceActions(
-            json['actions'],
-            'actions',
-            allowNull: false,
-          );
-          return LoopAction(
-            items: json['items'],
-            itemVar: itemVar,
-            indexVar: (json['index_var'] ?? json['indexVar'])?.toString(),
-            actions: actions,
-          );
+          return LoopAction.fromJson(json);
 
         case 'try_catch':
-          final tryActions = _coerceActions(
-            json['try_actions'] ?? json['try'],
-            'try_actions',
-          );
-          final catchActions = _coerceActions(
-            json['catch_actions'] ?? json['catch'],
-            'catch_actions',
-          );
-          return TryCatchAction(
-            tryActions: tryActions,
-            catchActions: catchActions,
-          );
+          return TryCatchAction.fromJson(json);
 
         case 'export':
-          final format = (json['format'] ?? 'xlsx').toString().trim();
-          final columnsRaw = (json['columns'] as List?) ?? const [];
-          final columns = columnsRaw
-              .whereType<Map<String, dynamic>>()
-              .map((e) => TColumn.fromJson(e))
-              .toList();
-
-          return ExportAction(
-            format: format,
-            columns: columns,
-            dataSource: (json['data_source'] ?? json['dataSource'])?.toString(),
-            saveResultTo:
-                (json['save_result_to'] ?? json['saveResultTo'])?.toString(),
-          );
+          return ExportAction.fromJson(json);
 
         default:
           throw WorkflowConfigurationException(
@@ -241,7 +144,7 @@ class ActionFactory {
     }
   }
 
-  static List<WorkflowAction> _coerceActions(
+  static List<WorkflowAction> coerceActions(
     dynamic raw,
     String label, {
     bool allowNull = false,

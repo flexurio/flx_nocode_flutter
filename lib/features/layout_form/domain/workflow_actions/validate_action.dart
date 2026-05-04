@@ -4,6 +4,10 @@ class ValidateAction implements WorkflowAction {
   final String scope; // "all" | "current_step"
   const ValidateAction({required this.scope});
 
+  factory ValidateAction.fromJson(Map<String, dynamic> json) {
+    return ValidateAction(scope: (json['scope'] ?? 'all').toString());
+  }
+
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
     final validator = ctx.validator;

@@ -5,6 +5,13 @@ class ToastAction implements WorkflowAction {
   final dynamic message;
   const ToastAction({required this.variant, required this.message});
 
+  factory ToastAction.fromJson(Map<String, dynamic> json) {
+    return ToastAction(
+      variant: (json['variant'] ?? 'info').toString(),
+      message: json['message'] ?? '',
+    );
+  }
+
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
     final msg = Template.resolve(message, ctx)?.toString() ?? '';
@@ -14,6 +21,9 @@ class ToastAction implements WorkflowAction {
 
 class CloseModalAction implements WorkflowAction {
   const CloseModalAction();
+
+  factory CloseModalAction.fromJson(Map<String, dynamic> json) =>
+      const CloseModalAction();
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
     await ui.closeModal();
@@ -23,6 +33,10 @@ class CloseModalAction implements WorkflowAction {
 class RefreshAction implements WorkflowAction {
   final String target;
   const RefreshAction({required this.target});
+
+  factory RefreshAction.fromJson(Map<String, dynamic> json) {
+    return RefreshAction(target: (json['target'] ?? '').toString());
+  }
 
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {

@@ -142,6 +142,31 @@ Widget interactiveTableFormUseCase(BuildContext context) {
   {
     "id": "$layoutId",
     "label": "Inventory Manager",
+    "submit_workflow": {
+      "actions": [
+        {
+          "type": "loop",
+          "items": "{{ inventory_list }}",
+          "item_var": "row",
+          "actions": [
+            {
+              "type": "http",
+              "name": "Post Row",
+              "http": {
+                "method": "POST",
+                "url": "https://api.example.com/inventory",
+                "body": "{{ vars.row }}"
+              }
+            }
+          ]
+        },
+        {
+          "type": "toast",
+          "variant": "success",
+          "message": "All items submitted sequentially!"
+        }
+      ]
+    },
     "components": [
       {
         "id": "main_layout",
@@ -264,6 +289,26 @@ Widget interactiveTableFormUseCase(BuildContext context) {
                     const SizedBox(height: 24),
                     // Rendering components from JSON
                     form.toWidget(dataContext),
+
+                    const SizedBox(height: 32),
+                    const Divider(),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed: () => controller.submit(context),
+                          icon: const Icon(Icons.send),
+                          label: const Text('Submit Sequential'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 24, vertical: 12),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),

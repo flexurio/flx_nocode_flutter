@@ -2,6 +2,9 @@ import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workf
 
 class StopWorkflowAction implements WorkflowAction {
   const StopWorkflowAction();
+
+  factory StopWorkflowAction.fromJson(Map<String, dynamic> json) =>
+      const StopWorkflowAction();
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
     ctx.stopped = true;
