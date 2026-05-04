@@ -136,10 +136,7 @@ class ActionD extends HiveObject {
       assert(layoutFormId != null && layoutFormId!.isNotEmpty,
           'Action "$id" of type "${type.id}" requires a non-empty layoutFormId.');
     }
-    if (type == ActionType.print) {
-      assert(layoutPrintId != null && layoutPrintId!.isNotEmpty,
-          'Action "$id" of type "${type.id}" requires a non-empty layoutPrintId.');
-    }
+
   }
 
   /// Creates a copy of this [ActionD] object with optional modifications.
@@ -213,12 +210,7 @@ class ActionD extends HiveObject {
       }
     }
 
-    if (type == ActionType.print) {
-      if (layoutPrintId == null || layoutPrintId.toString().isEmpty) {
-        throw FormatException(
-            'Action "${json['id'] ?? 'unknown'}" (type: "${type.id}") requires "layout_print_id"');
-      }
-    }
+
 
     return ActionD(
       isMultiple: json['is_multiple'] ?? false,
