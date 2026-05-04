@@ -82,7 +82,6 @@ extension ComponentRowWidgets on ComponentRow {
             child is ComponentDatePicker ||
             child is ComponentTextField ||
             child is ComponentNumberField ||
-            child is ComponentButton ||
             child is ComponentFieldDisplay) {
           rowChildren.add(SizedBox(width: 200, child: rowChild));
         } else {
@@ -169,7 +168,6 @@ extension ComponentRowWidgets on ComponentRow {
             child is ComponentDatePicker ||
             child is ComponentTextField ||
             child is ComponentNumberField ||
-            child is ComponentButton ||
             child is ComponentFieldDisplay) {
           rowChildren.add(SizedBox(width: 200, child: rowChild));
         } else {
