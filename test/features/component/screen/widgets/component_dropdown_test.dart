@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 import 'package:get/get.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_dropdown.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_dropdown.dart';
@@ -48,7 +49,7 @@ void main() {
         id: 'test_id',
         label: 'Mock Label',
         options: ['A', 'B'],
-        widthMode: 'fixed',
+        widthMode: ComponentSizeMode.fixed,
         width: 200,
       );
 
@@ -70,7 +71,7 @@ void main() {
         id: 'test_id',
         label: 'Hug Label',
         options: ['A', 'B'],
-        widthMode: 'hug',
+        widthMode: ComponentSizeMode.hug,
       );
 
       await tester.pumpWidget(

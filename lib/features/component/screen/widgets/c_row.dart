@@ -48,6 +48,10 @@ extension ComponentRowWidgets on ComponentRow {
         childWidthMode = child.widthMode;
         fixedWidth = child.width;
         flexValue = child.flex;
+      } else if (child is ComponentTimeField) {
+        childWidthMode = child.widthMode;
+        fixedWidth = child.width;
+        flexValue = child.flex;
       } else if (child is ComponentTextField) {
         childWidthMode = child.widthMode;
         fixedWidth = child.width;
@@ -81,6 +85,7 @@ extension ComponentRowWidgets on ComponentRow {
         // To prevent 'blank' inputs, we give them a default width if explicitly hug in a row
         if (child is ComponentDropdown ||
             child is ComponentDatePicker ||
+            child is ComponentTimeField ||
             child is ComponentTextField ||
             child is ComponentNumberField ||
             child is ComponentFieldDisplay) {
@@ -137,6 +142,10 @@ extension ComponentRowWidgets on ComponentRow {
         childWidthMode = child.widthMode;
         fixedWidth = child.width;
         flexValue = child.flex;
+      } else if (child is ComponentTimeField) {
+        childWidthMode = child.widthMode;
+        fixedWidth = child.width;
+        flexValue = child.flex;
       } else if (child is ComponentTextField) {
         childWidthMode = child.widthMode;
         fixedWidth = child.width;
@@ -167,6 +176,7 @@ extension ComponentRowWidgets on ComponentRow {
       } else {
         if (child is ComponentDropdown ||
             child is ComponentDatePicker ||
+            child is ComponentTimeField ||
             child is ComponentTextField ||
             child is ComponentNumberField ||
             child is ComponentFieldDisplay) {
