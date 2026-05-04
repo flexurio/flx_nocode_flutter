@@ -146,27 +146,56 @@ Widget interactiveTableFormUseCase(BuildContext context) {
       {
         "id": "main_layout",
         "type": "column",
+        "events": {},
+        "x_align": "left",
+        "y_align": "top",
         "gap": 24.0,
+        "widthMode": "fill",
         "children": [
           {
             "id": "input_section",
             "type": "row",
+            "events": {},
+            "x_align": "left",
+            "y_align": "top",
             "horizontal_gap": 16.0,
+            "widthMode": "fill",
             "children": [
-              { "id": "name", "type": "text_field", "label": "Item Name", "flex": 2 },
-              { "id": "qty", "type": "number_field", "label": "Quantity", "flex": 1 }
+              {
+                "id": "name",
+                "type": "text_field",
+                "label": "Item Name",
+                "maxLength": 50,
+                "maxLines": 1,
+                "flex": 2,
+                "widthMode": "fill"
+              },
+              {
+                "id": "qty",
+                "type": "number_field",
+                "label": "Quantity",
+                "flex": 1,
+                "widthMode": "fill"
+              }
             ]
           },
           {
             "id": "action_row",
             "type": "row",
+            "events": {},
             "x_align": "right",
+            "y_align": "top",
+            "widthMode": "fill",
             "children": [
               {
                 "id": "add_btn",
                 "type": "button",
                 "text": "Add to Table",
                 "color": "#2196F3",
+                "variant": "primary",
+                "size": "medium",
+                "widthMode": "hug",
+                "flex": null,
                 "on_click": {
                   "id": "append_item",
                   "type": "append_variable",
@@ -182,8 +211,8 @@ Widget interactiveTableFormUseCase(BuildContext context) {
             "type": "table",
             "reference_id": "inventory_list",
             "columns": [
-              { "header": "Item Name", "body": "name", "width": 200 },
-              { "header": "Quantity", "body": "qty", "width": 100 }
+              { "header": "Item Name", "body": "name", "width": 200.0 },
+              { "header": "Quantity", "body": "qty", "width": 100.0 }
             ]
           }
         ]
