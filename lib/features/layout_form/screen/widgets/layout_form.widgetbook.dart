@@ -1,14 +1,19 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_button.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table.dart';
+import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:dio/dio.dart';
 import 'layout_form.dart';
+
+class MockDio extends Mock implements Dio {}
 
 @UseCase(name: 'Simple Form (From JSON)', type: Column)
 Widget simpleLayoutFormUseCase(BuildContext context) {
@@ -252,6 +257,27 @@ Widget interactiveTableFormUseCase(BuildContext context) {
 
   final map = json.decode(jsonRaw) as Map<String, dynamic>;
   final form = LayoutForm.fromMap(map);
+  // Mock Dio for the workflow submission
+  final mockDio = MockDio();
+  when(() => mockDio.post<Map<String, dynamic>>(
+        any(),
+        data: any(named: 'data'),
+        queryParameters: any(named: 'queryParameters'),
+        options: any(named: 'options'),
+      )).thenAnswer((_) async {
+        await Future.delayed(const Duration(seconds: 2));
+        return Response(
+          requestOptions: RequestOptions(path: ''),
+          data: {'status': 'success'},
+          statusCode: 200,
+        );
+      });
+
+  EntityCustomRepository.instance = EntityCustomRepository(
+    dio: mockDio,
+    onUnauthorized: () {},
+  );
+
   final entity = EntityCustom.empty().copyWith(
     id: 'mock_entity',
     layoutForm: [form],
