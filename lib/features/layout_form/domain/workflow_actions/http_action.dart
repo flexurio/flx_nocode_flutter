@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
+import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 
 class HttpAction implements WorkflowAction {
   final String name;
@@ -28,9 +30,8 @@ class HttpAction implements WorkflowAction {
     }
     final retryJson = json['retry'] as Map?;
     return HttpAction(
-      name: name.isEmpty
-          ? 'http_${DateTime.now().microsecondsSinceEpoch}'
-          : name,
+      name:
+          name.isEmpty ? 'http_${DateTime.now().microsecondsSinceEpoch}' : name,
       http: HttpData.fromJson(Map<String, dynamic>.from(httpJson)),
       retry: retryJson == null
           ? null
@@ -60,6 +61,10 @@ class HttpAction implements WorkflowAction {
           throw const WorkflowExecutionException(
             'HTTP body must resolve to an object.',
           );
+        }
+
+        if (EntityController.enableLog) {
+          debugPrint('    [HttpAction] Resolved Body: $resolvedBody');
         }
 
         final resolved = HttpData(

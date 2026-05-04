@@ -27,6 +27,7 @@ class EntityCustomRepository extends Repository {
     Map<String, String>? headers,
     Map<String, dynamic>? queryParameters,
     Map<String, dynamic>? body,
+    bool useFormData = false,
   }) async {
     final combinedHeaders = {
       if (accessToken != null && accessToken != '')
@@ -37,6 +38,14 @@ class EntityCustomRepository extends Repository {
     if (!combinedHeaders.containsKey(RequestHeader.authorization)) {
       combinedHeaders[RequestHeader.authorization] =
           'Bearer {{auth_token}}'.interpolateJavascript();
+    }
+
+    // Auto-add Content-Type if body is present and not FormData
+    if (body != null &&
+        !useFormData &&
+        !combinedHeaders.containsKey('Content-Type') &&
+        (method.toUpperCase() == 'POST' || method.toUpperCase() == 'PUT')) {
+      combinedHeaders['Content-Type'] = 'application/json';
     }
 
     var url = path.interpolateJavascript();
@@ -62,13 +71,17 @@ class EntityCustomRepository extends Repository {
         case 'POST':
           return await dio.post<T>(
             url,
-            data: body != null ? FormData.fromMap(body) : null,
+            data: body != null
+                ? (useFormData ? FormData.fromMap(body) : body)
+                : null,
             options: options,
           );
         case 'PUT':
           return await dio.put<T>(
             url,
-            data: body != null ? FormData.fromMap(body) : null,
+            data: body != null
+                ? (useFormData ? FormData.fromMap(body) : body)
+                : null,
             options: options,
           );
         case 'DELETE':
@@ -229,12 +242,13 @@ class EntityCustomRepository extends Repository {
   }
 
   /// Create or update a record
-  Future<Map<String, dynamic>> modify({
+  Future<Response<Map<String, dynamic>>> modify({
     required String? accessToken,
     required String path,
     required String method,
     Map<String, String>? headers,
     Map<String, dynamic>? data,
+    bool useFormData = false,
     bool mockEnabled = false,
     Object? mockData,
   }) async {
@@ -250,7 +264,12 @@ class EntityCustomRepository extends Repository {
           });
         }
         print('──────────────────────────────────────────────────');
-        return (mockData as Map<String, dynamic>?) ?? {};
+        final mData = (mockData as Map<String, dynamic>?) ?? {};
+        return Response(
+          requestOptions: RequestOptions(path: path),
+          data: mData,
+          statusCode: 200,
+        );
       }
       if (data != null) {
         print('──────────────────────────────────────────────────');
@@ -264,14 +283,14 @@ class EntityCustomRepository extends Repository {
         print('──────────────────────────────────────────────────');
       }
 
-      final response = await _request<Map<String, dynamic>>(
+      return await _request<Map<String, dynamic>>(
         accessToken: accessToken,
         path: path,
         method: method,
         headers: headers,
         body: data,
+        useFormData: useFormData,
       );
-      return response.data ?? {};
     } catch (error) {
       print('❌ [EntityCustomRepository] MODIFY ERROR');
       print('   $error');

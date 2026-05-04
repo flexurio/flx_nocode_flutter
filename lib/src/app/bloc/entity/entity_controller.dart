@@ -58,8 +58,8 @@ class EntityController extends GetxController {
         mockEnabled: entity.backend.create?.mockEnabled ?? false,
         mockData: entity.backend.create?.mockData,
       );
-      _logSuccess('EXECUTE', response);
-      _state.value = EntityState.success(response);
+      _logSuccess('EXECUTE', response.data);
+      _state.value = EntityState.success(response.data);
     } catch (error) {
       _logError('EXECUTE', error);
       _state.value = EntityState.error(errorMessage(error));
@@ -85,8 +85,8 @@ class EntityController extends GetxController {
         mockEnabled: event.mockEnabled,
         mockData: event.mockData,
       );
-      _logSuccess('OTHER EVENT', response);
-      _state.value = EntityState.success(response);
+      _logSuccess('OTHER EVENT', response.data);
+      _state.value = EntityState.success(response.data);
     } catch (error) {
       _logError('OTHER EVENT', error);
       _state.value = EntityState.error(errorMessage(error));
@@ -120,8 +120,8 @@ class EntityController extends GetxController {
         mockEnabled: entity.backend.create!.mockEnabled,
         mockData: entity.backend.create!.mockData,
       );
-      _logSuccess('CREATE', response);
-      _state.value = EntityState.success(response);
+      _logSuccess('CREATE', response.data);
+      _state.value = EntityState.success(response.data);
     } on FormatException catch (error) {
       _logError('CREATE', error.message);
       _state.value = EntityState.error(error.message);
@@ -162,8 +162,8 @@ class EntityController extends GetxController {
         mockEnabled: entity.backend.update!.mockEnabled,
         mockData: entity.backend.update!.mockData,
       );
-      _logSuccess('EDIT', response);
-      _state.value = EntityState.success(response);
+      _logSuccess('EDIT', response.data);
+      _state.value = EntityState.success(response.data);
     } catch (error) {
       _logError('EDIT', error);
       _state.value = EntityState.error(errorMessage(error));
@@ -293,6 +293,7 @@ class GetxHttpExecutor implements HttpExecutor {
         method: request.method,
         headers: request.headers,
         data: request.body,
+        useFormData: request.useFormData,
         mockEnabled: request.mockEnabled,
         mockData: request.mockData,
       );
@@ -302,8 +303,8 @@ class GetxHttpExecutor implements HttpExecutor {
       }
 
       return HttpResult(
-        status: 200,
-        data: response,
+        status: response.statusCode ?? 200,
+        data: response.data,
       );
     } catch (e) {
       if (EntityController.enableLog) {

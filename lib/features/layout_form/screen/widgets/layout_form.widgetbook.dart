@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:get/get.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
@@ -155,7 +156,10 @@ Widget interactiveTableFormUseCase(BuildContext context) {
               "http": {
                 "method": "POST",
                 "url": "https://api.example.com/inventory",
-                "body": "{{ vars.row }}"
+                "body": {
+                  "product_name": "{{ vars.row.name }}",
+                  "quantity": "{{ vars.row.qty }}"
+                }
               }
             }
           ]
@@ -251,6 +255,12 @@ Widget interactiveTableFormUseCase(BuildContext context) {
   final entity = EntityCustom.empty().copyWith(
     id: 'mock_entity',
     layoutForm: [form],
+  );
+
+  // Initialize the required EntityController for the workflow submission
+  Get.put(
+    EntityController(entity),
+    tag: 'entity_ctrl_$layoutId',
   );
 
   return GetBuilder<CreatePageController>(

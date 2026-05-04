@@ -1,9 +1,29 @@
 import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
 
+/// An action that iterates over a list of items and executes a sequence of actions for each.
+///
+/// Example JSON:
+/// ```json
+/// {
+///   "type": "loop",
+///   "items": "{{ form.data_list }}",
+///   "item_var": "row",
+///   "actions": [ ... ]
+/// }
+/// ```
 class LoopAction implements WorkflowAction {
-  final dynamic items; // list literal OR string with {{ }} OR already List
+  /// The list of items to iterate over.
+  /// Can be a literal list, a template string (e.g., "{{ items }}"), or a resolved List.
+  final dynamic items;
+
+  /// The variable name used to store the current item in the workflow context's `vars`.
+  /// Defaults to "item" if not provided in JSON.
   final String itemVar;
+
+  /// Optional variable name used to store the current iteration index (0-based) in `vars`.
   final String? indexVar;
+
+  /// The list of actions to execute for each iteration of the loop.
   final List<WorkflowAction> actions;
 
   const LoopAction({
