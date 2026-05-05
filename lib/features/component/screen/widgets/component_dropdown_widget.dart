@@ -69,52 +69,55 @@ class _ComponentDropdownWidgetState extends State<ComponentDropdownWidget> {
           ? Status.progress
           : (controller.error.value != null ? Status.error : Status.loaded);
 
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (widget.isSmall)
-            FDropDownSearchSmall<Map<String, dynamic>>(
-              status: status,
-              items: controller.options,
-              initialValue: controller.displayedValue.value,
-              labelText: widget.component.label,
-              enabled: !controller.isLoading.value,
-              itemAsString: (item) => item['label']?.toString() ?? '',
-              onChanged: (val) {
-                controller.onSelectionChanged(val);
-              },
-              iconField: Icons.list,
-            )
-          else
-            FDropDownSearch<Map<String, dynamic>>(
-              status: status,
-              items: controller.options,
-              initialValue: controller.displayedValue.value,
-              labelText: widget.component.label,
-              enabled: !controller.isLoading.value,
-              validator: widget.component.required
-                  ? (value) {
-                      if (value == null || value.isEmpty) {
-                        return '${widget.component.label} is required';
+      return SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (widget.isSmall)
+              FDropDownSearchSmall<Map<String, dynamic>>(
+                status: status,
+                items: controller.options,
+                initialValue: controller.displayedValue.value,
+                labelText: widget.component.label,
+                enabled: !controller.isLoading.value,
+                itemAsString: (item) => item['label']?.toString() ?? '',
+                onChanged: (val) {
+                  controller.onSelectionChanged(val);
+                },
+                iconField: Icons.list,
+              )
+            else
+              FDropDownSearch<Map<String, dynamic>>(
+                status: status,
+                items: controller.options,
+                initialValue: controller.displayedValue.value,
+                labelText: widget.component.label,
+                enabled: !controller.isLoading.value,
+                validator: widget.component.required
+                    ? (value) {
+                        if (value == null || value.isEmpty) {
+                          return '${widget.component.label} is required';
+                        }
+                        return null;
                       }
-                      return null;
-                    }
-                  : null,
-              itemAsString: (item) => item['label']?.toString() ?? '',
-              onChanged: (val) {
-                controller.onSelectionChanged(val);
-              },
-            ),
-          if (controller.error.value != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: SelectableText(
-                'Error: ${controller.error.value}',
-                style: const TextStyle(color: Colors.red, fontSize: 12),
+                    : null,
+                itemAsString: (item) => item['label']?.toString() ?? '',
+                onChanged: (val) {
+                  controller.onSelectionChanged(val);
+                },
               ),
-            ),
-        ],
+            if (controller.error.value != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: SelectableText(
+                  'Error: ${controller.error.value}',
+                  style: const TextStyle(color: Colors.red, fontSize: 12),
+                ),
+              ),
+          ],
+        ),
       );
     });
   }

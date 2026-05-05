@@ -220,13 +220,16 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
           width: c.width,
           builder: (row, index) {
             if (c.component != null) {
-              return c.component!.toWidget(
-                isSmall: true,
-                data: {
-                  ...widget.data,
-                  "current": row,
-                  "row": row,
-                },
+              return SizedBox(
+                width: c.width,
+                child: c.component!.toWidget(
+                  isSmall: true,
+                  data: {
+                    ...widget.data,
+                    "current": row,
+                    "row": row,
+                  },
+                ),
               );
             }
 
