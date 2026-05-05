@@ -169,8 +169,32 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.data != widget.data) {
       controller.updateContextData(widget.data);
-      controller.loadData();
+
+      if (_shouldReload(oldWidget.data, widget.data)) {
+        controller.loadData();
+      }
     }
+  }
+
+  bool _shouldReload(JsonMap oldData, JsonMap newData) {
+    // If no dependencies are defined, we don't reload on every data change.
+    // This prevents unnecessary requests when other unrelated fields change.
+    if (widget.component.dependsOn.isEmpty) return false;
+
+    for (final depId in widget.component.dependsOn) {
+      final oldValue = _getValue(oldData, depId);
+      final newValue = _getValue(newData, depId);
+
+      if (oldValue != newValue) return true;
+    }
+
+    return false;
+  }
+
+  dynamic _getValue(JsonMap data, String id) {
+    final val = data[id];
+    if (val is TextEditingController) return val.text;
+    return val;
   }
 
   @override

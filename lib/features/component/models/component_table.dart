@@ -51,6 +51,7 @@ class ComponentTable extends Component {
     required this.width,
     this.actions = const [],
     this.referenceId,
+    this.dependsOn = const [],
     super.visibilityCondition,
     super.events = const {},
   }) : super(type: 'table');
@@ -88,8 +89,8 @@ class ComponentTable extends Component {
 
   /// List of actions available for each row.
   final List<ActionD> actions;
-
   final String? referenceId;
+  final List<String> dependsOn;
 
   /// Creates a [ComponentTable] instance from a JSON-compatible map.
   ///
@@ -126,6 +127,9 @@ class ComponentTable extends Component {
             ),
       width: (map['width'] as num?)?.toDouble(),
       referenceId: map['reference_id']?.toString(),
+      dependsOn: map['dependsOn'] is List
+          ? (map['dependsOn'] as List).map((e) => e.toString()).toList()
+          : const [],
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
     );
@@ -158,6 +162,7 @@ class ComponentTable extends Component {
                 })
             .toList(),
         'actions': actions.map((e) => e.toJson()).toList(),
+        'dependsOn': dependsOn,
       };
 
   /// Returns a dummy [EntityCustom] that represents this table.
