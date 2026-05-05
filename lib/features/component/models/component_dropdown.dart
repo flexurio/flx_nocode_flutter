@@ -2,6 +2,7 @@ import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_action.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 
 class ComponentDropdown extends Component {
   final String label;
@@ -13,7 +14,7 @@ class ComponentDropdown extends Component {
   final List<ComponentAction> onChangeActions;
   final bool required;
   final List<String> dependsOn;
-  final String? widthMode; // 'fill', 'hug', 'fixed'
+  final ComponentSizeMode? widthMode;
   final double? width;
   final int? flex;
 
@@ -23,7 +24,7 @@ class ComponentDropdown extends Component {
     super.events,
     required this.label,
     required this.options,
-    required this.initialValue,
+    this.initialValue = '',
     this.httpData,
     this.optionKey,
     this.optionLabel,
@@ -46,7 +47,7 @@ class ComponentDropdown extends Component {
       httpData: HttpData.empty(),
       required: false,
       dependsOn: const [],
-      widthMode: 'fill',
+      widthMode: ComponentSizeMode.fill,
     );
   }
 
@@ -112,7 +113,7 @@ class ComponentDropdown extends Component {
       onChangeActions: onChangeActions,
       required: required,
       dependsOn: dependsOn,
-      widthMode: map['widthMode']?.toString(),
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: map['width'] != null
           ? double.tryParse(map['width'].toString())
           : null,
@@ -132,7 +133,7 @@ class ComponentDropdown extends Component {
         'onChangeActions': onChangeActions.map((e) => e.toMap()).toList(),
         'required': required,
         'dependsOn': dependsOn,
-        'widthMode': widthMode,
+        'widthMode': widthMode?.name,
         'width': width,
         'flex': flex,
       };

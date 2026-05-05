@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_dropdown.dart';
 import 'component_dropdown.dart';
@@ -55,7 +56,7 @@ Widget mockComponentDropdownFill(BuildContext context) {
       label: 'Fill Width Dropdown',
       options: const [],
       initialValue: '',
-      widthMode: 'fill',
+      widthMode: ComponentSizeMode.fill,
     ).toMockWidget(),
   );
 }
@@ -69,7 +70,7 @@ Widget mockComponentDropdownFixed(BuildContext context) {
       label: 'Fixed Width (300px)',
       options: const [],
       initialValue: '',
-      widthMode: 'fixed',
+      widthMode: ComponentSizeMode.fixed,
       width: 300,
     ).toMockWidget(),
   );
@@ -87,7 +88,7 @@ Widget mockComponentDropdownHug(BuildContext context) {
           label: 'Short',
           options: const [],
           initialValue: '',
-          widthMode: 'hug',
+          widthMode: ComponentSizeMode.hug,
         ).toMockWidget(),
         const SizedBox(height: 16),
         ComponentDropdown(
@@ -95,7 +96,7 @@ Widget mockComponentDropdownHug(BuildContext context) {
           label: 'Very Long Label To Test Hug Content',
           options: const [],
           initialValue: '',
-          widthMode: 'hug',
+          widthMode: ComponentSizeMode.hug,
         ).toMockWidget(),
       ],
     ),

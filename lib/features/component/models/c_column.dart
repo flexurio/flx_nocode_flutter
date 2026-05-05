@@ -1,5 +1,6 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 
 /// A vertical container component that renders its children inside a column.
 ///
@@ -50,8 +51,11 @@ class ComponentColumn extends Component {
   /// Default: 12.0
   final double gap;
 
-  final String? widthMode; // 'fill', 'hug'
-  final String? heightMode; // 'fill', 'hug'
+  final double? width;
+  final double? height;
+  final int? flex;
+  final ComponentSizeMode? widthMode;
+  final ComponentSizeMode? heightMode;
 
   ComponentColumn({
     required super.id,
@@ -61,6 +65,9 @@ class ComponentColumn extends Component {
     this.xAlign = 'left',
     this.yAlign = 'top',
     this.gap = 12.0,
+    this.width,
+    this.height,
+    this.flex,
     this.widthMode,
     this.heightMode,
   }) : super(type: 'column');
@@ -73,8 +80,11 @@ class ComponentColumn extends Component {
       xAlign: 'left',
       yAlign: 'top',
       gap: 12.0,
-      widthMode: 'fill',
-      heightMode: 'hug',
+      widthMode: ComponentSizeMode.fill,
+      heightMode: ComponentSizeMode.hug,
+      width: null,
+      height: null,
+      flex: null,
     );
   }
 
@@ -111,8 +121,11 @@ class ComponentColumn extends Component {
       xAlign: (map['x_align']?.toString().trim() ?? 'left'),
       yAlign: (map['y_align']?.toString().trim() ?? 'top'),
       gap: (map['gap'] is num) ? (map['gap'] as num).toDouble() : 12.0,
-      widthMode: map['widthMode']?.toString(),
-      heightMode: map['heightMode']?.toString(),
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
+      heightMode: ComponentSizeMode.fromString(map['heightMode']?.toString()),
+      width: double.tryParse(map['width']?.toString() ?? ''),
+      height: double.tryParse(map['height']?.toString() ?? ''),
+      flex: int.tryParse(map['flex']?.toString() ?? ''),
     );
   }
 
@@ -122,8 +135,11 @@ class ComponentColumn extends Component {
         'x_align': xAlign,
         'y_align': yAlign,
         'gap': gap,
-        'widthMode': widthMode,
-        'heightMode': heightMode,
+        'widthMode': widthMode?.name,
+        'heightMode': heightMode?.name,
+        'width': width,
+        'height': height,
+        'flex': flex,
         'children': children.map((e) => e.toMap()).toList(growable: false),
       };
 }

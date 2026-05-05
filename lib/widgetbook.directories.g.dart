@@ -20,6 +20,16 @@ import 'package:flx_nocode_flutter/features/data_table/screen/widgets/entity_dat
     as _flx_nocode_flutter_features_data_table_screen_widgets_entity_data_table_widgetbook;
 import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_page.widgetbook.dart'
     as _flx_nocode_flutter_features_entity_screen_pages_enitity_view_page_widgetbook;
+import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/layout_form.widgetbook.dart'
+    as _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook;
+import 'package:flx_nocode_flutter/features/print/presentation/usecases/concert_ticket_print.widgetbook.dart'
+    as _flx_nocode_flutter_features_print_presentation_usecases_concert_ticket_print_widgetbook;
+import 'package:flx_nocode_flutter/features/print/presentation/usecases/invoice_table_print.widgetbook.dart'
+    as _flx_nocode_flutter_features_print_presentation_usecases_invoice_table_print_widgetbook;
+import 'package:flx_nocode_flutter/features/print/presentation/usecases/personnel_list_print.widgetbook.dart'
+    as _flx_nocode_flutter_features_print_presentation_usecases_personnel_list_print_widgetbook;
+import 'package:flx_nocode_flutter/features/print/presentation/usecases/product_catalog_print.widgetbook.dart'
+    as _flx_nocode_flutter_features_print_presentation_usecases_product_catalog_print_widgetbook;
 import 'package:flx_nocode_flutter/features/view/screen/widgets/view.widgetbook.dart'
     as _flx_nocode_flutter_features_view_screen_widgets_view_widgetbook;
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.widgetbook.dart'
@@ -29,6 +39,40 @@ import 'package:flx_nocode_flutter/src/app/view/widget/no_code_navigate_push_men
 import 'package:widgetbook/widgetbook.dart' as _widgetbook;
 
 final directories = <_widgetbook.WidgetbookNode>[
+  _widgetbook.WidgetbookCategory(
+    name: 'Print',
+    children: [
+      _widgetbook.WidgetbookComponent(
+        name: 'PdfPreview',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Concert Ticket (Canvas Mode)',
+            builder:
+                _flx_nocode_flutter_features_print_presentation_usecases_concert_ticket_print_widgetbook
+                    .buildConcertTicketUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Daftar Inisial Personel (Complex Table)',
+            builder:
+                _flx_nocode_flutter_features_print_presentation_usecases_personnel_list_print_widgetbook
+                    .buildPersonnelListUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Invoice Table (Canvas Mode)',
+            builder:
+                _flx_nocode_flutter_features_print_presentation_usecases_invoice_table_print_widgetbook
+                    .buildInvoiceTableUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Product Catalog (Table with Images)',
+            builder:
+                _flx_nocode_flutter_features_print_presentation_usecases_product_catalog_print_widgetbook
+                    .buildProductCatalogTableUseCase,
+          ),
+        ],
+      )
+    ],
+  ),
   _widgetbook.WidgetbookFolder(
     name: 'app',
     children: [
@@ -271,6 +315,34 @@ final directories = <_widgetbook.WidgetbookNode>[
           )
         ],
       ),
+    ],
+  ),
+  _widgetbook.WidgetbookFolder(
+    name: 'widgets',
+    children: [
+      _widgetbook.WidgetbookComponent(
+        name: 'Column',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Interactive Table Form',
+            builder:
+                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
+                    .interactiveTableFormUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Multi-Step Wizard',
+            builder:
+                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
+                    .wizardLayoutFormUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Simple Form (From JSON)',
+            builder:
+                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
+                    .simpleLayoutFormUseCase,
+          ),
+        ],
+      )
     ],
   ),
 ];

@@ -1,4 +1,5 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 class ComponentDatePicker extends Component {
@@ -7,7 +8,7 @@ class ComponentDatePicker extends Component {
   final String? minDate;
   final String? maxDate;
   final bool required;
-  final String? widthMode; // 'fill', 'hug', 'fixed'
+  final ComponentSizeMode? widthMode; // 'fill', 'hug', 'fixed'
   final double? width;
   final int? flex;
   final String? dateFormat;
@@ -35,7 +36,7 @@ class ComponentDatePicker extends Component {
       label: 'Date Picker',
       initialValue: '',
       required: false,
-      widthMode: 'fill',
+      widthMode: ComponentSizeMode.fill,
     );
   }
 
@@ -59,7 +60,7 @@ class ComponentDatePicker extends Component {
       maxDate: maxDate,
       required: required,
       dateFormat: dateFormat,
-      widthMode: map['widthMode']?.toString(),
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: map['width'] != null
           ? double.tryParse(map['width'].toString())
           : null,
@@ -78,7 +79,7 @@ class ComponentDatePicker extends Component {
         'maxDate': maxDate,
         'required': required,
         'dateFormat': dateFormat,
-        'widthMode': widthMode,
+        'widthMode': widthMode?.name,
         'width': width,
         'flex': flex,
       };

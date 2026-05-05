@@ -1,5 +1,6 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 
 /// A non-editable field component used to display a read-only value.
 ///
@@ -34,7 +35,7 @@ class ComponentFieldDisplay extends Component {
   /// The non-editable value displayed under the label.
   final String value;
 
-  final String? widthMode;
+  final ComponentSizeMode? widthMode;
   final double? width;
   final int? flex;
 
@@ -71,7 +72,7 @@ class ComponentFieldDisplay extends Component {
       id: id,
       label: label,
       value: value,
-      widthMode: map['widthMode']?.toString(),
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: double.tryParse(map['width']?.toString() ?? ''),
       flex: int.tryParse(map['flex']?.toString() ?? ''),
       visibilityCondition: map['visibilityCondition']?.toString(),
@@ -84,7 +85,7 @@ class ComponentFieldDisplay extends Component {
       id: id,
       label: 'Label',
       value: 'Value',
-      widthMode: 'fill',
+      widthMode: ComponentSizeMode.fill,
     );
   }
 
@@ -94,7 +95,7 @@ class ComponentFieldDisplay extends Component {
         ...super.toMap(),
         'label': label,
         'value': value,
-        'widthMode': widthMode,
+        'widthMode': widthMode?.name,
         'width': width,
         'flex': flex,
       };

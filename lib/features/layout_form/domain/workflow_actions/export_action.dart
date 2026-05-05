@@ -19,6 +19,22 @@ class ExportAction implements WorkflowAction {
     this.saveResultTo,
   });
 
+  factory ExportAction.fromJson(Map<String, dynamic> json) {
+    final format = (json['format'] ?? 'xlsx').toString().trim();
+    final columnsRaw = (json['columns'] as List?) ?? const [];
+    final columns = columnsRaw
+        .whereType<Map<String, dynamic>>()
+        .map((e) => TColumn.fromJson(e))
+        .toList();
+
+    return ExportAction(
+      format: format,
+      columns: columns,
+      dataSource: (json['data_source'] ?? json['dataSource'])?.toString(),
+      saveResultTo: (json['save_result_to'] ?? json['saveResultTo'])?.toString(),
+    );
+  }
+
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
     print('[ExportAction] Starting execution...');
@@ -69,6 +85,29 @@ class ExportAction implements WorkflowAction {
       if (format.toLowerCase() == 'xlsx') {
         final List<String> fields = columns.map((e) => e.header).toList();
 
+        // Transform items by resolving column bodies
+        final List<Map<String, dynamic>> transformedItems = [];
+        for (final item in items) {
+          final Map<String, dynamic> row = {};
+          final Map<String, dynamic> itemData =
+              item is Map<String, dynamic> ? item : {'item': item};
+
+          final tempCtx = WorkflowContext(
+            form: ctx.form,
+            record: ctx.record,
+            data: itemData,
+            vars: ctx.vars,
+            http: ctx.http,
+            auth: ctx.auth,
+            httpExecutor: ctx.httpExecutor,
+          );
+
+          for (final col in columns) {
+            row[col.header] = Template.resolve(col.body, tempCtx);
+          }
+          transformedItems.add(row);
+        }
+
         // Safely attempt to get BuildContext. WorkflowContext usually doesn't have it,
         // but some implementations might inject it. ui bridge might have it too.
         BuildContext? context;
@@ -83,14 +122,13 @@ class ExportAction implements WorkflowAction {
         }
 
         if (context == null) {
-          print('[ExportAction] Error: BuildContext not found in ctx or ui');
-          ui.toast('error', 'Export failed: System context missing');
-          return;
+          print(
+              '[ExportAction] Warning: BuildContext not found in ctx or ui. Proceeding without it.');
         }
 
         final bytes = generalXlsxNoCode(
           context,
-          items.cast<Map<String, dynamic>>(),
+          transformedItems,
           fields,
         );
 

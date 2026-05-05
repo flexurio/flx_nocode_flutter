@@ -19,6 +19,7 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `is_multiple`| Boolean | No | If `true`, this action is enabled when multiple items are selected in a table. |
 | `rule` | Object | No | A [Rule](#4-rule-based-visibility) object to determine if this action is visible for a specific row. |
 | `layout_form_id`| String| No* | The ID of the form layout to open (required for `open_page` or `show_dialog`). |
+| `layout_print_id`| String| No* | The ID of the print layout to use (required for `print`). |
 | `width` | Double | No | Custom width for the dialog or side panel (default depends on platform). |
 | `confirm_title`| String | No | Title for the confirmation dialog (for `show_confirmation_dialog`). |
 | `confirm_message`| String| No | Message for the confirmation dialog. |
@@ -45,7 +46,7 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `toast` | Shows a simple notification. | `name` (as message) |
 | `navigate_home` | Returns the user to the dashboard. | - |
 | `navigate_back` | Navigates to the previous screen. | - |
-| `print` | Triggers a PDF print workflow. | `http` (to fetch print data) |
+| `print` | Triggers a PDF print workflow. | `layout_print_id`, `http` (optional) |
 | `list_json_view_as_table` | Renders nested JSON as a sub-table. | `reference` (field name) |
 
 ---
@@ -139,3 +140,33 @@ You can use `{{ ... }}` syntax in many properties (URLs, Headers, Body, `value`)
   }
 }
 ```
+
+### Print Action (Global/Home)
+This example shows a "Print Report" action placed in `actions_home` that uses a specific layout.
+```json
+{
+  "id": "print_report",
+  "type": "print",
+  "name": "Print Monthly Report",
+  "icon": "print",
+  "layout_print_id": "monthly_report_layout",
+  "http": {
+    "method": "GET",
+    "url": "{{backend_host}}/reports/monthly?period={{form.period}}",
+    "headers": { "Authorization": "Bearer {{auth_token}}" }
+  }
+}
+```
+
+### Interactive List using `append_variable`
+This example demonstrates how to capture input from a form and append it to a local list variable, which can then be displayed in a table.
+
+```json
+{
+  "id": "add_to_inventory",
+  "type": "append_variable",
+  "name": "Add to List",
+  "target_variable": "inventory_items"
+}
+```
+*Note: The table displaying this data should have `"reference_id": "inventory_items"`.*

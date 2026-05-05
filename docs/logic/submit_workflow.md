@@ -1,165 +1,190 @@
 # Submit Workflow JSON Documentation
 
-This document explains the structure and configuration of the `SubmitWorkflow` object, which defines a sequence of actions executed when a form is submitted.
+The `SubmitWorkflow` is a powerful engine in **FlxNocode** that allows you to define complex, multi-step business logic directly in your JSON layouts. It is executed when a form is submitted or an action is triggered.
 
-## `SubmitWorkflow` Object
+---
 
-The root object for form submission logic.
+## 📋 Table of Contents
+- [Core Configuration](#core-configuration)
+- [Template Syntax & Expressions](#template-syntax--expressions)
+- [Workflow Actions](#workflow-actions)
+    - [HTTP Request](#1-http-request-http)
+    - [Validation](#2-validation-validate)
+    - [Variables](#3-variables-set_var-append_var)
+    - [UI Interactions](#4-ui-interactions-toast-close_modal-refresh)
+    - [Control Flow](#5-control-flow-condition-loop-try_catch)
+    - [Data Export](#6-data-export-export)
+- [Full Example](#full-example)
+
+---
+
+## ⚙️ Core Configuration
+
+The `SubmitWorkflow` object is the root configuration for submission logic.
 
 | Key | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `type` | String | Yes | `workflow` | Must be "workflow". |
-| `lock_ui_while_submitting` | Boolean | No | `true` | Whether to disable UI interactions during execution. |
-| `submit_label` | String | No | - | Custom label for the submit button. |
-| `show_submit_button` | Boolean | No | - | Whether to show the default submit button. |
-| `actions` | Array<Action> | Yes | - | Main sequence of actions to execute. |
-| `on_success` | Array<Action> | No | `[]` | Actions to run if the main sequence completes successfully. |
+| :--- | :--- | :---: | :---: | :--- |
+| `type` | String | Yes | `workflow` | Must be exactly `"workflow"`. |
+| `lock_ui_while_submitting` | Boolean | No | `true` | If true, disables the form UI during execution. |
+| `submit_label` | String | No | - | Custom label for the primary submit button. |
+| `show_submit_button` | Boolean | No | `true` | Whether to display the default submit button. |
+| `actions` | Array<Action> | Yes | - | The main sequence of actions to execute. |
+| `on_success` | Array<Action> | No | `[]` | Actions to run if the main sequence completes without errors. |
 | `on_error` | Array<Action> | No | `[]` | Actions to run if any action in the sequence fails. |
 
 ---
 
-## Workflow Actions
+## 🧪 Template Syntax & Expressions
 
-Each action in the `actions`, `on_success`, or `on_error` lists must have a `type` field.
+Workflows support dynamic data through the `{{ }}` interpolation syntax.
 
-### 1. Validate (`validate`)
-Validates the current form state before proceeding.
+### Available Scopes:
+- `{{ form }}`: The current form input values.
+- `{{ data }}`: The initial data/record values.
+- `{{ vars }}`: Temporary variables created during the workflow (via `set_var`).
+- `{{ http.STEP_NAME }}`: Results of previous HTTP steps (contains `status`, `data`, and `headers`).
+- `{{ auth }}`: Current user authentication state (permissions, token).
 
-| Key | Type | Default | Description |
-| --- | --- | --- | --- |
-| `scope` | String | `all` | Validation scope: `all` or `current_step`. |
-
-### 2. HTTP Request (`http`)
-Performs a network request.
-
-| Key | Type | Required | Description |
-| --- | --- | --- | --- |
-| `name` | String | Yes | A unique name for this step for logging/debugging. |
-| `http` | Object | Yes | `HttpData` configuration (method, path, body, etc.). |
-| `retry` | Object | No | Optional `WorkflowRetryPolicy`. |
-| `save_result_to` | String | No | Variable name to store the response data. |
-
-### 3. Set Variable (`set_var`)
-Sets a value in the workflow context.
-
-| Key | Type | Required | Description |
-| --- | --- | --- | --- |
-| `key` | String | Yes | The variable name. |
-| `value` | Any | Yes | The value to set (can include expressions). |
-
-### 4. Append Variable (`append_var`)
-Appends a value to an existing list variable.
-
-| Key | Type | Required | Description |
-| --- | --- | --- | --- |
-| `key` | String | Yes | The list variable name. |
-| `value` | Any | Yes | The value to append. |
-
-### 5. Toast Notification (`toast`)
-Shows a brief notification message.
-
-| Key | Type | Default | Description |
-| --- | --- | --- | --- |
-| `variant` | String | `info` | One of: `success`, `error`, `info`, `warning`. |
-| `message` | String | - | The message text to display. |
-
-### 6. Close Modal (`close_modal`)
-Closes the current form or modal dialog. No additional parameters.
-
-### 7. Refresh (`refresh`)
-Triggers a refresh of a specific UI component.
-
-| Key | Type | Required | Description |
-| --- | --- | --- | --- |
-| `target` | String | Yes | The ID or reference of the component to refresh. |
-
-### 8. Condition (`condition`)
-Branching logic based on an expression.
-
-| Key | Type | Required | Description |
-| --- | --- | --- | --- |
-| `if` | String | Yes | Expression to evaluate (must return boolean). |
-| `then_actions` | Array<Action> | Yes | Actions to run if condition is true. |
-| `else_actions` | Array<Action> | No | Actions to run if condition is false. |
-
-### 9. Loop (`loop`)
-Iterates over a list of items.
-
-| Key | Type | Required | Default | Description |
-| --- | --- | --- | --- | --- |
-| `items` | String | Yes | - | Path to items (e.g., `{{ form.data.items }}`). |
-| `item_var` | String | No | `item` | Variable name for the current item. |
-| `index_var` | String | No | - | Variable name for the current index. |
-| `actions` | Array<Action> | Yes | - | Actions to run for each item. |
-
-### 10. Try Catch (`try_catch`)
-Error handling block.
-
-| Key | Type | Required | Description |
-| --- | --- | --- | --- |
-| `try_actions` | Array<Action> | Yes | Actions to attempt. |
-| `catch_actions` | Array<Action> | Yes | Actions to run if `try_actions` fail. |
-
-### 11. Stop Workflow (`stop_workflow`)
-Immediately terminates the workflow execution.
+### Expression Examples:
+- `{{ form.first_name + " " + form.last_name }}`
+- `{{ http.login.status == 200 }}`
+- `{{ vars.items.length > 0 }}`
 
 ---
 
-## Nested Configuration Objects
+## 🚀 Workflow Actions
 
-### `WorkflowRetryPolicy`
-Used in HTTP actions to handle transient failures.
+### 1. HTTP Request (`http`)
+Performs a network request (GET, POST, PUT, DELETE, etc.).
+
+| Key | Type | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `name` | String | Yes | Unique name for this step. Result will be stored in `http.NAME`. |
+| `http` | Object | Yes | `HttpData` config (method, url, body, headers). |
+| `retry` | Object | No | Optional `WorkflowRetryPolicy` (max attempts, delay). |
+| `save_result_to` | String | No | Optional alias path to save results (e.g., `vars.last_response`). |
+
+**Example:**
+```json
+{
+  "type": "http",
+  "name": "create_user",
+  "http": {
+    "method": "POST",
+    "url": "{{ backend_host }}/users",
+    "body": { "email": "{{ form.email }}", "role": "admin" }
+  }
+}
+```
+
+### 2. Validation (`validate`)
+Triggers form validation. If validation fails, the workflow stops.
 
 | Key | Type | Default | Description |
-| --- | --- | --- | --- |
+| :--- | :--- | :---: | :--- |
+| `scope` | String | `all` | `all` (entire form) or `current_step` (for multi-step forms). |
+
+### 3. Variables (`set_var`, `append_var`)
+Manage temporary state within the workflow.
+
+- **`set_var`**: Assigns a value to a key.
+- **`append_var`**: Adds a value to a list.
+
+| Key | Type | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `key` | String | Yes | The variable name (accessible via `vars.KEY`). |
+| `value` | Any | Yes | The value to store (supports expressions). |
+
+### 4. UI Interactions (`toast`, `close_modal`, `refresh`)
+
+- **`toast`**: Shows a message to the user. `variant` can be `success`, `error`, `info`, or `warning`.
+- **`close_modal`**: Closes the current view.
+- **`refresh`**: Reloads a component or data source by ID.
+
+### 5. Control Flow (`condition`, `loop`, `try_catch`)
+
+- **`condition`**: Basic `if/then/else` logic.
+- **`loop`**: Iterates through a list. Exposes current item as `vars.ITEM_VAR`.
+- **`try_catch`**: Wraps actions in a safety block. If `try` fails, `catch` runs.
+
+**Loop Example:**
+```json
+{
+  "type": "loop",
+  "items": "{{ form.selected_ids }}",
+  "item_var": "id",
+  "actions": [
+    {
+      "type": "http",
+      "name": "delete_item",
+      "http": { "method": "DELETE", "url": "/items/{{ vars.id }}" }
+    }
+  ]
+}
+```
+
+### 6. Data Export (`export`)
+Generates and downloads files (Excel, CSV, PDF).
+
+| Key | Type | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `format` | String | Yes | `xlsx`, `csv`, or `pdf`. |
+| `data_source` | String | Yes | Path to the list of items to export. |
+| `columns` | Array | Yes | List of objects with `header` and `body` (expression). |
+
+---
+
+## 🛠️ Utility Objects
+
+### WorkflowRetryPolicy
+Used in HTTP actions to handle transient network errors.
+
+| Key | Type | Default | Description |
+| :--- | :--- | :---: | :--- |
 | `max` | Integer | `0` | Maximum number of retry attempts. |
-| `delay_ms` | Integer | `0` | Delay between retries in milliseconds. |
+| `delay_ms` | Integer | `0` | Wait time between attempts in milliseconds. |
 
 ---
 
-## Example JSON
+## 💡 Full Example
 
 ```json
 {
   "type": "workflow",
   "lock_ui_while_submitting": true,
-  "submit_label": "Submit Application",
+  "submit_label": "Process Order",
   "actions": [
+    { "type": "validate" },
     {
-      "type": "validate",
-      "scope": "all"
-    },
-    {
-      "type": "http",
-      "name": "submit_data",
-      "http": {
-        "method": "POST",
-        "path": "/api/applications",
-        "body": "{{ form.data }}"
-      },
-      "save_result_to": "submission_response"
-    },
-    {
-      "type": "condition",
-      "if": "{{ submission_response.status == 200 }}",
-      "then_actions": [
+      "type": "try_catch",
+      "try": [
+        {
+          "type": "http",
+          "name": "order_api",
+          "http": {
+            "method": "POST",
+            "url": "/api/orders",
+            "body": "{{ form }}"
+          }
+        },
         {
           "type": "toast",
           "variant": "success",
-          "message": "Application submitted successfully!"
-        },
-        {
-          "type": "close_modal"
+          "message": "Order #{{ http.order_api.data.id }} processed!"
         }
       ],
-      "else_actions": [
+      "catch": [
         {
           "type": "toast",
           "variant": "error",
-          "message": "Failed to submit: {{ submission_response.error }}"
+          "message": "Submission failed: {{ vars.last_error }}"
         }
       ]
     }
+  ],
+  "on_success": [
+    { "type": "refresh", "target": "order_list" },
+    { "type": "close_modal" }
   ]
 }
 ```

@@ -1,5 +1,6 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 
 class ComponentButton extends Component {
@@ -8,7 +9,7 @@ class ComponentButton extends Component {
   final String variant; // primary, secondary, outline, ghost, destructive
   final String size; // small, medium, large
   final ActionD? onClick;
-  final String? widthMode;
+  final ComponentSizeMode? widthMode;
   final double? width;
   final int? flex;
 
@@ -35,7 +36,7 @@ class ComponentButton extends Component {
       color: '#2196F3',
       variant: 'primary',
       size: 'medium',
-      widthMode: 'hug',
+      widthMode: ComponentSizeMode.hug,
     );
   }
 
@@ -51,7 +52,7 @@ class ComponentButton extends Component {
     final visibilityCondition = map['visibilityCondition']?.toString();
     final events = map['events'] as Map<String, dynamic>? ?? {};
 
-    final actionMap = map['onClick'];
+    final actionMap = map['on_click'] ?? map['onClick'];
     final onClick =
         actionMap != null ? ActionD.fromJson(Map.from(actionMap)) : null;
 
@@ -62,7 +63,7 @@ class ComponentButton extends Component {
       variant: variant,
       size: size,
       onClick: onClick,
-      widthMode: map['widthMode']?.toString(),
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: double.tryParse(map['width']?.toString() ?? ''),
       flex: int.tryParse(map['flex']?.toString() ?? ''),
       visibilityCondition: visibilityCondition,
@@ -78,8 +79,8 @@ class ComponentButton extends Component {
         'color': color,
         'variant': variant,
         'size': size,
-        if (onClick != null) 'onClick': onClick!.toJson(),
-        'widthMode': widthMode,
+        if (onClick != null) 'on_click': onClick!.toJson(),
+        'widthMode': widthMode?.name,
         'width': width,
         'flex': flex,
         if (visibilityCondition != null)

@@ -1,3 +1,4 @@
+export 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 export 'package:flx_nocode_flutter/features/component/models/c_column.dart';
 export 'package:flx_nocode_flutter/features/component/models/c_row.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_date_picker.dart';

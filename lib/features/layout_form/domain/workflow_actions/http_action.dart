@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
+import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 
 class HttpAction implements WorkflowAction {
   final String name;
@@ -17,6 +19,29 @@ class HttpAction implements WorkflowAction {
     this.retry,
     this.saveResultTo,
   });
+
+  factory HttpAction.fromJson(Map<String, dynamic> json) {
+    final name = (json['name'] ?? '').toString();
+    final httpJson = json['http'];
+    if (httpJson is! Map) {
+      throw const WorkflowConfigurationException(
+        '"http" action must include an "http" object.',
+      );
+    }
+    final retryJson = json['retry'] as Map?;
+    return HttpAction(
+      name:
+          name.isEmpty ? 'http_${DateTime.now().microsecondsSinceEpoch}' : name,
+      http: HttpData.fromJson(Map<String, dynamic>.from(httpJson)),
+      retry: retryJson == null
+          ? null
+          : RetryPolicy.fromJson(
+              Map<String, dynamic>.from(retryJson),
+            ),
+      saveResultTo:
+          (json['save_result_to'] ?? json['saveResultTo'])?.toString(),
+    );
+  }
 
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
@@ -36,6 +61,10 @@ class HttpAction implements WorkflowAction {
           throw const WorkflowExecutionException(
             'HTTP body must resolve to an object.',
           );
+        }
+
+        if (EntityController.enableLog) {
+          debugPrint('    [HttpAction] Resolved Body: $resolvedBody');
         }
 
         final resolved = HttpData(

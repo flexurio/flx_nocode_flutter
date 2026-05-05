@@ -1,14 +1,21 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 
 class ComponentCheckbox extends Component {
   final String label;
   final bool value;
+  final ComponentSizeMode? widthMode;
+  final double? width;
+  final int? flex;
 
   ComponentCheckbox({
     required super.id,
     required this.label,
     required this.value,
+    this.widthMode,
+    this.width,
+    this.flex,
     super.visibilityCondition,
     super.events = const {},
   }) : super(type: componentId);
@@ -20,6 +27,7 @@ class ComponentCheckbox extends Component {
       id: id,
       label: 'Checkbox',
       value: false,
+      widthMode: ComponentSizeMode.hug,
     );
   }
 
@@ -41,6 +49,9 @@ class ComponentCheckbox extends Component {
       id: id,
       label: label,
       value: value,
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
+      width: double.tryParse(map['width']?.toString() ?? ''),
+      flex: int.tryParse(map['flex']?.toString() ?? ''),
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
     );
@@ -51,5 +62,8 @@ class ComponentCheckbox extends Component {
         ...super.toMap(),
         'label': label,
         'value': value,
+        'widthMode': widthMode?.name,
+        'width': width,
+        'flex': flex,
       };
 }

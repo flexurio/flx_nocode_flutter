@@ -1,5 +1,6 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 
 /// A horizontal container component that renders its children inside a row.
 ///
@@ -48,8 +49,11 @@ class ComponentRow extends Component {
   /// Horizontal gap between children.
   final double horizontalGap;
 
-  final String? widthMode; // 'fill', 'hug'
-  final String? heightMode; // 'fill', 'hug'
+  final double? width;
+  final double? height;
+  final int? flex;
+  final ComponentSizeMode? widthMode;
+  final ComponentSizeMode? heightMode;
 
   ComponentRow({
     required super.id,
@@ -59,6 +63,9 @@ class ComponentRow extends Component {
     this.xAlign = 'left',
     this.yAlign = 'top',
     this.horizontalGap = 12.0,
+    this.width,
+    this.height,
+    this.flex,
     this.widthMode,
     this.heightMode,
   }) : super(type: 'row');
@@ -71,8 +78,11 @@ class ComponentRow extends Component {
       xAlign: 'left',
       yAlign: 'top',
       horizontalGap: 12.0,
-      widthMode: 'fill',
-      heightMode: 'hug',
+      widthMode: ComponentSizeMode.fill,
+      heightMode: ComponentSizeMode.hug,
+      width: null,
+      height: null,
+      flex: null,
     );
   }
 
@@ -109,8 +119,11 @@ class ComponentRow extends Component {
       yAlign: map['y_align']?.toString().trim() ?? 'top',
       horizontalGap:
           double.tryParse(map['horizontal_gap']?.toString() ?? '') ?? 12.0,
-      widthMode: map['widthMode']?.toString(),
-      heightMode: map['heightMode']?.toString(),
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
+      heightMode: ComponentSizeMode.fromString(map['heightMode']?.toString()),
+      width: double.tryParse(map['width']?.toString() ?? ''),
+      height: double.tryParse(map['height']?.toString() ?? ''),
+      flex: int.tryParse(map['flex']?.toString() ?? ''),
     );
   }
 
@@ -120,8 +133,11 @@ class ComponentRow extends Component {
         'x_align': xAlign,
         'y_align': yAlign,
         'horizontal_gap': horizontalGap,
-        'widthMode': widthMode,
-        'heightMode': heightMode,
+        'widthMode': widthMode?.name,
+        'heightMode': heightMode?.name,
+        'width': width,
+        'height': height,
+        'flex': flex,
         'children': children.map((e) => e.toMap()).toList(growable: false),
       };
 }

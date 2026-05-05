@@ -1,11 +1,15 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 
 class ComponentImage extends Component {
   final String url;
   final double? width;
   final double? height;
   final String fit;
+  final ComponentSizeMode? widthMode;
+  final ComponentSizeMode? heightMode;
+  final int? flex;
 
   ComponentImage({
     required super.id,
@@ -13,6 +17,9 @@ class ComponentImage extends Component {
     this.width,
     this.height,
     this.fit = 'cover',
+    this.widthMode,
+    this.heightMode,
+    this.flex,
     super.visibilityCondition,
     super.events = const {},
   }) : super(type: 'image');
@@ -37,6 +44,9 @@ class ComponentImage extends Component {
       width: double.tryParse(map['width']?.toString() ?? ''),
       height: double.tryParse(map['height']?.toString() ?? ''),
       fit: map['fit']?.toString() ?? 'cover',
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
+      heightMode: ComponentSizeMode.fromString(map['heightMode']?.toString()),
+      flex: int.tryParse(map['flex']?.toString() ?? ''),
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
     );
@@ -49,5 +59,8 @@ class ComponentImage extends Component {
         if (width != null) 'width': width,
         if (height != null) 'height': height,
         'fit': fit,
+        'widthMode': widthMode?.name,
+        'heightMode': heightMode?.name,
+        'flex': flex,
       };
 }

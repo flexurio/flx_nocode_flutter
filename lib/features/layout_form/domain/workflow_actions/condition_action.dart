@@ -11,6 +11,29 @@ class ConditionAction implements WorkflowAction {
     required this.elseActions,
   });
 
+  factory ConditionAction.fromJson(Map<String, dynamic> json) {
+    final condition = (json['if'] ?? '').toString();
+    if (condition.isEmpty) {
+      throw const WorkflowConfigurationException(
+          '"condition" action requires "if" expression.');
+    }
+
+    final thenActions = ActionFactory.coerceActions(
+      json['then_actions'] ?? json['then'],
+      'then_actions',
+    );
+    final elseActions = ActionFactory.coerceActions(
+      json['else_actions'] ?? json['else'],
+      'else_actions',
+      allowNull: true,
+    );
+    return ConditionAction(
+      ifExpr: condition,
+      thenActions: thenActions,
+      elseActions: elseActions,
+    );
+  }
+
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
     try {
