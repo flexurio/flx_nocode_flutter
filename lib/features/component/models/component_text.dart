@@ -10,6 +10,10 @@ class ComponentText extends Component {
   final ComponentSizeMode? widthMode;
   final double? width;
   final int? flex;
+  final double? fontSize;
+  final String? fontWeight;
+  final String? color;
+  final String? textAlign;
 
   ComponentText({
     required super.id,
@@ -19,6 +23,10 @@ class ComponentText extends Component {
     this.widthMode,
     this.width,
     this.flex,
+    this.fontSize,
+    this.fontWeight,
+    this.color,
+    this.textAlign,
   }) : super(type: 'text');
 
   /// Creates an empty [ComponentText] with a generated ID.
@@ -41,6 +49,10 @@ class ComponentText extends Component {
       widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: double.tryParse(map['width']?.toString() ?? ''),
       flex: int.tryParse(map['flex']?.toString() ?? ''),
+      fontSize: double.tryParse(map['fontSize']?.toString() ?? ''),
+      fontWeight: map['fontWeight']?.toString(),
+      color: map['color']?.toString(),
+      textAlign: map['textAlign']?.toString(),
     );
   }
 
@@ -51,5 +63,9 @@ class ComponentText extends Component {
         'widthMode': widthMode?.name,
         'width': width,
         'flex': flex,
+        'fontSize': fontSize,
+        'fontWeight': fontWeight,
+        'color': color,
+        'textAlign': textAlign,
       };
 }
