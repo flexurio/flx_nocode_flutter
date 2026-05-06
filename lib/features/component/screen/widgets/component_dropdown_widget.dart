@@ -82,6 +82,14 @@ class _ComponentDropdownWidgetState extends State<ComponentDropdownWidget> {
                 initialValue: controller.displayedValue.value,
                 labelText: widget.component.label,
                 enabled: !controller.isLoading.value,
+                validator: widget.component.required
+                    ? (value) {
+                        if (value == null || value.isEmpty) {
+                          return '${widget.component.label} is required';
+                        }
+                        return null;
+                      }
+                    : null,
                 itemAsString: (item) => item['label']?.toString() ?? '',
                 onChanged: (val) {
                   controller.onSelectionChanged(val);
