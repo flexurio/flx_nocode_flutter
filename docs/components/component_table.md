@@ -13,6 +13,7 @@ The `ComponentTable` is a powerful component designed to display dynamic data fe
 | `actions` | Array<Object> | No | List of actions available for each row. See [Action Properties](#action-properties). |
 | `width` | Double | No | The total width of the table in pixels. |
 | `reference_id` | String | No | Optional identifier used for referencing this table in other parts of the system. |
+| `initial_value` | dynamic | No | Local data to load into the table. Supports JSON lists, JSON strings, or templates like `{{form.table_var}}`. Alias: `data`. |
 | `visibilityCondition` | String | No | A logic expression to determine if the table should be visible. |
 | `events` | Object | No | A map of event listeners (e.g., `onLoad`). |
 

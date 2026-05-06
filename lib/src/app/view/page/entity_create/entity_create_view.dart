@@ -50,6 +50,14 @@ class _EntityCreateViewState extends State<EntityCreateView> {
     super.initState();
 
     _controllers = widget.entity.fields.generateControllers();
+    final layoutControllers = widget.layoutForm.generateControllers();
+    
+    // Merge layout controllers into main controllers if they don't already exist
+    for (final entry in layoutControllers.entries) {
+      if (!_controllers.containsKey(entry.key)) {
+        _controllers[entry.key] = entry.value;
+      }
+    }
 
     _action = createOrEdit(widget.data);
     if (_action.isEdit) {

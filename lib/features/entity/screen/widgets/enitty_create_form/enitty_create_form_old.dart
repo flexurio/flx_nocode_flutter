@@ -57,7 +57,12 @@ class _EntityCreateFormOldState extends State<EntityCreateFormOld> {
             widget.layoutForm.renderComponent(
               context: context,
               component: component,
-              data: state,
+              data: {
+                ...state,
+                'form': state,
+                'current': state,
+                'entity': widget.entity,
+              },
               controllers: widget.controllers,
               parentData: widget.parentData,
               dataAction: widget.dataAction,

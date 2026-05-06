@@ -44,7 +44,18 @@ extension LayoutFormDomainX on LayoutForm {
     for (final c in components) {
       _collectFields(c, s);
     }
+    for (final f in multiForms) {
+      s.addAll(f.allFields());
+    }
     return List.unmodifiable(s);
+  }
+
+  Map<String, TextEditingController> generateControllers() {
+    final map = <String, TextEditingController>{};
+    for (final id in allFields()) {
+      map[id] = TextEditingController();
+    }
+    return map;
   }
 
   void _collectFields(Component c, Set<String> fields) {
@@ -56,6 +67,7 @@ extension LayoutFormDomainX on LayoutForm {
         c is ComponentDropdown ||
         c is ComponentRadio ||
         c is ComponentSwitch ||
+        c is ComponentTable ||
         c is ComponentFieldDisplay) {
       fields.add(c.id);
     }

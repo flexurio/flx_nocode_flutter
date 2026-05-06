@@ -5,6 +5,7 @@ import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
 class ComponentTableController extends GetxController {
   final ComponentTable component;
@@ -57,9 +58,41 @@ class ComponentTableController extends GetxController {
       isLoading.value = true;
       error.value = null;
 
-      // 1. Check local data if referenceId is provided
+      // 1. Resolve local data from referenceId or initialValue
+      dynamic localData;
       if (component.referenceId != null && component.referenceId!.isNotEmpty) {
-        final localData = contextData[component.referenceId];
+        localData = contextData[component.referenceId];
+      }
+      
+      // If no referenceId or it yielded null, try initial_value
+      if (localData == null && component.initial_value != null) {
+        final rawInitial = component.initial_value;
+        if (rawInitial is String) {
+          final resolved = rawInitial.interpolateJavascript(contextData);
+          try {
+            localData = jsonDecode(resolved);
+          } catch (_) {
+            localData = resolved;
+          }
+        } else {
+          localData = rawInitial;
+        }
+      }
+
+      if (localData != null) {
+        if (localData is String && localData.isNotEmpty) {
+          try {
+            final decoded = jsonDecode(localData);
+            if (decoded is List) {
+              rows.value = _parseRows(decoded);
+              isLoading.value = false;
+              return;
+            }
+          } catch (_) {
+            // Not a JSON string, continue
+          }
+        }
+        
         if (localData is List) {
           rows.value = _parseRows(localData);
           isLoading.value = false;

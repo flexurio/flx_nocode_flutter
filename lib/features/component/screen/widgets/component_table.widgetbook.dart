@@ -234,3 +234,100 @@ Widget mockComponentTableWithActions(BuildContext context) {
     ),
   );
 }
+
+@UseCase(name: 'Reactive Form Integration', type: ComponentTable)
+Widget mockComponentTableReactiveForm(BuildContext context) {
+  // 1. Setup Form Controllers
+  final detailTableController = TextEditingController();
+  final allControllers = {
+    'detail_table': detailTableController,
+  };
+
+  const jsonRaw = '''
+  {
+    "id": "detail_table",
+    "initial_value": "{{form.detail_table}}",
+    "width": 800,
+    "columns": [
+      { "header": "Item", "body": "name", "width": 200 },
+      { 
+        "header": "Status", 
+        "body": "status", 
+        "width": 200,
+        "component": {
+          "id": "status_dropdown",
+          "type": "dropdown",
+          "on_change": {
+            "type": "update_row",
+            "target_id": "detail_table"
+          },
+          "options": ["Pending", "Approved", "Rejected"],
+          "widthMode": "fill"
+        }
+      }
+    ]
+  }
+  ''';
+
+  final map = json.decode(jsonRaw) as Map<String, dynamic>;
+  final component = ComponentTable.fromMap(map);
+
+  // Initial Data
+  final initialRows = [
+    {"name": "Document A", "status": "Pending"},
+    {"name": "Document B", "status": "Pending"},
+  ];
+  detailTableController.text = jsonEncode(initialRows);
+
+  return Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("Reactive Table Sync with Form Controller:",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        const SizedBox(height: 8),
+        const Text(
+            "Changing the dropdown inside the table updates the form controller below in real-time.",
+            style: TextStyle(color: Colors.grey, fontSize: 12)),
+        const SizedBox(height: 16),
+        SizedBox(
+          height: 300,
+          child: component.toWidget({
+            'form': {'detail_table': detailTableController.text},
+            'allControllers': allControllers,
+          }),
+        ),
+        const SizedBox(height: 24),
+        const Divider(),
+        const SizedBox(height: 8),
+        const Text("Parent Form Controller Value (Raw JSON):",
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        Expanded(
+          child: ListenableBuilder(
+            listenable: detailTableController,
+            builder: (context, _) {
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.black12),
+                ),
+                child: SingleChildScrollView(
+                  child: Text(
+                    detailTableController.text,
+                    style: const TextStyle(
+                        fontFamily: 'monospace', color: Colors.blueAccent),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    ),
+  );
+}

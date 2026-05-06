@@ -177,8 +177,18 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
   }
 
   bool _shouldReload(JsonMap oldData, JsonMap newData) {
-    // If no dependencies are defined, we don't reload on every data change.
-    // This prevents unnecessary requests when other unrelated fields change.
+    // 1. Check if the resolved initial_value has changed
+    if (widget.component.initial_value is String &&
+        (widget.component.initial_value as String).contains('{{')) {
+      final oldResolved = (widget.component.initial_value as String)
+          .interpolateJavascript(oldData);
+      final newResolved = (widget.component.initial_value as String)
+          .interpolateJavascript(newData);
+
+      if (oldResolved != newResolved) return true;
+    }
+
+    // 2. Check explicit dependencies
     if (widget.component.dependsOn.isEmpty) return false;
 
     for (final depId in widget.component.dependsOn) {

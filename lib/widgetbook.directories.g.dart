@@ -174,6 +174,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                             .mockComponentTableDesign,
                   ),
                   _widgetbook.WidgetbookUseCase(
+                    name: 'Reactive Form Integration',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
+                            .mockComponentTableReactiveForm,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
                     name: 'With Dropdown Component',
                     builder:
                         _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
