@@ -48,7 +48,9 @@ class JsInterpolationProcessor {
 
       // Fallback to full JS evaluation
       try {
-        final script = _scriptBuilder.build(info.targetExpr, allVars);
+        final target =
+            info.isJsonWrapper ? 'JSON.stringify(${info.targetExpr})' : info.targetExpr;
+        final script = _scriptBuilder.build(target, allVars);
         final value = evalJs(script);
 
         if (value == 'undefined' || value == 'null') {
@@ -132,11 +134,10 @@ class ExpressionInfo {
 
   String wrapResult(dynamic value) {
     if (isJsonWrapper) {
-      try {
-        return jsonEncode(value);
-      } catch (_) {
-        return 'null';
-      }
+      // If it's already a string (which it is, from evalJs),
+      // we don't want to jsonEncode it again if it's already a JSON string.
+      // However, JsInterpolationProcessor now handles stringification in JS.
+      return value?.toString() ?? 'null';
     }
     if (value == null) return '';
     if (value is String || value is num || value is bool) {

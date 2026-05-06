@@ -56,15 +56,18 @@ class LoopAction implements WorkflowAction {
 
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
+    print('[LoopAction] Resolving items: $items');
     final resolved = Template.resolve(items, ctx);
-    print('[LoopAction] Resolving items...');
+    print('[LoopAction] Resolved value: $resolved');
+    print('[LoopAction] Resolved type: ${resolved.runtimeType}');
+
     if (resolved == null) {
       print('[LoopAction] Items resolved to null, skipping loop.');
       return;
     }
     if (resolved is! List) {
       throw WorkflowExecutionException(
-        'Loop items must resolve to a list, got ${resolved.runtimeType}.',
+        'Loop items must resolve to a list, got ${resolved.runtimeType}. Value: $resolved',
       );
     }
 

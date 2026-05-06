@@ -20,6 +20,8 @@ class JsVariableProvider {
       // 1. Context variables
       if (variables != null) ...{
         ...variables,
+        // Flatten workflow variables for direct access (e.g. {{item.id}})
+        if (variables['vars'] is Map) ...variables['vars'],
         if (!variables.containsKey('form'))
           'form': variables['form'] ?? variables,
         if (!variables.containsKey('record'))
