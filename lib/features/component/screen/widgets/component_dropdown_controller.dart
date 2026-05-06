@@ -283,7 +283,7 @@ class ComponentDropdownController extends GetxController {
 
     for (final action in component.onChangeActions) {
       if (action.type == 'set_value') {
-        final targetId = action.targetId;
+        final targetId = action.target_id;
         final targetController = _allControllers[targetId];
         if (targetController != null) {
           String rawValue = action.value ?? '';
@@ -295,6 +295,28 @@ class ComponentDropdownController extends GetxController {
             debugPrint('Interpolation failed: $e');
           }
           _safeUpdateController(targetController, newValue);
+        }
+      } else if (action.type == 'update_row') {
+        final onRowChanged = data['onRowChanged'];
+        if (onRowChanged is Function(Map<String, dynamic>)) {
+          final row = Map<String, dynamic>.from(data['row'] as Map? ?? {});
+
+          if (action.mappings != null && action.mappings!.isNotEmpty) {
+            for (final entry in action.mappings!.entries) {
+              final targetField = entry.key;
+              final rawValue = entry.value;
+              try {
+                row[targetField] = rawValue.interpolateJavascript(context);
+              } catch (e) {
+                row[targetField] = rawValue;
+              }
+            }
+          } else {
+            final key = action.reference ?? component.id;
+            row[key] = value;
+          }
+
+          onRowChanged(row);
         }
       }
     }

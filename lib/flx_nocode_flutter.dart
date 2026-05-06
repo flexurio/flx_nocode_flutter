@@ -31,3 +31,4 @@ export 'features/component/models/component_chart.dart';
 export 'features/component/models/component_pie_chart.dart';
 export 'features/component/models/component_bar_chart.dart';
 export 'features/component/models/component_donut_chart.dart';
+export 'features/component/models/component_action.dart';

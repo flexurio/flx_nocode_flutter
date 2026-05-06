@@ -48,6 +48,7 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `navigate_back` | Navigates to the previous screen. | - |
 | `print` | Triggers a PDF print workflow. | `layout_print_id`, `http` (optional) |
 | `list_json_view_as_table` | Renders nested JSON as a sub-table. | `reference` (field name) |
+| `update_row` | Updates the data of the current row in a table. | `reference` (optional field name) |
 
 ---
 
@@ -170,3 +171,18 @@ This example demonstrates how to capture input from a form and append it to a lo
 }
 ```
 *Note: The table displaying this data should have `"reference_id": "inventory_items"`.*
+
+### Reactive Table Row Update using `update_row`
+This example shows how to use a dropdown inside a table to update a specific field in the row.
+
+```json
+{
+  "id": "dic_dropdown",
+  "type": "dropdown",
+  "on_change": {
+    "type": "update_row",
+    "reference": "department_id"
+  }
+}
+```
+When a value is selected in this dropdown, it will update the `department_id` field in the current table row and notify the parent form of the change.

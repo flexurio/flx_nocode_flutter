@@ -181,3 +181,54 @@ When rendering cells or executing actions, you can pass special flags in the `da
 | --- | --- |
 | `bypassPermission` | If set to `true`, all row actions will be visible and clickable regardless of user permissions. Primarily used for Widgetbook or development demos. |
 | `parentData` | A list of objects from the parent context, accessible by actions for complex workflows. |
+| `onRowChanged` | (Internal) Callback used by nested components to notify the table of row changes. |
+
+## Reactive Row Updates
+
+Tables support inline updates when using nested components (like `dropdown` or `text_field`) inside a column. This allows the table to act as a dynamic data entry tool.
+
+### How it works
+
+1. The table passes an `onRowChanged` callback to all components rendered within its cells.
+2. When a component (e.g., a Dropdown) triggers an update, it calls this callback.
+3. The `ComponentTableController` updates its reactive `rows` list.
+4. The table then serializes its entire state (all rows) into a JSON string.
+5. This JSON string is pushed to the parent form's `TextEditingController` matching the table's `id`.
+
+### Configuration Example
+
+To enable row updates for a dropdown in a table, use the `update_row` action type in the component's `on_change` (or `onChangeActions`):
+
+```json
+{
+  "header": "DIC",
+  "body": "department_id",
+  "component": {
+    "id": "dic_dropdown",
+    "type": "dropdown",
+    "on_change": {
+      "type": "update_row",
+      "reference": "department_id"
+    },
+    "httpData": { ... }
+  }
+}
+```
+
+- **`type: "update_row"`**: Tells the component to notify its parent table.
+- **`reference`**: (Optional) Specifies which key in the row object should be updated with the component's new value. If omitted, the component's `id` is used.
+- **`mappings`**: (Optional) A map of field names to values (supports JS interpolation). Use this to update multiple fields at once (e.g., updating both an ID and a Name from a dropdown selection).
+
+### Example with Mappings
+
+```json
+"on_change": {
+  "type": "update_row",
+  "target_id": "detail_table",
+  "mappings": {
+    "department_id": "{{ key }}",
+    "department_name": "{{ item.name }}"
+  }
+}
+```
+In this example, choosing an item from a dropdown will update both the `department_id` and `department_name` fields in the table row, using the selected item's key and its `name` property.

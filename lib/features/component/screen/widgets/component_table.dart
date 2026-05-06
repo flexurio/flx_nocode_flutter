@@ -228,6 +228,8 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
                     ...widget.data,
                     "current": row,
                     "row": row,
+                    "onRowChanged": (newData) =>
+                        controller.onRowChanged(index, newData),
                   },
                 ),
               );

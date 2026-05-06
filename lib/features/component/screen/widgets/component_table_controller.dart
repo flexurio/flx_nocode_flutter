@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
@@ -107,5 +108,34 @@ class ComponentTableController extends GetxController {
         .whereType<Map>()
         .map<JsonMap>((e) => Map<String, dynamic>.from(e))
         .toList();
+  }
+
+  /// Serializes the current rows to JSON and updates the parent form controller.
+  void notifyChanged() {
+    try {
+      final targetId = component.referenceId ?? component.id;
+      final allControllers =
+          contextData['allControllers'] as Map<String, dynamic>?;
+      final parentControllers =
+          allControllers?.cast<String, TextEditingController>();
+
+      if (parentControllers != null && parentControllers.containsKey(targetId)) {
+        final jsonStr = jsonEncode(rows);
+        final controller = parentControllers[targetId];
+        if (controller != null && controller.text != jsonStr) {
+          controller.text = jsonStr;
+        }
+      }
+    } catch (e) {
+      debugPrint('[ComponentTableController] notifyChanged error: $e');
+    }
+  }
+
+  /// Updates a specific row and notifies the parent.
+  void onRowChanged(int index, JsonMap newData) {
+    if (index >= 0 && index < rows.length) {
+      rows[index] = newData;
+      notifyChanged();
+    }
   }
 }

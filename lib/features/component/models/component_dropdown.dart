@@ -76,7 +76,7 @@ class ComponentDropdown extends Component {
         ? HttpData.fromJson(Map<String, dynamic>.from(httpDataMap))
         : null;
 
-    final rawActions = map['onChangeActions'];
+    final rawActions = map['onChangeActions'] ?? map['on_change'];
     final onChangeActions = <ComponentAction>[];
     if (rawActions is List) {
       for (final item in rawActions) {
@@ -84,6 +84,10 @@ class ComponentDropdown extends Component {
           onChangeActions.add(ComponentAction.fromMap(item));
         }
       }
+    } else if (rawActions is Map) {
+      onChangeActions.add(
+        ComponentAction.fromMap(Map<String, dynamic>.from(rawActions)),
+      );
     }
 
     final required = map['required'] == true;
