@@ -17,7 +17,28 @@ class ComponentDropdownController extends GetxController {
 
   /// Updates the context data from the parent widget.
   void updateData(JsonMap newData) {
+    final oldData = data;
     data = newData;
+
+    // Trigger refresh if dependencies in the row data changed
+    if (component.dependsOn.isNotEmpty) {
+      bool changed = false;
+      final oldRow = oldData['data'] as Map?;
+      final newRow = newData['data'] as Map?;
+
+      for (final depId in component.dependsOn) {
+        if (newRow != null && oldRow != null) {
+          if (newRow[depId] != oldRow[depId]) {
+            changed = true;
+            break;
+          }
+        }
+      }
+
+      if (changed) {
+        _onDependencyChanged();
+      }
+    }
   }
 
   final options = <Map<String, dynamic>>[].obs;
@@ -120,18 +141,19 @@ class ComponentDropdownController extends GetxController {
   JsonMap _prepareRequestData() {
     final requestData = <String, dynamic>{};
 
-    // 1. Start with values from state (if any) as a base
+    // 1. Context variables from widget (row, form, etc)
+    requestData.addAll(data);
+
+    // 2. Start with values from state (if any) as a base
     final state = data['data'] as Map?;
     if (state != null) {
       requestData.addAll(Map<String, dynamic>.from(state));
+      // Ensure 'data' variable is available for {{ data.id }}
+      requestData['data'] = state;
     }
 
-    // 2. Overlay current values from _allControllers to ensure freshness
-    // This is crucial because dependency listeners might fire before the widget
-    // receives the updated state via build updates.
+    // 3. Overlay current values from _allControllers to ensure freshness
     for (final entry in _allControllers.entries) {
-      // Only overwrite if the controller has a value (or empty string)
-      // This maps the controller text directly to the key.
       requestData[entry.key] = entry.value.text;
     }
 

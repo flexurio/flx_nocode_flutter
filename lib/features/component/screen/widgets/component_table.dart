@@ -236,8 +236,10 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
                   isSmall: true,
                   data: {
                     ...widget.data,
+                    ...row,
                     "current": row,
                     "row": row,
+                    "data": row,
                     "onRowChanged": (newData) =>
                         controller.onRowChanged(index, newData),
                   },
@@ -250,8 +252,11 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
 
             return Text(
               text.interpolateJavascript({
-                "current": currentData,
+                ...currentData,
+                ...row,
+                "current": row,
                 "row": row,
+                "data": row,
               }),
             );
           },
