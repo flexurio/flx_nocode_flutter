@@ -147,9 +147,6 @@ class ExpressionInfo {
       return jsonEncode(value);
     }
     if (value == null) return '';
-    if (value is String || value is num || value is bool) {
-      return value.toString();
-    }
     return value.toString();
   }
 }

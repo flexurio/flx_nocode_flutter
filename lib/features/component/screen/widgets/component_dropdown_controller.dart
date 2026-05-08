@@ -5,6 +5,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_dropdown.
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_action.dart';
 
 class ComponentDropdownController extends GetxController {
   final ComponentDropdown component;
@@ -162,11 +163,6 @@ class ComponentDropdownController extends GetxController {
   dynamic _resolveValue(dynamic item, String path, JsonMap context) {
     if (path.isEmpty) return '';
 
-    // If it's a template, use interpolation
-    if (path.contains('{{')) {
-      return path.interpolateJavascript(context);
-    }
-
     // Try to resolve as a direct or nested key in the item
     if (item is Map) {
       if (item.containsKey(path)) return item[path] ?? '';
@@ -185,7 +181,7 @@ class ComponentDropdownController extends GetxController {
       if (found) return current ?? '';
     }
 
-    // Fallback to interpolation (which returns the string itself if no {{ }} found)
+    // Fallback to interpolation
     return path.interpolateJavascript(context);
   }
 
@@ -206,9 +202,7 @@ class ComponentDropdownController extends GetxController {
           }
         }
 
-        if (iv.contains('{{')) {
-          iv = iv.interpolateJavascript(data);
-        }
+        iv = iv.interpolateJavascript(data);
       } catch (e) {
         debugPrint('[Dropdown Init: $id] Interpolation failed: $e');
       }
@@ -271,55 +265,63 @@ class ComponentDropdownController extends GetxController {
   void _handleActions(Map<String, dynamic> selection) {
     if (component.onChangeActions.isEmpty) return;
 
+    final context = _buildActionContext(selection);
+
+    for (final action in component.onChangeActions) {
+      switch (action.type) {
+        case 'set_value':
+          _handleSetValueAction(action, context);
+          break;
+        case 'update_row':
+          _handleUpdateRowAction(action, context, selection);
+          break;
+      }
+    }
+  }
+
+  Map<String, dynamic> _buildActionContext(Map<String, dynamic> selection) {
     final value = selection['key']?.toString() ?? '';
     final item = selection['item'];
     final requestData = _prepareRequestData();
 
-    final context = <String, dynamic>{
+    return <String, dynamic>{
       ...selection,
       'item': item,
       'value': value,
       ...requestData,
     };
+  }
 
-    for (final action in component.onChangeActions) {
-      if (action.type == 'set_value') {
-        final targetId = action.target_id;
-        final targetController = _allControllers[targetId];
-        if (targetController != null) {
-          String rawValue = action.value ?? '';
-          String newValue = rawValue;
-
-          try {
-            newValue = rawValue.interpolateJavascript(context);
-          } catch (e) {
-            debugPrint('Interpolation failed: $e');
-          }
-          _safeUpdateController(targetController, newValue);
-        }
-      } else if (action.type == 'update_row') {
-        final onRowChanged = data['onRowChanged'];
-        if (onRowChanged is Function(Map<String, dynamic>)) {
-          final row = Map<String, dynamic>.from(data['row'] as Map? ?? {});
-
-          if (action.mappings != null && action.mappings!.isNotEmpty) {
-            for (final entry in action.mappings!.entries) {
-              final targetField = entry.key;
-              final rawValue = entry.value;
-              try {
-                row[targetField] = rawValue.interpolateJavascript(context);
-              } catch (e) {
-                row[targetField] = rawValue;
-              }
-            }
-          } else {
-            final key = action.reference ?? component.id;
-            row[key] = value;
-          }
-
-          onRowChanged(row);
-        }
-      }
+  void _handleSetValueAction(
+      ComponentAction action, Map<String, dynamic> context) {
+    final targetId = action.target_id;
+    final targetController = _allControllers[targetId];
+    if (targetController != null) {
+      final rawValue = action.value ?? '';
+      final newValue = rawValue.interpolateJavascript(context);
+      _safeUpdateController(targetController, newValue);
     }
+  }
+
+  void _handleUpdateRowAction(ComponentAction action,
+      Map<String, dynamic> context, Map<String, dynamic> selection) {
+    final onRowChanged = data['onRowChanged'];
+    if (onRowChanged is! Function) return;
+
+    final row = Map<String, dynamic>.from(data['row'] as Map? ?? {});
+
+    if (action.mappings != null && action.mappings!.isNotEmpty) {
+      for (final entry in action.mappings!.entries) {
+        final targetField = entry.key;
+        final rawValue = entry.value;
+        row[targetField] = rawValue.interpolateJavascript(context);
+      }
+    } else {
+      final value = selection['key']?.toString() ?? '';
+      final key = action.reference ?? component.id;
+      row[key] = value;
+    }
+
+    onRowChanged(row);
   }
 }
