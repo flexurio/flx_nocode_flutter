@@ -27,6 +27,13 @@ extension ActionExecutionExtension on ActionD {
     required List<Map<String, dynamic>> parentData,
     VoidCallback? onSuccessCallback,
   }) async {
+    if (validate) {
+      final form = Form.of(context);
+      if (!form.validate()) {
+        return;
+      }
+    }
+
     switch (type) {
       case ActionType.listJsonViewAsTable:
         if (reference == null) {

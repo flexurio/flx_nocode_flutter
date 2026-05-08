@@ -98,6 +98,9 @@ class ActionD extends HiveObject {
   /// The value to be set for setVariable action type.
   final String? value;
 
+  /// Whether to validate the form before executing the action.
+  final bool validate;
+
   /// The format for export action (excel, csv, pdf).
   final String? exportFormat;
 
@@ -129,6 +132,7 @@ class ActionD extends HiveObject {
     this.copyValue,
     this.targetVariable,
     this.value,
+    this.validate = false,
     this.exportFormat,
     this.exportColumns,
   }) {
@@ -165,6 +169,7 @@ class ActionD extends HiveObject {
     String? copyValue,
     String? targetVariable,
     String? value,
+    bool? validate,
     String? exportFormat,
     List<TColumn>? exportColumns,
   }) {
@@ -172,6 +177,7 @@ class ActionD extends HiveObject {
       exportFormat: exportFormat ?? this.exportFormat,
       exportColumns: exportColumns ?? this.exportColumns,
       value: value ?? this.value,
+      validate: validate ?? this.validate,
       width: width ?? this.width,
       isMultiple: isMultiple ?? this.isMultiple,
       id: id ?? this.id,
@@ -242,6 +248,7 @@ class ActionD extends HiveObject {
       copyValue: json['copy_value'],
       targetVariable: json['target_variable'],
       value: json['value'],
+      validate: json['validate'] ?? false,
       exportFormat: json['export_format'],
       exportColumns: json['export_columns'] != null
           ? (json['export_columns'] as List)
@@ -278,6 +285,7 @@ class ActionD extends HiveObject {
       'copy_value': copyValue,
       'target_variable': targetVariable,
       'value': value,
+      'validate': validate,
       'export_format': exportFormat,
       'export_columns': exportColumns
           ?.map((e) => {
