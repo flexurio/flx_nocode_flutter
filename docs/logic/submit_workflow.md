@@ -63,7 +63,7 @@ Performs a network request (GET, POST, PUT, DELETE, etc.).
 | `http` | Object | Yes | `HttpData` config (method, url, body, headers). |
 | `retry` | Object | No | Optional `WorkflowRetryPolicy` (max attempts, delay). |
 | `save_result_to` | String | No | Optional alias path to save results (e.g., `vars.last_response`). |
-| `error_message_path` | String | No | Optional JSON path to extract error message from response (e.g. `error.detail`). Defaults to `message`, `error`, or `detail` fields. |
+| `error_message_path` | String | No | Optional JSON path to extract error message from response (e.g. `error.detail`). |
 
 **Example:**
 ```json
@@ -132,6 +132,26 @@ Generates and downloads files (Excel, CSV, PDF).
 | `format` | String | Yes | `xlsx`, `csv`, or `pdf`. |
 | `data_source` | String | Yes | Path to the list of items to export. |
 | `columns` | Array | Yes | List of objects with `header` and `body` (expression). |
+
+---
+
+## 🛡️ Error Handling & Extraction
+
+The workflow engine includes a robust system for extracting and cleaning error messages from API responses.
+
+### Automatic Extraction
+When an HTTP step fails (Status 4xx/5xx), the system automatically looks for an error message in the response body using the following priority:
+1.  **Custom Path**: If `error_message_path` is provided, it uses that dot-notation path.
+2.  **Default Fields**: It checks for `message`, `error`, or `detail` fields in the root of the JSON response.
+3.  **Fallback**: It uses the standard HTTP status message.
+
+### Recursive Message Cleaning
+All extracted messages are recursively cleaned to remove technical prefixes before they are displayed or stored in `vars.last_error`. This removes:
+-   Class names (e.g., `ApiException:`, `WorkflowException:`, `Exception:`)
+-   Status codes (e.g., `500::`, `400::`)
+-   Leading/trailing whitespace
+
+This ensures that the user sees a clean message like *"duplicate entry '1-1' for key..."* instead of technical stack traces.
 
 ---
 

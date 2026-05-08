@@ -15,7 +15,7 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `icon_color` | String | No | Hex color code for the icon (e.g., `#4CAF50`). |
 | `http` | Object | No | [HttpData](./http_data.md) configuration if the action involves a network request. |
 | `on_success` | String | No | Behavior on success: `toast`, `refresh`, `navigate_back`, `navigate_home`, `show_success_dialog_with_data`. |
-| `on_failure` | String | No | Behavior on failure: `toast`, `show_error_dialog`. |
+| `on_failure` | String | No | Behavior on failure: `toast`, `show_error_dialog`. (Uses cleaned API messages automatically). |
 | `is_multiple`| Boolean | No | If `true`, this action is enabled when multiple items are selected in a table. |
 | `rule` | Object | No | A [Rule](#4-rule-based-visibility) object to determine if this action is visible for a specific row. |
 | `layout_form_id`| String| No* | The ID of the form layout to open (required for `open_page` or `show_dialog`). |
