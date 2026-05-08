@@ -1,80 +1,574 @@
-Failed to build dart_code_linter:metrics:
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/always_remove_listener/always_remove_listener_rule.dart:5:8: Error: Error when reading '../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/dart/element/element2.dart': No such file or directory
-import 'package:analyzer/dart/element/element2.dart';
-       ^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/arguments_ordering/arguments_ordering_rule.dart:6:8: Error: Error when reading '../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/dart/element/element2.dart': No such file or directory
-import 'package:analyzer/dart/element/element2.dart';
-       ^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_border_all/avoid_border_all_rule.dart:5:8: Error: Error when reading '../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/dart/element/element2.dart': No such file or directory
-import 'package:analyzer/dart/element/element2.dart';
-       ^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_initializing_in_on_mount/avoid_initializing_in_on_mount_rule.dart:5:8: Error: Error when reading '../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/dart/element/element2.dart': No such file or directory
-import 'package:analyzer/dart/element/element2.dart';
-       ^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/prefer_const_border_radius/prefer_const_border_radius_rule.dart:5:8: Error: Error when reading '../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/dart/element/element2.dart': No such file or directory
-import 'package:analyzer/dart/element/element2.dart';
-       ^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/always_remove_listener/visitor.dart:123:5: Error: Type 'Element2' not found.
-    Element2? element,
-    ^^^^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/always_remove_listener/visitor.dart:166:5: Error: Type 'Element2' not found.
-    Element2? element,
-    ^^^^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/always_remove_listener/visitor.dart:123:5: Error: 'Element2' isn't a type.
-    Element2? element,
-    ^^^^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/always_remove_listener/visitor.dart:166:5: Error: 'Element2' isn't a type.
-    Element2? element,
-    ^^^^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_border_all/visitor.dart:29:26: Error: 'PropertyAccessorElement2' isn't a type.
-          if (element is PropertyAccessorElement2 &&
-                         ^^^^^^^^^^^^^^^^^^^^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_border_all/visitor.dart:32:33: Error: 'VariableElement2' isn't a type.
-          } else if (element is VariableElement2 && !element.isConst) {
-                                ^^^^^^^^^^^^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_dynamic/visitor.dart:10:44: Error: The getter 'name2' isn't defined for the type 'NamedType'.
- - 'NamedType' is from 'package:analyzer/src/dart/ast/ast.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/src/dart/ast/ast.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'name2'.
-    if ((node.type is DynamicType) && node.name2.toString() == 'dynamic') {
-                                           ^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_dynamic/visitor.dart:30:47: Error: The getter 'name2' isn't defined for the type 'NamedType'.
- - 'NamedType' is from 'package:analyzer/src/dart/ast/ast.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/src/dart/ast/ast.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'name2'.
-      if (baseType is Identifier && baseType?.name2.toString() == 'dynamic') {
-                                              ^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_dynamic/visitor.dart:34:41: Error: The getter 'name2' isn't defined for the type 'NamedType'.
- - 'NamedType' is from 'package:analyzer/src/dart/ast/ast.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/src/dart/ast/ast.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'name2'.
-          if (type is NamedType && type.name2.toString() == 'dynamic') {
-                                        ^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_initializing_in_on_mount/visitor.dart:39:20: Error: 'PropertyAccessorElement2' isn't a type.
-    if (element is PropertyAccessorElement2 &&
-                   ^^^^^^^^^^^^^^^^^^^^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/avoid_initializing_in_on_mount/visitor.dart:38:26: Error: The getter 'writeElement2' isn't defined for the type 'AssignmentExpression'.
- - 'AssignmentExpression' is from 'package:analyzer/src/dart/ast/ast.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/src/dart/ast/ast.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'writeElement2'.
-    final element = node.writeElement2;
-                         ^^^^^^^^^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/no_object_declaration/visitor.dart:28:34: Error: The getter 'name2' isn't defined for the type 'NamedType'.
- - 'NamedType' is from 'package:analyzer/src/dart/ast/ast.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/src/dart/ast/ast.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'name2'.
-      (type is NamedType && type.name2.lexeme == 'Object');
-                                 ^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/prefer_const_border_radius/visitor.dart:27:24: Error: 'PropertyAccessorElement2' isn't a type.
-        if (element is PropertyAccessorElement2 && element.variable3!.isConst) {
-                       ^^^^^^^^^^^^^^^^^^^^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/use_design_system/visitor.dart:15:50: Error: The getter 'element2' isn't defined for the type 'NamedType'.
- - 'NamedType' is from 'package:analyzer/src/dart/ast/ast.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/src/dart/ast/ast.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'element2'.
-    final widgetName = node.constructorName.type.element2?.displayName;
-                                                 ^^^^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/rules_list/use_design_system/visitor.dart:25:54: Error: The getter 'library2' isn't defined for the type 'ConstructorElement'.
- - 'ConstructorElement' is from 'package:analyzer/dart/element/element.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/dart/element/element.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'library2'.
-    final libraryUri = node.constructorName.element?.library2.toString() ?? '';
-                                                     ^^^^^^^^
-../../../.pub-cache/hosted/pub.dev/dart_code_linter-3.2.1/lib/src/analyzers/lint_analyzer/rules/base_visitors/intl_base_visitor.dart:35:44: Error: The getter 'name2' isn't defined for the type 'NamedType'.
- - 'NamedType' is from 'package:analyzer/src/dart/ast/ast.dart' ('../../../.pub-cache/hosted/pub.dev/analyzer-9.0.0/lib/src/dart/ast/ast.dart').
-Try correcting the name to the name of an existing getter, or defining a getter or field named 'name2'.
-    if (node.fields.type?.as<NamedType>()?.name2.lexeme != 'String') {
-                                           ^^^^^
+[2K⠙ Analyzing...[2K[2K⠹ Processing 228 file(s)... 0.6s[2K⠸ Processing 228 file(s)... 26.9s[2K⠼ Processing 228 file(s)... 27.0s[2K⠴ Processing 228 file(s)... 27.1s[2K⠦ Processing 228 file(s)... 27.1s[2K⠧ Processing 228 file(s)... 27.3s[2K⠇ Processing 228 file(s)... 27.3s[2K⠏ Processing 228 file(s)... 27.5s[2K⠋ Processing 228 file(s)... 27.5s[2K⠙ Processing 228 file(s)... 27.6s[2K⠹ Processing 228 file(s)... 27.7s[2K⠸ Processing 228 file(s)... 28.3s[2K⠼ Processing 228 file(s)... 28.3s[2K⠴ Processing 228 file(s)... 28.4s[2K⠦ Processing 228 file(s)... 28.5s[2K⠧ Processing 228 file(s)... 28.6s[2K⠇ Processing 228 file(s)... 28.7s[2K⠏ Processing 228 file(s)... 28.7s[2K⠋ Processing 228 file(s)... 28.8s[2K⠙ Processing 228 file(s)... 28.9s[2K⠹ Processing 228 file(s)... 29.0s[2K⠸ Processing 228 file(s)... 29.0s[2K⠼ Processing 228 file(s)... 29.1s[2K⠴ Processing 228 file(s)... 29.2s[2K⠦ Processing 228 file(s)... 29.3s[2K⠧ Processing 228 file(s)... 30.1s[2K⠇ Processing 228 file(s)... 30.2s[2K⠏ Processing 228 file(s)... 30.2s[2K⠋ Processing 228 file(s)... 30.3s[2K⠙ Processing 228 file(s)... 30.4s[2K⠹ Processing 228 file(s)... 30.5s[2K⠸ Processing 228 file(s)... 30.6s[2K⠼ Processing 228 file(s)... 30.6s[2K⠴ Processing 228 file(s)... 30.7s[2K⠦ Processing 228 file(s)... 30.8s[2K⠧ Processing 228 file(s)... 30.9s[2K⠇ Processing 228 file(s)... 31.0s[2K⠏ Processing 228 file(s)... 31.1s[2K⠋ Processing 228 file(s)... 31.1s[2K⠙ Processing 228 file(s)... 31.2s[2K⠹ Processing 228 file(s)... 31.3s[2K⠸ Processing 228 file(s)... 31.4s[2K⠼ Processing 228 file(s)... 31.4s[2K⠴ Processing 228 file(s)... 31.5s[2K⠦ Processing 228 file(s)... 31.6s[2K⠧ Processing 228 file(s)... 31.7s[2K⠇ Processing 228 file(s)... 31.8s[2K✔ Analysis is completed. Preparing the results: 31.9s
+
+lib/src/app/resource/entity_custom.dart:
+WARNING EntityCustomRepository._request
+        cyclomatic complexity: 20
+        number of parameters: 7
+        source lines of code: 66 lines
+
+ALARM   EntityCustomRepository.fetch
+        cyclomatic complexity: 17
+        number of parameters: 9
+        source lines of code: 69 lines
+
+WARNING EntityCustomRepository.fetchById
+        maximum nesting level: 5
+        number of parameters: 7
+
+WARNING EntityCustomRepository.modify
+        maximum nesting level: 5
+        number of parameters: 8
+        source lines of code: 44 lines
+
+
+lib/src/app/util/resource_loader.dart:
+WARNING loadFromAssetOrFile
+        number of parameters: 6
+
+
+lib/src/app/view/widget/filter.dart:
+WARNING FilterButton.build
+        source lines of code: 53 lines
+
+
+lib/src/app/view/widget/error.dart:
+ALARM   _NoCodeErrorState.build
+        source lines of code: 417 lines
+
+
+lib/src/app/view/widget/entity_home.dart:
+WARNING MenuCustom.fromId
+        number of parameters: 8
+
+WARNING BreadcrumbWithBack.build
+        source lines of code: 58 lines
+
+
+lib/src/app/view/page/entity_create/entity_create_page_old.dart:
+ALARM   EntityCreatePageOld.prepare
+        number of parameters: 10
+
+WARNING EntityCreatePageOld.route
+        number of parameters: 8
+
+
+lib/src/app/view/page/landing/widget/landing_app_bar.dart:
+WARNING _LandingAppBarState._buildDesktopNavigation
+        source lines of code: 61 lines
+
+WARNING _LandingAppBarState.build
+        source lines of code: 63 lines
+
+
+lib/src/app/view/page/landing/landing_page.dart:
+WARNING _LandingPageState._buildHeroSection
+        source lines of code: 62 lines
+
+WARNING _LandingPageState._buildMobileHeroButtons
+        source lines of code: 51 lines
+
+WARNING _LandingPageState._buildServiceCard
+        number of parameters: 4
+        source lines of code: 91 lines
+
+WARNING _LandingPageState._buildTestimonialCard
+        number of parameters: 4
+        source lines of code: 80 lines
+
+WARNING _LandingPageState._buildTeamMember
+        source lines of code: 51 lines
+
+ALARM   _LandingPageState._buildPricingCard
+        number of parameters: 4
+        source lines of code: 118 lines
+
+WARNING _LandingPageState._buildContactForm
+        source lines of code: 67 lines
+
+WARNING _LandingPageState._buildFooterLogo
+        source lines of code: 61 lines
+
+
+lib/src/app/view/page/entity_view/widget/delete_button.dart:
+WARNING EntityDeleteButton.prepare
+        number of parameters: 5
+
+WARNING EntityDeleteButton._showConfirmationDialog
+        maximum nesting level: 6
+        source lines of code: 42 lines
+
+
+lib/src/app/model/entity_custom_query/entity_custom_query_bloc.dart:
+WARNING EntityCustomQueryBloc.EntityCustomQueryBloc
+        maximum nesting level: 5
+        source lines of code: 82 lines
+
+
+lib/src/app/model/backend_other.dart:
+WARNING BackendOther.showConfirmationDialog
+        maximum nesting level: 6
+        number of parameters: 6
+
+
+lib/src/app/model/layout_list_tile.dart:
+WARNING LayoutListTile.build
+        number of parameters: 8
+
+
+lib/features/data_table/screen/widgets/inline_filter.dart:
+WARNING _InlineFilterState._parseInitialValue
+        maximum nesting level: 6
+        source lines of code: 48 lines
+
+WARNING _InlineFilterState.build
+        source lines of code: 64 lines
+
+
+lib/features/data_table/screen/widgets/entity_data_table.dart:
+WARNING MenuDataTableCustom.prepare
+        number of parameters: 5
+
+
+lib/features/data_table/screen/widgets/menu_data_table_custom_table_view.dart:
+WARNING MenuDataTableCustomTableView._buildColumns
+        source lines of code: 51 lines
+
+
+lib/features/print/domain/pdf_generator/utils/pdf_interpolation_utils.dart:
+WARNING PdfInterpolationUtils.interpolateJson
+        maximum nesting level: 6
+
+
+lib/features/print/domain/pdf_generator/utils/pdf_data_utils.dart:
+WARNING PdfDataUtils.fetchAllHttpData
+        maximum nesting level: 7
+        source lines of code: 41 lines
+
+
+lib/features/print/domain/pdf_generator/components/pdf_table_component.dart:
+ALARM   PdfTableComponent.build
+        cyclomatic complexity: 38
+        maximum nesting level: 6
+        number of parameters: 4
+        source lines of code: 138 lines
+
+WARNING PdfTableComponent.buildRow
+        maximum nesting level: 5
+        number of parameters: 5
+        source lines of code: 50 lines
+
+
+lib/features/print/domain/pdf_generator/strategies/pdf_layout_strategy.dart:
+WARNING PdfLayoutStrategy.build
+        number of parameters: 7
+
+
+lib/features/print/domain/pdf_generator/strategies/canvas_layout_strategy.dart:
+WARNING CanvasLayoutStrategy.build
+        number of parameters: 7
+
+
+lib/features/print/domain/pdf_generator/strategies/document_layout_strategy.dart:
+WARNING DocumentLayoutStrategy.build
+        maximum nesting level: 6
+        number of parameters: 7
+        source lines of code: 70 lines
+
+
+lib/features/print/domain/pdf_generator/pdf_component_factory.dart:
+ALARM   PdfComponentFactory.buildRawComponent
+        cyclomatic complexity: 67
+        source lines of code: 173 lines
+
+
+lib/features/print/presentation/widgets/pdf_preview_dialog.dart:
+ALARM   _PdfPreviewDialogState.build
+        source lines of code: 103 lines
+
+
+lib/features/field/presentation/widgets/entity_field_display.dart:
+WARNING EntityFieldDisplay.build
+        cyclomatic complexity: 17
+        number of parameters: 4
+        source lines of code: 60 lines
+
+
+lib/features/layout_form/domain/workflow_actions/export_action.dart:
+ALARM   ExportAction.execute
+        cyclomatic complexity: 25
+        maximum nesting level: 6
+        source lines of code: 112 lines
+
+
+lib/features/layout_form/domain/workflow_actions/http_action.dart:
+WARNING HttpAction.execute
+        cyclomatic complexity: 19
+        source lines of code: 70 lines
+
+
+lib/features/layout_form/domain/extensions/layout_form_extensions.dart:
+WARNING LayoutFormDomainX.renderComponent
+        number of parameters: 6
+
+
+lib/features/layout_form/screen/widgets/entity_create_view.dart:
+WARNING CreateForm.build
+        maximum nesting level: 8
+        source lines of code: 86 lines
+
+WARNING CreateForm._buildButtonSubmit
+        source lines of code: 54 lines
+
+
+lib/features/layout_form/screen/widgets/layout_form.widgetbook.dart:
+WARNING interactiveTableFormUseCase
+        source lines of code: 93 lines
+
+
+lib/features/layout_form/screen/controllers/create_page_controller.dart:
+WARNING CreatePageController._executeOnInitActions
+        cyclomatic complexity: 23
+        maximum nesting level: 7
+        source lines of code: 91 lines
+
+
+lib/features/layout_form/screen/pages/create_page.dart:
+ALARM   CreatePage.prepare
+        number of parameters: 13
+
+ALARM   CreatePage.route
+        number of parameters: 10
+
+
+lib/features/layout_form/models/layout_form.dart:
+WARNING LayoutForm._fromMapInternal
+        cyclomatic complexity: 28
+        source lines of code: 90 lines
+
+
+lib/features/entity/screen/widgets/enitty_create_form/row_builder.dart:
+WARNING RowBuilder.build
+        source lines of code: 51 lines
+
+
+lib/features/entity/screen/widgets/action/action_widget_extension.dart:
+WARNING ActionListWidgetExtension.buildButtonsSingleRow
+        number of parameters: 7
+
+WARNING ActionListWidgetExtension.buildButtonsMultiple
+        number of parameters: 6
+
+WARNING ActionWidgetExtension.buildButtonRegular
+        number of parameters: 7
+
+WARNING ActionWidgetExtension.buttonSingle
+        number of parameters: 7
+
+WARNING ActionWidgetExtension.buttonMultiple
+        number of parameters: 7
+        source lines of code: 41 lines
+
+
+lib/features/entity/screen/widgets/action/action_confirm_dialog_extension.dart:
+WARNING ActionConfirmDialogExtension.showConfirmDialog
+        maximum nesting level: 8
+        number of parameters: 5
+
+
+lib/features/entity/screen/widgets/action/action_execution_extension.dart:
+ALARM   ActionExecutionExtension.executeSingle
+        cyclomatic complexity: 44
+        maximum nesting level: 5
+        number of parameters: 5
+        source lines of code: 291 lines
+
+WARNING ActionExecutionExtension._handlePrint
+        maximum nesting level: 6
+        number of parameters: 4
+        source lines of code: 52 lines
+
+
+lib/features/entity/screen/widgets/action/action_button_regular.dart:
+ALARM   _ActionButtonRegularState._onPressed
+        source lines of code: 114 lines
+
+
+lib/features/entity/screen/widgets/action/json_table_viewer.dart:
+WARNING _DraggableDialogContainerState.build
+        source lines of code: 70 lines
+
+ALARM   _JsonTableViewerState.build
+        source lines of code: 101 lines
+
+
+lib/features/entity/screen/widgets/action/entity_action_bottom_sheet.dart:
+WARNING EntityActionBottomSheet.build
+        source lines of code: 63 lines
+
+
+lib/features/entity/screen/widgets/action/action_handler_extension.dart:
+ALARM   ActionSuccessHandlerExtension.handleOnSuccessSingle
+        cyclomatic complexity: 17
+        number of parameters: 5
+        source lines of code: 120 lines
+
+WARNING ActionSuccessHandlerExtension.handleOnSuccessMultiple
+        number of parameters: 5
+
+
+lib/features/entity/screen/pages/enitity_view_page.dart:
+WARNING EntityViewPage.prepare
+        number of parameters: 5
+
+WARNING EntityViewPage.route
+        number of parameters: 5
+
+WARNING EntityViewPage.actions
+        number of parameters: 7
+
+WARNING EntityViewPage.actionsLarge
+        number of parameters: 7
+
+WARNING EntityViewPage._buildEntityCustomActionsLarge
+        number of parameters: 7
+
+WARNING EntityViewPage._buildEntityCustomActions
+        number of parameters: 7
+        source lines of code: 47 lines
+
+
+lib/features/entity/models/entity.dart:
+WARNING EntityCustom.buttonViews
+        number of parameters: 6
+
+
+lib/features/entity/models/action.dart:
+WARNING ActionD.copyWith
+        cyclomatic complexity: 28
+
+
+lib/features/component/screen/widgets/component_table.widgetbook.dart:
+WARNING mockComponentTableWithDropdown
+        source lines of code: 55 lines
+
+WARNING mockComponentTableReactiveForm
+        source lines of code: 64 lines
+
+
+lib/features/component/screen/widgets/component_icon_button.dart:
+WARNING ComponentIconButtonWidgets.toWidget
+        maximum nesting level: 5
+        source lines of code: 77 lines
+
+WARNING ComponentIconButtonWidgets.toMockWidget
+        source lines of code: 64 lines
+
+
+lib/features/component/screen/widgets/component_table_controller.dart:
+WARNING ComponentTableController.loadData
+        cyclomatic complexity: 21
+        maximum nesting level: 6
+        source lines of code: 68 lines
+
+
+lib/features/component/screen/widgets/component_table.dart:
+ALARM   ComponentTableWidgets.toMockWidget
+        source lines of code: 108 lines
+
+ALARM   _ComponentTableWidgetState.build
+        maximum nesting level: 5
+        source lines of code: 105 lines
+
+
+lib/features/component/screen/widgets/component.dart:
+WARNING ComponentWidget.toWidget
+        cyclomatic complexity: 27
+        number of parameters: 5
+        source lines of code: 56 lines
+
+WARNING ComponentWidget.toMockWidget
+        cyclomatic complexity: 24
+        source lines of code: 48 lines
+
+
+lib/features/component/screen/widgets/component_container.dart:
+WARNING ComponentContainerWidgets._buildContainer
+        cyclomatic complexity: 26
+
+
+lib/features/component/screen/widgets/component_dropdown_widget.dart:
+WARNING _ComponentDropdownWidgetState.build
+        source lines of code: 63 lines
+
+
+lib/features/component/screen/widgets/component_chart_controller.dart:
+WARNING ComponentChartController.loadData
+        cyclomatic complexity: 17
+        maximum nesting level: 6
+        source lines of code: 72 lines
+
+
+lib/features/component/screen/widgets/component_dropdown.dart:
+WARNING ComponentDropdownWidgets.toMockWidget
+        source lines of code: 52 lines
+
+
+lib/features/component/screen/widgets/component_file_picker.dart:
+WARNING _FilePickerWidgetState.build
+        source lines of code: 51 lines
+
+
+lib/features/component/screen/widgets/c_row.dart:
+WARNING ComponentRowWidgets.toWidget
+        cyclomatic complexity: 27
+        source lines of code: 83 lines
+
+WARNING ComponentRowWidgets.toMockWidget
+        cyclomatic complexity: 27
+        source lines of code: 80 lines
+
+
+lib/features/component/models/component.dart:
+WARNING Component.fromMap
+        source lines of code: 57 lines
+
+WARNING Component.fromEntityField
+        cyclomatic complexity: 17
+        source lines of code: 54 lines
+
+
+lib/features/component/models/component_text_field.dart:
+WARNING ComponentTextField.fromMap
+        cyclomatic complexity: 32
+        source lines of code: 44 lines
+
+
+lib/features/component/models/component_dropdown.dart:
+WARNING ComponentDropdown.fromMap
+        cyclomatic complexity: 28
+        source lines of code: 66 lines
+
+
+lib/features/component/models/c_row.dart:
+WARNING ComponentRow.fromMap
+        cyclomatic complexity: 23
+
+
+lib/features/component/models/component_button.dart:
+WARNING ComponentButton.fromMap
+        cyclomatic complexity: 21
+
+
+lib/features/component/models/c_column.dart:
+WARNING ComponentColumn.fromMap
+        cyclomatic complexity: 21
+
+
+lib/features/configuration/screen/pages/configuration_error_page.dart:
+ALARM   _ConfigurationErrorPageState.build
+        source lines of code: 221 lines
+
+WARNING _ConfigurationErrorPageState._buildFloatingDecorations
+        source lines of code: 74 lines
+
+WARNING _AnimatedButtonState.build
+        source lines of code: 63 lines
+
+
+lib/features/view/screen/widgets/view.dart:
+WARNING DViewWidget.buttonLarge
+        number of parameters: 8
+
+WARNING DViewWidget._buildButton
+        number of parameters: 7
+
+WARNING ListDViewWidget.buildButtons
+        number of parameters: 6
+
+
+lib/features/view/models/view.dart:
+WARNING DView.button
+        number of parameters: 6
+
+
+lib/features/export/screen/widgets/export_to_pdf.dart:
+ALARM   exportToPdf
+        source lines of code: 160 lines
+
+WARNING fetchTableData
+        maximum nesting level: 5
+        source lines of code: 66 lines
+
+
+lib/features/export/screen/widgets/export_button.dart:
+WARNING ButtonExport.build
+        maximum nesting level: 5
+        source lines of code: 57 lines
+
+
+lib/features/export/screen/models/export_section.dart:
+WARNING ExportSignersSectionPdf.toPdfWidget
+        number of parameters: 7
+
+WARNING ExportFieldSectionPdf.toPdfWidget
+        number of parameters: 6
+
+
+lib/features/export/screen/models/export_table_section.dart:
+ALARM   ExportTableSectionPdf.toPdfWidget
+        cyclomatic complexity: 29
+        number of parameters: 9
+        source lines of code: 165 lines
+
+
+lib/login_page.dart:
+WARNING _AuthPageState._handleAuth
+        source lines of code: 73 lines
+
+WARNING _AuthPageState.build
+        source lines of code: 75 lines
+
+ALARM   _AuthPageState._buildAuthScreen
+        source lines of code: 187 lines
+
+ALARM   _AuthPageState._buildOtpScreen
+        source lines of code: 171 lines
+
+WARNING _AuthPageState._buildTextField
+        number of parameters: 5
+        source lines of code: 42 lines
+
+
+lib/core/utils/js/src/js_interpolation_processor.dart:
+WARNING JsInterpolationProcessor.interpolate
+        cyclomatic complexity: 21
+        maximum nesting level: 5
+        source lines of code: 45 lines
+
+
+lib/core/utils/js/src/js_script_builder.dart:
+WARNING JsScriptBuilder._appendHelpers
+        source lines of code: 80 lines
+
+
+lib/core/utils/js/src/js_shortcut_evaluator.dart:
+WARNING JsShortcutEvaluator.tryEvaluate
+        cyclomatic complexity: 24
+        source lines of code: 44 lines
+
+
+lib/shared/services/http_request_executor.dart:
+ALARM   HttpRequestExecutor.execute
+        cyclomatic complexity: 19
+        source lines of code: 118 lines
+
+WARNING HttpRequestExecutor._logHttpRequest
+        number of parameters: 5
+
+
+lib/main.dart:
+ALARM   main
+        maximum nesting level: 5
+        source lines of code: 151 lines
+
+
