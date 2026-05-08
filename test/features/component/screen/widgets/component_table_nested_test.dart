@@ -29,7 +29,7 @@ void main() {
         { 
           "header": "Action", 
           "body": "status", 
-          "width": 150,
+          "width": 250,
           "component": {
             "id": "status_dropdown",
             "type": "dropdown",

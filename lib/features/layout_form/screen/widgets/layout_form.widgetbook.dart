@@ -6,8 +6,6 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
-import 'package:flx_nocode_flutter/features/component/screen/widgets/component_button.dart';
-import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:dio/dio.dart';
@@ -265,13 +263,13 @@ Widget interactiveTableFormUseCase(BuildContext context) {
         queryParameters: any(named: 'queryParameters'),
         options: any(named: 'options'),
       )).thenAnswer((_) async {
-        await Future.delayed(const Duration(seconds: 2));
-        return Response(
-          requestOptions: RequestOptions(path: ''),
-          data: {'status': 'success'},
-          statusCode: 200,
-        );
-      });
+    await Future.delayed(const Duration(seconds: 2));
+    return Response(
+      requestOptions: RequestOptions(path: ''),
+      data: {'status': 'success'},
+      statusCode: 200,
+    );
+  });
 
   EntityCustomRepository.instance = EntityCustomRepository(
     dio: mockDio,

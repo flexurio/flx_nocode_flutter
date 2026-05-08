@@ -91,5 +91,52 @@ void main() {
       expect(controller.resolveValue(row, 'user.profile.name'), 'Alice');
       expect(controller.resolveValue(row, 'non.existent'), isNull);
     });
+
+    test('loadData resolves initial_value as List', () async {
+      final tableWithInitial = ComponentTable(
+        id: 'test_table_initial',
+        columns: [],
+        http: HttpData.empty(),
+        initial_value: [
+          {'id': 1, 'name': 'Initial Item'}
+        ],
+      );
+
+      final newController = ComponentTableController(
+        component: tableWithInitial,
+        contextData: {},
+      );
+
+      await newController.loadData();
+
+      expect(newController.rows.length, 1);
+      expect(newController.rows[0]['name'], 'Initial Item');
+    });
+
+    test('loadData resolves initial_value as JSON string via interpolation',
+        () async {
+      final tableWithInitial = ComponentTable(
+        id: 'test_table_initial_json',
+        columns: [],
+        http: HttpData.empty(),
+        initial_value: '{{ my_json_data }}',
+      );
+
+      final data = {
+        'my_json_data': jsonEncode([
+          {'id': 100, 'label': 'From JSON'}
+        ])
+      };
+
+      final newController = ComponentTableController(
+        component: tableWithInitial,
+        contextData: data,
+      );
+
+      await newController.loadData();
+
+      expect(newController.rows.length, 1);
+      expect(newController.rows[0]['label'], 'From JSON');
+    });
   });
 }

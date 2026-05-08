@@ -94,5 +94,37 @@ void main() {
 
       expect('status === "active"'.evaluateVisibility(variables), true);
     });
+
+    test('should flatten "vars" for direct access', () {
+      final variables = {
+        'vars': {
+          'my_var': 'hello',
+          'item': {'id': 123}
+        }
+      };
+
+      expect('{{ my_var }}'.interpolateJavascript(variables), 'hello');
+      expect('{{ item.id }}'.interpolateJavascript(variables), '123');
+    });
+
+    test('should handle JSON stringification in JS for JSON wrapper', () {
+      final variables = {
+        'data': {
+          'id': 1,
+          'tags': ['a', 'b']
+        }
+      };
+
+      // [[ expr ]] is the syntax for isJsonWrapper = true in Template.parse
+      // But in interpolateJavascript, we can test the processor directly if needed.
+      // Actually, interpolateJavascript calls JsInterpolationProcessor.process.
+      // Let's verify how [[ ]] is handled.
+      
+      const template = '[[ data ]]';
+      final result = template.interpolateJavascript(variables);
+      
+      expect(result, contains('"id":1'));
+      expect(result, contains('"tags":["a","b"]'));
+    });
   });
 }

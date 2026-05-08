@@ -46,7 +46,7 @@ dependencies:
   flx_core_flutter:
     git:
       url: https://github.com/flexurio/flx_core_flutter.git
-      ref: dev
+      ref: main
 
   hive: any
   uuid: any
@@ -61,7 +61,7 @@ dependency_overrides:
   flx_core_flutter:
     git:
       url: https://github.com/flexurio/flx_core_flutter.git
-      ref: dev
+      ref: main
   freezed_annotation: ^3.1.0
 
 dev_dependencies:

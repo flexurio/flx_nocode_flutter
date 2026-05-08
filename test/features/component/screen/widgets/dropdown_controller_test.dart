@@ -152,5 +152,52 @@ void main() {
       // Note: _setInitialValue is private, but we can trigger it via public if we exposed it
       // or just know it's called in fetchOptions/loadStatic.
     });
+
+    testWidgets('Should trigger update_row action correctly', (tester) async {
+      bool onRowChangedCalled = false;
+      Map<String, dynamic>? updatedRow;
+
+      final dropdownWithAction = ComponentDropdown(
+        id: 'dropdown_1',
+        label: 'Select Item',
+        options: ['Item 1', 'Item 2'],
+        onChangeActions: [
+          ComponentAction(
+            type: 'update_row',
+            target_id: '', // Not used for update_row
+            mappings: {
+              'item_id': '{{ key }}',
+              'item_name': '{{ label }}',
+              'static': 'value'
+            },
+          )
+        ],
+      );
+
+      final rowData = {'id': 100, 'item_id': null, 'item_name': null};
+      final dataWithRow = {
+        ...data,
+        'row': rowData,
+        'onRowChanged': (newData) {
+          onRowChangedCalled = true;
+          updatedRow = newData;
+        },
+      };
+
+      final controller = ComponentDropdownController(
+        component: dropdownWithAction,
+        data: dataWithRow,
+      );
+      controller.onInit();
+
+      // Simulate selection
+      controller.onSelectionChanged({'key': 'itm_001', 'label': 'My Item'});
+
+      expect(onRowChangedCalled, isTrue);
+      expect(updatedRow?['item_id'], 'itm_001');
+      expect(updatedRow?['item_name'], 'My Item');
+      expect(updatedRow?['static'], 'value');
+      expect(updatedRow?['id'], 100); // Original data preserved
+    });
   });
 }
