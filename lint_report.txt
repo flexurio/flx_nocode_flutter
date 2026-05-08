@@ -384,8 +384,9 @@ warning • Unused import: 'package:flx_nocode_flutter/features/component/screen
    info • The import of 'package:flx_nocode_flutter/shared/services/http_request_executor.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flx_nocode_flutter/flx_nocode_flutter.dart' • test/features/component/screen/widgets/component_table_dependency_test.dart:6:8 • unnecessary_import
    info • The import of 'package:flx_nocode_flutter/src/app/model/configuration.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flx_nocode_flutter/flx_nocode_flutter.dart' • test/features/component/screen/widgets/component_table_dependency_test.dart:8:8 • unnecessary_import
    info • The import of 'package:flx_nocode_flutter/src/app/model/configuration.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flx_nocode_flutter/flx_nocode_flutter.dart' • test/features/component/screen/widgets/component_table_nested_test.dart:8:8 • unnecessary_import
+warning • Unused import: 'package:get/get.dart' • test/features/component/screen/widgets/dropdown_controller_dependency_test.dart:7:8 • unused_import
    info • The import of 'package:flx_nocode_flutter/core/network/models/http_data.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flx_nocode_flutter/flx_nocode_flutter.dart' • test/features/entity/screen/widgets/action/action_execution_test.dart:6:8 • unnecessary_import
 warning • The value of the local variable 'mockUiBridge' isn't used • test/features/layout_form/domain/workflow_actions/workflow_execution_test.dart:12:21 • unused_local_variable
    info • The import of 'package:flx_nocode_flutter/src/app/model/theme.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flx_nocode_flutter/flx_nocode_flutter.dart' • test/no_code_navigate_push_menu_parent_test.dart:11:8 • unnecessary_import
 
-387 issues found. (ran in 40.7s)
+388 issues found. (ran in 37.5s)
