@@ -18,10 +18,13 @@ class JsInterpolationProcessor {
 
   JsInterpolationProcessor({this.throwOnError = false});
 
-  /// Interpolates `{{ ... }}` blocks in [text] with evaluated values.
+  /// Interpolates `{{ ... }}` or `[[ ... ]]` blocks in [text] with evaluated values.
+  /// `[[ ... ]]` is a shortcut for `{{ JSON.stringify(...) }}`.
   String interpolate(String text, [Map<String, dynamic>? variables]) {
-    final regex = RegExp(r'\{\{\s*((?:(?!\}\}).)*)\s*\}\}', dotAll: true);
-    if (!text.contains(regex)) return text;
+    final regex = RegExp(
+        r'\{\{\s*((?:(?!\}\}).)*)\s*\}\}|\[\[\s*((?:(?!\]\]).)*)\s*\]\]',
+        dotAll: true);
+    if (!text.contains('{{') && !text.contains('[[')) return text;
 
     final allVars = _variableProvider.prepare(variables);
 
@@ -30,14 +33,19 @@ class JsInterpolationProcessor {
     }
 
     return text.replaceAllMapped(regex, (match) {
-      final expr = match.group(1)?.trim();
+      final group1 = match.group(1);
+      final group2 = match.group(2);
+      final expr = (group1 ?? group2)?.trim();
       if (expr == null || expr.isEmpty) return '';
 
+      final isManualJson = group2 != null;
+
       if (enableLog) {
-        debugPrint('  [JS Interpolation] Evaluating: {{ $expr }}');
+        debugPrint(
+            '  [JS Interpolation] Evaluating: ${isManualJson ? '[[' : '{{'} $expr ${isManualJson ? ']]' : '}}'}');
       }
 
-      final info = ExpressionInfo.parse(expr);
+      final info = ExpressionInfo.parse(expr, forceJson: isManualJson);
 
       // Try shortcut evaluation (faster, handles common cases)
       final shortcutResult =
@@ -123,7 +131,9 @@ class ExpressionInfo {
 
   ExpressionInfo(this.targetExpr, this.isJsonWrapper);
 
-  factory ExpressionInfo.parse(String expr) {
+  factory ExpressionInfo.parse(String expr, {bool forceJson = false}) {
+    if (forceJson) return ExpressionInfo(expr, true);
+
     if (expr.startsWith('JSON.stringify(') && expr.endsWith(')')) {
       final inner =
           expr.substring('JSON.stringify('.length, expr.length - 1).trim();
@@ -134,10 +144,7 @@ class ExpressionInfo {
 
   String wrapResult(dynamic value) {
     if (isJsonWrapper) {
-      // If it's already a string (which it is, from evalJs),
-      // we don't want to jsonEncode it again if it's already a JSON string.
-      // However, JsInterpolationProcessor now handles stringification in JS.
-      return value?.toString() ?? 'null';
+      return jsonEncode(value);
     }
     if (value == null) return '';
     if (value is String || value is num || value is bool) {

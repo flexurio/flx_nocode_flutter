@@ -19,6 +19,7 @@ class _MockExportHttpExecutor implements HttpExecutor {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   group('User Filter & Export Workflow Test', () {
     test('Should execute fetch and then export correctly', () async {
       // 1. Define the workflow JSON (matching what we added to flx_users_schema_frontend.dart)
