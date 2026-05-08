@@ -276,6 +276,7 @@ class ComponentDropdownController extends GetxController {
     final requestData = _prepareRequestData();
 
     final context = <String, dynamic>{
+      ...selection,
       'item': item,
       'value': value,
       ...requestData,

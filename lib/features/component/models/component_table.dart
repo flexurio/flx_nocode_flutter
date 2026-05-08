@@ -49,7 +49,7 @@ class ComponentTable extends Component {
     required this.columns,
     required super.id,
     required this.http,
-    required this.width,
+    this.width,
     this.widthMode,
     this.flex,
     this.actions = const [],

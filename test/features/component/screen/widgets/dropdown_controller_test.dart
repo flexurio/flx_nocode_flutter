@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_action.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_dropdown.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_dropdown_controller.dart';
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
@@ -178,7 +179,7 @@ void main() {
       final dataWithRow = {
         ...data,
         'row': rowData,
-        'onRowChanged': (newData) {
+        'onRowChanged': (Map<String, dynamic> newData) {
           onRowChangedCalled = true;
           updatedRow = newData;
         },
