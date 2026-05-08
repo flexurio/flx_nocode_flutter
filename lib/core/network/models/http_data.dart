@@ -71,6 +71,9 @@ class HttpData extends HiveObject {
   /// The data to return when [mockEnabled] is true.
   final Object? mockData;
 
+  /// Optional JSON path to extract error message from response.
+  final String? errorMessagePath;
+
   /// Creates a new immutable [HttpData] instance.
   HttpData({
     required this.method,
@@ -80,6 +83,7 @@ class HttpData extends HiveObject {
     this.useFormData = false,
     this.mockEnabled = false,
     this.mockData,
+    this.errorMessagePath,
   });
 
   /// Creates a modified copy of this [HttpData].
@@ -100,6 +104,7 @@ class HttpData extends HiveObject {
     bool? useFormData,
     bool? mockEnabled,
     Object? mockData,
+    String? errorMessagePath,
   }) {
     return HttpData(
       method: method ?? this.method,
@@ -109,6 +114,7 @@ class HttpData extends HiveObject {
       useFormData: useFormData ?? this.useFormData,
       mockEnabled: mockEnabled ?? this.mockEnabled,
       mockData: mockData ?? this.mockData,
+      errorMessagePath: errorMessagePath ?? this.errorMessagePath,
     );
   }
 
@@ -133,6 +139,7 @@ class HttpData extends HiveObject {
       useFormData: json['use_form_data'] ?? false,
       mockEnabled: json['mock_enabled'] ?? false,
       mockData: json['mock_data'],
+      errorMessagePath: json['error_message_path'],
     );
   }
 
@@ -169,6 +176,7 @@ class HttpData extends HiveObject {
       'use_form_data': useFormData,
       'mock_enabled': mockEnabled,
       'mock_data': mockData,
+      'error_message_path': errorMessagePath,
     };
   }
 }
@@ -189,6 +197,7 @@ extension HttpDataExtension on HttpData {
       asFormData: useFormData,
       mockEnabled: mockEnabled,
       mockData: mockData,
+      errorMessagePath: errorMessagePath,
     );
   }
 
@@ -223,6 +232,7 @@ extension HttpDataExtension on HttpData {
       asFormData: useFormData,
       mockEnabled: mockEnabled,
       mockData: mockData,
+      errorMessagePath: errorMessagePath,
     );
   }
 

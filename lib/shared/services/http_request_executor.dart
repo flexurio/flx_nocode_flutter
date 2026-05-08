@@ -27,6 +27,9 @@ class HttpRequestConfig {
   /// The data to return when [mockEnabled] is true.
   final Object? mockData;
 
+  /// Optional JSON path to extract error message from response.
+  final String? errorMessagePath;
+
   const HttpRequestConfig({
     required this.method,
     required this.url,
@@ -35,6 +38,7 @@ class HttpRequestConfig {
     this.asFormData = false,
     this.mockEnabled = false,
     this.mockData,
+    this.errorMessagePath,
   });
 }
 
@@ -184,6 +188,7 @@ class HttpRequestExecutor {
       } else {
         final String message = _extractErrorMessage(
           response.data,
+          path: config.errorMessagePath,
           fallback:
               'Request failed: ${response.statusCode} - ${response.statusMessage}',
         );
@@ -201,6 +206,7 @@ class HttpRequestExecutor {
       );
       final String message = _extractErrorMessage(
         e.response?.data,
+        path: config.errorMessagePath,
         fallback:
             e.message ?? 'Network error or CORS policy blocked the request',
       );
@@ -289,15 +295,19 @@ class HttpRequestExecutor {
   // ------------------------ ERROR PARSER ------------------------------------
   String _extractErrorMessage(
     Object? responseData, {
+    String? path,
     String fallback = 'Request failed',
   }) {
     if (responseData == null) return fallback;
 
-    if (responseData is String && responseData.trim().isNotEmpty) {
-      return responseData;
-    }
-
     if (responseData is Map) {
+      if (path != null && path.isNotEmpty) {
+        final customMessage = _getValueFromPath(responseData, path);
+        if (customMessage != null && customMessage.toString().isNotEmpty) {
+          return customMessage.toString();
+        }
+      }
+
       final Object? messageField = responseData['message'] ??
           responseData['error'] ??
           responseData['detail'];
@@ -310,6 +320,23 @@ class HttpRequestExecutor {
       if (errors != null) return errors.toString();
     }
 
+    if (responseData is String && responseData.trim().isNotEmpty) {
+      return responseData;
+    }
+
     return fallback;
+  }
+
+  Object? _getValueFromPath(Map data, String path) {
+    final parts = path.split('.');
+    dynamic current = data;
+    for (final part in parts) {
+      if (current is Map && current.containsKey(part)) {
+        current = current[part];
+      } else {
+        return null;
+      }
+    }
+    return current;
   }
 }

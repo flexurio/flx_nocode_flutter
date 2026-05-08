@@ -235,10 +235,18 @@ class EntityController extends GetxController {
               ? Map<String, dynamic>.from(result.data as Map)
               : {},
         );
+      } else if (result.status == WorkflowRunStatus.stopped) {
+        _logSection('WORKFLOW', '⏸ Execution stopped');
+        final lastError = ctx.vars['last_error']?.toString();
+        if (lastError != null && lastError.isNotEmpty) {
+          _state.value = EntityState.error(lastError);
+        } else {
+          _state.value = const EntityState.initial();
+        }
       } else {
-        _logError('WORKFLOW', result.error?.message ?? 'Workflow failed');
-        _state.value =
-            EntityState.error(result.error?.message ?? 'Workflow failed');
+        final msg = result.error?.message ?? 'Workflow failed';
+        _logError('WORKFLOW', msg);
+        _state.value = EntityState.error(msg);
       }
     } catch (error, st) {
       _logError('WORKFLOW', 'FATAL EXCEPTION: $error\n$st');
@@ -307,14 +315,60 @@ class GetxHttpExecutor implements HttpExecutor {
         data: response.data,
       );
     } catch (e) {
-      if (EntityController.enableLog) {
-        debugPrint('    [HTTP] ❌ Error executing request: $e');
-        if (e is DioException && e.response != null) {
-          debugPrint('    [HTTP] Status: ${e.response?.statusCode}');
-          debugPrint('    [HTTP] Data: ${e.response?.data}');
+      String message = e.toString();
+
+      if (e is DioException && e.response != null) {
+        final responseData = e.response?.data;
+        if (responseData is Map) {
+          // 1. Try custom path if provided
+          final path = request.errorMessagePath;
+          if (path != null && path.isNotEmpty) {
+            final parts = path.split('.');
+            dynamic current = responseData;
+            for (final part in parts) {
+              if (current is Map && current.containsKey(part)) {
+                current = current[part];
+              } else {
+                current = null;
+                break;
+              }
+            }
+            if (current != null && current.toString().isNotEmpty) {
+              message = current.toString();
+            }
+          }
+
+          // 2. Try common fields if custom path didn't work or wasn't provided
+          if (message == e.toString()) {
+            final Object? msg = responseData['message'] ??
+                responseData['error'] ??
+                responseData['detail'];
+            if (msg != null && msg.toString().isNotEmpty) {
+              message = msg.toString();
+            }
+          }
         }
       }
-      throw Exception('HTTP Error: $e');
+
+      // Recursive cleaning of technical prefixes
+      String clean = message;
+      bool changed = true;
+      while (changed) {
+        final original = clean;
+        clean = clean
+            .replaceFirst(RegExp(r'^[a-zA-Z]+Exception:\s*'), '')
+            .replaceFirst(RegExp(r'^Exception:\s*'), '')
+            .replaceFirst(RegExp(r'^ApiException:\s*'), '')
+            .replaceFirst(RegExp(r'^[0-9]+::\s*'), '')
+            .trim();
+        changed = (original != clean);
+      }
+
+      if (EntityController.enableLog) {
+        debugPrint('    [HTTP] ❌ Cleaned Message: $clean');
+      }
+      // Re-throw as a clean message without technical prefixes
+      throw Exception(clean);
     }
   }
 }

@@ -115,12 +115,29 @@ class HttpAction implements WorkflowAction {
         ctx.lastData = result.data;
         return;
       } catch (e) {
-        ui.log('⚠️ Attempt ${attempt + 1} failed: $e');
+        String cleanMessage = e.toString();
+        if (e is WorkflowException) {
+          cleanMessage = e.message;
+        } else if (e is Exception) {
+          cleanMessage = e.toString();
+          bool changed = true;
+          while (changed) {
+            final original = cleanMessage;
+            cleanMessage = cleanMessage
+                .replaceFirst(RegExp(r'^[a-zA-Z]+Exception:\s*'), '')
+                .replaceFirst(RegExp(r'^Exception:\s*'), '')
+                .replaceFirst(RegExp(r'^ApiException:\s*'), '')
+                .replaceFirst(RegExp(r'^[0-9]+::\s*'), '')
+                .trim();
+            changed = (original != cleanMessage);
+          }
+        }
+        ui.log('⚠️ Attempt ${attempt + 1} failed: $cleanMessage');
         attempt++;
         if (retry == null || attempt > retry!.max) {
           if (e is WorkflowException) rethrow;
           throw WorkflowExecutionException(
-            'HTTP "$actionLabel" failed: $e',
+            cleanMessage,
             cause: e,
           );
         }

@@ -63,6 +63,7 @@ Performs a network request (GET, POST, PUT, DELETE, etc.).
 | `http` | Object | Yes | `HttpData` config (method, url, body, headers). |
 | `retry` | Object | No | Optional `WorkflowRetryPolicy` (max attempts, delay). |
 | `save_result_to` | String | No | Optional alias path to save results (e.g., `vars.last_response`). |
+| `error_message_path` | String | No | Optional JSON path to extract error message from response (e.g. `error.detail`). Defaults to `message`, `error`, or `detail` fields. |
 
 **Example:**
 ```json
@@ -177,7 +178,7 @@ Used in HTTP actions to handle transient network errors.
         {
           "type": "toast",
           "variant": "error",
-          "message": "Submission failed: {{ vars.last_error }}"
+          "message": "{{ vars.last_error }}"
         }
       ]
     }

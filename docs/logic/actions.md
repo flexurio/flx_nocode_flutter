@@ -42,6 +42,7 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `export` | Exports data to a file (Excel/PDF). | `export_format`, `http` (to fetch data) |
 | `set_variable` | Updates a local state variable. | `target_variable`, `value` |
 | `append_variable` | Appends a value to a local state list. | `target_variable`, `value` |
+| `remove_variable` | Removes a value from a local state list (matches by content). | `target_variable` |
 | `refresh` | Reloads the current entity data. | - |
 | `toast` | Shows a simple notification. | `name` (as message) |
 | `navigate_home` | Returns the user to the dashboard. | - |
@@ -171,6 +172,19 @@ This example demonstrates how to capture input from a form and append it to a lo
 }
 ```
 *Note: The table displaying this data should have `"reference_id": "inventory_items"`.*
+
+### Interactive List Removal using `remove_variable`
+This example demonstrates how to remove an item from a local list variable when a row action is triggered.
+
+```json
+{
+  "id": "remove_from_inventory",
+  "type": "remove_variable",
+  "name": "Delete",
+  "target_variable": "inventory_items",
+  "icon": "delete"
+}
+```
 
 ### Reactive Table Row Update using `update_row`
 This example shows how to use a dropdown inside a table to update a specific field in the row.

@@ -286,6 +286,52 @@ extension ActionExecutionExtension on ActionD {
         }
         break;
 
+      case ActionType.removeVariable:
+        final varName = targetVariable;
+        if (varName == null || varName.isEmpty) {
+          Toast(context).fail('Target variable name is required');
+          return;
+        }
+
+        final layoutId = data['layoutFormId'] as String?;
+
+        if (layoutId != null) {
+          final tag = 'create_page_$layoutId';
+          if (Get.isRegistered<CreatePageController>(tag: tag)) {
+            final controller = Get.find<CreatePageController>(tag: tag);
+
+            final currentData = controller.initialData[varName];
+            if (currentData is List) {
+              final list = List.from(currentData);
+
+              // We want to remove the item that matches the current 'data' (the row).
+              // Since 'data' might have extra fields, we iterate and check if all
+              // keys in the list item match the values in 'data'.
+              list.removeWhere((item) {
+                if (item is! Map) return false;
+                for (final key in item.keys) {
+                  if (item[key].toString() != data[key]?.toString()) {
+                    return false;
+                  }
+                }
+                return true;
+              });
+
+              controller.initialData[varName] = list;
+              controller.initialData.refresh();
+
+              await handleOnSuccessSingle(
+                entity: entity,
+                context: context,
+                responseData: null,
+                data: data,
+                onSuccessCallback: onSuccessCallback,
+              );
+            }
+          }
+        }
+        break;
+
       case ActionType.export:
         await showConfirmDialog(
           context: context,

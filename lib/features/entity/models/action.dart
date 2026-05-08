@@ -23,6 +23,7 @@ enum ActionType {
       'show_success_dialog_with_data', 'Show Success Dialog with Data'),
   setVariable('set_variable', 'Set Variable'),
   appendVariable('append_variable', 'Append Variable'),
+  removeVariable('remove_variable', 'Remove Variable'),
   clearForm('clear_form', 'Clear Form'),
   export('export', 'Export');
 
