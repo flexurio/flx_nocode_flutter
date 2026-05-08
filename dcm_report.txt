@@ -1,4 +1,4 @@
-[2K⠙ Analyzing...[2K[2K⠹ Processing 228 file(s)... 0.6s[2K⠸ Processing 228 file(s)... 25.0s[2K⠼ Processing 228 file(s)... 25.0s[2K⠴ Processing 228 file(s)... 25.2s[2K⠦ Processing 228 file(s)... 25.3s[2K⠧ Processing 228 file(s)... 25.4s[2K⠇ Processing 228 file(s)... 25.4s[2K⠏ Processing 228 file(s)... 25.6s[2K⠋ Processing 228 file(s)... 25.7s[2K⠙ Processing 228 file(s)... 25.8s[2K⠹ Processing 228 file(s)... 25.9s[2K⠸ Processing 228 file(s)... 26.4s[2K⠼ Processing 228 file(s)... 26.5s[2K⠴ Processing 228 file(s)... 26.6s[2K⠦ Processing 228 file(s)... 26.6s[2K⠧ Processing 228 file(s)... 26.8s[2K⠇ Processing 228 file(s)... 26.8s[2K⠏ Processing 228 file(s)... 26.9s[2K⠋ Processing 228 file(s)... 27.0s[2K⠙ Processing 228 file(s)... 27.0s[2K⠹ Processing 228 file(s)... 27.2s[2K⠸ Processing 228 file(s)... 27.2s[2K⠼ Processing 228 file(s)... 27.3s[2K⠴ Processing 228 file(s)... 27.4s[2K⠦ Processing 228 file(s)... 27.5s[2K⠧ Processing 228 file(s)... 28.2s[2K⠇ Processing 228 file(s)... 28.2s[2K⠏ Processing 228 file(s)... 28.3s[2K⠋ Processing 228 file(s)... 28.4s[2K⠙ Processing 228 file(s)... 28.5s[2K⠹ Processing 228 file(s)... 28.6s[2K⠸ Processing 228 file(s)... 28.6s[2K⠼ Processing 228 file(s)... 28.7s[2K⠴ Processing 228 file(s)... 28.8s[2K⠦ Processing 228 file(s)... 28.9s[2K⠧ Processing 228 file(s)... 29.0s[2K⠇ Processing 228 file(s)... 29.0s[2K⠏ Processing 228 file(s)... 29.1s[2K⠋ Processing 228 file(s)... 29.2s[2K⠙ Processing 228 file(s)... 29.3s[2K⠹ Processing 228 file(s)... 29.4s[2K⠸ Processing 228 file(s)... 29.4s[2K⠼ Processing 228 file(s)... 29.5s[2K⠴ Processing 228 file(s)... 29.6s[2K⠦ Processing 228 file(s)... 29.7s[2K⠧ Processing 228 file(s)... 29.8s[2K⠇ Processing 228 file(s)... 29.9s[2K⠏ Processing 228 file(s)... 29.9s[2K✔ Analysis is completed. Preparing the results: 30.0s
+[2K⠙ Analyzing...[2K[2K⠹ Processing 228 file(s)... 0.6s[2K⠸ Processing 228 file(s)... 25.3s[2K⠼ Processing 228 file(s)... 25.4s[2K⠴ Processing 228 file(s)... 25.4s[2K⠦ Processing 228 file(s)... 25.6s[2K⠧ Processing 228 file(s)... 25.6s[2K⠇ Processing 228 file(s)... 25.8s[2K⠏ Processing 228 file(s)... 25.8s[2K⠋ Processing 228 file(s)... 26.0s[2K⠙ Processing 228 file(s)... 26.0s[2K⠹ Processing 228 file(s)... 26.1s[2K⠸ Processing 228 file(s)... 26.2s[2K⠼ Processing 228 file(s)... 26.2s[2K⠴ Processing 228 file(s)... 26.8s[2K⠦ Processing 228 file(s)... 26.8s[2K⠧ Processing 228 file(s)... 26.9s[2K⠇ Processing 228 file(s)... 27.0s[2K⠏ Processing 228 file(s)... 27.0s[2K⠋ Processing 228 file(s)... 27.1s[2K⠙ Processing 228 file(s)... 27.2s[2K⠹ Processing 228 file(s)... 27.3s[2K⠸ Processing 228 file(s)... 27.4s[2K⠼ Processing 228 file(s)... 27.5s[2K⠴ Processing 228 file(s)... 27.6s[2K⠦ Processing 228 file(s)... 27.6s[2K⠧ Processing 228 file(s)... 27.7s[2K⠇ Processing 228 file(s)... 27.8s[2K⠏ Processing 228 file(s)... 27.8s[2K⠋ Processing 228 file(s)... 28.5s[2K⠙ Processing 228 file(s)... 28.6s[2K⠹ Processing 228 file(s)... 28.6s[2K⠸ Processing 228 file(s)... 28.7s[2K⠼ Processing 228 file(s)... 28.8s[2K⠴ Processing 228 file(s)... 28.9s[2K⠦ Processing 228 file(s)... 29.0s[2K⠧ Processing 228 file(s)... 29.1s[2K⠇ Processing 228 file(s)... 29.1s[2K⠏ Processing 228 file(s)... 29.2s[2K⠋ Processing 228 file(s)... 29.3s[2K⠙ Processing 228 file(s)... 29.4s[2K⠹ Processing 228 file(s)... 29.5s[2K⠸ Processing 228 file(s)... 29.5s[2K⠼ Processing 228 file(s)... 29.6s[2K⠴ Processing 228 file(s)... 29.7s[2K⠦ Processing 228 file(s)... 29.8s[2K⠧ Processing 228 file(s)... 29.8s[2K⠇ Processing 228 file(s)... 29.9s[2K⠏ Processing 228 file(s)... 30.0s[2K⠋ Processing 228 file(s)... 30.1s[2K⠙ Processing 228 file(s)... 30.2s[2K⠹ Processing 228 file(s)... 30.2s[2K⠸ Processing 228 file(s)... 30.3s[2K✔ Analysis is completed. Preparing the results: 30.4s
 
 lib/src/app/resource/entity_custom.dart:
 WARNING EntityCustomRepository._request
@@ -19,6 +19,13 @@ WARNING EntityCustomRepository.modify
         maximum nesting level: 5
         number of parameters: 8
         source lines of code: 44 lines
+
+
+lib/src/app/bloc/entity/entity_controller.dart:
+WARNING GetxHttpExecutor.execute
+        cyclomatic complexity: 23
+        maximum nesting level: 7
+        source lines of code: 69 lines
 
 
 lib/src/app/util/resource_loader.dart:
@@ -202,8 +209,9 @@ ALARM   ExportAction.execute
 
 lib/features/layout_form/domain/workflow_actions/http_action.dart:
 WARNING HttpAction.execute
-        cyclomatic complexity: 19
-        source lines of code: 70 lines
+        cyclomatic complexity: 22
+        maximum nesting level: 5
+        source lines of code: 87 lines
 
 
 lib/features/layout_form/domain/extensions/layout_form_extensions.dart:
@@ -277,10 +285,10 @@ WARNING ActionConfirmDialogExtension.showConfirmDialog
 
 lib/features/entity/screen/widgets/action/action_execution_extension.dart:
 ALARM   ActionExecutionExtension.executeSingle
-        cyclomatic complexity: 44
-        maximum nesting level: 5
+        cyclomatic complexity: 53
+        maximum nesting level: 7
         number of parameters: 5
-        source lines of code: 291 lines
+        source lines of code: 327 lines
 
 WARNING ActionExecutionExtension._handlePrint
         maximum nesting level: 6
@@ -560,7 +568,7 @@ WARNING JsShortcutEvaluator.tryEvaluate
 lib/shared/services/http_request_executor.dart:
 ALARM   HttpRequestExecutor.execute
         cyclomatic complexity: 19
-        source lines of code: 118 lines
+        source lines of code: 120 lines
 
 WARNING HttpRequestExecutor._logHttpRequest
         number of parameters: 5
