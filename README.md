@@ -1,6 +1,6 @@
 # FLX No-Code Flutter Framework
 
-[![Coverage](https://img.shields.io/badge/coverage-32.8%25-red?style=for-the-badge)](coverage/lcov.info)
+[![Coverage](https://img.shields.io/badge/coverage-33.3%25-red?style=for-the-badge)](coverage/lcov.info)
 [![Lints](https://img.shields.io/badge/lints-385%20issues-red?style=for-the-badge)](analysis_options.yaml)
 
 
