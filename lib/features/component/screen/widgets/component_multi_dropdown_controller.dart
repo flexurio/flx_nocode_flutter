@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_multi_dropdown.dart';
@@ -31,7 +32,20 @@ class ComponentMultiDropdownController extends ComponentSelectionController<Comp
         if (stateValue is List) {
           ivs = stateValue.map((e) => e.toString()).toList();
         } else if (stateValue != null && stateValue.toString().isNotEmpty) {
-          ivs = stateValue.toString().split(',').map((e) => e.trim()).toList();
+          try {
+            // Try to parse as JSON if it's a JSON string
+            final decoded = jsonDecode(stateValue.toString());
+            if (decoded is List) {
+              ivs = decoded.map((e) {
+                if (e is Map) return e['id']?.toString() ?? e['key']?.toString() ?? '';
+                return e.toString();
+              }).toList();
+            } else {
+              ivs = stateValue.toString().split(',').map((e) => e.trim()).toList();
+            }
+          } catch (_) {
+            ivs = stateValue.toString().split(',').map((e) => e.trim()).toList();
+          }
         }
       }
       
@@ -45,13 +59,13 @@ class ComponentMultiDropdownController extends ComponentSelectionController<Comp
     if (matchedOptions.isNotEmpty) {
       selectedValues.value = matchedOptions.map((o) => o['key'].toString()).toList();
       displayedValues.value = matchedOptions;
-      updateTargetController(selectedValues.join(','));
+      _updateTargetWithJson();
     } else if (selectedValues.isNotEmpty) {
       final stillExists = options.where((o) => selectedValues.contains(o['key'])).toList();
       if (stillExists.length != selectedValues.length) {
         selectedValues.value = stillExists.map((o) => o['key'].toString()).toList();
         displayedValues.value = stillExists;
-        updateTargetController(selectedValues.join(','));
+        _updateTargetWithJson();
       } else {
         displayedValues.value = stillExists;
       }
@@ -61,7 +75,7 @@ class ComponentMultiDropdownController extends ComponentSelectionController<Comp
   void onSelectionsChanged(List<Map<String, dynamic>> selections) {
     selectedValues.value = selections.map((s) => s['key']?.toString() ?? '').toList();
     displayedValues.value = selections;
-    updateTargetController(selectedValues.join(','));
+    _updateTargetWithJson();
     
     // For actions, we might want to handle them differently for multi-select.
     // For now, we'll just pass the last selected item or the whole list if supported.
@@ -70,5 +84,13 @@ class ComponentMultiDropdownController extends ComponentSelectionController<Comp
     } else {
       // Handle empty selection if needed
     }
+  }
+
+  void _updateTargetWithJson() {
+    final jsonValue = jsonEncode(displayedValues.map((v) => {
+      'id': v['key'],
+      'name': v['label'],
+    }).toList());
+    updateTargetController(jsonValue);
   }
 }
