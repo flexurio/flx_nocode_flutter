@@ -5,16 +5,16 @@ import 'package:flx_nocode_flutter/features/component/models/component_selection
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 
-class ComponentDropdown extends ComponentSelectionBase {
-  final String initialValue;
+class ComponentMultiDropdown extends ComponentSelectionBase {
+  final List<String> initialValues;
 
-  ComponentDropdown({
+  ComponentMultiDropdown({
     required super.id,
     super.visibilityCondition,
     super.events,
     required super.label,
     required super.options,
-    this.initialValue = '',
+    this.initialValues = const [],
     super.httpData,
     super.optionKey,
     super.optionLabel,
@@ -26,14 +26,14 @@ class ComponentDropdown extends ComponentSelectionBase {
     super.flex,
   }) : super(type: componentId);
 
-  static const String componentId = 'dropdown';
+  static const String componentId = 'dropdown_multi_value';
 
-  factory ComponentDropdown.empty(String id) {
-    return ComponentDropdown(
+  factory ComponentMultiDropdown.empty(String id) {
+    return ComponentMultiDropdown(
       id: id,
-      label: 'Dropdown',
+      label: 'Multi Dropdown',
       options: const ['Option 1', 'Option 2'],
-      initialValue: '',
+      initialValues: const [],
       httpData: HttpData.empty(),
       required: false,
       dependsOn: const [],
@@ -41,13 +41,24 @@ class ComponentDropdown extends ComponentSelectionBase {
     );
   }
 
-  factory ComponentDropdown.fromMap(Map<String, dynamic> map) {
+  factory ComponentMultiDropdown.fromMap(Map<String, dynamic> map) {
     final id = map['id']?.toString().trim();
     if (id == null || id.isEmpty) {
       throw const FormatException('Component "id" is required');
     }
-    final label = map['label']?.toString().trim() ?? 'Dropdown';
-    final initialValue = map['initialValue']?.toString().trim() ?? '';
+    final label = map['label']?.toString().trim() ?? 'Multi Dropdown';
+    
+    final rawInitialValues = map['initialValues'] ?? map['initialValue'];
+    final initialValues = <String>[];
+    if (rawInitialValues is List) {
+      initialValues.addAll(rawInitialValues.map((e) => e.toString().trim()));
+    } else if (rawInitialValues != null && rawInitialValues.toString().isNotEmpty) {
+      // Handle comma separated string if any
+      initialValues.addAll(
+        rawInitialValues.toString().split(',').map((e) => e.trim()).where((e) => e.isNotEmpty),
+      );
+    }
+
     final rawOptions = map['options'];
     final options = <String>[];
     if (rawOptions is List) {
@@ -92,7 +103,7 @@ class ComponentDropdown extends ComponentSelectionBase {
       }
     }
 
-    return ComponentDropdown(
+    return ComponentMultiDropdown(
       id: id,
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] is Map
@@ -100,7 +111,7 @@ class ComponentDropdown extends ComponentSelectionBase {
           : const <String, dynamic>{},
       label: label,
       options: options,
-      initialValue: initialValue,
+      initialValues: initialValues,
       httpData: httpData,
       optionKey: map['optionKey']?.toString(),
       optionLabel: map['optionLabel']?.toString(),
@@ -118,6 +129,6 @@ class ComponentDropdown extends ComponentSelectionBase {
   @override
   JsonMap toMap() => {
         ...super.toMap(),
-        'initialValue': initialValue,
+        'initialValues': initialValues,
       };
 }

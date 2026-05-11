@@ -23,6 +23,7 @@ export 'package:flx_nocode_flutter/features/component/models/component_bar_chart
 export 'package:flx_nocode_flutter/features/component/models/component_chart.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_file_picker.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_form.dart';
+export 'package:flx_nocode_flutter/features/component/models/component_multi_dropdown.dart';
 
 import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
 import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
@@ -48,6 +49,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_bar_chart
 import 'package:flx_nocode_flutter/features/component/models/component_chart.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_file_picker.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_multi_dropdown.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
@@ -92,6 +94,8 @@ class Component {
         return ComponentCheckbox.fromMap(map);
       case ComponentType.dropdown:
         return ComponentDropdown.fromMap(map);
+      case ComponentType.multiDropdown:
+        return ComponentMultiDropdown.fromMap(map);
       case ComponentType.radio:
         return ComponentRadio.fromMap(map);
       case ComponentType.button:
@@ -154,6 +158,8 @@ class Component {
         return ComponentCheckbox.empty(Component._generateId(type));
       case ComponentType.dropdown:
         return ComponentDropdown.empty(Component._generateId(type));
+      case ComponentType.multiDropdown:
+        return ComponentMultiDropdown.empty(Component._generateId(type));
       case ComponentType.radio:
         return ComponentRadio.empty(Component._generateId(type));
       case ComponentType.button:
@@ -269,6 +275,7 @@ class Component {
     if (comp is ComponentTimeField) return comp.label;
     if (comp is ComponentCheckbox) return comp.label;
     if (comp is ComponentDropdown) return comp.label;
+    if (comp is ComponentMultiDropdown) return comp.label;
     if (comp is ComponentRadio) return comp.label;
     if (comp is ComponentFieldDisplay) return comp.label;
     if (comp is ComponentButton) return comp.text;
@@ -288,6 +295,7 @@ class ComponentType {
   static const String timeField = 'time_field';
   static const String checkbox = 'checkbox';
   static const String dropdown = 'dropdown';
+  static const String multiDropdown = 'dropdown_multi_value';
   static const String radio = 'radio';
   static const String button = 'button';
   static const String iconButton = 'icon_button';
@@ -313,6 +321,7 @@ class ComponentType {
     ComponentTypeEntry(id: timeField, label: 'Time Field'),
     ComponentTypeEntry(id: checkbox, label: 'Checkbox'),
     ComponentTypeEntry(id: dropdown, label: 'Dropdown'),
+    ComponentTypeEntry(id: multiDropdown, label: 'Multi Dropdown'),
     ComponentTypeEntry(id: radio, label: 'Radio'),
     ComponentTypeEntry(id: button, label: 'Button'),
     ComponentTypeEntry(id: iconButton, label: 'Icon Button'),

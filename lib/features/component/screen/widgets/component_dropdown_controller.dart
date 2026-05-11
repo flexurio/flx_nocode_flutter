@@ -1,213 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_dropdown.dart';
-import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_action.dart';
+import 'component_selection_controller.dart';
 
-class ComponentDropdownController extends GetxController {
-  final ComponentDropdown component;
-  JsonMap data;
-
+class ComponentDropdownController extends ComponentSelectionController<ComponentDropdown> {
   ComponentDropdownController({
-    required this.component,
-    required this.data,
+    required super.component,
+    required super.data,
   });
 
-  /// Updates the context data from the parent widget.
-  void updateData(JsonMap newData) {
-    final oldData = data;
-    data = newData;
-
-    // Trigger refresh if dependencies in the row data changed
-    if (component.dependsOn.isNotEmpty) {
-      bool changed = false;
-      final oldRow = oldData['data'] as Map?;
-      final newRow = newData['data'] as Map?;
-
-      for (final depId in component.dependsOn) {
-        if (newRow != null && oldRow != null) {
-          if (newRow[depId] != oldRow[depId]) {
-            changed = true;
-            break;
-          }
-        }
-      }
-
-      if (changed) {
-        _onDependencyChanged();
-      }
-    }
-  }
-
-  final options = <Map<String, dynamic>>[].obs;
-  final isLoading = false.obs;
-  final error = RxnString();
   final selectedValue = RxnString();
   final displayedValue = Rxn<Map<String, dynamic>>();
 
-  TextEditingController? get _targetController =>
-      data['controller'] as TextEditingController? ??
-      _allControllers[component.id];
-
-  Map<String, TextEditingController> get _allControllers =>
-      (data['allControllers'] as Map?)?.cast<String, TextEditingController>() ??
-      const {};
-
   @override
-  void onInit() {
-    super.onInit();
-    _setupListeners();
-    if (component.httpData != null && component.httpData!.url.isNotEmpty) {
-      fetchOptions();
-    } else {
-      _loadStaticOptions();
-    }
-  }
-
-  @override
-  void onClose() {
-    _removeListeners();
-    super.onClose();
-  }
-
-  void _setupListeners() {
-    if (component.dependsOn.isEmpty) return;
-
-    for (final depId in component.dependsOn) {
-      final controller = _allControllers[depId];
-      if (controller != null) {
-        controller.addListener(_onDependencyChanged);
-      }
-    }
-  }
-
-  void _removeListeners() {
-    if (component.dependsOn.isEmpty) return;
-
-    for (final depId in component.dependsOn) {
-      final controller = _allControllers[depId];
-      if (controller != null) {
-        controller.removeListener(_onDependencyChanged);
-      }
-    }
-  }
-
-  void _onDependencyChanged() {
+  void resetSelection() {
     selectedValue.value = null;
     displayedValue.value = null;
-    _updateTargetController('');
-    if (component.httpData != null && component.httpData!.url.isNotEmpty) {
-      fetchOptions();
-    }
   }
 
-  void _loadStaticOptions() {
-    final staticOptions = component.options.isNotEmpty
-        ? component.options
-        : ['Option 1', 'Option 2'];
-    options.value =
-        staticOptions.map((opt) => {'key': opt, 'label': opt}).toList();
-
-    _setInitialValue();
-  }
-
-  Future<void> fetchOptions() async {
-    if (component.httpData == null) return;
-
-    try {
-      isLoading.value = true;
-      error.value = null;
-
-      final requestData = _prepareRequestData();
-      final result = await component.httpData!.execute(requestData);
-
-      if (result.isSuccess && result.data is Map) {
-        final list = (result.data as Map)['data'] as List;
-        options.value =
-            list.map((item) => _mapItemToOption(item, requestData)).toList();
-        _setInitialValue();
-      } else {
-        error.value = 'Invalid data format';
-      }
-    } catch (e) {
-      error.value = e.toString();
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  JsonMap _prepareRequestData() {
-    final requestData = <String, dynamic>{};
-
-    // 1. Context variables from widget (row, form, etc)
-    requestData.addAll(data);
-
-    // 2. Start with values from state (if any) as a base
-    final state = data['data'] as Map?;
-    if (state != null) {
-      requestData.addAll(Map<String, dynamic>.from(state));
-      // Ensure 'data' variable is available for {{ data.id }}
-      requestData['data'] = state;
-    }
-
-    // 3. Overlay current values from _allControllers to ensure freshness
-    for (final entry in _allControllers.entries) {
-      requestData[entry.key] = entry.value.text;
-    }
-
-    return requestData;
-  }
-
-  Map<String, dynamic> _mapItemToOption(dynamic item, JsonMap requestData) {
-    final context = <String, dynamic>{
-      'item': item,
-      ...requestData,
-    };
-
-    String key = item.toString();
-    String label = item.toString();
-
-    if (component.optionKey != null && component.optionKey!.isNotEmpty) {
-      key = _resolveValue(item, component.optionKey!, context).toString();
-    }
-
-    if (component.optionLabel != null && component.optionLabel!.isNotEmpty) {
-      label = _resolveValue(item, component.optionLabel!, context).toString();
-    }
-
-    return {'key': key, 'label': label, 'item': item};
-  }
-
-  /// Resolves a value from an item, supporting dot notation and JS templates.
-  dynamic _resolveValue(dynamic item, String path, JsonMap context) {
-    if (path.isEmpty) return '';
-
-    // Try to resolve as a direct or nested key in the item
-    if (item is Map) {
-      if (item.containsKey(path)) return item[path] ?? '';
-
-      final parts = path.split('.');
-      dynamic current = item;
-      bool found = true;
-      for (final part in parts) {
-        if (current is Map && current.containsKey(part)) {
-          current = current[part];
-        } else {
-          found = false;
-          break;
-        }
-      }
-      if (found) return current ?? '';
-    }
-
-    // Fallback to interpolation
-    return path.interpolateJavascript(context);
-  }
-
-  void _setInitialValue() {
+  @override
+  void setInitialValue() {
     String iv = component.initialValue;
     final id = component.id;
 
@@ -216,14 +29,11 @@ class ComponentDropdownController extends GetxController {
       try {
         final dataPayload = data['data'];
         if (dataPayload is Map && dataPayload.containsKey(id)) {
-          // If the field already has a value in the state, use it as the initial value
-          // This handles the case where the component is rebuilt but should keep its current value
           final stateValue = dataPayload[id]?.toString();
           if (stateValue != null && stateValue.isNotEmpty) {
             iv = stateValue;
           }
         }
-
         iv = iv.interpolateJavascript(data);
       } catch (e) {
         debugPrint('[Dropdown Init: $id] Interpolation failed: $e');
@@ -235,14 +45,13 @@ class ComponentDropdownController extends GetxController {
       if (initialOption != null) {
         selectedValue.value = iv;
         displayedValue.value = initialOption;
-        _updateTargetController(selectedValue.value!);
+        updateTargetController(selectedValue.value!);
       }
     } else if (selectedValue.value != null) {
       final stillExists = options.any((o) => o['key'] == selectedValue.value);
       if (!stillExists) {
-        selectedValue.value = null;
-        displayedValue.value = null;
-        _updateTargetController('');
+        resetSelection();
+        updateTargetController('');
       } else {
         displayedValue.value =
             options.firstWhere((o) => o['key'] == selectedValue.value);
@@ -252,98 +61,14 @@ class ComponentDropdownController extends GetxController {
 
   void onSelectionChanged(Map<String, dynamic>? selection) {
     if (selection == null) {
-      selectedValue.value = null;
-      displayedValue.value = null;
-      _updateTargetController('');
+      resetSelection();
+      updateTargetController('');
     } else {
       final key = selection['key']?.toString() ?? '';
       selectedValue.value = key;
       displayedValue.value = selection;
-      _updateTargetController(key);
-      _handleActions(selection);
+      updateTargetController(key);
+      handleActions(selection);
     }
-  }
-
-  void _updateTargetController(String value) {
-    _safeUpdateController(_targetController, value);
-  }
-
-  void _safeUpdateController(TextEditingController? controller, String value) {
-    if (controller == null || controller.text == value) return;
-
-    final binding = WidgetsBinding.instance;
-    // If we are not in the middle of a frame, we can update immediately.
-    if (binding.schedulerPhase == SchedulerPhase.idle) {
-      controller.text = value;
-    } else {
-      binding.addPostFrameCallback((_) {
-        if (controller.text != value) {
-          controller.text = value;
-        }
-      });
-    }
-  }
-
-  void _handleActions(Map<String, dynamic> selection) {
-    if (component.onChangeActions.isEmpty) return;
-
-    final context = _buildActionContext(selection);
-
-    for (final action in component.onChangeActions) {
-      switch (action.type) {
-        case 'set_value':
-          _handleSetValueAction(action, context);
-          break;
-        case 'update_row':
-          _handleUpdateRowAction(action, context, selection);
-          break;
-      }
-    }
-  }
-
-  Map<String, dynamic> _buildActionContext(Map<String, dynamic> selection) {
-    final value = selection['key']?.toString() ?? '';
-    final item = selection['item'];
-    final requestData = _prepareRequestData();
-
-    return <String, dynamic>{
-      ...selection,
-      'item': item,
-      'value': value,
-      ...requestData,
-    };
-  }
-
-  void _handleSetValueAction(
-      ComponentAction action, Map<String, dynamic> context) {
-    final targetId = action.target_id;
-    final targetController = _allControllers[targetId];
-    if (targetController != null) {
-      final rawValue = action.value ?? '';
-      final newValue = rawValue.interpolateJavascript(context);
-      _safeUpdateController(targetController, newValue);
-    }
-  }
-
-  void _handleUpdateRowAction(ComponentAction action,
-      Map<String, dynamic> context, Map<String, dynamic> selection) {
-    final onRowChanged = data['onRowChanged'];
-    if (onRowChanged is! Function) return;
-
-    final row = Map<String, dynamic>.from(data['row'] as Map? ?? {});
-
-    if (action.mappings != null && action.mappings!.isNotEmpty) {
-      for (final entry in action.mappings!.entries) {
-        final targetField = entry.key;
-        final rawValue = entry.value;
-        row[targetField] = rawValue.interpolateJavascript(context);
-      }
-    } else {
-      final value = selection['key']?.toString() ?? '';
-      final key = action.reference ?? component.id;
-      row[key] = value;
-    }
-
-    onRowChanged(row);
   }
 }

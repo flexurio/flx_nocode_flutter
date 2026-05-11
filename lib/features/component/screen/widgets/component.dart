@@ -23,6 +23,8 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_p
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_bar_chart.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_file_picker.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_form.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_multi_dropdown.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_multi_dropdown.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
@@ -64,6 +66,8 @@ extension ComponentWidget on Component {
       return (this as ComponentCheckbox).toWidget(fullData);
     } else if (this.type == ComponentDropdown.componentId) {
       return (this as ComponentDropdown).toWidget(fullData, isSmall: isSmall);
+    } else if (this.type == ComponentMultiDropdown.componentId) {
+      return (this as ComponentMultiDropdown).toWidget(fullData, isSmall: isSmall);
     } else if (this.type == ComponentRadio.componentId) {
       return (this as ComponentRadio).toWidget(fullData);
     } else if (this.type == ComponentButton.componentId) {
@@ -115,6 +119,8 @@ extension ComponentWidget on Component {
       return (this as ComponentCheckbox).toMockWidget();
     } else if (this.type == ComponentDropdown.componentId) {
       return (this as ComponentDropdown).toMockWidget();
+    } else if (this.type == ComponentMultiDropdown.componentId) {
+      return (this as ComponentMultiDropdown).toMockWidget();
     } else if (this.type == ComponentRadio.componentId) {
       return (this as ComponentRadio).toMockWidget();
     } else if (this.type == ComponentButton.componentId) {
