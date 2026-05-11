@@ -1,4 +1,4 @@
-[2K⠙ Analyzing...[2K[2K⠹ Processing 228 file(s)... 0.6s[2K⠸ Processing 228 file(s)... 27.2s[2K⠼ Processing 228 file(s)... 27.3s[2K⠴ Processing 228 file(s)... 27.4s[2K⠦ Processing 228 file(s)... 27.4s[2K⠧ Processing 228 file(s)... 27.5s[2K⠇ Processing 228 file(s)... 27.6s[2K⠏ Processing 228 file(s)... 27.7s[2K⠋ Processing 228 file(s)... 27.9s[2K⠙ Processing 228 file(s)... 27.9s[2K⠹ Processing 228 file(s)... 28.0s[2K⠸ Processing 228 file(s)... 28.1s[2K⠼ Processing 228 file(s)... 28.2s[2K⠴ Processing 228 file(s)... 28.7s[2K⠦ Processing 228 file(s)... 28.7s[2K⠧ Processing 228 file(s)... 28.8s[2K⠇ Processing 228 file(s)... 28.9s[2K⠏ Processing 228 file(s)... 29.0s[2K⠋ Processing 228 file(s)... 29.0s[2K⠙ Processing 228 file(s)... 29.2s[2K⠹ Processing 228 file(s)... 29.2s[2K⠸ Processing 228 file(s)... 29.3s[2K⠼ Processing 228 file(s)... 29.4s[2K⠴ Processing 228 file(s)... 29.4s[2K⠦ Processing 228 file(s)... 29.6s[2K⠧ Processing 228 file(s)... 29.6s[2K⠇ Processing 228 file(s)... 29.7s[2K⠏ Processing 228 file(s)... 29.8s[2K⠋ Processing 228 file(s)... 30.6s[2K⠙ Processing 228 file(s)... 30.6s[2K⠹ Processing 228 file(s)... 30.7s[2K⠸ Processing 228 file(s)... 30.8s[2K⠼ Processing 228 file(s)... 30.9s[2K⠴ Processing 228 file(s)... 31.0s[2K⠦ Processing 228 file(s)... 31.0s[2K⠧ Processing 228 file(s)... 31.1s[2K⠇ Processing 228 file(s)... 31.2s[2K⠏ Processing 228 file(s)... 31.3s[2K⠋ Processing 228 file(s)... 31.4s[2K⠙ Processing 228 file(s)... 31.4s[2K⠹ Processing 228 file(s)... 31.5s[2K⠸ Processing 228 file(s)... 31.6s[2K⠼ Processing 228 file(s)... 31.7s[2K⠴ Processing 228 file(s)... 31.8s[2K⠦ Processing 228 file(s)... 31.9s[2K⠧ Processing 228 file(s)... 31.9s[2K⠇ Processing 228 file(s)... 32.0s[2K⠏ Processing 228 file(s)... 32.1s[2K⠋ Processing 228 file(s)... 32.2s[2K⠙ Processing 228 file(s)... 32.2s[2K⠹ Processing 228 file(s)... 32.3s[2K⠸ Processing 228 file(s)... 32.4s[2K⠼ Processing 228 file(s)... 32.5s[2K⠴ Processing 228 file(s)... 32.6s[2K✔ Analysis is completed. Preparing the results: 32.7s
+[2K⠙ Analyzing...[2K[2K⠹ Processing 234 file(s)... 0.6s[2K⠸ Processing 234 file(s)... 27.3s[2K⠼ Processing 234 file(s)... 27.4s[2K⠴ Processing 234 file(s)... 27.5s[2K⠦ Processing 234 file(s)... 27.6s[2K⠧ Processing 234 file(s)... 27.7s[2K⠇ Processing 234 file(s)... 27.8s[2K⠏ Processing 234 file(s)... 28.0s[2K⠋ Processing 234 file(s)... 28.1s[2K⠙ Processing 234 file(s)... 28.2s[2K⠹ Processing 234 file(s)... 28.2s[2K⠸ Processing 234 file(s)... 28.9s[2K⠼ Processing 234 file(s)... 28.9s[2K⠴ Processing 234 file(s)... 29.0s[2K⠦ Processing 234 file(s)... 29.1s[2K⠧ Processing 234 file(s)... 29.1s[2K⠇ Processing 234 file(s)... 29.2s[2K⠏ Processing 234 file(s)... 29.3s[2K⠋ Processing 234 file(s)... 29.4s[2K⠙ Processing 234 file(s)... 29.4s[2K⠹ Processing 234 file(s)... 29.5s[2K⠸ Processing 234 file(s)... 29.6s[2K⠼ Processing 234 file(s)... 29.7s[2K⠴ Processing 234 file(s)... 29.8s[2K⠦ Processing 234 file(s)... 29.9s[2K⠧ Processing 234 file(s)... 30.0s[2K⠇ Processing 234 file(s)... 30.0s[2K⠏ Processing 234 file(s)... 30.8s[2K⠋ Processing 234 file(s)... 30.9s[2K⠙ Processing 234 file(s)... 31.0s[2K⠹ Processing 234 file(s)... 31.0s[2K⠸ Processing 234 file(s)... 31.1s[2K⠼ Processing 234 file(s)... 31.2s[2K⠴ Processing 234 file(s)... 31.3s[2K⠦ Processing 234 file(s)... 31.4s[2K⠧ Processing 234 file(s)... 31.5s[2K⠇ Processing 234 file(s)... 31.5s[2K⠏ Processing 234 file(s)... 31.6s[2K⠋ Processing 234 file(s)... 31.7s[2K⠙ Processing 234 file(s)... 31.8s[2K⠹ Processing 234 file(s)... 31.9s[2K⠸ Processing 234 file(s)... 31.9s[2K⠼ Processing 234 file(s)... 32.0s[2K⠴ Processing 234 file(s)... 32.1s[2K⠦ Processing 234 file(s)... 32.2s[2K⠧ Processing 234 file(s)... 32.2s[2K⠇ Processing 234 file(s)... 32.3s[2K⠏ Processing 234 file(s)... 32.4s[2K⠋ Processing 234 file(s)... 32.5s[2K⠙ Processing 234 file(s)... 32.6s[2K⠹ Processing 234 file(s)... 32.6s[2K⠸ Processing 234 file(s)... 32.7s[2K⠼ Processing 234 file(s)... 32.8s[2K⠴ Processing 234 file(s)... 32.9s[2K✔ Analysis is completed. Preparing the results: 33.0s
 
 lib/src/app/resource/entity_custom.dart:
 WARNING EntityCustomRepository._request
@@ -363,6 +363,11 @@ WARNING mockComponentTableReactiveForm
         source lines of code: 64 lines
 
 
+lib/features/component/screen/widgets/component_multi_dropdown.dart:
+WARNING ComponentMultiDropdownWidgets.toMockWidget
+        source lines of code: 52 lines
+
+
 lib/features/component/screen/widgets/component_icon_button.dart:
 WARNING ComponentIconButtonWidgets.toWidget
         maximum nesting level: 5
@@ -390,13 +395,13 @@ ALARM   _ComponentTableWidgetState.build
 
 lib/features/component/screen/widgets/component.dart:
 WARNING ComponentWidget.toWidget
-        cyclomatic complexity: 27
+        cyclomatic complexity: 28
         number of parameters: 5
-        source lines of code: 56 lines
+        source lines of code: 58 lines
 
 WARNING ComponentWidget.toMockWidget
-        cyclomatic complexity: 24
-        source lines of code: 48 lines
+        cyclomatic complexity: 25
+        source lines of code: 50 lines
 
 
 lib/features/component/screen/widgets/component_container.dart:
@@ -436,9 +441,18 @@ WARNING ComponentRowWidgets.toMockWidget
         source lines of code: 80 lines
 
 
+lib/features/component/models/component_multi_dropdown.dart:
+WARNING ComponentMultiDropdown.fromMap
+        cyclomatic complexity: 30
+        source lines of code: 74 lines
+
+
 lib/features/component/models/component.dart:
 WARNING Component.fromMap
-        source lines of code: 57 lines
+        source lines of code: 59 lines
+
+WARNING Component.empty
+        source lines of code: 52 lines
 
 WARNING Component.fromEntityField
         cyclomatic complexity: 17
