@@ -1,7 +1,7 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart' hide TColumn;
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
+import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:hive/hive.dart';
 
 enum ActionType {
@@ -108,6 +108,9 @@ class ActionD extends HiveObject {
   /// The column mappings for export action.
   final List<TColumn>? exportColumns;
 
+  /// Optional filter fields shown in the PrintFilterDialog before print executes.
+  final List<Component> filterFields;
+
   ActionD({
     required this.isMultiple,
     required this.onSuccess,
@@ -136,6 +139,7 @@ class ActionD extends HiveObject {
     this.validate = false,
     this.exportFormat,
     this.exportColumns,
+    this.filterFields = const [],
   }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       assert(layoutFormId != null && layoutFormId!.isNotEmpty,
@@ -173,6 +177,7 @@ class ActionD extends HiveObject {
     bool? validate,
     String? exportFormat,
     List<TColumn>? exportColumns,
+    List<Component>? filterFields,
   }) {
      return ActionD(
       exportFormat: exportFormat ?? this.exportFormat,
@@ -202,6 +207,7 @@ class ActionD extends HiveObject {
       copyLabel: copyLabel ?? this.copyLabel,
       copyValue: copyValue ?? this.copyValue,
       targetVariable: targetVariable ?? this.targetVariable,
+      filterFields: filterFields ?? this.filterFields,
     );
   }
 
@@ -256,6 +262,11 @@ class ActionD extends HiveObject {
               .map((e) => TColumn.fromJson(Map<String, dynamic>.from(e as Map)))
               .toList()
           : null,
+      filterFields: json['filter_fields'] != null
+          ? (json['filter_fields'] as List)
+              .map((e) => Component.fromMap(Map<String, dynamic>.from(e as Map)))
+              .toList()
+          : const [],
     );
   }
 
@@ -295,6 +306,7 @@ class ActionD extends HiveObject {
                 'width': e.width,
               })
           .toList(),
+      'filter_fields': filterFields.map((e) => e.toMap()).toList(),
     };
   }
 

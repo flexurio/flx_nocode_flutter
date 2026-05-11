@@ -386,4 +386,4 @@ warning • Unused import: 'package:get/get.dart' • test/features/component/sc
 warning • The value of the local variable 'mockUiBridge' isn't used • test/features/layout_form/domain/workflow_actions/workflow_execution_test.dart:12:21 • unused_local_variable
    info • The import of 'package:flx_nocode_flutter/src/app/model/theme.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flx_nocode_flutter/flx_nocode_flutter.dart' • test/no_code_navigate_push_menu_parent_test.dart:11:8 • unnecessary_import
 
-385 issues found. (ran in 43.5s)
+385 issues found. (ran in 39.3s)
