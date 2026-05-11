@@ -30,3 +30,4 @@ Detailed documentation for each category of components:
 - [**Layout Components**](./layout_components.md): Containers for arranging UI elements (`row`, `column`, `container`).
 - [**Other Components**](./other_components.md): Selection toggles, dividers, and other UI utilities.
 - [**Chart Components**](./charts.md): Data visualization tools.
+- [**Logic Components**](./component_conditional.md): Dynamic UI switching (`conditional`).

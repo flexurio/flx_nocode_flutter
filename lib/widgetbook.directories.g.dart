@@ -14,6 +14,8 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_c
     as _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook;
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_dropdown.widgetbook.dart'
     as _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook;
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_multi_dropdown.widgetbook.dart'
+    as _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook;
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table.widgetbook.dart'
     as _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook;
 import 'package:flx_nocode_flutter/features/data_table/screen/widgets/entity_data_table.widgetbook.dart'
@@ -235,7 +237,42 @@ final directories = <_widgetbook.WidgetbookNode>[
                                 .mockComponentDropdownDesign,
                       ),
                     ],
-                  )
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'ComponentMultiDropdownWidget',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Fill Width',
+                        builder:
+                            _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
+                                .mockComponentMultiDropdownFill,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Fixed Width',
+                        builder:
+                            _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
+                                .mockComponentMultiDropdownFixed,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Hug Content',
+                        builder:
+                            _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
+                                .mockComponentMultiDropdownHug,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Live Widget (Local Data)',
+                        builder:
+                            _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
+                                .mockComponentMultiDropdownLive,
+                      ),
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Mock Design (From JSON)',
+                        builder:
+                            _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
+                                .mockComponentMultiDropdownDesign,
+                      ),
+                    ],
+                  ),
                 ],
               )
             ],

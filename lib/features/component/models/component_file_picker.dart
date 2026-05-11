@@ -1,20 +1,22 @@
-import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
-class ComponentFilePicker extends Component {
-  final String label;
+class ComponentFilePicker extends ComponentInputBase {
   final String? initialValue;
-  final bool required;
   final bool enabled;
   final List<String>? allowedExtensions;
 
   ComponentFilePicker({
     required super.id,
-    required this.label,
+    required super.label,
     this.initialValue,
-    this.required = false,
+    super.required,
     this.enabled = true,
     this.allowedExtensions,
+    super.widthMode,
+    super.width,
+    super.flex,
     super.visibilityCondition,
     super.events,
   }) : super(type: 'file_picker');
@@ -59,6 +61,9 @@ class ComponentFilePicker extends Component {
       required: required,
       enabled: enabled,
       allowedExtensions: allowedExtensions,
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
+      width: double.tryParse(map['width']?.toString() ?? ''),
+      flex: int.tryParse(map['flex']?.toString() ?? ''),
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? {},
     );
@@ -66,15 +71,9 @@ class ComponentFilePicker extends Component {
 
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
-        'label': label,
+        ...super.toMap(),
         if (initialValue != null) 'initialValue': initialValue,
-        'required': required,
         'enabled': enabled,
         if (allowedExtensions != null) 'allowedExtensions': allowedExtensions,
-        if (visibilityCondition != null)
-          'visibilityCondition': visibilityCondition,
-        'events': events,
       };
 }

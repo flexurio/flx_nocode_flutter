@@ -24,7 +24,9 @@ export 'package:flx_nocode_flutter/features/component/models/component_chart.dar
 export 'package:flx_nocode_flutter/features/component/models/component_file_picker.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_form.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_multi_dropdown.dart';
-
+export 'package:flx_nocode_flutter/features/component/models/component_conditional.dart';
+export 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
 import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
 import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_date_picker.dart';
@@ -50,6 +52,8 @@ import 'package:flx_nocode_flutter/features/component/models/component_chart.dar
 import 'package:flx_nocode_flutter/features/component/models/component_file_picker.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_form.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_multi_dropdown.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_conditional.dart';
+
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
@@ -128,6 +132,9 @@ class Component {
         return ComponentFilePicker.fromMap(map);
       case ComponentType.form:
         return ComponentForm.fromMap(map);
+      case ComponentType.conditional:
+        return ComponentConditional.fromMap(map);
+
       default:
         throw FormatException('Unknown component type "$type"');
     }
@@ -192,6 +199,9 @@ class Component {
         return ComponentFilePicker.empty(Component._generateId(type));
       case ComponentType.form:
         return ComponentForm.empty(Component._generateId(type));
+      case ComponentType.conditional:
+        return ComponentConditional.empty(Component._generateId(type));
+
       default:
         throw FormatException('Unknown component type "$type"');
     }
@@ -269,14 +279,7 @@ class Component {
   /// Get a human-readable label for this component based on its data.
   String get displayLabel {
     final comp = this;
-    if (comp is ComponentTextField) return comp.label;
-    if (comp is ComponentNumberField) return comp.label;
-    if (comp is ComponentDatePicker) return comp.label;
-    if (comp is ComponentTimeField) return comp.label;
-    if (comp is ComponentCheckbox) return comp.label;
-    if (comp is ComponentDropdown) return comp.label;
-    if (comp is ComponentMultiDropdown) return comp.label;
-    if (comp is ComponentRadio) return comp.label;
+    if (comp is ComponentInputBase) return comp.label;
     if (comp is ComponentFieldDisplay) return comp.label;
     if (comp is ComponentButton) return comp.text;
     if (comp is ComponentIconButton) return comp.icon;
@@ -312,6 +315,7 @@ class ComponentType {
   static const String barChart = 'bar_chart';
   static const String filePicker = 'file_picker';
   static const String form = 'form';
+  static const String conditional = 'conditional';
 
   static const List<ComponentTypeEntry> values = [
     ComponentTypeEntry(id: table, label: 'Table'),
@@ -338,6 +342,7 @@ class ComponentType {
     ComponentTypeEntry(id: barChart, label: 'Bar Chart'),
     ComponentTypeEntry(id: filePicker, label: 'File Picker'),
     ComponentTypeEntry(id: form, label: 'Form'),
+    ComponentTypeEntry(id: conditional, label: 'Conditional'),
   ];
 
   static String labelOf(String type) => values

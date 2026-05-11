@@ -3,14 +3,14 @@
 *Last updated: 2026-05-11*
 
 ## 📈 Summary
-- **Total Issues (Combined)**: 389
-- **Standard Analyzer Issues**: 389
+- **Total Issues (Combined)**: 385
+- **Standard Analyzer Issues**: 385
 - **DCM Issues (Presets)**: 0
 
 ### 🔍 Standard Analyzer Breakdown
 - **Errors**: 0
 - **Warnings**: 41
-- **Infos**: 348
+- **Infos**: 344
 
 ### 🛠️ Tooling Status
 - **Standard Analyzer**: Active

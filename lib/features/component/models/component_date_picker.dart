@@ -1,31 +1,26 @@
-import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
-class ComponentDatePicker extends Component {
-  final String label;
+class ComponentDatePicker extends ComponentInputBase {
   final String initialValue;
   final String? minDate;
   final String? maxDate;
-  final bool required;
-  final ComponentSizeMode? widthMode; // 'fill', 'hug', 'fixed'
-  final double? width;
-  final int? flex;
   final String? dateFormat;
 
   ComponentDatePicker({
     required super.id,
-    required this.label,
+    required super.label,
     required this.initialValue,
     this.minDate,
     this.maxDate,
-    this.required = false,
+    super.required,
     this.dateFormat,
-    this.widthMode,
-    this.width,
-    this.flex,
+    super.widthMode,
+    super.width,
+    super.flex,
     super.visibilityCondition,
-    super.events = const {},
+    super.events,
   }) : super(type: componentId);
 
   static const String componentId = 'date_picker';
@@ -73,14 +68,9 @@ class ComponentDatePicker extends Component {
   @override
   JsonMap toMap() => {
         ...super.toMap(),
-        'label': label,
         'initialValue': initialValue,
         'minDate': minDate,
         'maxDate': maxDate,
-        'required': required,
         'dateFormat': dateFormat,
-        'widthMode': widthMode?.name,
-        'width': width,
-        'flex': flex,
       };
 }

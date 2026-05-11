@@ -1,25 +1,22 @@
-import 'package:flx_nocode_flutter/features/component/models/component.dart';
-import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
+import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
-class ComponentNumberField extends Component {
-  final String label;
+class ComponentNumberField extends ComponentInputBase {
   final String initialValue;
   final bool enabled;
-  final ComponentSizeMode? widthMode;
-  final double? width;
-  final int? flex;
 
   ComponentNumberField({
     required super.id,
-    required this.label,
+    required super.label,
     required this.initialValue,
-    required this.enabled,
-    this.widthMode,
-    this.width,
-    this.flex,
+    this.enabled = true,
+    super.required,
+    super.widthMode,
+    super.width,
+    super.flex,
     super.visibilityCondition,
-    super.events = const {},
+    super.events,
   }) : super(type: componentId);
 
   static const String componentId = 'number_field';
@@ -55,6 +52,7 @@ class ComponentNumberField extends Component {
       label: label,
       initialValue: initialValue,
       enabled: enabled,
+      required: map['required'] == true,
       widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: double.tryParse(map['width']?.toString() ?? ''),
       flex: int.tryParse(map['flex']?.toString() ?? ''),
@@ -66,11 +64,7 @@ class ComponentNumberField extends Component {
   @override
   JsonMap toMap() => {
         ...super.toMap(),
-        'label': label,
         'initialValue': initialValue,
         'enabled': enabled,
-        'widthMode': widthMode?.name,
-        'width': width,
-        'flex': flex,
       };
 }

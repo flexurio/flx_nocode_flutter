@@ -25,6 +25,9 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_f
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_form.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_multi_dropdown.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_multi_dropdown.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_conditional.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_conditional.dart';
+
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
@@ -96,7 +99,10 @@ extension ComponentWidget on Component {
       return (this as ComponentFilePicker).toWidget(fullData);
     } else if (this.type == ComponentForm.componentId) {
       return (this as ComponentForm).toWidget(fullData);
+    } else if (this.type == ComponentConditional.componentId) {
+      return (this as ComponentConditional).toWidget(fullData, isSmall: isSmall);
     }
+
     return NoCodeError('Unknown component type: ${this.type}');
   }
 
@@ -149,7 +155,10 @@ extension ComponentWidget on Component {
       return (this as ComponentFilePicker).toMockWidget();
     } else if (this.type == ComponentForm.componentId) {
       return (this as ComponentForm).toMockWidget();
+    } else if (this.type == ComponentConditional.componentId) {
+      return (this as ComponentConditional).toMockWidget();
     }
+
     return Text('Mock Widget: $type');
   }
 }
