@@ -1,23 +1,20 @@
-import 'package:flx_nocode_flutter/features/component/models/component.dart';
-import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
+import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
-class ComponentCheckbox extends Component {
-  final String label;
+class ComponentCheckbox extends ComponentInputBase {
   final bool value;
-  final ComponentSizeMode? widthMode;
-  final double? width;
-  final int? flex;
 
   ComponentCheckbox({
     required super.id,
-    required this.label,
+    required super.label,
     required this.value,
-    this.widthMode,
-    this.width,
-    this.flex,
+    super.required,
+    super.widthMode,
+    super.width,
+    super.flex,
     super.visibilityCondition,
-    super.events = const {},
+    super.events,
   }) : super(type: componentId);
 
   static const String componentId = 'checkbox';
@@ -49,6 +46,7 @@ class ComponentCheckbox extends Component {
       id: id,
       label: label,
       value: value,
+      required: map['required'] == true,
       widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: double.tryParse(map['width']?.toString() ?? ''),
       flex: int.tryParse(map['flex']?.toString() ?? ''),
@@ -60,10 +58,6 @@ class ComponentCheckbox extends Component {
   @override
   JsonMap toMap() => {
         ...super.toMap(),
-        'label': label,
         'value': value,
-        'widthMode': widthMode?.name,
-        'width': width,
-        'flex': flex,
       };
 }

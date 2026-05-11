@@ -24,6 +24,8 @@ export 'package:flx_nocode_flutter/features/component/models/component_chart.dar
 export 'package:flx_nocode_flutter/features/component/models/component_file_picker.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_form.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_multi_dropdown.dart';
+export 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
 
 import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
 import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
@@ -269,14 +271,7 @@ class Component {
   /// Get a human-readable label for this component based on its data.
   String get displayLabel {
     final comp = this;
-    if (comp is ComponentTextField) return comp.label;
-    if (comp is ComponentNumberField) return comp.label;
-    if (comp is ComponentDatePicker) return comp.label;
-    if (comp is ComponentTimeField) return comp.label;
-    if (comp is ComponentCheckbox) return comp.label;
-    if (comp is ComponentDropdown) return comp.label;
-    if (comp is ComponentMultiDropdown) return comp.label;
-    if (comp is ComponentRadio) return comp.label;
+    if (comp is ComponentInputBase) return comp.label;
     if (comp is ComponentFieldDisplay) return comp.label;
     if (comp is ComponentButton) return comp.text;
     if (comp is ComponentIconButton) return comp.icon;

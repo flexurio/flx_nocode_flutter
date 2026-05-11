@@ -1,18 +1,22 @@
-import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
-class ComponentSwitch extends Component {
-  final String label;
+class ComponentSwitch extends ComponentInputBase {
   final bool initialValue;
   final bool enabled;
 
   ComponentSwitch({
     required super.id,
-    this.label = 'Switch',
+    super.label = 'Switch',
     this.initialValue = false,
     this.enabled = true,
+    super.required,
+    super.widthMode,
+    super.width,
+    super.flex,
     super.visibilityCondition,
-    super.events = const {},
+    super.events,
   }) : super(type: 'switch');
 
   static String get componentId => 'switch';
@@ -36,6 +40,10 @@ class ComponentSwitch extends Component {
       label: map['label']?.toString() ?? 'Switch',
       initialValue: map['initialValue'] == true,
       enabled: map['enabled'] != false,
+      required: map['required'] == true,
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
+      width: double.tryParse(map['width']?.toString() ?? ''),
+      flex: int.tryParse(map['flex']?.toString() ?? ''),
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
     );
@@ -44,7 +52,6 @@ class ComponentSwitch extends Component {
   @override
   JsonMap toMap() => {
         ...super.toMap(),
-        'label': label,
         'initialValue': initialValue,
         'enabled': enabled,
       };
