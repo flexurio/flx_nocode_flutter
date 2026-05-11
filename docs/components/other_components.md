@@ -9,3 +9,5 @@ Miscellaneous components for specific state and UI needs.
 | `radio` | Single choice list | `label`, `options`, `initialValue` |
 | `date_picker` | Date selection | `label`, `initialValue`, `dateFormat` |
 | `divider` | Visual separator | `thickness`, `indent` |
+| `conditional` | Dynamic if-else switching | `condition`, `then`, `else` |
+
