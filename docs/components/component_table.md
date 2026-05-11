@@ -28,7 +28,8 @@ Each object in the `columns` array defines a single column.
 | `header` | String | Yes | The label displayed in the table header. |
 | `body` | String | Yes | The key or expression used to extract a value from each row. Supports dot notation (e.g., `user.name`) or simple templates. |
 | `width` | Double | No | The width of this specific column in pixels. |
-| `component` | Object | No | A nested component to be rendered inside every cell of this column. The component will have access to the specific row data. |
+| `component` | Object | No | A nested component to be rendered inside every cell of this column. Can be any component type, including `conditional` for dynamic logic. |
+
 
 ---
 
@@ -233,3 +234,45 @@ To enable row updates for a dropdown in a table, use the `update_row` action typ
 }
 ```
 In this example, choosing an item from a dropdown will update both the `department_id` and `department_name` fields in the table row, using the selected item's key and its `name` property.
+
+---
+
+## Conditional Components (`type: "conditional"`)
+
+You can use the `conditional` component type to render different components based on a logic expression. This is particularly useful in table columns where you might want to show a dropdown for some rows and a text field for others.
+
+### Properties
+
+| Key | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | String | Yes | Unique identifier. |
+| `type` | String | Yes | Must be `"conditional"`. |
+| `condition` | String | Yes | JS expression to evaluate (e.g., `data.is_editable == true`). |
+| `then` | Object | Yes | The component to render if the condition is true. |
+| `else` | Object | No | The component to render if the condition is false. |
+
+### Example in TColumn
+
+```json
+{
+  "header": "Department",
+  "body": "department_id",
+  "component": {
+    "id": "dept_conditional",
+    "type": "conditional",
+    "condition": "data.is_all_department == true",
+    "then": {
+      "id": "dept_dropdown",
+      "type": "dropdown",
+      "label": "Select Department",
+      "httpData": { ... }
+    },
+    "else": {
+      "id": "dept_display",
+      "type": "field_display",
+      "label": "Dept",
+      "value": "{{department_name}}"
+    }
+  }
+}
+```
