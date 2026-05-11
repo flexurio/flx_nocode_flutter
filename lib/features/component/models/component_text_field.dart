@@ -1,38 +1,33 @@
-import 'package:flx_nocode_flutter/features/component/models/component.dart';
-import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
+import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
-class ComponentTextField extends Component {
-  final String label;
+class ComponentTextField extends ComponentInputBase {
   final int maxLength;
   final int maxLines;
   final String initialValue;
   final String hintText;
   final bool enabled;
-  final bool required;
   final String? regex;
   final String? regexErrorMessage;
   final String? helperText;
-  final ComponentSizeMode? widthMode;
-  final double? width;
-  final int? flex;
   final bool obscure;
 
   ComponentTextField({
     required super.id,
-    required this.label,
+    required super.label,
     this.maxLength = 50,
     this.maxLines = 1,
     this.initialValue = '',
     this.hintText = '',
     this.enabled = true,
-    this.required = false,
+    super.required,
     this.regex,
     this.regexErrorMessage,
     this.helperText,
-    this.widthMode,
-    this.width,
-    this.flex,
+    super.widthMode,
+    super.width,
+    super.flex,
     this.obscure = false,
     super.visibilityCondition,
     super.events,
@@ -108,24 +103,15 @@ class ComponentTextField extends Component {
 
   @override
   JsonMap toMap() => {
-        'id': id,
-        'type': type,
-        'label': label,
+        ...super.toMap(),
         'maxLength': maxLength,
         'maxLines': maxLines,
         'initialValue': initialValue,
         'hintText': hintText,
         'enabled': enabled,
-        'required': required,
         if (regex != null) 'regex': regex,
         if (regexErrorMessage != null) 'regexErrorMessage': regexErrorMessage,
         if (helperText != null) 'helperText': helperText,
-        'widthMode': widthMode?.name,
-        'width': width,
-        'flex': flex,
         'obscure': obscure,
-        if (visibilityCondition != null)
-          'visibilityCondition': visibilityCondition,
-        'events': events,
       };
 }

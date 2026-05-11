@@ -1,20 +1,22 @@
-import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
-class ComponentRadio extends Component {
-  final String label;
+class ComponentRadio extends ComponentInputBase {
   final List<String> options;
   final String initialValue;
-  final bool required;
 
   ComponentRadio({
     required super.id,
-    required this.label,
+    required super.label,
     required this.options,
     required this.initialValue,
-    this.required = false,
+    super.required,
+    super.widthMode,
+    super.width,
+    super.flex,
     super.visibilityCondition,
-    super.events = const {},
+    super.events,
   }) : super(type: componentId);
 
   static const String componentId = 'radio';
@@ -55,6 +57,9 @@ class ComponentRadio extends Component {
       options: options,
       initialValue: initialValue,
       required: required,
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
+      width: double.tryParse(map['width']?.toString() ?? ''),
+      flex: int.tryParse(map['flex']?.toString() ?? ''),
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
     );
@@ -63,9 +68,7 @@ class ComponentRadio extends Component {
   @override
   JsonMap toMap() => {
         ...super.toMap(),
-        'label': label,
         'options': options,
         'initialValue': initialValue,
-        'required': required,
       };
 }
