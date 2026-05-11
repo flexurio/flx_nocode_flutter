@@ -76,5 +76,29 @@ void main() {
       expect(original.exportFormat, 'pdf');
       expect(original.exportColumns, isNull);
     });
+
+    test('ActionD handles filter_fields deserialization correctly', () {
+      final json = <String, dynamic>{
+        'id': 'print_1',
+        'name': 'Print Doc',
+        'type': 'print',
+        'is_multiple': false,
+        'filter_fields': [
+          {
+            'id': 'dept',
+            'type': 'text_field',
+            'label': 'Department',
+            'required': true
+          }
+        ],
+      };
+
+      final action = ActionD.fromJson(json);
+
+      expect(action.filterFields.length, 1);
+      expect(action.filterFields.first.id, 'dept');
+      expect(action.filterFields.first.type, 'text_field');
+      expect(action.filterFields.first.displayLabel, 'Department');
+    });
   });
 }
