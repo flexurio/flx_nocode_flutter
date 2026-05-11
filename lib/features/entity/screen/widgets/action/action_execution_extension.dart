@@ -7,6 +7,7 @@ import 'package:flx_nocode_flutter/features/layout_form/screen/pages/create_page
 import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/print/presentation/widgets/pdf_preview_dialog.dart';
+import 'package:flx_nocode_flutter/features/print/presentation/widgets/print_filter_dialog.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:get/get.dart';
@@ -496,12 +497,53 @@ extension ActionExecutionExtension on ActionD {
       return;
     }
 
+    // ── Show filter dialog if filterFields are defined or layoutForm is specified ───
+    Map<String, dynamic> filterData = {};
+    List<Component> finalFilterFields = List.from(filterFields);
+
+    if (layoutFormId != null && layoutFormId!.isNotEmpty) {
+      dynamic formLayout;
+      for (final f in entity.layoutForm) {
+        if (f.id == layoutFormId) {
+          formLayout = f;
+          break;
+        }
+      }
+      
+      if (formLayout != null) {
+        finalFilterFields = formLayout.components;
+      } else {
+        Toast(context).fail('Filter form layout "$layoutFormId" not found');
+        return;
+      }
+    }
+
+    if (finalFilterFields.isNotEmpty) {
+      final result = await PrintFilterDialog.show(
+        context,
+        printName: layout.name,
+        fields: finalFilterFields,
+        initialData: data,
+      );
+      // User cancelled — abort print
+      if (result == null) return;
+      filterData = Map<String, dynamic>.from(result);
+    }
+    // ───────────────────────────────────────────────────────────────────
+
     final execute = (BuildContext ctx) async {
       try {
-        JsonMap contextData = Map<String, dynamic>.from(data);
+        // Merge: base data + filter values nested under 'filter' key
+        // so templates like {{filter.department_id}} work
+        JsonMap contextData = {
+          ...Map<String, dynamic>.from(data),
+          'filter': filterData,
+          'form': filterData,  // allows {{form.xxx}} templates to resolve
+          ...filterData, // also flat merge for backward compat
+        };
 
         if (http != null) {
-          final response = await http!.execute(data);
+          final response = await http!.execute(contextData);
           if (response.statusCode != null &&
               response.statusCode! >= 200 &&
               response.statusCode! < 300) {

@@ -114,7 +114,7 @@ Widget buildMenuCustomUseCase(BuildContext context) {
                       { "type": "container", "height": 10 },
                       { "type": "text", "value": "DAFTAR INISIAL PERSONEL", "font_size": 18, "is_bold": true },
                       { "type": "container", "height": 8 },
-                      { "type": "text", "value": "Quality Assurance", "font_size": 10 }
+                      { "type": "text", "value": "{{filter.department_name}}", "font_size": 10 }
                     ]
                   }, 
                   "flex": 10, 
@@ -145,11 +145,11 @@ Widget buildMenuCustomUseCase(BuildContext context) {
             "cell_padding": { "top": 3, "bottom": 3, "left": 3, "right": 3 },
             "http_data": {
               "method": "GET",
-              "url": "https://erp-metiska-farma-api-dev.flexurio.com/users?page=1&search=&sort=created_at&ascending=true",
+              "url": "https://erp-metiska-farma-api-dev.flexurio.com/report_intial_users?page=1&limit=9999&department_id.eq={{filter.department_id}}&search=&sort=name&ascending=true",
               "headers": {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6IjBmNzk4ZmJhLTRjNWMtNDYxMy1hODg5LTBjMWQzMTNjOTZiMiIsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6MTc3ODA0MjMyMywiaWQiOjE4MDEwMDgsIm5hbWUiOiJNdWFsaXAgU3VoYWwiLCJuaXAiOiIxODAxMDA4Iiwicm9sZSI6IkFkbWluaXN0cmF0b3IifQ.8UaBcBG4ClzC42jbiGtKU1fcwJE291gGD2TU0DD42BE"
+                "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6IjhkNWZjYTFmLTRiYmUtNDMzZC1hNjJjLTk2YWRhMDYwM2ZhMCIsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6MTc3OTA2OTU3NCwiaWQiOjIyMDcwMDQsIm5hbWUiOiJVbWFyIE1hcnVmIE11dGFxaW4iLCJuaXAiOiIyMjA3MDA0Iiwicm9sZSI6IkFkbWluaXN0cmF0b3IifQ.W8UmtGq5N4KCGqbxEQQNISiGuQZNxplGju9qwrJT8-0"
               },
               "mock_enabled": false
             },
@@ -184,14 +184,61 @@ Widget buildMenuCustomUseCase(BuildContext context) {
         ]
       }
     ],
+    "layout_form": [
+      {
+        "id": "filter_personnel",
+        "label": "Filter Personnel",
+        "type": "filter",
+        "groups": [],
+        "components": [
+          {
+            "id": "department_id",
+            "type": "dropdown",
+            "label": "Department",
+            "options": [],
+            "initialValue": "",
+            "httpData": {
+              "method": "GET",
+              "url": "https://erp-metiska-farma-api-dev.flexurio.com/departments?page=1&sort=created_at&ascending=false&limit=90000",
+              "headers": {
+                "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6IjhkNWZjYTFmLTRiYmUtNDMzZC1hNjJjLTk2YWRhMDYwM2ZhMCIsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6MTc3OTA2OTU3NCwiaWQiOjIyMDcwMDQsIm5hbWUiOiJVbWFyIE1hcnVmIE11dGFxaW4iLCJuaXAiOiIyMjA3MDA0Iiwicm9sZSI6IkFkbWluaXN0cmF0b3IifQ.W8UmtGq5N4KCGqbxEQQNISiGuQZNxplGju9qwrJT8-0"
+              },
+              "body": {},
+              "use_form_data": false
+            },
+            "optionKey": "{{item.id}}",
+            "optionLabel": "{{item.id}} - {{item.name}}",
+            "onChangeActions": [
+              {
+                "type": "set_value",
+                "target_id": "department_name",
+                "value": "{{item.name}}"
+              }
+            ],
+            "required": true,
+            "dependsOn": []
+          }
+        ]
+      }
+    ],
     "actions_home": [
       {
         "id": "print_personnel",
         "name": "Personnel List",
         "type": "print",
+        "on_success": "toast",
+        "on_failure": "toast",
+        "is_multiple": false,
+        "reference": null,
         "layout_print_id": "print_personnel_list",
-        "icon": "print",
-        "is_multiple": false
+        "layout_form_id": "filter_personnel",
+        "icon": "Print",
+        "icon_code": null,
+        "http": null,
+        "width": null,
+        "confirm_title": null,
+        "confirm_message": null,
+        "icon_color": null
       }
     ]
 }
