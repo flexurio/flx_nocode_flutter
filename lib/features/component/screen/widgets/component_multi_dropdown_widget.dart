@@ -1,6 +1,11 @@
+import 'package:dropdown_search/dropdown_search.dart';
+import 'package:easy_localization/easy_localization.dart'
+    hide TextTranslateExtension;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_core_flutter/src/app/view/widget/f_drop_down/_container_drop_down.dart';
+import 'package:gap/gap.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_multi_dropdown.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'component_multi_dropdown_controller.dart';
@@ -22,7 +27,8 @@ class ComponentMultiDropdownWidget extends StatefulWidget {
       _ComponentMultiDropdownWidgetState();
 }
 
-class _ComponentMultiDropdownWidgetState extends State<ComponentMultiDropdownWidget> {
+class _ComponentMultiDropdownWidgetState
+    extends State<ComponentMultiDropdownWidget> {
   late final ComponentMultiDropdownController controller;
   late final String tag;
 
@@ -66,33 +72,100 @@ class _ComponentMultiDropdownWidgetState extends State<ComponentMultiDropdownWid
           ? Status.progress
           : (controller.error.value != null ? Status.error : Status.loaded);
 
-      // Using FDropDownSearchSmallMultiple as it's confirmed to exist in the project
+      // Follow the ComponentDropdownWidget pattern:
+      // - If isSmall is true, use a compact view (similar to FDropDownSearchSmall)
+      // - Otherwise, use the regular FDropDownSearchMultiple
       return SingleChildScrollView(
         physics: const NeverScrollableScrollPhysics(),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            FDropDownSearchSmallMultiple<Map<String, dynamic>>(
-              status: status,
-              items: controller.options,
-              initialValue: controller.displayedValues,
-              labelText: widget.component.label,
-              enabled: !controller.isLoading.value,
-              validator: widget.component.required
-                  ? (value) {
-                      if (value == null || value.isEmpty) {
-                        return '${widget.component.label} is required';
+            if (widget.isSmall)
+              ContainerDropDown<Map<String, dynamic>>(
+                status: status,
+                showSelectedItems: false,
+                builder: (
+                  foregroundColor,
+                  border,
+                  dropdownButtonProps,
+                  popupProps,
+                  decoratorProps,
+                ) {
+                  return DropdownSearch<Map<String, dynamic>>.multiSelection(
+                    enabled: !controller.isLoading.value,
+                    compareFn: (a, b) => a['value'] == b['value'],
+                    validator: widget.component.required
+                        ? (value) {
+                            if (value == null || value.isEmpty) {
+                              return '${widget.component.label} is required';
+                            }
+                            return null;
+                          }
+                        : null,
+                    suffixProps: DropdownSuffixProps(
+                      dropdownButtonProps: dropdownButtonProps,
+                    ),
+                    items: (f, p) => controller.options,
+                    itemAsString: (item) => item['label']?.toString() ?? '',
+                    dropdownBuilder: (context, selectedItems) {
+                      return Row(
+                        children: [
+                          const Gap(12),
+                          const Icon(Icons.list, size: 16),
+                          const Gap(18),
+                          Expanded(
+                            child: Text(
+                              selectedItems.isEmpty
+                                  ? '${tr('choose')} ${widget.component.label}'
+                                  : selectedItems
+                                      .map((e) => e['label'])
+                                      .join(', '),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(color: foregroundColor),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                    decoratorProps: decoratorProps,
+                    onSelected: (val) {
+                      controller.onSelectionsChanged(val);
+                    },
+                    selectedItems: controller.displayedValues,
+                  );
+                },
+              )
+            else
+              FDropDownSearchMultiple<Map<String, dynamic>>(
+                status: status,
+                items: controller.options,
+                selectedItems: controller.displayedValues,
+                labelText: widget.component.label,
+                // enabled: !controller.isLoading.value,
+                validator: widget.component.required
+                    ? (value) {
+                        if (value == null || value.isEmpty) {
+                          return '${widget.component.label} is required';
+                        }
+                        return null;
                       }
-                      return null;
-                    }
-                  : null,
-              itemAsString: (item) => item['label']?.toString() ?? '',
-              onChanged: (val) {
-                controller.onSelectionsChanged(val);
-              },
-              iconField: Icons.list,
-            ),
+                    : null,
+                itemAsString: (item) => item['label']?.toString() ?? '',
+                onChanged: (val) {
+                  controller.onSelectionsChanged(val);
+                },
+                dropdownBuilder: (context, selectedItems) {
+                  return Text(
+                    selectedItems.isEmpty
+                        ? '${tr('choose')} ${widget.component.label}'
+                        : selectedItems.map((e) => e['label']).join(', '),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  );
+                },
+              ),
             if (controller.error.value != null)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
