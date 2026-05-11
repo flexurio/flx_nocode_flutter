@@ -184,45 +184,61 @@ Widget buildMenuCustomUseCase(BuildContext context) {
         ]
       }
     ],
+    "layout_form": [
+      {
+        "id": "filter_personnel",
+        "label": "Filter Personnel",
+        "type": "filter",
+        "groups": [],
+        "components": [
+          {
+            "id": "department_id",
+            "type": "dropdown",
+            "label": "Department",
+            "options": [],
+            "initialValue": "",
+            "httpData": {
+              "method": "GET",
+              "url": "https://erp-metiska-farma-api-dev.flexurio.com/departments?page=1&sort=created_at&ascending=false&limit=90000",
+              "headers": {
+                "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6IjhkNWZjYTFmLTRiYmUtNDMzZC1hNjJjLTk2YWRhMDYwM2ZhMCIsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6MTc3OTA2OTU3NCwiaWQiOjIyMDcwMDQsIm5hbWUiOiJVbWFyIE1hcnVmIE11dGFxaW4iLCJuaXAiOiIyMjA3MDA0Iiwicm9sZSI6IkFkbWluaXN0cmF0b3IifQ.W8UmtGq5N4KCGqbxEQQNISiGuQZNxplGju9qwrJT8-0"
+              },
+              "body": {},
+              "use_form_data": false
+            },
+            "optionKey": "{{item.id}}",
+            "optionLabel": "{{item.id}} - {{item.name}}",
+            "onChangeActions": [
+              {
+                "type": "set_value",
+                "target_id": "department_name",
+                "value": "{{item.name}}"
+              }
+            ],
+            "required": true,
+            "dependsOn": []
+          }
+        ]
+      }
+    ],
     "actions_home": [
       {
         "id": "print_personnel",
         "name": "Personnel List",
         "type": "print",
-        "layout_print_id": "print_personnel_list",
-        "icon": "print",
+        "on_success": "toast",
+        "on_failure": "toast",
         "is_multiple": false,
-        "filter_fields": [
-          {
-          "id": "department_id",
-          "type": "dropdown",
-          "label": "Department",
-          "options": [],
-          "initialValue": "",
-          "httpData": {
-            "method": "GET",
-            "url": "https://erp-metiska-farma-api-dev.flexurio.com/departments?page=1&sort=created_at&ascending=false&limit=90000",
-            "headers": {
-              "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6IjhkNWZjYTFmLTRiYmUtNDMzZC1hNjJjLTk2YWRhMDYwM2ZhMCIsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6MTc3OTA2OTU3NCwiaWQiOjIyMDcwMDQsIm5hbWUiOiJVbWFyIE1hcnVmIE11dGFxaW4iLCJuaXAiOiIyMjA3MDA0Iiwicm9sZSI6IkFkbWluaXN0cmF0b3IifQ.W8UmtGq5N4KCGqbxEQQNISiGuQZNxplGju9qwrJT8-0"
-            },
-            "body": {},
-            "use_form_data": false,
-            "mock_enabled": false,
-            "mock_data": null
-          },
-          "optionKey": "{{item.id}}",
-          "optionLabel": "{{item.id}} - {{item.name}}",
-          "onChangeActions": [
-            {
-              "type": "set_value",
-              "target_id": "department_name",
-              "value": "{{item.name}}"
-            }
-          ],
-          "required": true,
-          "dependsOn": []
-        }
-        ]
+        "reference": null,
+        "layout_print_id": "print_personnel_list",
+        "layout_form_id": "filter_personnel",
+        "icon": "Print",
+        "icon_code": null,
+        "http": null,
+        "width": null,
+        "confirm_title": null,
+        "confirm_message": null,
+        "icon_color": null
       }
     ]
 }

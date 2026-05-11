@@ -497,13 +497,32 @@ extension ActionExecutionExtension on ActionD {
       return;
     }
 
-    // ── Show filter dialog if filterFields are defined ──────────────────
+    // ── Show filter dialog if filterFields are defined or layoutForm is specified ───
     Map<String, dynamic> filterData = {};
-    if (filterFields.isNotEmpty) {
+    List<Component> finalFilterFields = List.from(filterFields);
+
+    if (layoutFormId != null && layoutFormId!.isNotEmpty) {
+      dynamic formLayout;
+      for (final f in entity.layoutForm) {
+        if (f.id == layoutFormId) {
+          formLayout = f;
+          break;
+        }
+      }
+      
+      if (formLayout != null) {
+        finalFilterFields = formLayout.components;
+      } else {
+        Toast(context).fail('Filter form layout "$layoutFormId" not found');
+        return;
+      }
+    }
+
+    if (finalFilterFields.isNotEmpty) {
       final result = await PrintFilterDialog.show(
         context,
         printName: layout.name,
-        fields: filterFields,
+        fields: finalFilterFields,
         initialData: data,
       );
       // User cancelled — abort print
