@@ -240,6 +240,7 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
                     "current": row,
                     "row": row,
                     "data": row,
+                    "columnBody": c.body,
                     "onRowChanged": (newData) =>
                         controller.onRowChanged(index, newData),
                   },
@@ -248,7 +249,7 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
             }
 
             final rawValue = controller.resolveValue(row, c.body);
-            final text = rawValue?.toString() ?? c.body;
+            final text = rawValue?.toString() ?? "";
 
             return Text(
               text.interpolateJavascript({
@@ -257,6 +258,7 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
                 "current": row,
                 "row": row,
                 "data": row,
+                "columnBody": c.body,
               }),
             );
           },

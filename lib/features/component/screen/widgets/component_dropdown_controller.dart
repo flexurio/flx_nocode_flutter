@@ -68,7 +68,7 @@ class ComponentDropdownController extends ComponentSelectionController<Component
       selectedValue.value = key;
       displayedValue.value = selection;
       updateTargetController(key);
-      handleActions(selection);
     }
+    handleActions(selection);
   }
 }

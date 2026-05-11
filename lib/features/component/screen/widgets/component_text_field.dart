@@ -14,7 +14,15 @@ extension ComponentTextFieldWidgets on ComponentTextField {
         controller: controller ?? TextEditingController(),
         hintText: label,
         onChanged: (val) {
-          // controller manages text
+          final onRowChanged = data['onRowChanged'];
+          if (onRowChanged is Function) {
+            final targetField = data['columnBody']?.toString() ?? id;
+            final row = Map<String, dynamic>.from(data['row'] as Map? ?? {});
+            if (row[targetField] != val) {
+              row[targetField] = val;
+              onRowChanged(row);
+            }
+          }
         },
       );
     }

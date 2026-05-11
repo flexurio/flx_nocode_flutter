@@ -210,8 +210,27 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase> ex
     }
   }
 
-  void handleActions(Map<String, dynamic> selection) {
-    if (component.onChangeActions.isEmpty) return;
+  void handleActions(Map<String, dynamic>? selection) {
+    // If we're inside a table, we should automatically update the row data
+    // even if there are no explicit actions.
+    final onRowChanged = data['onRowChanged'];
+    if (onRowChanged is Function) {
+      final hasUpdateRowAction =
+          component.onChangeActions.any((a) => a.type == 'update_row');
+      if (!hasUpdateRowAction) {
+        final targetField = data['columnBody']?.toString() ?? component.id;
+        final value = selection?['key']?.toString() ?? '';
+        final row = Map<String, dynamic>.from(data['row'] as Map? ?? {});
+
+        // Only notify if value actually changed to avoid infinite loops or redundant rebuilds
+        if (row[targetField] != value) {
+          row[targetField] = value;
+          onRowChanged(row);
+        }
+      }
+    }
+
+    if (component.onChangeActions.isEmpty || selection == null) return;
     final context = buildActionContext(selection);
     for (final action in component.onChangeActions) {
       switch (action.type) {

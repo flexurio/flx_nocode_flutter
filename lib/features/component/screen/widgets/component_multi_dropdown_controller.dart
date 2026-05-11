@@ -73,16 +73,38 @@ class ComponentMultiDropdownController extends ComponentSelectionController<Comp
   }
 
   void onSelectionsChanged(List<Map<String, dynamic>> selections) {
-    selectedValues.value = selections.map((s) => s['key']?.toString() ?? '').toList();
+    selectedValues.value =
+        selections.map((s) => s['key']?.toString() ?? '').toList();
     displayedValues.value = selections;
     _updateTargetWithJson();
-    
-    // For actions, we might want to handle them differently for multi-select.
-    // For now, we'll just pass the last selected item or the whole list if supported.
-    if (selections.isNotEmpty) {
-      handleActions(selections.last);
-    } else {
-      // Handle empty selection if needed
+
+    // If we're inside a table, we should automatically update the row data
+    final onRowChanged = data['onRowChanged'];
+    if (onRowChanged is Function) {
+      final targetField = data['columnBody']?.toString() ?? component.id;
+      final jsonValue = jsonEncode(displayedValues
+          .map((v) => {
+                'id': v['key'],
+                'name': v['label'],
+              })
+          .toList());
+      final row = Map<String, dynamic>.from(data['row'] as Map? ?? {});
+      if (row[targetField] != jsonValue) {
+        row[targetField] = jsonValue;
+        onRowChanged(row);
+      }
+    }
+
+    // For actions, we'll pass the last selected item or null
+    handleActions(selections.isNotEmpty ? selections.last : null);
+  }
+
+  @override
+  void handleActions(Map<String, dynamic>? selection) {
+    // Multi-dropdown handles automatic row updates differently (as a list)
+    // So we only use the base handleActions for explicit actions.
+    if (component.onChangeActions.isNotEmpty && selection != null) {
+      super.handleActions(selection);
     }
   }
 
