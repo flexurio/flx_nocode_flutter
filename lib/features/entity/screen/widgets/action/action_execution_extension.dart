@@ -538,6 +538,7 @@ extension ActionExecutionExtension on ActionD {
         JsonMap contextData = {
           ...Map<String, dynamic>.from(data),
           'filter': filterData,
+          'form': filterData,  // allows {{form.xxx}} templates to resolve
           ...filterData, // also flat merge for backward compat
         };
 
