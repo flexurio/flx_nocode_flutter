@@ -353,3 +353,95 @@ Widget interactiveTableFormUseCase(BuildContext context) {
     },
   );
 }
+
+@UseCase(name: 'Date Restriction by Month', type: Column)
+Widget dateRestrictionLayoutFormUseCase(BuildContext context) {
+  const layoutId = 'date_restriction';
+  const jsonRaw = '''
+  {
+    "id": "$layoutId",
+    "label": "Monthly Report Date Selection",
+    "components": [
+      {
+        "id": "period",
+        "type": "text_field",
+        "label": "Reporting Period (YYYYMM)",
+        "initialValue": "202503",
+        "enabled": false
+      },
+      {
+        "id": "selected_date",
+        "type": "date_picker",
+        "label": "Select Date",
+        "minDate": "{{ startOfMonth(period) }}",
+        "maxDate": "{{ endOfMonth(period) }}"
+      }
+    ]
+  }
+  ''';
+
+  final map = json.decode(jsonRaw) as Map<String, dynamic>;
+  final form = LayoutForm.fromMap(map);
+
+  final entity = EntityCustom.empty().copyWith(
+    id: 'mock_entity_date',
+    layoutForm: [form],
+  );
+
+  return GetBuilder<CreatePageController>(
+    init: CreatePageController(
+      entity: entity,
+      layoutFormId: layoutId,
+      initialDataInput: {},
+      parentData: [],
+    ),
+    tag: 'create_page_$layoutId',
+    builder: (controller) {
+      return Obx(() {
+        final dataContext = {
+          'layoutFormId': layoutId,
+          'entity': entity,
+          ...controller.initialData,
+          'allControllers': controller.controllers,
+        };
+
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Center(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      form.label,
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 24),
+                    form.toWidget(dataContext),
+                    const SizedBox(height: 32),
+                    const Divider(),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Information:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'The Date Picker below is dynamically restricted based on the "Reporting Period" field. '
+                      'Since the period is 202503, you can only select dates between 2025-03-01 and 2025-03-31.',
+                      style: TextStyle(color: Colors.black54),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      });
+    },
+  );
+}

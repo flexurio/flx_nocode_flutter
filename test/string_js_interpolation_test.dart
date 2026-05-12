@@ -126,5 +126,45 @@ void main() {
       expect(result, contains('"id":1'));
       expect(result, contains('"tags":["a","b"]'));
     });
+
+    group('Date Helper Functions', () {
+      test('startOfMonth should handle YYYYMM string', () {
+        final variables = {'period': '202503'};
+        expect('{{ startOfMonth(period) }}'.interpolateJavascript(variables),
+            '2025-03-01');
+      });
+
+      test('endOfMonth should handle YYYYMM string', () {
+        final variables = {'period': '202503'};
+        expect('{{ endOfMonth(period) }}'.interpolateJavascript(variables),
+            '2025-03-31');
+      });
+
+      test('endOfMonth should handle leap year', () {
+        final variables = {'period': '202402'}; // Feb 2024 is leap year
+        expect('{{ endOfMonth(period) }}'.interpolateJavascript(variables),
+            '2024-02-29');
+      });
+
+      test('startOfMonth and endOfMonth with custom format', () {
+        final variables = {'period': '202503'};
+        expect(
+            '{{ startOfMonth(period, "dd/MM/yyyy") }}'
+                .interpolateJavascript(variables),
+            '01/03/2025');
+        expect(
+            '{{ endOfMonth(period, "dd/MM/yyyy") }}'
+                .interpolateJavascript(variables),
+            '31/03/2025');
+      });
+
+      test('should handle standard date strings', () {
+        final variables = {'my_date': '2025-05-20'};
+        expect('{{ startOfMonth(my_date) }}'.interpolateJavascript(variables),
+            '2025-05-01');
+        expect('{{ endOfMonth(my_date) }}'.interpolateJavascript(variables),
+            '2025-05-31');
+      });
+    });
   });
 }
