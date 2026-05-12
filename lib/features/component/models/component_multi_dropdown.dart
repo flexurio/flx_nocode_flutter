@@ -20,6 +20,7 @@ class ComponentMultiDropdown extends ComponentSelectionBase {
     super.optionLabel,
     super.onChangeActions,
     super.required,
+    super.enabled = true,
     super.dependsOn,
     super.widthMode,
     super.width,
@@ -92,6 +93,14 @@ class ComponentMultiDropdown extends ComponentSelectionBase {
     }
 
     final required = map['required'] == true;
+    final enabledRaw = map['enabled'];
+    final enabled = () {
+      if (enabledRaw == null) return true;
+      if (enabledRaw is bool) return enabledRaw;
+      final str = enabledRaw.toString().toLowerCase().trim();
+      if (str == 'false' || str == '0') return false;
+      return true;
+    }();
 
     final rawDependsOn = map['dependsOn'];
     final dependsOn = <String>[];
@@ -117,6 +126,7 @@ class ComponentMultiDropdown extends ComponentSelectionBase {
       optionLabel: map['optionLabel']?.toString(),
       onChangeActions: onChangeActions,
       required: required,
+      enabled: enabled,
       dependsOn: dependsOn,
       widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: map['width'] != null

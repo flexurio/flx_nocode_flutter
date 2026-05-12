@@ -10,6 +10,7 @@ class ComponentCheckbox extends ComponentInputBase {
     required super.label,
     required this.value,
     super.required,
+    super.enabled = true,
     super.widthMode,
     super.width,
     super.flex,
@@ -42,11 +43,21 @@ class ComponentCheckbox extends ComponentInputBase {
       if (str == 'true' || str == '1') return true;
       return false;
     }();
+    final enabledRaw = map['enabled'];
+    final enabled = () {
+      if (enabledRaw == null) return true;
+      if (enabledRaw is bool) return enabledRaw;
+      final str = enabledRaw.toString().toLowerCase().trim();
+      if (str == 'false' || str == '0') return false;
+      return true;
+    }();
+
     return ComponentCheckbox(
       id: id,
       label: label,
       value: value,
       required: map['required'] == true,
+      enabled: enabled,
       widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: double.tryParse(map['width']?.toString() ?? ''),
       flex: int.tryParse(map['flex']?.toString() ?? ''),

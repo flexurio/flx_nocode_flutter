@@ -41,26 +41,41 @@ extension ComponentDropdownWidgets on ComponentDropdown {
           constraints: const BoxConstraints(minWidth: 120),
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: enabled ? Colors.white : Colors.grey.shade100,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade300),
+            border: Border.all(
+              color: enabled ? Colors.grey.shade300 : Colors.grey.shade200,
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (isHug)
                 Text(
-                  'Select $label...',
-                  style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                  initialValue.isNotEmpty ? initialValue : 'Select $label...',
+                  style: TextStyle(
+                    color: initialValue.isNotEmpty
+                        ? (enabled ? Colors.black87 : Colors.grey.shade500)
+                        : Colors.grey.shade400,
+                    fontSize: 13,
+                  ),
                 )
               else
                 Expanded(
                   child: Text(
-                    'Select $label...',
-                    style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
+                    initialValue.isNotEmpty ? initialValue : 'Select $label...',
+                    style: TextStyle(
+                      color: initialValue.isNotEmpty
+                          ? (enabled ? Colors.black87 : Colors.grey.shade500)
+                          : Colors.grey.shade400,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
-              Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
+              Icon(
+                Icons.arrow_drop_down,
+                color: enabled ? Colors.grey.shade600 : Colors.grey.shade400,
+              ),
             ],
           ),
         ),

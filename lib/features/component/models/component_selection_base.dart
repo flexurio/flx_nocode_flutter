@@ -23,6 +23,7 @@ abstract class ComponentSelectionBase extends ComponentInputBase {
     this.optionLabel,
     this.onChangeActions = const [],
     super.required,
+    super.enabled = true,
     this.dependsOn = const [],
     super.widthMode,
     super.width,

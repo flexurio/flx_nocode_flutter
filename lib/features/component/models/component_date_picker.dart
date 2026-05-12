@@ -15,6 +15,7 @@ class ComponentDatePicker extends ComponentInputBase {
     this.minDate,
     this.maxDate,
     super.required,
+    super.enabled = true,
     this.dateFormat,
     super.widthMode,
     super.width,
@@ -31,6 +32,7 @@ class ComponentDatePicker extends ComponentInputBase {
       label: 'Date Picker',
       initialValue: '',
       required: false,
+      enabled: true,
       widthMode: ComponentSizeMode.fill,
     );
   }
@@ -45,6 +47,15 @@ class ComponentDatePicker extends ComponentInputBase {
     final minDate = map['minDate']?.toString();
     final maxDate = map['maxDate']?.toString();
     final required = map['required'] == true;
+    final enabledRaw = map['enabled'];
+    final enabled = () {
+      if (enabledRaw == null) return true;
+      if (enabledRaw is bool) return enabledRaw;
+      final str = enabledRaw.toString().toLowerCase().trim();
+      if (str == 'false' || str == '0') return false;
+      if (str == 'true' || str == '1') return true;
+      return true;
+    }();
     final dateFormat = map['dateFormat']?.toString();
 
     return ComponentDatePicker(
@@ -54,6 +65,7 @@ class ComponentDatePicker extends ComponentInputBase {
       minDate: minDate,
       maxDate: maxDate,
       required: required,
+      enabled: enabled,
       dateFormat: dateFormat,
       widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: map['width'] != null

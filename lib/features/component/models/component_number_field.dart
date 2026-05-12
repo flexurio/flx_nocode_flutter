@@ -4,13 +4,12 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 
 class ComponentNumberField extends ComponentInputBase {
   final String initialValue;
-  final bool enabled;
 
   ComponentNumberField({
     required super.id,
     required super.label,
     required this.initialValue,
-    this.enabled = true,
+    super.enabled = true,
     super.required,
     super.widthMode,
     super.width,
@@ -65,6 +64,5 @@ class ComponentNumberField extends ComponentInputBase {
   JsonMap toMap() => {
         ...super.toMap(),
         'initialValue': initialValue,
-        'enabled': enabled,
       };
 }

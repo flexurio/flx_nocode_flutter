@@ -5,6 +5,7 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 abstract class ComponentInputBase extends Component {
   final String label;
   final bool required;
+  final bool enabled;
   final ComponentSizeMode? widthMode;
   final double? width;
   final int? flex;
@@ -16,6 +17,7 @@ abstract class ComponentInputBase extends Component {
     super.events,
     required this.label,
     this.required = false,
+    this.enabled = true,
     this.widthMode,
     this.width,
     this.flex,
@@ -26,6 +28,7 @@ abstract class ComponentInputBase extends Component {
         ...super.toMap(),
         'label': label,
         'required': required,
+        'enabled': enabled,
         if (widthMode != null) 'widthMode': widthMode?.name,
         if (width != null) 'width': width,
         if (flex != null) 'flex': flex,

@@ -7,7 +7,6 @@ class ComponentTextField extends ComponentInputBase {
   final int maxLines;
   final String initialValue;
   final String hintText;
-  final bool enabled;
   final String? regex;
   final String? regexErrorMessage;
   final String? helperText;
@@ -20,7 +19,7 @@ class ComponentTextField extends ComponentInputBase {
     this.maxLines = 1,
     this.initialValue = '',
     this.hintText = '',
-    this.enabled = true,
+    super.enabled = true,
     super.required,
     this.regex,
     this.regexErrorMessage,
@@ -108,7 +107,6 @@ class ComponentTextField extends ComponentInputBase {
         'maxLines': maxLines,
         'initialValue': initialValue,
         'hintText': hintText,
-        'enabled': enabled,
         if (regex != null) 'regex': regex,
         if (regexErrorMessage != null) 'regexErrorMessage': regexErrorMessage,
         if (helperText != null) 'helperText': helperText,
