@@ -249,7 +249,11 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
             }
 
             final rawValue = controller.resolveValue(row, c.body);
-            final text = rawValue?.toString() ?? "";
+            
+            // If direct resolution fails and body contains interpolation, use body as template
+            final text = (rawValue == null && c.body.contains('{{'))
+                ? c.body
+                : (rawValue?.toString() ?? "");
 
             return Text(
               text.interpolateJavascript({
