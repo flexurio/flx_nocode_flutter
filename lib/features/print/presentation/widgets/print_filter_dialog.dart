@@ -65,7 +65,7 @@ class _PrintFilterDialogState extends State<PrintFilterDialog> {
       // 2. Also scan for actions that target other IDs (e.g. side-effects setting department_name)
       if (component is ComponentSelectionBase) {
         for (final action in component.onChangeActions) {
-          final tid = action.target_id;
+          final tid = action.targetId;
           if (tid.isNotEmpty && !_allControllers.containsKey(tid)) {
             final secondaryVal = widget.initialData[tid]?.toString() ?? '';
             _allControllers[tid] = TextEditingController(text: secondaryVal);

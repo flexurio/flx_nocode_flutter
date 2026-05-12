@@ -165,7 +165,7 @@ void main() {
         onChangeActions: [
           ComponentAction(
             type: 'update_row',
-            target_id: '', // Not used for update_row
+            targetId: '', // Not used for update_row
             mappings: {
               'item_id': '{{ key }}',
               'item_name': '{{ label }}',

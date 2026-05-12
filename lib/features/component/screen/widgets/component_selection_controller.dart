@@ -257,7 +257,7 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase> ex
   }
 
   void handleSetValueAction(ComponentAction action, Map<String, dynamic> context) {
-    final targetId = action.target_id;
+    final targetId = action.targetId;
     final targetCtrl = allControllers[targetId];
     if (targetCtrl != null) {
       final rawValue = action.value ?? '';

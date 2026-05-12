@@ -1,12 +1,12 @@
 class ComponentAction {
   final String type;
-  final String target_id;
+  final String targetId;
   final String? value;
   final Map<String, String>? mappings;
 
   ComponentAction({
     required this.type,
-    required this.target_id,
+    required this.targetId,
     this.value,
     this.reference,
     this.mappings,
@@ -15,7 +15,7 @@ class ComponentAction {
   factory ComponentAction.fromMap(Map<String, dynamic> map) {
     return ComponentAction(
       type: map['type'] ?? '',
-      target_id: (map['target_id'] ?? map['targetId'] ?? '').toString(),
+      targetId: (map['target_id'] ?? map['targetId'] ?? '').toString(),
       value: map['value']?.toString(),
       reference: map['reference']?.toString(),
       mappings: map['mappings'] != null
@@ -27,7 +27,7 @@ class ComponentAction {
   Map<String, dynamic> toMap() {
     return {
       'type': type,
-      'target_id': target_id,
+      'target_id': targetId,
       'value': value,
       'reference': reference,
       'mappings': mappings,
