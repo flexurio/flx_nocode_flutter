@@ -30,6 +30,7 @@ class ComponentTextField extends ComponentInputBase {
     this.obscure = false,
     super.visibilityCondition,
     super.events,
+    super.dependsOn,
   }) : super(type: 'text_field');
 
   static String get componentId => 'text_field';
@@ -78,6 +79,13 @@ class ComponentTextField extends ComponentInputBase {
     final visibilityCondition = map['visibilityCondition']?.toString();
     final events = map['events'] as Map<String, dynamic>? ?? {};
     final obscure = map['obscure'] == true;
+    final rawDependsOn = map['dependsOn'];
+    final dependsOn = <String>[];
+    if (rawDependsOn is List) {
+      for (final item in rawDependsOn) {
+        dependsOn.add(item.toString());
+      }
+    }
 
     return ComponentTextField(
       id: id,
@@ -97,6 +105,7 @@ class ComponentTextField extends ComponentInputBase {
       obscure: obscure,
       visibilityCondition: visibilityCondition,
       events: events,
+      dependsOn: dependsOn,
     );
   }
 

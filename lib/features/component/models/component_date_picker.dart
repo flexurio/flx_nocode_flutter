@@ -22,6 +22,7 @@ class ComponentDatePicker extends ComponentInputBase {
     super.flex,
     super.visibilityCondition,
     super.events,
+    super.dependsOn,
   }) : super(type: componentId);
 
   static const String componentId = 'date_picker';
@@ -57,6 +58,13 @@ class ComponentDatePicker extends ComponentInputBase {
       return true;
     }();
     final dateFormat = map['dateFormat']?.toString();
+    final rawDependsOn = map['dependsOn'];
+    final dependsOn = <String>[];
+    if (rawDependsOn is List) {
+      for (final item in rawDependsOn) {
+        dependsOn.add(item.toString());
+      }
+    }
 
     return ComponentDatePicker(
       id: id,
@@ -74,6 +82,7 @@ class ComponentDatePicker extends ComponentInputBase {
       flex: map['flex'] != null ? int.tryParse(map['flex'].toString()) : null,
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
+      dependsOn: dependsOn,
     );
   }
 

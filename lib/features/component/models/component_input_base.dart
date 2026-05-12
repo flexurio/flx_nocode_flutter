@@ -6,6 +6,7 @@ abstract class ComponentInputBase extends Component {
   final String label;
   final bool required;
   final bool enabled;
+  final List<String> dependsOn;
   final ComponentSizeMode? widthMode;
   final double? width;
   final int? flex;
@@ -18,6 +19,7 @@ abstract class ComponentInputBase extends Component {
     required this.label,
     this.required = false,
     this.enabled = true,
+    this.dependsOn = const [],
     this.widthMode,
     this.width,
     this.flex,
@@ -29,6 +31,7 @@ abstract class ComponentInputBase extends Component {
         'label': label,
         'required': required,
         'enabled': enabled,
+        'dependsOn': dependsOn,
         if (widthMode != null) 'widthMode': widthMode?.name,
         if (width != null) 'width': width,
         if (flex != null) 'flex': flex,

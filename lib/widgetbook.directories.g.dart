@@ -367,6 +367,12 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Column',
         useCases: [
           _widgetbook.WidgetbookUseCase(
+            name: 'Date Restriction (Interactive)',
+            builder:
+                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
+                    .interactiveDateRestrictionUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Date Restriction by Month',
             builder:
                 _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
