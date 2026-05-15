@@ -14,6 +14,7 @@ enum ActionType {
   showDialog('show_dialog', 'Show Dialog'),
   toast('toast', 'Toast Notification'),
   refresh('refresh', 'Refresh Data'),
+  toastAndRefresh('toast_and_refresh', 'Toast and Refresh Data'),
   navigateHome('navigate_home', 'Navigate Home'),
   showErrorDialog('show_error_dialog', 'Show Error Dialog'),
   navigateBack('navigate_back', 'Navigate Back'),
