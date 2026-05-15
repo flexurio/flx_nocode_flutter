@@ -90,6 +90,11 @@ extension ActionSuccessHandlerExtension on ActionD {
         print('[ActionLogic] 🔃 Executing onSuccess refresh');
         onSuccessCallback?.call();
         break;
+      case ActionType.toastAndRefresh:
+        Toast(context).success('Request success');
+        print('[ActionLogic] 🔃 Executing onSuccess toastAndRefresh');
+        onSuccessCallback?.call();
+        break;
       case ActionType.navigateBack:
         print('[ActionLogic] 🔙 Executing onSuccess navigateBack');
         if (Navigator.of(context).canPop()) {
