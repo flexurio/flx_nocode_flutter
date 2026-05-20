@@ -14,7 +14,6 @@ enum ActionType {
   showDialog('show_dialog', 'Show Dialog'),
   toast('toast', 'Toast Notification'),
   refresh('refresh', 'Refresh Data'),
-  toastAndRefresh('toast_and_refresh', 'Toast and Refresh Data'),
   navigateHome('navigate_home', 'Navigate Home'),
   showErrorDialog('show_error_dialog', 'Show Error Dialog'),
   navigateBack('navigate_back', 'Navigate Back'),
@@ -60,10 +59,10 @@ class ActionD extends HiveObject {
   final HttpData? http;
 
   /// Defines what happens after success
-  final String onSuccess;
+  final List<String> onSuccess;
 
   /// Defines what happens on failure
-  final String onFailure;
+  final List<String> onFailure;
 
   // for type listJsonViewAsTable
   final String? reference;
@@ -114,8 +113,8 @@ class ActionD extends HiveObject {
 
   ActionD({
     required this.isMultiple,
-    required this.onSuccess,
-    required this.onFailure,
+    required dynamic onSuccess,
+    required dynamic onFailure,
     required this.id,
      this.http,
     this.reference,
@@ -141,7 +140,12 @@ class ActionD extends HiveObject {
     this.exportFormat,
     this.exportColumns,
     this.filterFields = const [],
-  }) {
+  })  : onSuccess = onSuccess is List
+            ? List<String>.from(onSuccess)
+            : [onSuccess?.toString() ?? 'toast'],
+        onFailure = onFailure is List
+            ? List<String>.from(onFailure)
+            : [onFailure?.toString() ?? 'toast'] {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       assert(layoutFormId != null && layoutFormId!.isNotEmpty,
           'Action "$id" of type "${type.id}" requires a non-empty layoutFormId.');
@@ -155,8 +159,8 @@ class ActionD extends HiveObject {
     ActionType? type,
     String? name,
     HttpData? http,
-    String? onSuccess,
-    String? onFailure,
+    dynamic onSuccess,
+    dynamic onFailure,
     bool? isMultiple,
     String? reference,
     String? layoutFormId,
@@ -277,8 +281,8 @@ class ActionD extends HiveObject {
       'id': id,
       'type': type.id,
       'name': name,
-      'on_success': onSuccess,
-      'on_failure': onFailure,
+      'on_success': onSuccess.length == 1 ? onSuccess.first : onSuccess,
+      'on_failure': onFailure.length == 1 ? onFailure.first : onFailure,
        'is_multiple': isMultiple,
       'reference': reference,
       'layout_form_id': layoutFormId,
@@ -303,7 +307,7 @@ class ActionD extends HiveObject {
       'export_columns': exportColumns
           ?.map((e) => {
                 'header': e.header,
-                'body': e.body,
+                 'body': e.body,
                 'width': e.width,
               })
           .toList(),
