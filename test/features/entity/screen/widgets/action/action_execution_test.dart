@@ -35,8 +35,8 @@ void main() {
       name: 'Export CSV',
       type: ActionType.export,
       isMultiple: false,
-      onSuccess: 'toast',
-      onFailure: 'toast',
+      onSuccess: const ['toast'],
+      onFailure: const ['toast'],
       http: HttpData(
         method: 'GET',
         url: 'https://api.example.com/export',
@@ -101,8 +101,8 @@ void main() {
       name: 'Process Settlement',
       type: ActionType.http,
       isMultiple: true,
-      onSuccess: 'none',
-      onFailure: 'none',
+      onSuccess: const ['none'],
+      onFailure: const ['none'],
       http: HttpData(
         method: 'POST',
         url: 'https://api.example.com/multi',

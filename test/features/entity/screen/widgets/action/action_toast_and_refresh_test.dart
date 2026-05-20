@@ -41,8 +41,8 @@ void main() {
         type: ActionType.none,
         name: 'Test',
         isMultiple: false,
-        onSuccess: ['refresh', 'toast'],
-        onFailure: 'none',
+        onSuccess: const ['refresh', 'toast'],
+        onFailure: const ['none'],
       );
 
       bool callbackTriggered = false;

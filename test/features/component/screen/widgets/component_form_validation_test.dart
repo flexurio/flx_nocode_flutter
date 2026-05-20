@@ -47,8 +47,8 @@ void main() {
         type: ActionType.setVariable,
         validate: true,
         targetVariable: 'test_var',
-        onSuccess: 'toast',
-        onFailure: 'toast',
+        onSuccess: const ['toast'],
+        onFailure: const ['toast'],
         isMultiple: false,
       );
 
@@ -103,8 +103,8 @@ void main() {
         type: ActionType.setVariable,
         validate: false,
         targetVariable: 'test_var',
-        onSuccess: 'toast',
-        onFailure: 'toast',
+        onSuccess: const ['toast'],
+        onFailure: const ['toast'],
         isMultiple: false,
       );
 

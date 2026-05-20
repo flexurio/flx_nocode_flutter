@@ -54,8 +54,8 @@ void main() {
         type: ActionType.none,
         name: 'Test',
         isMultiple: false,
-        onSuccess: 'clear_form',
-        onFailure: 'none',
+        onSuccess: const ['clear_form'],
+        onFailure: const ['none'],
       );
 
       // 3. Build a context for handleOnSuccessSingle

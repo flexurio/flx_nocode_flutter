@@ -50,8 +50,8 @@ void main() {
           type: ActionType.refresh,
           name: 'Refresh',
           isMultiple: false,
-          onSuccess: 'toast',
-          onFailure: 'toast',
+          onSuccess: const ['toast'],
+          onFailure: const ['toast'],
         ),
       );
 
