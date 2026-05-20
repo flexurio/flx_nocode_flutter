@@ -36,3 +36,4 @@ asset/configuration/landing_page.json
 .DS_Store
 android/build/
 .agent
+coverage/
