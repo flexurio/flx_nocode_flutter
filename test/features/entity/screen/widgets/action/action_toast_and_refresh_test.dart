@@ -16,26 +16,32 @@ void main() {
     Get.reset();
   });
 
-  group('ActionType.toastAndRefresh Tests', () {
-    test('ActionType.fromId should recognize toast_and_refresh', () {
-      final type = ActionType.fromId('toast_and_refresh');
-      expect(type, ActionType.toastAndRefresh);
-      expect(type.label, 'Toast and Refresh Data');
+  group('Action onSuccess Array Tests', () {
+    test('ActionD.fromJson should recognize array of actions for on_success', () {
+      final json = <String, dynamic>{
+        'id': 'test_act',
+        'type': 'none',
+        'name': 'Test',
+        'on_success': ['refresh', 'toast'],
+        'on_failure': 'none',
+      };
+      final action = ActionD.fromJson(json);
+      expect(action.onSuccess, ['refresh', 'toast']);
     });
 
-    testWidgets('handleOnSuccessSingle with toast_and_refresh should trigger onSuccessCallback', (tester) async {
+    testWidgets('handleOnSuccessSingle with array of actions should trigger onSuccessCallback', (tester) async {
       // 1. Setup Mock Entity
       final entity = EntityCustom.empty().copyWith(
         id: 'test_entity',
       );
 
-      // 2. Define Action with on_success: toast_and_refresh
+      // 2. Define Action with on_success: ["refresh", "toast"]
       final action = ActionD(
         id: 'test_act',
         type: ActionType.none,
         name: 'Test',
         isMultiple: false,
-        onSuccess: 'toast_and_refresh',
+        onSuccess: ['refresh', 'toast'],
         onFailure: 'none',
       );
 
@@ -75,7 +81,7 @@ void main() {
       });
 
       // 5. Verify the callback was triggered
-      expect(callbackTriggered, true, reason: 'onSuccessCallback should be triggered after toast_and_refresh action');
+      expect(callbackTriggered, true, reason: 'onSuccessCallback should be triggered after refresh action in list');
     });
   });
 }
