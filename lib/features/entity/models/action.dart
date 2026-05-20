@@ -113,10 +113,10 @@ class ActionD extends HiveObject {
 
   ActionD({
     required this.isMultiple,
-    required dynamic onSuccess,
-    required dynamic onFailure,
+    required this.onSuccess,
+    required this.onFailure,
     required this.id,
-     this.http,
+    this.http,
     this.reference,
     this.layoutFormId,
     this.layoutPrintId,
@@ -140,17 +140,11 @@ class ActionD extends HiveObject {
     this.exportFormat,
     this.exportColumns,
     this.filterFields = const [],
-  })  : onSuccess = onSuccess is List
-            ? List<String>.from(onSuccess)
-            : [onSuccess?.toString() ?? 'toast'],
-        onFailure = onFailure is List
-            ? List<String>.from(onFailure)
-            : [onFailure?.toString() ?? 'toast'] {
+  }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       assert(layoutFormId != null && layoutFormId!.isNotEmpty,
           'Action "$id" of type "${type.id}" requires a non-empty layoutFormId.');
     }
-
   }
 
   /// Creates a copy of this [ActionD] object with optional modifications.
@@ -159,8 +153,8 @@ class ActionD extends HiveObject {
     ActionType? type,
     String? name,
     HttpData? http,
-    dynamic onSuccess,
-    dynamic onFailure,
+    List<String>? onSuccess,
+    List<String>? onFailure,
     bool? isMultiple,
     String? reference,
     String? layoutFormId,
@@ -237,8 +231,8 @@ class ActionD extends HiveObject {
       type: type,
       name: json['name'] ?? '',
       http: json['http'] != null ? HttpData.fromJson(json['http']) : null,
-      onSuccess: json['on_success'] ?? 'toast',
-      onFailure: json['on_failure'] ?? 'toast',
+      onSuccess: (json['on_success'] as List).cast<String>(),
+      onFailure: (json['on_failure'] as List).cast<String>(),
        reference: json['reference'],
       layoutFormId: layoutFormId,
       layoutPrintId: layoutPrintId,
@@ -281,8 +275,8 @@ class ActionD extends HiveObject {
       'id': id,
       'type': type.id,
       'name': name,
-      'on_success': onSuccess.length == 1 ? onSuccess.first : onSuccess,
-      'on_failure': onFailure.length == 1 ? onFailure.first : onFailure,
+      'on_success': onSuccess,
+      'on_failure': onFailure,
        'is_multiple': isMultiple,
       'reference': reference,
       'layout_form_id': layoutFormId,
