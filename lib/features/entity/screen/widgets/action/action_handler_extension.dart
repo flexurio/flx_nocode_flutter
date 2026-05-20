@@ -26,6 +26,34 @@ extension ActionSuccessHandlerExtension on ActionD {
       final successType = ActionType.fromId(actionStr);
       print('[ActionLogic] → successType: $successType');
 
+      final regex = RegExp(r'^exports\.([0-9a-fA-F\-]{36})$');
+      final match = regex.firstMatch(actionStr);
+
+      if (match != null) {
+        final exportId = match.group(1) ?? '';
+        print('[ActionLogic] ✅ Match Export UUID: $exportId');
+
+        final index = entity.exports.indexWhere((e) => e.uuid == exportId);
+        if (index != -1) {
+          final export = entity.exports[index];
+          print('[ActionLogic] 📄 Triggering exportToPdf for: ${export.name}');
+
+          exportToPdf(
+            export,
+            data: data,
+            headerProvider: () async => {
+              'Authorization': 'Bearer ${UserRepositoryApp.instance.token}',
+            },
+          );
+        } else {
+          print(
+              '[ActionLogic] ❌ Export ID $exportId NOT found in entity exports');
+          print(
+              '[ActionLogic] 🔍 Available exports: ${entity.exports.map((e) => e.uuid).toList()}');
+        }
+        continue;
+      }
+
       switch (successType) {
         case ActionType.showDialog:
           await showDialog(
@@ -116,37 +144,8 @@ extension ActionSuccessHandlerExtension on ActionD {
           }
           break;
         default:
-          print('[ActionLogic] → No standard ActionType matched for onSuccess');
+          print('[ActionLogic] → No standard ActionType matched for onSuccess: $actionStr');
           break;
-      }
-
-      final regex = RegExp(r'^exports\.([0-9a-fA-F\-]{36})$');
-      final match = regex.firstMatch(actionStr);
-
-      if (match != null) {
-        final exportId = match.group(1) ?? '';
-        print('[ActionLogic] ✅ Match Export UUID: $exportId');
-
-        final index = entity.exports.indexWhere((e) => e.uuid == exportId);
-        if (index != -1) {
-          final export = entity.exports[index];
-          print('[ActionLogic] 📄 Triggering exportToPdf for: ${export.name}');
-
-          exportToPdf(
-            export,
-            data: data,
-            headerProvider: () async => {
-              'Authorization': 'Bearer ${UserRepositoryApp.instance.token}',
-            },
-          );
-        } else {
-          print(
-              '[ActionLogic] ❌ Export ID $exportId NOT found in entity exports');
-          print(
-              '[ActionLogic] 🔍 Available exports: ${entity.exports.map((e) => e.uuid).toList()}');
-        }
-      } else {
-        print('[ActionLogic] ℹ️ onSuccess does not match exports.UUID pattern');
       }
     }
     print('==============================');

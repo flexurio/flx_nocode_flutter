@@ -231,8 +231,16 @@ class ActionD extends HiveObject {
       type: type,
       name: json['name'] ?? '',
       http: json['http'] != null ? HttpData.fromJson(json['http']) : null,
-      onSuccess: (json['on_success'] as List).cast<String>(),
-      onFailure: (json['on_failure'] as List).cast<String>(),
+      onSuccess: json['on_success'] is List
+          ? (json['on_success'] as List).cast<String>()
+          : json['on_success'] is String
+              ? [json['on_success'] as String]
+              : const ['toast'],
+      onFailure: json['on_failure'] is List
+          ? (json['on_failure'] as List).cast<String>()
+          : json['on_failure'] is String
+              ? [json['on_failure'] as String]
+              : const ['toast'],
        reference: json['reference'],
       layoutFormId: layoutFormId,
       layoutPrintId: layoutPrintId,
