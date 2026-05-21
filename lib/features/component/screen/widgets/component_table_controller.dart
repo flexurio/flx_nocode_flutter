@@ -63,7 +63,7 @@ class ComponentTableController extends GetxController {
       if (component.referenceId != null && component.referenceId!.isNotEmpty) {
         localData = contextData[component.referenceId];
       }
-      
+
       // If no referenceId or it yielded null, try initial_value
       if (localData == null && component.initial_value != null) {
         final rawInitial = component.initial_value;
@@ -86,16 +86,18 @@ class ComponentTableController extends GetxController {
             if (decoded is List) {
               rows.value = _parseRows(decoded);
               isLoading.value = false;
+              notifyChanged();
               return;
             }
           } catch (_) {
             // Not a JSON string, continue
           }
         }
-        
+
         if (localData is List) {
           rows.value = _parseRows(localData);
           isLoading.value = false;
+          notifyChanged();
           return;
         }
       }
@@ -104,13 +106,14 @@ class ComponentTableController extends GetxController {
       if (httpData.url.isEmpty) {
         rows.value = [];
         isLoading.value = false;
+        notifyChanged();
         return;
       }
 
       final executor = Get.isRegistered<HttpRequestExecutor>()
           ? Get.find<HttpRequestExecutor>()
           : null;
-      
+
       final result = await httpData.execute(contextData, executor: executor);
 
       if (!result.isSuccess) {
@@ -128,6 +131,7 @@ class ComponentTableController extends GetxController {
       } else {
         rows.value = const <JsonMap>[];
       }
+      notifyChanged();
     } catch (e) {
       debugPrint('[ComponentTableController] Error: $e');
       error.value = e.toString();
@@ -152,7 +156,8 @@ class ComponentTableController extends GetxController {
       final parentControllers =
           allControllers?.cast<String, TextEditingController>();
 
-      if (parentControllers != null && parentControllers.containsKey(targetId)) {
+      if (parentControllers != null &&
+          parentControllers.containsKey(targetId)) {
         final jsonStr = jsonEncode(rows);
         final controller = parentControllers[targetId];
         if (controller != null && controller.text != jsonStr) {
