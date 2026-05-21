@@ -59,10 +59,10 @@ class ActionD extends HiveObject {
   final HttpData? http;
 
   /// Defines what happens after success
-  final String onSuccess;
+  final List<String> onSuccess;
 
   /// Defines what happens on failure
-  final String onFailure;
+  final List<String> onFailure;
 
   // for type listJsonViewAsTable
   final String? reference;
@@ -116,7 +116,7 @@ class ActionD extends HiveObject {
     required this.onSuccess,
     required this.onFailure,
     required this.id,
-     this.http,
+    this.http,
     this.reference,
     this.layoutFormId,
     this.layoutPrintId,
@@ -145,7 +145,6 @@ class ActionD extends HiveObject {
       assert(layoutFormId != null && layoutFormId!.isNotEmpty,
           'Action "$id" of type "${type.id}" requires a non-empty layoutFormId.');
     }
-
   }
 
   /// Creates a copy of this [ActionD] object with optional modifications.
@@ -154,8 +153,8 @@ class ActionD extends HiveObject {
     ActionType? type,
     String? name,
     HttpData? http,
-    String? onSuccess,
-    String? onFailure,
+    List<String>? onSuccess,
+    List<String>? onFailure,
     bool? isMultiple,
     String? reference,
     String? layoutFormId,
@@ -232,8 +231,16 @@ class ActionD extends HiveObject {
       type: type,
       name: json['name'] ?? '',
       http: json['http'] != null ? HttpData.fromJson(json['http']) : null,
-      onSuccess: json['on_success'] ?? 'toast',
-      onFailure: json['on_failure'] ?? 'toast',
+      onSuccess: json['on_success'] is List
+          ? (json['on_success'] as List).cast<String>()
+          : json['on_success'] is String
+              ? [json['on_success'] as String]
+              : const ['toast'],
+      onFailure: json['on_failure'] is List
+          ? (json['on_failure'] as List).cast<String>()
+          : json['on_failure'] is String
+              ? [json['on_failure'] as String]
+              : const ['toast'],
        reference: json['reference'],
       layoutFormId: layoutFormId,
       layoutPrintId: layoutPrintId,
@@ -302,7 +309,7 @@ class ActionD extends HiveObject {
       'export_columns': exportColumns
           ?.map((e) => {
                 'header': e.header,
-                'body': e.body,
+                 'body': e.body,
                 'width': e.width,
               })
           .toList(),

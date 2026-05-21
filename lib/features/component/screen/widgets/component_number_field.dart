@@ -43,13 +43,20 @@ extension ComponentNumberFieldWidgets on ComponentNumberField {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: enabled ? Colors.white : Colors.grey.shade100,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade300),
+            border: Border.all(
+              color: enabled ? Colors.grey.shade300 : Colors.grey.shade200,
+            ),
           ),
           child: Text(
-            initialValue.isEmpty ? '0' : initialValue,
-            style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+            initialValue.isNotEmpty ? initialValue : '0',
+            style: TextStyle(
+              color: initialValue.isNotEmpty
+                  ? (enabled ? Colors.black87 : Colors.grey.shade500)
+                  : Colors.grey.shade400,
+              fontSize: 13,
+            ),
           ),
         ),
       ],

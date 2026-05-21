@@ -12,6 +12,7 @@ class ComponentRadio extends ComponentInputBase {
     required this.options,
     required this.initialValue,
     super.required,
+    super.enabled = true,
     super.widthMode,
     super.width,
     super.flex,
@@ -50,13 +51,24 @@ class ComponentRadio extends ComponentInputBase {
     if (options.isEmpty) {
       options.addAll(['Option 1', 'Option 2']);
     }
+    final enabledRaw = map['enabled'];
+    final enabled = () {
+      if (enabledRaw == null) return true;
+      if (enabledRaw is bool) return enabledRaw;
+      final str = enabledRaw.toString().toLowerCase().trim();
+      if (str == 'false' || str == '0') return false;
+      return true;
+    }();
+
     final required = map['required'] == true;
+
     return ComponentRadio(
       id: id,
       label: label,
       options: options,
       initialValue: initialValue,
       required: required,
+      enabled: enabled,
       widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: double.tryParse(map['width']?.toString() ?? ''),
       flex: int.tryParse(map['flex']?.toString() ?? ''),

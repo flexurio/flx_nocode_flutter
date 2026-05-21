@@ -20,6 +20,7 @@ class ComponentDropdown extends ComponentSelectionBase {
     super.optionLabel,
     super.onChangeActions,
     super.required,
+    super.enabled = true,
     super.dependsOn,
     super.widthMode,
     super.width,
@@ -92,6 +93,15 @@ class ComponentDropdown extends ComponentSelectionBase {
       }
     }
 
+    final enabledRaw = map['enabled'];
+    final enabled = () {
+      if (enabledRaw == null) return true;
+      if (enabledRaw is bool) return enabledRaw;
+      final str = enabledRaw.toString().toLowerCase().trim();
+      if (str == 'false' || str == '0') return false;
+      return true;
+    }();
+
     return ComponentDropdown(
       id: id,
       visibilityCondition: map['visibilityCondition']?.toString(),
@@ -106,6 +116,7 @@ class ComponentDropdown extends ComponentSelectionBase {
       optionLabel: map['optionLabel']?.toString(),
       onChangeActions: onChangeActions,
       required: required,
+      enabled: enabled,
       dependsOn: dependsOn,
       widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: map['width'] != null

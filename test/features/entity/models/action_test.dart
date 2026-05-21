@@ -37,8 +37,8 @@ void main() {
         name: 'Export to CSV',
         type: ActionType.export,
         isMultiple: false,
-        onSuccess: 'toast',
-        onFailure: 'toast',
+        onSuccess: const ['toast'],
+        onFailure: const ['toast'],
         exportFormat: 'csv',
         exportColumns: [
           TColumn(header: 'Date', body: 'created_at'),
@@ -62,8 +62,8 @@ void main() {
         name: 'Original',
         type: ActionType.export,
         isMultiple: false,
-        onSuccess: 'toast',
-        onFailure: 'toast',
+        onSuccess: const ['toast'],
+        onFailure: const ['toast'],
         exportFormat: 'pdf',
       );
 
@@ -132,8 +132,8 @@ void main() {
         name: 'Daftar Inisial Personel',
         type: ActionType.print,
         isMultiple: false,
-        onSuccess: 'toast',
-        onFailure: 'toast',
+        onSuccess: const ['toast'],
+        onFailure: const ['toast'],
         layoutPrintId: 'print_initial_personnel_layout',
         layoutFormId: 'filter_personnel',
         icon: 'Print',

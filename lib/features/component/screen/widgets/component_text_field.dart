@@ -79,14 +79,20 @@ extension ComponentTextFieldWidgets on ComponentTextField {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           alignment: maxLines > 1 ? Alignment.topLeft : Alignment.centerLeft,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: enabled ? Colors.white : Colors.grey.shade100,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade300),
+            border: Border.all(
+              color: enabled ? Colors.grey.shade300 : Colors.grey.shade200,
+            ),
           ),
           child: Text(
-            obscure ? '••••••••' : 'Enter $label...',
+            initialValue.isNotEmpty
+                ? (obscure ? '••••••••' : initialValue)
+                : (obscure ? '••••••••' : 'Enter $label...'),
             style: TextStyle(
-              color: Colors.grey.shade400,
+              color: initialValue.isNotEmpty
+                  ? (enabled ? Colors.black87 : Colors.grey.shade500)
+                  : Colors.grey.shade400,
               fontSize: obscure ? 18 : 13,
               letterSpacing: obscure ? 2 : null,
             ),

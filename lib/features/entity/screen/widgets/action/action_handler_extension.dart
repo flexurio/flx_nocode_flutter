@@ -20,132 +20,133 @@ extension ActionSuccessHandlerExtension on ActionD {
     print('==============================');
     print('[ActionLogic] 🚀 handleOnSuccessSingle()');
     print('[ActionLogic] → Action ID: $id');
-    print('[ActionLogic] → onSuccess value: "$onSuccess"');
+    print('[ActionLogic] → onSuccess values: $onSuccess');
 
-    final successType = ActionType.fromId(onSuccess);
-    print('[ActionLogic] → successType: $successType');
+    for (final actionStr in onSuccess) {
+      final successType = ActionType.fromId(actionStr);
+      print('[ActionLogic] → successType: $successType');
 
-    switch (successType) {
-      case ActionType.showDialog:
-        await showDialog(
-          context: context,
-          useRootNavigator: false,
-          builder: (_) => AlertDialog(
-            title: const Text('Success'),
-            content: const Text('Operation completed successfully.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
-        break;
-      case ActionType.toast:
-        Toast(context).success('Request success');
-        break;
-      case ActionType.showSuccessDialogWithData:
-        final vars = <String, dynamic>{};
-        print('[ActionLogic] 💎 responseData: $responseData');
-        if (responseData is Map<String, dynamic>) {
-          vars.addAll(responseData);
-        }
-        print('[ActionLogic] 💎 Interpolation vars: $vars');
+      final regex = RegExp(r'^exports\.([0-9a-fA-F\-]{36})$');
+      final match = regex.firstMatch(actionStr);
 
-        final isMultiple = data['_is_multiple_context'] == true;
-        final originalList =
-            (data['_original_list'] as List?)?.cast<Map<String, dynamic>>();
+      if (match != null) {
+        final exportId = match.group(1) ?? '';
+        print('[ActionLogic] ✅ Match Export UUID: $exportId');
 
-        String interpolate(String? text) {
-          if (text == null) return '';
-          var result = text;
-          if (isMultiple && originalList != null) {
-            result = result.replaceStringWithValuesMultiple(originalList);
-          }
-          return result.interpolateJavascript(vars).renderWithData(data);
-        }
+        final index = entity.exports.indexWhere((e) => e.uuid == exportId);
+        if (index != -1) {
+          final export = entity.exports[index];
+          print('[ActionLogic] 📄 Triggering exportToPdf for: ${export.name}');
 
-        final titleText = interpolate(successTitle ?? 'Success');
-        final messageText = interpolate(successMessage);
-        final copyLabelText = interpolate(copyLabel ?? 'Copy');
-        final copyValueText = interpolate(copyValue);
-
-        print('[ActionLogic] 💎 titleText: "$titleText"');
-        print('[ActionLogic] 💎 messageText: "$messageText"');
-        print('[ActionLogic] 💎 copyValueText: "$copyValueText"');
-
-        await showDialog(
-          context: context,
-          useRootNavigator: false,
-          builder: (_) => CardSuccessWithData(
-            title: titleText,
-            message: messageText,
-            copyLabel: copyLabelText,
-            copyValue: copyValueText,
-          ),
-        );
-        break;
-      case ActionType.refresh:
-        print('[ActionLogic] 🔃 Executing onSuccess refresh');
-        onSuccessCallback?.call();
-        break;
-      case ActionType.navigateBack:
-        print('[ActionLogic] 🔙 Executing onSuccess navigateBack');
-        if (Navigator.of(context).canPop()) {
-          Navigator.of(context).pop();
+          exportToPdf(
+            export,
+            data: data,
+            headerProvider: () async => {
+              'Authorization': 'Bearer ${UserRepositoryApp.instance.token}',
+            },
+          );
         } else {
-          Toast(context).notify('Cannot navigate back');
+          print(
+              '[ActionLogic] ❌ Export ID $exportId NOT found in entity exports');
+          print(
+              '[ActionLogic] 🔍 Available exports: ${entity.exports.map((e) => e.uuid).toList()}');
         }
-        break;
-      case ActionType.navigateHome:
-        print('[ActionLogic] 🏠 Executing onSuccess navigateHome');
-        if (Navigator.of(context).canPop()) {
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        }
-        break;
-      case ActionType.clearForm:
-        print('[ActionLogic] ✨ Executing onSuccess clearForm');
-        final layoutId = data['layoutFormId'];
-        if (layoutId != null &&
-            Get.isRegistered<CreatePageController>(
-                tag: 'create_page_$layoutId')) {
-          Get.find<CreatePageController>(tag: 'create_page_$layoutId')
-              .clearForm();
-        }
-        break;
-      default:
-        print('[ActionLogic] → No standard ActionType matched for onSuccess');
-        break;
-    }
-
-    final regex = RegExp(r'^exports\.([0-9a-fA-F\-]{36})$');
-    final match = regex.firstMatch(onSuccess);
-
-    if (match != null) {
-      final exportId = match.group(1) ?? '';
-      print('[ActionLogic] ✅ Match Export UUID: $exportId');
-
-      final index = entity.exports.indexWhere((e) => e.uuid == exportId);
-      if (index != -1) {
-        final export = entity.exports[index];
-        print('[ActionLogic] 📄 Triggering exportToPdf for: ${export.name}');
-
-        exportToPdf(
-          export,
-          data: data,
-          headerProvider: () async => {
-            'Authorization': 'Bearer ${UserRepositoryApp.instance.token}',
-          },
-        );
-      } else {
-        print(
-            '[ActionLogic] ❌ Export ID $exportId NOT found in entity exports');
-        print(
-            '[ActionLogic] 🔍 Available exports: ${entity.exports.map((e) => e.uuid).toList()}');
+        continue;
       }
-    } else {
-      print('[ActionLogic] ℹ️ onSuccess does not match exports.UUID pattern');
+
+      switch (successType) {
+        case ActionType.showDialog:
+          await showDialog(
+            context: context,
+            useRootNavigator: false,
+            builder: (_) => AlertDialog(
+              title: const Text('Success'),
+              content: const Text('Operation completed successfully.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+          break;
+        case ActionType.toast:
+          Toast(context).success('Request success');
+          break;
+        case ActionType.showSuccessDialogWithData:
+          final vars = <String, dynamic>{};
+          print('[ActionLogic] 💎 responseData: $responseData');
+          if (responseData is Map<String, dynamic>) {
+            vars.addAll(responseData);
+          }
+          print('[ActionLogic] 💎 Interpolation vars: $vars');
+
+          final isMultiple = data['_is_multiple_context'] == true;
+          final originalList =
+              (data['_original_list'] as List?)?.cast<Map<String, dynamic>>();
+
+          String interpolate(String? text) {
+            if (text == null) return '';
+            var result = text;
+            if (isMultiple && originalList != null) {
+              result = result.replaceStringWithValuesMultiple(originalList);
+            }
+            return result.interpolateJavascript(vars).renderWithData(data);
+          }
+
+          final titleText = interpolate(successTitle ?? 'Success');
+          final messageText = interpolate(successMessage);
+          final copyLabelText = interpolate(copyLabel ?? 'Copy');
+          final copyValueText = interpolate(copyValue);
+
+          print('[ActionLogic] 💎 titleText: "$titleText"');
+          print('[ActionLogic] 💎 messageText: "$messageText"');
+          print('[ActionLogic] 💎 copyValueText: "$copyValueText"');
+
+          await showDialog(
+            context: context,
+            useRootNavigator: false,
+            builder: (_) => CardSuccessWithData(
+              title: titleText,
+              message: messageText,
+              copyLabel: copyLabelText,
+              copyValue: copyValueText,
+            ),
+          );
+          break;
+        case ActionType.refresh:
+          print('[ActionLogic] 🔃 Executing onSuccess refresh');
+          onSuccessCallback?.call();
+          break;
+        case ActionType.navigateBack:
+          print('[ActionLogic] 🔙 Executing onSuccess navigateBack');
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          } else {
+            Toast(context).notify('Cannot navigate back');
+          }
+          break;
+        case ActionType.navigateHome:
+          print('[ActionLogic] 🏠 Executing onSuccess navigateHome');
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          }
+          break;
+        case ActionType.clearForm:
+          print('[ActionLogic] ✨ Executing onSuccess clearForm');
+          final layoutId = data['layoutFormId'];
+          if (layoutId != null &&
+              Get.isRegistered<CreatePageController>(
+                  tag: 'create_page_$layoutId')) {
+            Get.find<CreatePageController>(tag: 'create_page_$layoutId')
+                .clearForm();
+          }
+          break;
+        default:
+          print('[ActionLogic] → No standard ActionType matched for onSuccess: $actionStr');
+          break;
+      }
     }
     print('==============================');
   }
@@ -196,44 +197,46 @@ extension ActionSuccessHandlerExtension on ActionD {
     print('==============================');
     print('[ActionLogic] ❌ _handleOnFailure()');
     print('[ActionLogic] → Action ID: $id');
-    print('[ActionLogic] → onFailure value: "$onFailure"');
+    print('[ActionLogic] → onFailure values: "$onFailure"');
     print('[ActionLogic] → message: $message');
 
-    final failureType = ActionType.fromId(onFailure);
-    print('[ActionLogic] → failureType: $failureType');
+    for (final actionStr in onFailure) {
+      final failureType = ActionType.fromId(actionStr);
+      print('[ActionLogic] → failureType: $failureType');
 
-    switch (failureType) {
-      case ActionType.showErrorDialog:
-        showDialog(
-          context: context,
-          useRootNavigator: false,
-          builder: (_) => AlertDialog(
-            title: const Text('Failed'),
-            content: Text(message),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
-        break;
+      switch (failureType) {
+        case ActionType.showErrorDialog:
+          showDialog(
+            context: context,
+            useRootNavigator: false,
+            builder: (_) => AlertDialog(
+              title: const Text('Failed'),
+              content: Text(message),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          );
+          break;
 
-      case ActionType.toast:
-        Toast(context).fail(message);
-        break;
+        case ActionType.toast:
+          Toast(context).fail(message);
+          break;
 
-      case ActionType.navigateBack:
-        if (Navigator.of(context).canPop()) {
-          Navigator.of(context).pop();
-        } else {
-          Toast(context).notify('Cannot navigate back');
-        }
-        break;
+        case ActionType.navigateBack:
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          } else {
+            Toast(context).notify('Cannot navigate back');
+          }
+          break;
 
-      default:
-        break;
+        default:
+          break;
+      }
     }
     print('==============================');
   }

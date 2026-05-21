@@ -22,8 +22,8 @@ void main() {
       name: 'Action 1',
       type: ActionType.toast,
       isMultiple: false,
-      onSuccess: 'toast',
-      onFailure: 'toast',
+      onSuccess: const ['toast'],
+      onFailure: const ['toast'],
     );
 
     // Create an action with a rule that checks for status = 'approved'
@@ -32,8 +32,8 @@ void main() {
       name: 'Action 2',
       type: ActionType.toast,
       isMultiple: false,
-      onSuccess: 'toast',
-      onFailure: 'toast',
+      onSuccess: const ['toast'],
+      onFailure: const ['toast'],
       rule: Rule(
         all: [
           Condition(field: 'status', op: '=', value: 'approved'),
@@ -124,8 +124,8 @@ void main() {
       name: 'Export Home',
       type: ActionType.export,
       isMultiple: false,
-      onSuccess: 'toast',
-      onFailure: 'toast',
+      onSuccess: const ['toast'],
+      onFailure: const ['toast'],
     );
 
     final regularAction = ActionD(
@@ -133,8 +133,8 @@ void main() {
       name: 'Regular Action',
       type: ActionType.toast,
       isMultiple: false,
-      onSuccess: 'toast',
-      onFailure: 'toast',
+      onSuccess: const ['toast'],
+      onFailure: const ['toast'],
     );
 
     when(() => entity.actionsHome).thenReturn([exportAction, regularAction]);

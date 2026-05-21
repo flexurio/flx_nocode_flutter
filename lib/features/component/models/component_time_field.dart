@@ -4,14 +4,14 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 
 class ComponentTimeField extends ComponentInputBase {
   final String initialValue;
-  final bool enabled;
+  // final bool enabled; // Removed, now in base
 
   ComponentTimeField({
     required super.id,
     required super.label,
     required this.initialValue,
     super.required,
-    this.enabled = true,
+    super.enabled = true,
     super.widthMode,
     super.width,
     super.flex,
@@ -62,6 +62,5 @@ class ComponentTimeField extends ComponentInputBase {
   JsonMap toMap() => {
         ...super.toMap(),
         'initialValue': initialValue,
-        'enabled': enabled,
       };
 }

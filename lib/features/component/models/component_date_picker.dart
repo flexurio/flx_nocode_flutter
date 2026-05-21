@@ -15,12 +15,14 @@ class ComponentDatePicker extends ComponentInputBase {
     this.minDate,
     this.maxDate,
     super.required,
+    super.enabled = true,
     this.dateFormat,
     super.widthMode,
     super.width,
     super.flex,
     super.visibilityCondition,
     super.events,
+    super.dependsOn,
   }) : super(type: componentId);
 
   static const String componentId = 'date_picker';
@@ -31,6 +33,7 @@ class ComponentDatePicker extends ComponentInputBase {
       label: 'Date Picker',
       initialValue: '',
       required: false,
+      enabled: true,
       widthMode: ComponentSizeMode.fill,
     );
   }
@@ -45,7 +48,23 @@ class ComponentDatePicker extends ComponentInputBase {
     final minDate = map['minDate']?.toString();
     final maxDate = map['maxDate']?.toString();
     final required = map['required'] == true;
+    final enabledRaw = map['enabled'];
+    final enabled = () {
+      if (enabledRaw == null) return true;
+      if (enabledRaw is bool) return enabledRaw;
+      final str = enabledRaw.toString().toLowerCase().trim();
+      if (str == 'false' || str == '0') return false;
+      if (str == 'true' || str == '1') return true;
+      return true;
+    }();
     final dateFormat = map['dateFormat']?.toString();
+    final rawDependsOn = map['dependsOn'];
+    final dependsOn = <String>[];
+    if (rawDependsOn is List) {
+      for (final item in rawDependsOn) {
+        dependsOn.add(item.toString());
+      }
+    }
 
     return ComponentDatePicker(
       id: id,
@@ -54,6 +73,7 @@ class ComponentDatePicker extends ComponentInputBase {
       minDate: minDate,
       maxDate: maxDate,
       required: required,
+      enabled: enabled,
       dateFormat: dateFormat,
       widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: map['width'] != null
@@ -62,6 +82,7 @@ class ComponentDatePicker extends ComponentInputBase {
       flex: map['flex'] != null ? int.tryParse(map['flex'].toString()) : null,
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
+      dependsOn: dependsOn,
     );
   }
 

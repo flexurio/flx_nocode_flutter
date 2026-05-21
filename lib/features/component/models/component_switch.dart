@@ -4,13 +4,12 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 
 class ComponentSwitch extends ComponentInputBase {
   final bool initialValue;
-  final bool enabled;
 
   ComponentSwitch({
     required super.id,
     super.label = 'Switch',
     this.initialValue = false,
-    this.enabled = true,
+    super.enabled = true,
     super.required,
     super.widthMode,
     super.width,
@@ -53,6 +52,5 @@ class ComponentSwitch extends ComponentInputBase {
   JsonMap toMap() => {
         ...super.toMap(),
         'initialValue': initialValue,
-        'enabled': enabled,
       };
 }

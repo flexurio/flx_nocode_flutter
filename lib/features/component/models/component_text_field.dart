@@ -7,7 +7,6 @@ class ComponentTextField extends ComponentInputBase {
   final int maxLines;
   final String initialValue;
   final String hintText;
-  final bool enabled;
   final String? regex;
   final String? regexErrorMessage;
   final String? helperText;
@@ -20,7 +19,7 @@ class ComponentTextField extends ComponentInputBase {
     this.maxLines = 1,
     this.initialValue = '',
     this.hintText = '',
-    this.enabled = true,
+    super.enabled = true,
     super.required,
     this.regex,
     this.regexErrorMessage,
@@ -31,6 +30,7 @@ class ComponentTextField extends ComponentInputBase {
     this.obscure = false,
     super.visibilityCondition,
     super.events,
+    super.dependsOn,
   }) : super(type: 'text_field');
 
   static String get componentId => 'text_field';
@@ -79,6 +79,13 @@ class ComponentTextField extends ComponentInputBase {
     final visibilityCondition = map['visibilityCondition']?.toString();
     final events = map['events'] as Map<String, dynamic>? ?? {};
     final obscure = map['obscure'] == true;
+    final rawDependsOn = map['dependsOn'];
+    final dependsOn = <String>[];
+    if (rawDependsOn is List) {
+      for (final item in rawDependsOn) {
+        dependsOn.add(item.toString());
+      }
+    }
 
     return ComponentTextField(
       id: id,
@@ -98,6 +105,7 @@ class ComponentTextField extends ComponentInputBase {
       obscure: obscure,
       visibilityCondition: visibilityCondition,
       events: events,
+      dependsOn: dependsOn,
     );
   }
 
@@ -108,7 +116,6 @@ class ComponentTextField extends ComponentInputBase {
         'maxLines': maxLines,
         'initialValue': initialValue,
         'hintText': hintText,
-        'enabled': enabled,
         if (regex != null) 'regex': regex,
         if (regexErrorMessage != null) 'regexErrorMessage': regexErrorMessage,
         if (helperText != null) 'helperText': helperText,
