@@ -222,9 +222,12 @@ class JsShortcutEvaluator {
     final trueValExpr = remaining.substring(0, colonIndex).trim();
     final falseValExpr = remaining.substring(colonIndex + 1).trim();
 
-    final conditionValue = _resolvePath(condition, vars);
-    final bool conditionResult = asBool(conditionValue);
+    final condEval = tryEvaluate(condition, vars);
+    if (!condEval.success) {
+      return null;
+    }
 
+    final bool conditionResult = asBool(condEval.value);
     final targetExpr = conditionResult ? trueValExpr : falseValExpr;
 
     // Recursively try to evaluate the selected branch

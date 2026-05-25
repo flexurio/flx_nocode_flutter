@@ -41,6 +41,32 @@ void main() {
       expect(result, '1801008');
     });
 
+    test('should evaluate ternary expression with comparison correctly', () {
+      const template = "{{ form.status == 'APPROVE QA STAFF' ? 'heyy' : 'ouu' }}";
+      final variables = {
+        'form': {
+          'status': 'APPROVE QA STAFF',
+        }
+      };
+
+      final result = template.interpolateJavascript(variables);
+
+      expect(result, 'heyy');
+    });
+
+    test('should evaluate ternary expression with comparison falsy correctly', () {
+      const template = "{{ form.status == 'APPROVE QA STAFF' ? 'heyy' : 'ouu' }}";
+      final variables = {
+        'form': {
+          'status': 'REJECT QA STAFF',
+        }
+      };
+
+      final result = template.interpolateJavascript(variables);
+
+      expect(result, 'ouu');
+    });
+
     test('Accessing record user_id should still be possible via record prefix',
         () {
       const template = '{{ record.user_id }}';
