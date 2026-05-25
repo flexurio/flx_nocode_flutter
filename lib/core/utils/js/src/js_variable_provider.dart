@@ -41,6 +41,7 @@ class JsVariableProvider {
       // 3. System variables
       'auth_token': userRepo?.token ?? '',
       'user_id': userRepo?.userApp?.id?.toString() ?? '',
+      'auth_nik': userRepo?.userApp?.id?.toString() ?? '',
       'backend_host': config?.backendHost ?? '',
     };
 

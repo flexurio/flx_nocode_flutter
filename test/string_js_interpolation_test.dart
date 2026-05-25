@@ -35,6 +35,12 @@ void main() {
       expect(result, '1801008');
     });
 
+    test('auth_nik should return JWT user ID', () {
+      const template = '{{ auth_nik }}';
+      final result = template.interpolateJavascript();
+      expect(result, '1801008');
+    });
+
     test('Accessing record user_id should still be possible via record prefix',
         () {
       const template = '{{ record.user_id }}';
