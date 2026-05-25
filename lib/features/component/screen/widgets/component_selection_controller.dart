@@ -92,6 +92,7 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase> ex
   }
 
   void onDependencyChanged() {
+    debugPrint('[Nocode Selection] onDependencyChanged called for ${component.id}. Parent controllers state: ${allControllers.map((key, value) => MapEntry(key, value.text))}');
     resetSelection();
     updateTargetController('');
     if (component.httpData != null && component.httpData!.url.isNotEmpty) {
@@ -144,9 +145,45 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase> ex
       requestData.addAll(Map<String, dynamic>.from(state));
       requestData['data'] = state;
     }
+
+    final controllerValues = <String, dynamic>{};
     for (final entry in allControllers.entries) {
-      requestData[entry.key] = entry.value.text;
+      controllerValues[entry.key] = entry.value.text;
     }
+
+    requestData.addAll(controllerValues);
+
+    final formMap = requestData['form'];
+    if (formMap is Map) {
+      requestData['form'] = {
+        ...formMap,
+        ...controllerValues,
+      };
+    } else {
+      requestData['form'] = controllerValues;
+    }
+
+    final currentMap = requestData['current'];
+    if (currentMap is Map) {
+      requestData['current'] = {
+        ...currentMap,
+        ...controllerValues,
+      };
+    } else {
+      requestData['current'] = controllerValues;
+    }
+
+    final dataMap = requestData['data'];
+    if (dataMap is Map) {
+      requestData['data'] = {
+        ...dataMap,
+        ...controllerValues,
+      };
+    } else {
+      requestData['data'] = controllerValues;
+    }
+
+    debugPrint('[Nocode Selection] prepareRequestData for ${component.id}. form.account_bank_nip = ${requestData['form']?['account_bank_nip']}. Interpolated URL: ${component.httpData?.url.interpolateJavascript(requestData)}');
     return requestData;
   }
 

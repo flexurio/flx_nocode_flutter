@@ -66,5 +66,31 @@ void main() {
       
       expect(controller.selectedValue.value, 'A');
     });
+
+    test('prepareRequestData should contain updated controller values in form/current/data maps', () {
+      final parentCtrl = data['allControllers']['parent_id'] as TextEditingController;
+      
+      final controller = ComponentDropdownController(
+        component: component,
+        data: {
+          ...data,
+          'form': {'parent_id': '1'},
+          'current': {'parent_id': '1'},
+        },
+      );
+      
+      // Update the controller value (simulating user selection/typing)
+      parentCtrl.text = 'newValue';
+      
+      final requestData = controller.prepareRequestData();
+      
+      // Verify root level is updated
+      expect(requestData['parent_id'], 'newValue');
+      
+      // Verify nested maps are updated
+      expect(requestData['form']['parent_id'], 'newValue');
+      expect(requestData['current']['parent_id'], 'newValue');
+      expect(requestData['data']['parent_id'], 'newValue');
+    });
   });
 }
