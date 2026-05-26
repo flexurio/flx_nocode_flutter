@@ -92,7 +92,7 @@ This is useful when a dropdown loads dynamic options from `httpData` but still n
     "use_form_data": false
   },
   "optionKey": "id",
-  "optionLabel": "{{ item.created_at ? ('History - ' + item.created_at) : item.id }}",
+  "optionLabel": "History - {{formatDate(new Date(item.created_at), 'dd/MM/yyyy HH:mm')}}",
   "initialValue": ""
 }
 ```

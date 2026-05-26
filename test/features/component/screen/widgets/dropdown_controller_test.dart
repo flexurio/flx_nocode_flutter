@@ -131,7 +131,8 @@ void main() {
           },
         ),
         optionKey: 'id',
-        optionLabel: 'History - {{item.created_at}}',
+        optionLabel:
+            "History - {{formatDate(new Date(item.created_at), 'dd/MM/yyyy HH:mm')}}",
         initialValue: '',
       );
 
@@ -142,8 +143,12 @@ void main() {
       expect(controller.options, hasLength(3));
       expect(controller.options[0]['key'], '');
       expect(controller.options[0]['label'], 'Versi Terakhir (Latest)');
+      final firstHistoryDate = DateTime.parse('2026-05-22T08:00:16Z').toUtc();
+      final expectedFirstHistoryLabel =
+          'History - ${_pad(firstHistoryDate.day)}/${_pad(firstHistoryDate.month)}/${firstHistoryDate.year} ${_pad(firstHistoryDate.hour)}:${_pad(firstHistoryDate.minute)}';
+
       expect(controller.options[1]['key'], 'history-1');
-      expect(controller.options[1]['label'], 'History - 2026-05-22T08:00:16Z');
+      expect(controller.options[1]['label'], expectedFirstHistoryLabel);
       expect(controller.options[2]['key'], 'history-2');
       expect(controller.selectedValue.value, isNull);
     });
@@ -295,3 +300,5 @@ void main() {
     });
   });
 }
+
+String _pad(int value) => value < 10 ? '0$value' : '$value';
