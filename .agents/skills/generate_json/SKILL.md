@@ -1,3 +1,9 @@
+---
+name: generate_json
+description: Generates and edits entity JSON configuration files for the no-code Flutter framework in this project. Use when the user asks to create a new entity configuration, add/update fields, or configure backend CRUD API endpoints, forms, and layout tables.
+version: 1.0.0
+---
+
 # Agent Skill: generate_json
 
 This skill allows the agent to generate and edit entity JSON configuration files for the no-code Flutter framework in this project.
@@ -52,3 +58,11 @@ Construct the main editing/creation form. Group fields inside layout columns or 
 
 ### Step 6: Validate and Output
 Perform a mental walk-through of the JSON object. Check for trailing commas, brackets, and key structures. Finally, write the file using the appropriate file modification tools to `asset/configuration/entity/<entity_id>.json`.
+
+---
+
+## 4. Examples & Templates
+To ensure consistency and speed up development, refer to:
+*   **Skeleton Template**: Use [entity_template.json](file:///Users/suhal/Documents/Development/projects/vneu/flx_studio/packages/flx_nocode_flutter/.agents/skills/generate_json/resources/entity_template.json) as a starting boilerplate.
+*   **Reference Implementation**: See [bank_example.json](file:///Users/suhal/Documents/Development/projects/vneu/flx_studio/packages/flx_nocode_flutter/.agents/skills/generate_json/examples/bank_example.json) for a fully featured working configuration.
+

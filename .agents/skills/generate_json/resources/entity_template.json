@@ -1,0 +1,61 @@
+{
+  "id": "${entity_id}",
+  "label": "${entity_label}",
+  "description": "${entity_description}",
+  "fields": [
+    {
+      "label": "ID",
+      "reference": "id",
+      "type": "number",
+      "auto_generated": true
+    },
+    {
+      "label": "Name",
+      "reference": "name",
+      "type": "text",
+      "required": true,
+      "allow_create": true,
+      "allow_update": true
+    }
+  ],
+  "layout_table": {
+    "id": 4,
+    "name": 20
+  },
+  "backend": {
+    "read_all": {
+      "method": "GET",
+      "url": "{backend_host}/${entity_id}"
+    },
+    "read": {
+      "method": "GET",
+      "url": "{backend_host}/${entity_id}/{id}"
+    },
+    "create": {
+      "method": "POST",
+      "url": "{backend_host}/${entity_id}"
+    },
+    "update": {
+      "method": "PUT",
+      "url": "{backend_host}/${entity_id}/{id}"
+    },
+    "delete": {
+      "method": "DELETE",
+      "url": "{backend_host}/${entity_id}/{id}"
+    }
+  },
+  "layout_form": [
+    {
+      "id": "${entity_id}_form",
+      "label": "${entity_label} Information",
+      "components": [
+        {
+          "id": "name",
+          "type": "text_field",
+          "label": "Name",
+          "required": true
+        }
+      ]
+    }
+  ]
+}
