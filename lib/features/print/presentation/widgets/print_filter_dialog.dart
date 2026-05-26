@@ -114,7 +114,7 @@ class _PrintFilterDialogState extends State<PrintFilterDialog> {
         child: CardForm(
           popup: true,
           title: widget.printName,
-          icon: FontAwesomeIcons.calendar,
+          icon: Icons.calendar_month,
           actions: [
             Button.action(
               permission: null,
