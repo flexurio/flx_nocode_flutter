@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_action.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_dropdown.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_dropdown_controller.dart';
@@ -53,6 +54,98 @@ void main() {
       expect(targetCtrl.text, 'B');
 
       disposeJsRuntime();
+    });
+
+    testWidgets('Should load object options with explicit key and label',
+        (tester) async {
+      component = ComponentDropdown(
+        id: 'test_dropdown',
+        label: 'Test Dropdown',
+        options: [
+          {'key': '', 'label': 'Versi Terakhir (Latest)'},
+          {'key': 'history-1', 'label': 'History - 1'},
+        ],
+        initialValue: 'history-1',
+      );
+
+      final controller =
+          ComponentDropdownController(component: component, data: data);
+      controller.onInit();
+
+      expect(controller.options, hasLength(2));
+      expect(controller.options[0]['key'], '');
+      expect(controller.options[0]['label'], 'Versi Terakhir (Latest)');
+      expect(controller.selectedValue.value, 'history-1');
+      expect(controller.displayedValue.value?['label'], 'History - 1');
+
+      await tester.pump();
+      await tester.pump(Duration.zero);
+      expect(targetCtrl.text, 'history-1');
+    });
+
+    testWidgets('Should clear selection when object option key is empty',
+        (tester) async {
+      component = ComponentDropdown(
+        id: 'test_dropdown',
+        label: 'Test Dropdown',
+        options: [
+          {'key': '', 'label': 'Versi Terakhir (Latest)'},
+          {'key': 'history-1', 'label': 'History - 1'},
+        ],
+        initialValue: 'history-1',
+      );
+
+      final controller =
+          ComponentDropdownController(component: component, data: data);
+      controller.onInit();
+      controller.onSelectionChanged(controller.options.first);
+
+      expect(controller.selectedValue.value, '');
+      expect(
+          controller.displayedValue.value?['label'], 'Versi Terakhir (Latest)');
+
+      await tester.pump();
+      await tester.pump(Duration.zero);
+      expect(targetCtrl.text, '');
+    });
+
+    testWidgets('Should prepend object options to dynamic http options',
+        (tester) async {
+      component = ComponentDropdown(
+        id: 'test_dropdown',
+        label: 'Test Dropdown',
+        options: [
+          {'key': '', 'label': 'Versi Terakhir (Latest)'},
+        ],
+        httpData: HttpData(
+          method: 'GET',
+          url: 'https://example.com/histories',
+          headers: const {},
+          body: const {},
+          mockEnabled: true,
+          mockData: {
+            'data': [
+              {'id': 'history-1', 'created_at': '2026-05-22T08:00:16Z'},
+              {'id': 'history-2', 'created_at': '2026-05-21T08:00:16Z'},
+            ],
+          },
+        ),
+        optionKey: 'id',
+        optionLabel: 'History - {{item.created_at}}',
+        initialValue: '',
+      );
+
+      final controller =
+          ComponentDropdownController(component: component, data: data);
+      await controller.fetchOptions();
+
+      expect(controller.options, hasLength(3));
+      expect(controller.options[0]['key'], '');
+      expect(controller.options[0]['label'], 'Versi Terakhir (Latest)');
+      expect(controller.options[1]['key'], 'history-1');
+      expect(controller.options[1]['label'], 'History - 2026-05-22T08:00:16Z');
+      expect(controller.options[2]['key'], 'history-2');
+      expect(controller.selectedValue.value, isNull);
     });
 
     testWidgets('Should interpolate initial value from data template',

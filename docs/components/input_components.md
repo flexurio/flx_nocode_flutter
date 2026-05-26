@@ -64,3 +64,46 @@ A selectable list of options.
 
 > **Note on Option Resolution:**
 > `optionKey` and `optionLabel` are "smart". They first try to find a matching field in the data object (including nested fields like `user.name`). If no matching field is found, they fall back to evaluating the string as a JavaScript template if it contains `{{ ... }}`.
+
+#### Static Options with Explicit Key and Label
+
+Static dropdown options can be declared as objects when the stored value and displayed text need to differ.
+
+This is useful when a dropdown loads dynamic options from `httpData` but still needs one local option, such as returning to the current/latest record after viewing history:
+
+```json
+{
+  "id": "history_selector",
+  "type": "dropdown",
+  "label": "Lihat Riwayat",
+  "options": [
+    {
+      "key": "",
+      "label": "Versi Terakhir (Latest)"
+    }
+  ],
+  "httpData": {
+    "method": "GET",
+    "url": "https://example.com/header_histories?id.eq={{data.id}}",
+    "headers": {
+      "Authorization": "Bearer {{auth_token}}"
+    },
+    "body": {},
+    "use_form_data": false
+  },
+  "optionKey": "id",
+  "optionLabel": "{{ item.created_at ? ('History - ' + item.created_at) : item.id }}",
+  "initialValue": ""
+}
+```
+
+In this example, selecting `Versi Terakhir (Latest)` sets the dropdown value to an empty string. That empty value can be used in `visibilityCondition` or interpolation logic to switch the page back to editable latest-data mode:
+
+```json
+{
+  "id": "btn_edit",
+  "type": "icon_button",
+  "visibilityCondition": "form.history_selector == null || form.history_selector == ''",
+  "icon": "Edit"
+}
+```

@@ -4,7 +4,8 @@ import 'package:flx_nocode_flutter/features/component/models/component_size_mode
 
 void main() {
   group('ComponentMultiDropdown Model Tests', () {
-    test('ComponentMultiDropdown.fromMap parses basic properties correctly', () {
+    test('ComponentMultiDropdown.fromMap parses basic properties correctly',
+        () {
       final map = {
         'id': 'test_dropdown',
         'type': 'dropdown_multi_value',
@@ -23,7 +24,30 @@ void main() {
       expect(component.required, true);
     });
 
-    test('ComponentMultiDropdown.fromMap handles initialValue as comma-separated string', () {
+    test('ComponentMultiDropdown.fromMap preserves object options', () {
+      final map = {
+        'id': 'test_dropdown',
+        'type': 'dropdown_multi_value',
+        'label': 'Test Multi Dropdown',
+        'options': [
+          {'key': '', 'label': 'Versi Terakhir (Latest)'},
+          {'key': 'A', 'label': 'Option A'},
+        ],
+      };
+
+      final component = ComponentMultiDropdown.fromMap(map);
+
+      expect(component.options, hasLength(2));
+      expect(component.options[0], isA<Map<String, dynamic>>());
+      expect(component.options[0]['key'], '');
+      expect(component.options[0]['label'], 'Versi Terakhir (Latest)');
+      expect(component.options[1]['key'], 'A');
+      expect(component.options[1]['label'], 'Option A');
+    });
+
+    test(
+        'ComponentMultiDropdown.fromMap handles initialValue as comma-separated string',
+        () {
       final map = {
         'id': 'test_dropdown',
         'type': 'dropdown_multi_value',

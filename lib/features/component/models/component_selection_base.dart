@@ -4,7 +4,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_input_bas
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 abstract class ComponentSelectionBase extends ComponentInputBase {
-  final List<String> options;
+  final List<dynamic> options;
   final HttpData? httpData;
   final String? optionKey;
   final String? optionLabel;

@@ -48,25 +48,34 @@ class ComponentMultiDropdown extends ComponentSelectionBase {
       throw const FormatException('Component "id" is required');
     }
     final label = map['label']?.toString().trim() ?? 'Multi Dropdown';
-    
+
     final rawInitialValues = map['initialValues'] ?? map['initialValue'];
     final initialValues = <String>[];
     if (rawInitialValues is List) {
       initialValues.addAll(rawInitialValues.map((e) => e.toString().trim()));
-    } else if (rawInitialValues != null && rawInitialValues.toString().isNotEmpty) {
+    } else if (rawInitialValues != null &&
+        rawInitialValues.toString().isNotEmpty) {
       // Handle comma separated string if any
       initialValues.addAll(
-        rawInitialValues.toString().split(',').map((e) => e.trim()).where((e) => e.isNotEmpty),
+        rawInitialValues
+            .toString()
+            .split(',')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty),
       );
     }
 
     final rawOptions = map['options'];
-    final options = <String>[];
+    final options = <dynamic>[];
     if (rawOptions is List) {
       for (final o in rawOptions) {
         if (o == null) continue;
-        final value = o.toString().trim();
-        options.add(value);
+        if (o is Map) {
+          options.add(Map<String, dynamic>.from(o));
+        } else {
+          final value = o.toString().trim();
+          options.add(value);
+        }
       }
     }
     if (options.isEmpty) {

@@ -50,12 +50,16 @@ class ComponentDropdown extends ComponentSelectionBase {
     final label = map['label']?.toString().trim() ?? 'Dropdown';
     final initialValue = map['initialValue']?.toString().trim() ?? '';
     final rawOptions = map['options'];
-    final options = <String>[];
+    final options = <dynamic>[];
     if (rawOptions is List) {
       for (final o in rawOptions) {
         if (o == null) continue;
-        final value = o.toString().trim();
-        options.add(value);
+        if (o is Map) {
+          options.add(Map<String, dynamic>.from(o));
+        } else {
+          final value = o.toString().trim();
+          options.add(value);
+        }
       }
     }
     if (options.isEmpty) {

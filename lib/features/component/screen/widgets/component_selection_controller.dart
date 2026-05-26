@@ -7,7 +7,8 @@ import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_action.dart';
 
-abstract class ComponentSelectionController<T extends ComponentSelectionBase> extends GetxController {
+abstract class ComponentSelectionController<T extends ComponentSelectionBase>
+    extends GetxController {
   final T component;
   JsonMap data;
 
@@ -92,7 +93,8 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase> ex
   }
 
   void onDependencyChanged() {
-    debugPrint('[Nocode Selection] onDependencyChanged called for ${component.id}. Parent controllers state: ${allControllers.map((key, value) => MapEntry(key, value.text))}');
+    debugPrint(
+        '[Nocode Selection] onDependencyChanged called for ${component.id}. Parent controllers state: ${allControllers.map((key, value) => MapEntry(key, value.text))}');
     resetSelection();
     updateTargetController('');
     if (component.httpData != null && component.httpData!.url.isNotEmpty) {
@@ -106,8 +108,7 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase> ex
     final staticOptions = component.options.isNotEmpty
         ? component.options
         : ['Option 1', 'Option 2'];
-    options.value =
-        staticOptions.map((opt) => {'key': opt, 'label': opt}).toList();
+    options.value = staticOptions.map(_mapStaticOption).toList();
 
     setInitialValue();
   }
@@ -124,8 +125,14 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase> ex
 
       if (result.isSuccess && result.data is Map) {
         final list = (result.data as Map)['data'] as List;
-        options.value =
-            list.map((item) => mapItemToOption(item, requestData)).toList();
+        final staticOptions = component.options
+            .where((option) =>
+                option is Map || (option is String && option.contains('|')))
+            .map(_mapStaticOption);
+        options.value = [
+          ...staticOptions,
+          ...list.map((item) => mapItemToOption(item, requestData)),
+        ];
         setInitialValue();
       } else {
         error.value = 'Invalid data format';
@@ -135,6 +142,27 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase> ex
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Map<String, dynamic> _mapStaticOption(dynamic option) {
+    if (option is Map) {
+      final item = Map<String, dynamic>.from(option);
+      final key = (item['key'] ?? item['value'] ?? item['id'] ?? '').toString();
+      final label = (item['label'] ?? item['text'] ?? key).toString();
+      return {'key': key, 'label': label, 'item': item};
+    }
+
+    final optionText = option.toString();
+    // Backward-compatible parser for the legacy key|label shorthand.
+    final separatorIndex = optionText.indexOf('|');
+    if (separatorIndex == -1) {
+      return {'key': optionText, 'label': optionText, 'item': optionText};
+    }
+
+    final key = optionText.substring(0, separatorIndex);
+    final label = optionText.substring(separatorIndex + 1);
+    final item = {'id': key, 'label': label};
+    return {'key': key, 'label': label, 'item': item};
   }
 
   JsonMap prepareRequestData() {
@@ -183,7 +211,8 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase> ex
       requestData['data'] = controllerValues;
     }
 
-    debugPrint('[Nocode Selection] prepareRequestData for ${component.id}. form.account_bank_nip = ${requestData['form']?['account_bank_nip']}. Interpolated URL: ${component.httpData?.url.interpolateJavascript(requestData)}');
+    debugPrint(
+        '[Nocode Selection] prepareRequestData for ${component.id}. form.account_bank_nip = ${requestData['form']?['account_bank_nip']}. Interpolated URL: ${component.httpData?.url.interpolateJavascript(requestData)}');
     return requestData;
   }
 
@@ -293,7 +322,8 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase> ex
     };
   }
 
-  void handleSetValueAction(ComponentAction action, Map<String, dynamic> context) {
+  void handleSetValueAction(
+      ComponentAction action, Map<String, dynamic> context) {
     final targetId = action.targetId;
     final targetCtrl = allControllers[targetId];
     if (targetCtrl != null) {
@@ -303,7 +333,8 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase> ex
     }
   }
 
-  void handleUpdateRowAction(ComponentAction action, Map<String, dynamic> context, Map<String, dynamic> selection) {
+  void handleUpdateRowAction(ComponentAction action,
+      Map<String, dynamic> context, Map<String, dynamic> selection) {
     final onRowChanged = data['onRowChanged'];
     if (onRowChanged is! Function) return;
     final row = Map<String, dynamic>.from(data['row'] as Map? ?? {});

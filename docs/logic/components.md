@@ -69,9 +69,9 @@ Numeric input with specific keyboard and formatting.
 ### `dropdown`
 Selection from a list of options.
 - `label`: Display label.
-- `options`: Array of strings or objects.
+- `options`: Array of strings or objects. Use object options such as `{ "key": "", "label": "Versi Terakhir (Latest)" }` when the stored value and display text must differ.
 - `initialValue`: Selected key.
-- `httpData`: Optional dynamic data source.
+- `httpData`: Optional dynamic data source. Static object options are prepended to dynamic API options.
 
 ### `date_picker` & `time_field`
 Specialized inputs for dates and times.
