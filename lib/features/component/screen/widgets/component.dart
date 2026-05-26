@@ -8,6 +8,7 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_d
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_field_display.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_radio.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_list_view.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_text_field.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_text.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_number_field.dart';
@@ -24,8 +25,6 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_b
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_file_picker.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_form.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_multi_dropdown.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_multi_dropdown.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_conditional.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_conditional.dart';
 
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
@@ -55,6 +54,8 @@ extension ComponentWidget on Component {
       return (this as ComponentText).toWidget(fullData);
     } else if (this.type == ComponentTable.componentId) {
       return (this as ComponentTable).toWidget(fullData);
+    } else if (this.type == ComponentListView.componentId) {
+      return (this as ComponentListView).toWidget(fullData);
     } else if (this.type == ComponentFieldDisplay.componentId) {
       return (this as ComponentFieldDisplay).toWidget(fullData);
     } else if (this.type == ComponentRow.componentId) {
@@ -70,7 +71,8 @@ extension ComponentWidget on Component {
     } else if (this.type == ComponentDropdown.componentId) {
       return (this as ComponentDropdown).toWidget(fullData, isSmall: isSmall);
     } else if (this.type == ComponentMultiDropdown.componentId) {
-      return (this as ComponentMultiDropdown).toWidget(fullData, isSmall: isSmall);
+      return (this as ComponentMultiDropdown)
+          .toWidget(fullData, isSmall: isSmall);
     } else if (this.type == ComponentRadio.componentId) {
       return (this as ComponentRadio).toWidget(fullData);
     } else if (this.type == ComponentButton.componentId) {
@@ -100,7 +102,8 @@ extension ComponentWidget on Component {
     } else if (this.type == ComponentForm.componentId) {
       return (this as ComponentForm).toWidget(fullData);
     } else if (this.type == ComponentConditional.componentId) {
-      return (this as ComponentConditional).toWidget(fullData, isSmall: isSmall);
+      return (this as ComponentConditional)
+          .toWidget(fullData, isSmall: isSmall);
     }
 
     return NoCodeError('Unknown component type: ${this.type}');
@@ -111,6 +114,8 @@ extension ComponentWidget on Component {
       return (this as ComponentText).toMockWidget();
     } else if (this.type == ComponentTable.componentId) {
       return (this as ComponentTable).toMockWidget();
+    } else if (this.type == ComponentListView.componentId) {
+      return (this as ComponentListView).toMockWidget();
     } else if (this.type == ComponentFieldDisplay.componentId) {
       return (this as ComponentFieldDisplay).toMockWidget();
     } else if (this.type == ComponentRow.componentId) {

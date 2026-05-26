@@ -7,6 +7,7 @@ export 'package:flx_nocode_flutter/features/component/models/component_dropdown.
 export 'package:flx_nocode_flutter/features/component/models/component_field_display.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_radio.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_table.dart';
+export 'package:flx_nocode_flutter/features/component/models/component_list_view.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_text.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_button.dart';
@@ -35,6 +36,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_dropdown.
 import 'package:flx_nocode_flutter/features/component/models/component_field_display.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_radio.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_list_view.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_text.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_button.dart';
@@ -86,6 +88,8 @@ class Component {
     switch (type) {
       case ComponentType.table:
         return ComponentTable.fromMap(map);
+      case ComponentType.listView:
+        return ComponentListView.fromMap(map);
       case ComponentType.text:
         return ComponentText.fromMap(map);
       case ComponentType.textField:
@@ -153,6 +157,8 @@ class Component {
     switch (type) {
       case ComponentType.table:
         return ComponentTable.empty(Component._generateId(type));
+      case ComponentType.listView:
+        return ComponentListView.empty(Component._generateId(type));
       case ComponentType.text:
         return ComponentText.empty(Component._generateId(type));
       case ComponentType.textField:
@@ -292,6 +298,7 @@ class Component {
 
 class ComponentType {
   static const String table = 'table';
+  static const String listView = 'list_view';
   static const String text = 'text';
   static const String textField = 'text_field';
   static const String datePicker = 'date_picker';
@@ -319,6 +326,7 @@ class ComponentType {
 
   static const List<ComponentTypeEntry> values = [
     ComponentTypeEntry(id: table, label: 'Table'),
+    ComponentTypeEntry(id: listView, label: 'List View'),
     ComponentTypeEntry(id: text, label: 'Text'),
     ComponentTypeEntry(id: textField, label: 'Text Field'),
     ComponentTypeEntry(id: datePicker, label: 'Date Picker'),

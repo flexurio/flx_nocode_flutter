@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_container.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
@@ -19,12 +20,12 @@ extension ComponentContainerWidgets on ComponentContainer {
 
   Widget _buildContainer({required Widget child}) {
     double? effectiveWidth = width;
-    if (widthMode == 'fill') effectiveWidth = double.infinity;
-    if (widthMode == 'hug') effectiveWidth = null;
+    if (widthMode == ComponentSizeMode.fill) effectiveWidth = double.infinity;
+    if (widthMode == ComponentSizeMode.hug) effectiveWidth = null;
 
     double? effectiveHeight = height;
-    if (heightMode == 'fill') effectiveHeight = double.infinity;
-    if (heightMode == 'hug') effectiveHeight = null;
+    if (heightMode == ComponentSizeMode.fill) effectiveHeight = double.infinity;
+    if (heightMode == ComponentSizeMode.hug) effectiveHeight = null;
 
     return Container(
       width: effectiveWidth,
