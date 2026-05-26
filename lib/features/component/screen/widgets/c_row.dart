@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:gap/gap.dart';
@@ -14,7 +14,12 @@ extension ComponentRowWidgets on ComponentRow {
     final childData = Map<String, dynamic>.from(data);
     childData.remove('controller');
 
-    final widgets = children
+    final visibleChildren = children
+        .where((child) =>
+            child.visibilityCondition?.evaluateVisibility(childData) ?? true)
+        .toList(growable: false);
+
+    final widgets = visibleChildren
         .map((child) => child.toWidget(data: childData))
         .toList(growable: false);
 
@@ -26,7 +31,7 @@ extension ComponentRowWidgets on ComponentRow {
 
     final List<Widget> rowChildren = [];
     for (int i = 0; i < widgets.length; i++) {
-      final child = children[i];
+      final child = visibleChildren[i];
       Widget rowChild = widgets[i];
 
       ComponentSizeMode? childWidthMode;
