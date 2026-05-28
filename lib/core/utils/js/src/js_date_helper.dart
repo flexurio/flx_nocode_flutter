@@ -49,6 +49,8 @@ class JsDateHelper {
     String res = format;
     res = res.replaceAll('yyyy', dt.year.toString());
     res = res.replaceAll('YYYY', dt.year.toString());
+    res = res.replaceAll('yy', (dt.year % 100).toString().padLeft(2, '0'));
+    res = res.replaceAll('YY', (dt.year % 100).toString().padLeft(2, '0'));
     res = res.replaceAll('MMMM', months[dt.month - 1]);
     res = res.replaceAll('MMM', monthsShort[dt.month - 1]);
     res = res.replaceAll('MM', dt.month.toString().padLeft(2, '0'));

@@ -43,6 +43,8 @@ class JsDateHelpers implements JsHelperProvider {
         '    return f'
         '      .replace("yyyy",date.getFullYear())'
         '      .replace("YYYY",date.getFullYear())'
+        '      .replace("yy",pad(date.getFullYear()%100))'
+        '      .replace("YY",pad(date.getFullYear()%100))'
         '      .replace("MMMM",MONTH_NAMES[date.getMonth()])'
         '      .replace("MMM",MONTH_NAMES_SHORT[date.getMonth()])'
         '      .replace("MM",pad(date.getMonth()+1))'

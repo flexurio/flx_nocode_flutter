@@ -197,6 +197,12 @@ void main() {
         expect('{{ endOfMonth(my_date) }}'.interpolateJavascript(variables),
             '2025-05-31');
       });
+
+      test('formatDate should support yyMM format for 2-digit years', () {
+        final variables = {'my_date': '2026-05-15'};
+        expect('{{ formatDate(new Date(my_date), "yyMM") }}'.interpolateJavascript(variables),
+            '2605');
+      });
     });
   });
 }
