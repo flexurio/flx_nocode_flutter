@@ -50,7 +50,7 @@ IconData _parseIcon(String input) {
     case 'add':
       return Icons.add;
     case 'edit':
-      return Icons.edit;
+      return Icons.edit_outlined;
     case 'delete':
       return Icons.delete;
     case 'close':
@@ -76,7 +76,12 @@ IconData _parseIcon(String input) {
     case 'info':
       return Icons.info;
     case 'help':
-      return Icons.help;
+      return Icons.help_outline;
+    case 'list':
+      return Icons.notes_rounded;
+    case 'visibility':
+    case 'view':
+      return Icons.visibility_outlined;
     case 'more_vert':
       return Icons.more_vert;
     case 'more_horiz':
@@ -92,23 +97,24 @@ extension ComponentIconButtonWidgets on ComponentIconButton {
     final iconData = _parseIcon(this.icon);
 
     // Map size string to concrete values
-    final double iconSize;
+    final double defaultIconSize;
     final double buttonSize;
     switch (size) {
       case 'small':
-        iconSize = 18;
-        buttonSize = 32;
+        defaultIconSize = 18;
+        buttonSize = 36;
         break;
       case 'large':
-        iconSize = 32;
-        buttonSize = 56;
+        defaultIconSize = 24;
+        buttonSize = 52;
         break;
       case 'medium':
       default:
-        iconSize = 24;
-        buttonSize = 48;
+        defaultIconSize = 20;
+        buttonSize = 44;
         break;
     }
+    final iconSize = this.iconSize ?? defaultIconSize;
 
     ButtonStyle? style;
 
@@ -118,18 +124,40 @@ extension ComponentIconButtonWidgets on ComponentIconButton {
         style = IconButton.styleFrom(
           backgroundColor: color,
           foregroundColor: Colors.white,
-          hoverColor: color.withValues(alpha: 0.8),
+          hoverColor: color.withValues(alpha: 0.9),
           minimumSize: Size(buttonSize, buttonSize),
+          fixedSize: Size(buttonSize, buttonSize),
           padding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        );
+        break;
+      case 'soft':
+        style = IconButton.styleFrom(
+          backgroundColor: color.withValues(alpha: 0.1),
+          foregroundColor: color,
+          hoverColor: color.withValues(alpha: 0.16),
+          minimumSize: Size(buttonSize, buttonSize),
+          fixedSize: Size(buttonSize, buttonSize),
+          padding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         );
         break;
       case 'outlined':
         style = IconButton.styleFrom(
           backgroundColor: Colors.transparent, // transparent
           foregroundColor: color,
-          side: BorderSide(color: color),
+          hoverColor: color.withValues(alpha: 0.08),
+          side: BorderSide(color: color.withValues(alpha: 0.28)),
           minimumSize: Size(buttonSize, buttonSize),
+          fixedSize: Size(buttonSize, buttonSize),
           padding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         );
         break;
       case 'ghost':
@@ -137,8 +165,13 @@ extension ComponentIconButtonWidgets on ComponentIconButton {
         style = IconButton.styleFrom(
           backgroundColor: Colors.transparent,
           foregroundColor: color,
+          hoverColor: color.withValues(alpha: 0.08),
           minimumSize: Size(buttonSize, buttonSize),
+          fixedSize: Size(buttonSize, buttonSize),
           padding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         );
         break;
     }
@@ -177,23 +210,24 @@ extension ComponentIconButtonWidgets on ComponentIconButton {
     final color = _parseColor(this.color);
     final iconData = _parseIcon(this.icon);
 
-    final double iconSize;
+    final double defaultIconSize;
     final double buttonSize;
     switch (size) {
       case 'small':
-        iconSize = 18;
-        buttonSize = 32;
+        defaultIconSize = 18;
+        buttonSize = 36;
         break;
       case 'large':
-        iconSize = 32;
-        buttonSize = 56;
+        defaultIconSize = 24;
+        buttonSize = 52;
         break;
       case 'medium':
       default:
-        iconSize = 24;
-        buttonSize = 48;
+        defaultIconSize = 20;
+        buttonSize = 44;
         break;
     }
+    final iconSize = this.iconSize ?? defaultIconSize;
 
     // Creating a mock look
     BoxDecoration decoration;
@@ -203,22 +237,29 @@ extension ComponentIconButtonWidgets on ComponentIconButton {
       case 'filled':
         decoration = BoxDecoration(
           color: color,
-          shape: BoxShape.circle,
+          borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
-              color: color.withValues(alpha: 0.2),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
+              color: color.withValues(alpha: 0.18),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
             ),
           ],
         );
         iconColor = Colors.white;
         break;
+      case 'soft':
+        decoration = BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(14),
+        );
+        iconColor = color;
+        break;
       case 'outlined':
         decoration = BoxDecoration(
           color: Colors.transparent,
-          shape: BoxShape.circle,
-          border: Border.all(color: color),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: color.withValues(alpha: 0.28)),
         );
         iconColor = color;
         break;
@@ -226,7 +267,7 @@ extension ComponentIconButtonWidgets on ComponentIconButton {
       default:
         decoration = const BoxDecoration(
           color: Colors.transparent,
-          shape: BoxShape.circle,
+          borderRadius: BorderRadius.all(Radius.circular(14)),
         );
         iconColor = color;
         break;
