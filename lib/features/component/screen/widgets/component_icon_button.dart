@@ -45,6 +45,17 @@ Color _parseColor(String input, [Color? fallback]) {
   return fb;
 }
 
+String _defaultTooltip(String input) {
+  final words = input
+      .trim()
+      .replaceAll(RegExp(r'[_-]+'), ' ')
+      .split(RegExp(r'\s+'))
+      .where((word) => word.isNotEmpty);
+  return words
+      .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')
+      .join(' ');
+}
+
 IconData _parseIcon(String input) {
   switch (input.trim().toLowerCase()) {
     case 'add':
@@ -177,30 +188,67 @@ extension ComponentIconButtonWidgets on ComponentIconButton {
     }
 
     return Builder(builder: (context) {
+      final theme = Theme.of(context);
+      final tooltipText = (tooltip?.trim().isNotEmpty ?? false)
+          ? tooltip!.trim()
+          : _defaultTooltip(icon);
+
       return SizedBox(
         width: buttonSize,
         height: buttonSize,
-        child: IconButton(
-          icon: Icon(iconData, size: iconSize),
-          style: style,
-          onPressed: () {
-            if (onClick != null) {
-              final entity = data['entity'];
-              if (entity is EntityCustom) {
-                onClick!.executeSingle(
-                  entity: entity,
-                  context: context,
-                  data: data,
-                  parentData: (data['parentData'] as List?)
-                          ?.cast<Map<String, dynamic>>() ??
-                      [],
-                );
-              } else {
-                print('[ComponentIconButton] Entity not found or invalid type');
+        child: Tooltip(
+          message: tooltipText,
+          waitDuration: const Duration(milliseconds: 350),
+          showDuration: const Duration(milliseconds: 1800),
+          preferBelow: true,
+          verticalOffset: 12,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          textStyle: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w600,
+              ) ??
+              TextStyle(
+                color: theme.colorScheme.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: color.withValues(alpha: 0.18),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.12),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: Icon(iconData, size: iconSize),
+            style: style,
+            onPressed: () {
+              if (onClick != null) {
+                final entity = data['entity'];
+                if (entity is EntityCustom) {
+                  onClick!.executeSingle(
+                    entity: entity,
+                    context: context,
+                    data: data,
+                    parentData: (data['parentData'] as List?)
+                            ?.cast<Map<String, dynamic>>() ??
+                        [],
+                  );
+                } else {
+                  print(
+                    '[ComponentIconButton] Entity not found or invalid type',
+                  );
+                }
               }
-            }
-          },
-          tooltip: icon, // Simple tooltip
+            },
+          ),
         ),
       );
     });

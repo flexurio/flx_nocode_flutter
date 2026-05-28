@@ -5,6 +5,7 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 class ComponentIconButton extends Component {
   final String icon;
   final double? iconSize;
+  final String? tooltip;
   final String color; // hex string or semantic name
   final String variant; // filled, outlined, ghost, soft
   final String size; // small, medium, large
@@ -14,6 +15,7 @@ class ComponentIconButton extends Component {
     required super.id,
     this.icon = 'add',
     this.iconSize,
+    this.tooltip,
     required this.color,
     this.variant = 'filled',
     this.size = 'medium',
@@ -43,6 +45,7 @@ class ComponentIconButton extends Component {
     final iconSize = double.tryParse(
       (map['icon_size'] ?? map['iconSize'] ?? '').toString(),
     );
+    final tooltip = map['tooltip']?.toString().trim();
     final color = map['color']?.toString().trim() ?? '#2196F3';
     final variant = map['variant']?.toString().trim() ?? 'filled';
     final size = map['size']?.toString().trim() ?? 'medium';
@@ -57,6 +60,7 @@ class ComponentIconButton extends Component {
       id: id,
       icon: icon,
       iconSize: iconSize,
+      tooltip: tooltip?.isEmpty == true ? null : tooltip,
       color: color,
       variant: variant,
       size: size,
@@ -72,6 +76,7 @@ class ComponentIconButton extends Component {
         'type': type,
         'icon': icon,
         if (iconSize != null) 'icon_size': iconSize,
+        if (tooltip != null) 'tooltip': tooltip,
         'color': color,
         'variant': variant,
         'size': size,
