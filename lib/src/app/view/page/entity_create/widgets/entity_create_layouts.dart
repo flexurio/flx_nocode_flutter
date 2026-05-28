@@ -73,6 +73,7 @@ class EntityCreatePanelLayout extends StatelessWidget {
         action: action,
         suffixText: suffixText,
         entity: coreEntity,
+        titlePage: title,
         actions: [submitButton],
         children: [form],
       ),
