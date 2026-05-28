@@ -56,6 +56,7 @@ extension ComponentButtonWidgets on ComponentButton {
           if (onClick != null) {
             final entity = data['entity'];
             if (entity is EntityCustom) {
+              final onSuccessCallback = data['_on_success_callback'];
               onClick!.executeSingle(
                 entity: entity,
                 context: context,
@@ -63,6 +64,9 @@ extension ComponentButtonWidgets on ComponentButton {
                 parentData: (data['parentData'] as List?)
                         ?.cast<Map<String, dynamic>>() ??
                     [],
+                onSuccessCallback: onSuccessCallback is VoidCallback
+                    ? onSuccessCallback
+                    : null,
               );
             }
           }

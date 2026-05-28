@@ -170,6 +170,7 @@ class _ComponentListViewWidgetState extends State<_ComponentListViewWidget> {
           'row': row,
           'data': row,
           'index': index,
+          '_on_success_callback': controller.loadData,
         };
 
         return widget.component.item?.toWidget(data: rowData) ??
