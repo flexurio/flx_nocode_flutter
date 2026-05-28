@@ -10,6 +10,7 @@
 | --- | --- | --- | --- |
 | `id` | String | Yes | Unique identifier (e.g., `create`, `update`, `view`). See [Form Roles](#2-form-roles). |
 | `label` | String | Yes | Title displayed at the top of the form or modal. |
+| `title` | String | No | Explicit page title. If omitted, submit forms use the entity title without a `submit` prefix. |
 | `components` | Array | No* | List of [UI Components](./components.md) to render. *Required if `multi_forms` is not used. |
 | `multi_forms` | Array | No | List of `LayoutForm` objects for [Multi-Step Wizards](#3-multi-step-forms). |
 | `visible_if` | Object | No | A [Rule](./actions.md#4-rule-based-visibility) determining when this form is available. |

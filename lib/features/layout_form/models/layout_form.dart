@@ -17,6 +17,7 @@ JsonMap _coerceJsonMap(dynamic v) {
 class LayoutForm extends HiveObject {
   final String id;
   final String label;
+  final String? title;
   final Rule? visibleIf;
   final List<Component> components;
   final List<ButtonAction> buttons;
@@ -62,6 +63,7 @@ class LayoutForm extends HiveObject {
   LayoutForm.empty()
       : id = '',
         label = '',
+        title = null,
         visibleIf = null,
         components = const [],
         buttons = const [],
@@ -72,6 +74,7 @@ class LayoutForm extends HiveObject {
   LayoutForm({
     required this.id,
     required this.label,
+    this.title,
     this.visibleIf,
     required this.components,
     List<ButtonAction>? buttons,
@@ -193,6 +196,7 @@ class LayoutForm extends HiveObject {
       id: id,
       components: components ?? const [],
       label: map['label'].toString().trim(),
+      title: map['title']?.toString().trim(),
       visibleIf: map['visible_if'] == null
           ? null
           : Rule.fromMap(_coerceJsonMap(map['visible_if'])),
@@ -207,6 +211,7 @@ class LayoutForm extends HiveObject {
     final m = <String, dynamic>{
       'id': id,
       'label': label,
+      if (title != null && title!.isNotEmpty) 'title': title,
       'components': components.map((e) => e.toMap()).toList(growable: false),
     };
 
@@ -240,6 +245,7 @@ class LayoutForm extends HiveObject {
   LayoutForm copyWith({
     String? id,
     String? label,
+    String? title,
     Rule? visibleIf,
     List<ButtonAction>? buttons,
     List<Component>? components,
@@ -251,6 +257,7 @@ class LayoutForm extends HiveObject {
       id: id ?? this.id,
       components: components ?? this.components,
       label: label ?? this.label,
+      title: title ?? this.title,
       visibleIf: visibleIf ?? this.visibleIf,
       buttons: buttons ?? this.buttons,
       multiForms: multiForms ?? this.multiForms,

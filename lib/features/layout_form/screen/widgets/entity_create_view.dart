@@ -107,16 +107,18 @@ class CreateForm extends StatelessWidget {
                     width: width ?? 400,
                     title: controller.title,
                     icon: layoutForm.isHome ? Icons.home : Icons.edit_note,
-                    actions: [
-                      Button.action(
-                        permission: null,
-                        isSecondary: true,
-                        onPressed: () => Navigator.pop(context),
-                        action: DataAction.cancel,
-                      ),
-                      const Gap(10),
-                      _buildButtonSubmit(context, controller, entityCtrl),
-                    ],
+                    actions: layoutForm.showSubmitButton
+                        ? [
+                            Button.action(
+                              permission: null,
+                              isSecondary: true,
+                              onPressed: () => Navigator.pop(context),
+                              action: DataAction.cancel,
+                            ),
+                            const Gap(10),
+                            _buildButtonSubmit(context, controller, entityCtrl),
+                          ]
+                        : const [],
                     child: _buildFormContent(controller),
                   ),
                 )

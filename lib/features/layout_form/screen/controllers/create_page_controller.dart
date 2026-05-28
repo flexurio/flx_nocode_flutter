@@ -264,7 +264,12 @@ class CreatePageController extends GetxController {
 
   /// Computes the display title for the page based on the current action and label.
   String get title {
-    final baseTitle = '${action.title} ${entity.coreEntity.title}';
+    final configuredTitle = layoutForm.title?.trim();
+    if (configuredTitle != null && configuredTitle.isNotEmpty) {
+      return configuredTitle;
+    }
+
+    final baseTitle = _defaultTitle;
     final label = layoutForm.label.trim();
     if (layoutForm.isHome && label.isNotEmpty) return label;
     return baseTitle;
@@ -273,11 +278,16 @@ class CreatePageController extends GetxController {
   /// Computes a suffix for the header, often used for additional context in Home forms.
   String get headerSuffix {
     if (!layoutForm.isHome) return '';
-    final baseTitle = '${action.title} ${entity.coreEntity.title}';
+    final baseTitle = _defaultTitle;
     final label = layoutForm.label.trim();
     if (label.isEmpty) return '';
     if (label.toLowerCase() == baseTitle.toLowerCase()) return '';
     return label;
+  }
+
+  String get _defaultTitle {
+    if (action == DataAction.submit) return entity.coreEntity.title;
+    return '${action.title} ${entity.coreEntity.title}';
   }
 
   /// Executes any actions defined in [LayoutForm.onInit].

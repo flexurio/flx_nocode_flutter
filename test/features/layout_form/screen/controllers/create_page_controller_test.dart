@@ -120,4 +120,36 @@ void main() {
       expect(controller.initialData['progressed_by_id'], '3251043');
     });
   });
+
+  group('CreatePageController title Tests', () {
+    setUp(() {
+      Configuration.instance = Configuration.empty();
+      Get.reset();
+    });
+
+    test('submit layout title uses entity title without submit prefix', () {
+      final entity = EntityCustom.empty().copyWith(
+        id: 'review_qas',
+        label: 'Review QA',
+        layoutForm: [
+          LayoutForm.fromMap({
+            'id': 'review_form',
+            'label': 'Review QA',
+            'components': const [],
+          }),
+        ],
+      );
+
+      final controller = CreatePageController(
+        entity: entity,
+        layoutFormId: 'review_form',
+        initialDataInput: {},
+        parentData: [],
+      );
+
+      controller.onInit();
+
+      expect(controller.title, 'Review QA');
+    });
+  });
 }
