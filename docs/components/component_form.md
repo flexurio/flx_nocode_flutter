@@ -19,7 +19,8 @@ Wrapping the entry inputs and the "Add" button in a `ComponentForm` solves this:
 | `id` | String | Yes | Unique identifier for the component. |
 | `type` | String | Yes | Must be `"form"`. |
 | `children` | Array<Component> | Yes | List of components to be rendered inside this form group. |
-| `visibilityCondition`| String | No | Logic expression to determine if the form group should be visible. |
+| `visibilityCondition` / `visibility_condition` | String | No | Logic expression to determine if the form group should be visible. |
+| `events` | Map | No | Custom event listeners. |
 
 ---
 
@@ -35,7 +36,7 @@ To trigger validation for a `ComponentForm`, set the `"validate": true` property
 
 ## Example Usage
 
-In this example, the `item_id` and `type_id` are only validated when "Add to Table" is clicked. The main form submission will ignore them.
+In this example, the `item_id` and `type_id` are only validated when "Add to Table" is clicked. The main form submission will ignore them because they are registered under the nested `form`.
 
 ```json
 {
@@ -63,3 +64,9 @@ In this example, the `item_id` and `type_id` are only validated when "Add to Tab
   ]
 }
 ```
+
+## Best Practices
+
+- Use `form` for repeatable entry sections such as "add item", "add attachment", or "add signer".
+- Keep action buttons that validate the nested fields inside the same `form` component.
+- Use unique child `id` values unless the nested section intentionally writes to the same form key as another component.
