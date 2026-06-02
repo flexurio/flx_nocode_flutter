@@ -13,6 +13,8 @@ This is extremely powerful for creating flexible UIs where a field might need to
 | `condition` | String | Yes | A JavaScript expression that evaluates to a boolean. Supports variable interpolation (e.g., `data.status == 'active'`). |
 | `then` | Object | Yes | The component configuration to render if the `condition` is **true**. |
 | `else` | Object | No | The component configuration to render if the `condition` is **false**. If omitted and the condition is false, nothing is rendered (`SizedBox.shrink`). |
+| `visibilityCondition` | String | No | Optional visibility condition for the conditional wrapper itself. |
+| `events` | Map | No | Custom event listeners. |
 
 ---
 
@@ -94,14 +96,35 @@ While the `id` of the `ComponentConditional` itself must be unique, the componen
 You can use complex logic in the condition:
 `"condition": "(data.age >= 18 && data.has_consent == true) || data.is_admin == 'true'"`
 
+### Wrapper vs Branch Conditions
+Use `visibilityCondition` when the entire conditional block should disappear. Use `condition` when the block should remain in place but choose between `then` and `else`.
+
 ### Nesting
 You can nest conditional components to create "if / else if / else" structures:
 ```json
-"then": { ... },
-"else": {
+{
+  "id": "status_branch",
   "type": "conditional",
-  "condition": "data.other_check",
-  "then": { ... },
-  "else": { ... }
+  "condition": "data.status == 'draft'",
+  "then": {
+    "id": "draft_text",
+    "type": "text",
+    "value": "Draft"
+  },
+  "else": {
+    "id": "submitted_branch",
+    "type": "conditional",
+    "condition": "data.status == 'submitted'",
+    "then": {
+      "id": "submitted_text",
+      "type": "text",
+      "value": "Submitted"
+    },
+    "else": {
+      "id": "other_status_text",
+      "type": "text",
+      "value": "Other"
+    }
+  }
 }
 ```
