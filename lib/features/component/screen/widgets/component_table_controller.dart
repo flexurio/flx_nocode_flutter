@@ -25,10 +25,28 @@ class ComponentTableController extends GetxController {
   final isLoading = true.obs;
   final error = RxnString();
 
-  /// Pre-built dummy entity for row actions
-  late final EntityCustom tableEntity = component.dummyEntity.copyWith(
-    bypassAllPermissions: contextData['bypassPermission'] == true,
-  );
+  /// Pre-built entity context for row actions.
+  ///
+  /// Component tables render actions with a table-specific dummy entity id, but
+  /// those actions still need the parent entity's layout forms and permission
+  /// bypass setting to open configured forms from nested detail pages.
+  late final EntityCustom tableEntity = _buildTableEntity();
+
+  EntityCustom _buildTableEntity() {
+    final parentEntity = contextData['entity'];
+    if (parentEntity is EntityCustom) {
+      return component.dummyEntity.copyWith(
+        layoutForm: parentEntity.layoutForm,
+        layoutPrint: parentEntity.layoutPrint,
+        bypassAllPermissions: contextData['bypassPermission'] == true ||
+            parentEntity.bypassAllPermissions,
+      );
+    }
+
+    return component.dummyEntity.copyWith(
+      bypassAllPermissions: contextData['bypassPermission'] == true,
+    );
+  }
 
   @override
   void onInit() {
