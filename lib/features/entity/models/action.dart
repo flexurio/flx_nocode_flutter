@@ -25,7 +25,8 @@ enum ActionType {
   appendVariable('append_variable', 'Append Variable'),
   removeVariable('remove_variable', 'Remove Variable'),
   clearForm('clear_form', 'Clear Form'),
-  export('export', 'Export');
+  export('export', 'Export'),
+  displayPdf('display_pdf', 'Display PDF');
 
   final String id;
   final String label;
@@ -178,7 +179,7 @@ class ActionD extends HiveObject {
     List<TColumn>? exportColumns,
     List<Component>? filterFields,
   }) {
-     return ActionD(
+    return ActionD(
       exportFormat: exportFormat ?? this.exportFormat,
       exportColumns: exportColumns ?? this.exportColumns,
       value: value ?? this.value,
@@ -212,7 +213,7 @@ class ActionD extends HiveObject {
 
   /// Factory constructor for parsing from a JSON map.
   factory ActionD.fromJson(Map<String, dynamic> json) {
-     final type = ActionType.fromId(json['type']);
+    final type = ActionType.fromId(json['type']);
     final layoutFormId = json['layout_form_id'];
     final layoutPrintId = json['layout_print_id'];
 
@@ -222,8 +223,6 @@ class ActionD extends HiveObject {
             'Action "${json['id'] ?? 'unknown'}" (type: "${type.id}") requires "layout_form_id"');
       }
     }
-
-
 
     return ActionD(
       isMultiple: json['is_multiple'] ?? false,
@@ -241,7 +240,7 @@ class ActionD extends HiveObject {
           : json['on_failure'] is String
               ? [json['on_failure'] as String]
               : const ['toast'],
-       reference: json['reference'],
+      reference: json['reference'],
       layoutFormId: layoutFormId,
       layoutPrintId: layoutPrintId,
       icon: json['icon'],
@@ -271,7 +270,8 @@ class ActionD extends HiveObject {
           : null,
       filterFields: json['filter_fields'] != null
           ? (json['filter_fields'] as List)
-              .map((e) => Component.fromMap(Map<String, dynamic>.from(e as Map)))
+              .map(
+                  (e) => Component.fromMap(Map<String, dynamic>.from(e as Map)))
               .toList()
           : const [],
     );
@@ -285,7 +285,7 @@ class ActionD extends HiveObject {
       'name': name,
       'on_success': onSuccess,
       'on_failure': onFailure,
-       'is_multiple': isMultiple,
+      'is_multiple': isMultiple,
       'reference': reference,
       'layout_form_id': layoutFormId,
       'layout_print_id': layoutPrintId,
@@ -309,7 +309,7 @@ class ActionD extends HiveObject {
       'export_columns': exportColumns
           ?.map((e) => {
                 'header': e.header,
-                 'body': e.body,
+                'body': e.body,
                 'width': e.width,
               })
           .toList(),
@@ -332,6 +332,8 @@ class ActionD extends HiveObject {
         return DataAction.confirm;
       case ActionType.export:
         return DataAction.export;
+      case ActionType.displayPdf:
+        return DataAction.view;
       default:
         return DataAction.none;
     }

@@ -115,6 +115,7 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
 
         case ActionType.print:
         case ActionType.export:
+        case ActionType.displayPdf:
           await action.executeSingle(
             entity: widget.entity,
             context: context,

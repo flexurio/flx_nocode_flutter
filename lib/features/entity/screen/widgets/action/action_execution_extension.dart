@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
@@ -10,6 +11,7 @@ import 'package:flx_nocode_flutter/features/print/presentation/widgets/pdf_previ
 import 'package:flx_nocode_flutter/features/print/presentation/widgets/print_filter_dialog.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
+import 'package:flx_nocode_flutter/src/app/util/string.dart';
 import 'package:get/get.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -388,6 +390,10 @@ extension ActionExecutionExtension on ActionD {
         );
         break;
 
+      case ActionType.displayPdf:
+        await _handleDisplayPdf(context: context, data: data);
+        break;
+
       default:
         Toast(context).fail('Unhandled ActionType: $type');
         break;
@@ -509,7 +515,7 @@ extension ActionExecutionExtension on ActionD {
           break;
         }
       }
-      
+
       if (formLayout != null) {
         finalFilterFields = formLayout.components;
       } else {
@@ -538,7 +544,7 @@ extension ActionExecutionExtension on ActionD {
         JsonMap contextData = {
           ...Map<String, dynamic>.from(data),
           'filter': filterData,
-          'form': filterData,  // allows {{form.xxx}} templates to resolve
+          'form': filterData, // allows {{form.xxx}} templates to resolve
           ...filterData, // also flat merge for backward compat
         };
 
@@ -587,5 +593,108 @@ extension ActionExecutionExtension on ActionD {
     } else {
       await execute(context);
     }
+  }
+
+  Future<void> _handleDisplayPdf({
+    required BuildContext context,
+    required JsonMap data,
+  }) async {
+    final request = http?.toRequestConfig(data);
+    final rawUrl = request?.url ?? value;
+    var url = rawUrl?.renderWithData(data).interpolateJavascript(data);
+
+    if (url == null || url.isEmpty) {
+      Toast(context).fail('No PDF URL found');
+      return;
+    }
+
+    try {
+      final hasDirectValue = value != null && value!.isNotEmpty;
+      if (http != null && !hasDirectValue) {
+        final metadata = await http!.execute(data);
+        if (!metadata.isSuccess) {
+          Toast(context).fail(metadata.message ?? 'Failed to load PDF data');
+          return;
+        }
+
+        final documentUrl = _extractDocumentUrl(metadata.data);
+        if (documentUrl != null && documentUrl.isNotEmpty) {
+          url = _normalizeDocumentUrl(documentUrl, request?.url ?? url);
+        }
+      }
+
+      final response = await Dio().request<List<int>>(
+        url,
+        options: Options(
+          method: 'GET',
+          headers: request?.headers ?? const <String, String>{},
+          responseType: ResponseType.bytes,
+        ),
+      );
+
+      final statusCode = response.statusCode ?? 0;
+      final bytes = response.data;
+      if (statusCode < 200 || statusCode >= 300 || bytes == null) {
+        Toast(context).fail('Failed to load PDF');
+        return;
+      }
+
+      await PdfPreviewDialog.show(
+        context,
+        Uint8List.fromList(bytes),
+        name.isNotEmpty ? name : 'Display File PDF',
+      );
+    } on DioException catch (e) {
+      Toast(context).fail(e.message ?? 'Failed to load PDF');
+    } catch (e) {
+      Toast(context).fail('Failed to load PDF');
+    }
+  }
+
+  String? _extractDocumentUrl(Object? payload) {
+    if (payload is Map) {
+      final direct = payload['document'];
+      if (direct is String && direct.isNotEmpty) return direct;
+
+      final rows = payload['data'];
+      if (rows is List && rows.isNotEmpty) {
+        final first = rows.first;
+        if (first is Map) {
+          final document = first['document'];
+          if (document is String && document.isNotEmpty) return document;
+        }
+      }
+    }
+
+    if (payload is List && payload.isNotEmpty) {
+      final first = payload.first;
+      if (first is Map) {
+        final document = first['document'];
+        if (document is String && document.isNotEmpty) return document;
+      }
+    }
+
+    return null;
+  }
+
+  String _normalizeDocumentUrl(String documentUrl, String baseUrl) {
+    final documentUri = Uri.tryParse(documentUrl);
+    final baseUri = Uri.tryParse(baseUrl);
+
+    if (documentUri == null) return documentUrl;
+    if (baseUri == null) return documentUri.toString();
+
+    final host = documentUri.host.toLowerCase();
+    if (host == 'localhost' || host == '127.0.0.1') {
+      return documentUri
+          .replace(
+            scheme: baseUri.scheme,
+            host: baseUri.host,
+            port: baseUri.hasPort ? baseUri.port : null,
+          )
+          .toString();
+    }
+
+    return documentUri.toString();
   }
 }
