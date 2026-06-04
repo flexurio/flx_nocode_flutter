@@ -190,5 +190,43 @@ void main() {
       expect(dropdown.httpData, isNotNull);
       expect(dropdown.httpData!.url, contains('departments'));
     });
+
+    test('ActionD correctly handles visibility_http deserialization and serialization', () {
+      final json = <String, dynamic>{
+        'id': 'edit_doc',
+        'name': 'Edit Doc',
+        'type': 'open_page',
+        'layout_form_id': 'edit_form',
+        'is_multiple': false,
+        'visibility_http': {
+          'http': {
+            'method': 'GET',
+            'url': '{{backend_host}}/check?id={{data.id}}',
+            'headers': {'Authorization': 'Bearer {{auth_token}}'},
+            'body': {},
+            'use_form_data': false,
+          },
+          'rule': {
+            'all': [
+              {'field': 'allowed', 'op': '=', 'value': true}
+            ]
+          }
+        }
+      };
+
+      final action = ActionD.fromJson(json);
+
+      expect(action.visibilityHttp, isNotNull);
+      expect(action.visibilityHttp!.http.method, 'GET');
+      expect(action.visibilityHttp!.http.url, contains('check?id='));
+      expect(action.visibilityHttp!.rule, isNotNull);
+      expect(action.visibilityHttp!.rule!.all.length, 1);
+      expect(action.visibilityHttp!.rule!.all.first.field, 'allowed');
+
+      final serialized = action.toJson();
+      expect(serialized['visibility_http'], isNotNull);
+      expect(serialized['visibility_http']['http']['method'], 'GET');
+      expect(serialized['visibility_http']['rule']['all'][0]['field'], 'allowed');
+    });
   });
 }

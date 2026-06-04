@@ -81,6 +81,8 @@ class ActionD extends HiveObject {
   /// Optional conditional rule to decide when the action is available.
   final Rule? rule;
 
+  final VisibilityHttpD? visibilityHttp;
+
   final bool isMultiple;
   final double? width;
   final String? confirmTitle;
@@ -124,6 +126,7 @@ class ActionD extends HiveObject {
     this.icon,
     this.iconCode,
     this.rule,
+    this.visibilityHttp,
     required this.type,
     required this.name,
     this.width,
@@ -163,6 +166,7 @@ class ActionD extends HiveObject {
     String? icon,
     int? iconCode,
     Rule? rule,
+    VisibilityHttpD? visibilityHttp,
     double? width,
     String? confirmTitle,
     String? confirmMessage,
@@ -198,6 +202,7 @@ class ActionD extends HiveObject {
       icon: icon ?? this.icon,
       iconCode: iconCode ?? this.iconCode,
       rule: rule ?? this.rule,
+      visibilityHttp: visibilityHttp ?? this.visibilityHttp,
       confirmTitle: confirmTitle ?? this.confirmTitle,
       confirmMessage: confirmMessage ?? this.confirmMessage,
       iconColor: iconColor ?? this.iconColor,
@@ -250,6 +255,11 @@ class ActionD extends HiveObject {
           : Rule.fromMap(
               Map<String, dynamic>.from(json['rule'] as Map),
             ),
+      visibilityHttp: json['visibility_http'] == null
+          ? null
+          : VisibilityHttpD.fromJson(
+              Map<String, dynamic>.from(json['visibility_http'] as Map),
+            ),
       width: json['width']?.toDouble(),
       confirmTitle: json['confirm_title'],
       confirmMessage: json['confirm_message'],
@@ -292,6 +302,7 @@ class ActionD extends HiveObject {
       'icon': icon,
       'icon_code': iconCode,
       if (rule != null) 'rule': rule!.toMap(),
+      if (visibilityHttp != null) 'visibility_http': visibilityHttp!.toJson(),
       if (http != null) 'http': http!.toJson(),
       'width': width,
       'confirm_title': confirmTitle,
@@ -352,3 +363,30 @@ extension ActionDListExtension on List<ActionD> {
   List<ActionD> get singleRow =>
       where((element) => !element.isMultiple).toList();
 }
+
+class VisibilityHttpD {
+  final HttpData http;
+  final Rule? rule;
+
+  VisibilityHttpD({
+    required this.http,
+    this.rule,
+  });
+
+  factory VisibilityHttpD.fromJson(Map<String, dynamic> json) {
+    return VisibilityHttpD(
+      http: HttpData.fromJson(Map<String, dynamic>.from(json['http'] as Map)),
+      rule: json['rule'] == null
+          ? null
+          : Rule.fromMap(Map<String, dynamic>.from(json['rule'] as Map)),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'http': http.toJson(),
+      if (rule != null) 'rule': rule!.toMap(),
+    };
+  }
+}
+
