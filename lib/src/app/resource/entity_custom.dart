@@ -3,6 +3,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flx_nocode_flutter/src/app/model/entity_cache.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
+import 'package:flx_nocode_flutter/src/app/util/file_picker_upload_registry.dart';
 
 class EntityCustomRepository extends Repository {
   EntityCustomRepository({
@@ -60,6 +61,10 @@ class EntityCustomRepository extends Repository {
       print('[EntityCustomRepository] Query Parameters: $queryParameters');
     }
 
+    final formDataBody = useFormData && body != null
+        ? await FilePickerUploadRegistry.prepareFormDataMap(body)
+        : null;
+
     try {
       switch (method.toUpperCase()) {
         case 'GET':
@@ -72,7 +77,7 @@ class EntityCustomRepository extends Repository {
           return await dio.post<T>(
             url,
             data: body != null
-                ? (useFormData ? FormData.fromMap(body) : body)
+                ? (useFormData ? FormData.fromMap(formDataBody!) : body)
                 : null,
             options: options,
           );
@@ -80,7 +85,7 @@ class EntityCustomRepository extends Repository {
           return await dio.put<T>(
             url,
             data: body != null
-                ? (useFormData ? FormData.fromMap(body) : body)
+                ? (useFormData ? FormData.fromMap(formDataBody!) : body)
                 : null,
             options: options,
           );

@@ -2,6 +2,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
+import 'package:flx_nocode_flutter/src/app/util/file_picker_upload_registry.dart';
 
 typedef Json = Map<String, dynamic>;
 
@@ -101,7 +102,11 @@ class HttpRequestExecutor {
     if (config.body != null) {
       if (hasBody) {
         if (config.asFormData && config.body is Map<String, dynamic>) {
-          dataBody = FormData.fromMap(config.body as Map<String, dynamic>);
+          final formDataBody =
+              await FilePickerUploadRegistry.prepareFormDataMap(
+            config.body as Map<String, dynamic>,
+          );
+          dataBody = FormData.fromMap(formDataBody);
         } else {
           dataBody = config.body;
         }

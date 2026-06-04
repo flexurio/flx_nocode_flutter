@@ -1,7 +1,8 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_file_picker.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/src/app/util/file_picker_upload_registry.dart';
+import 'package:flx_nocode_flutter/src/app/util/picker_file.dart';
 
 extension ComponentFilePickerWidgets on ComponentFilePicker {
   Widget toWidget(JsonMap data) {
@@ -85,14 +86,14 @@ class _FilePickerWidgetState extends State<_FilePickerWidget> {
   Future<void> _pickFile() async {
     if (!widget.enabled) return;
 
-    final result = await FilePicker.platform.pickFiles(
-      type: widget.allowedExtensions != null ? FileType.custom : FileType.any,
-      allowedExtensions: widget.allowedExtensions,
+    final result = await pickFile(
+      file: widget.allowedExtensions,
     );
 
-    if (result != null && result.files.single.path != null) {
+    if (result != null) {
+      final fileKey = FilePickerUploadRegistry.register(result.files.single);
       setState(() {
-        widget.controller.text = result.files.single.path!;
+        widget.controller.text = fileKey;
       });
     }
   }
@@ -123,7 +124,9 @@ class _FilePickerWidgetState extends State<_FilePickerWidget> {
                   child: Text(
                     widget.controller.text.isEmpty
                         ? 'Click to select file'
-                        : widget.controller.text.split('/').last,
+                        : FilePickerUploadRegistry.displayName(
+                            widget.controller.text,
+                          ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),

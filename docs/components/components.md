@@ -29,16 +29,16 @@ Many components share these layout and behavioral properties:
 | `image` | Display | Image from URL. |
 | `table` | Display/Data | Configurable data grid. |
 | `list_view` | Display/Data | Repeated item renderer from HTTP, local reference, or inline data. |
-| `text_field` | Input | Text entry. |
-| `number_field` | Input | Numeric entry. |
-| `date_picker` | Input | Date selection. |
-| `time_field` | Input | Time selection/input. |
-| `file_picker` | Input | File upload field. |
-| `dropdown` | Input | Single-value dropdown. |
-| `dropdown_multi_value` | Input | Multi-value dropdown. |
-| `checkbox` | Input | Boolean checkbox. |
-| `switch` | Input | Boolean switch. |
-| `radio` | Input | Single choice radio group. |
+| [`text_field`](./inputs/text_field.md) | Input | Text entry. |
+| [`number_field`](./inputs/number_field.md) | Input | Numeric entry. |
+| [`date_picker`](./inputs/date_picker.md) | Input | Date selection. |
+| [`time_field`](./inputs/time_field.md) | Input | Time selection/input. |
+| [`file_picker`](./inputs/file_picker.md) | Input | File upload field. |
+| [`dropdown`](./inputs/dropdown.md) | Input | Single-value dropdown. |
+| [`dropdown_multi_value`](./inputs/dropdown_multi_value.md) | Input | Multi-value dropdown. |
+| [`checkbox`](./inputs/checkbox.md) | Input | Boolean checkbox. |
+| [`switch`](./inputs/switch.md) | Input | Boolean switch. |
+| [`radio`](./inputs/radio.md) | Input | Single choice radio group. |
 | `button` | Interaction | Text button with action. |
 | `icon_button` | Interaction | Icon-only button with action. |
 | `column` | Layout | Vertical child layout. |
