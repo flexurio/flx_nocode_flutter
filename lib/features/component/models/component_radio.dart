@@ -10,7 +10,7 @@ class ComponentRadio extends ComponentInputBase {
     required super.id,
     required super.label,
     required this.options,
-    required this.initialValue,
+    this.initialValue = '',
     super.required,
     super.enabled = true,
     super.widthMode,

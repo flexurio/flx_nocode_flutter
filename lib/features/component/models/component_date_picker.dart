@@ -11,7 +11,7 @@ class ComponentDatePicker extends ComponentInputBase {
   ComponentDatePicker({
     required super.id,
     required super.label,
-    required this.initialValue,
+    this.initialValue = '',
     this.minDate,
     this.maxDate,
     super.required,
