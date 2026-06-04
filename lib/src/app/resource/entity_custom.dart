@@ -45,7 +45,9 @@ class EntityCustomRepository extends Repository {
     if (body != null &&
         !useFormData &&
         !combinedHeaders.containsKey('Content-Type') &&
-        (method.toUpperCase() == 'POST' || method.toUpperCase() == 'PUT')) {
+        (method.toUpperCase() == 'POST' ||
+            method.toUpperCase() == 'PUT' ||
+            method.toUpperCase() == 'PATCH')) {
       combinedHeaders['Content-Type'] = 'application/json';
     }
 
@@ -83,6 +85,14 @@ class EntityCustomRepository extends Repository {
           );
         case 'PUT':
           return await dio.put<T>(
+            url,
+            data: body != null
+                ? (useFormData ? FormData.fromMap(formDataBody!) : body)
+                : null,
+            options: options,
+          );
+        case 'PATCH':
+          return await dio.patch<T>(
             url,
             data: body != null
                 ? (useFormData ? FormData.fromMap(formDataBody!) : body)
