@@ -42,7 +42,8 @@ class _ComponentBarChartWidget extends StatefulWidget {
   final JsonMap data;
 
   @override
-  State<_ComponentBarChartWidget> createState() => _ComponentBarChartWidgetState();
+  State<_ComponentBarChartWidget> createState() =>
+      _ComponentBarChartWidgetState();
 }
 
 class _ComponentBarChartWidgetState extends State<_ComponentBarChartWidget> {

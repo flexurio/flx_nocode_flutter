@@ -57,7 +57,9 @@ dependencies:
 dependency_overrides:
   intl: ^0.20.2
   flx_core_flutter:
-    path: packages/flx_core_flutter
+    git:
+      url: https://github.com/flexurio/flx_core_flutter.git
+      ref: main
   freezed_annotation: ^3.1.0
 
 dev_dependencies:

@@ -82,6 +82,39 @@ void main() {
       expect(ctxTest.lastData['id'], 999);
     });
 
+    test('HttpAction execute with PATCH method should resolve templates and execute request with body',
+        () async {
+      final actionForTest = HttpAction(
+        name: 'patch_order',
+        http: HttpData(
+          method: 'PATCH',
+          url: 'https://api.example.com/orders/{{ form.customer_id }}',
+          headers: {'Authorization': 'Bearer {{ vars.mock_token }}'},
+          body: {'status': 'completed', 'qty': 2},
+        ),
+      );
+
+      final ctxTest = WorkflowContext(
+        form: {'customer_id': 123},
+        vars: {'mock_token': 'test_token'},
+        auth: const AuthContext(permissions: []),
+        httpExecutor: _MockHttpExecutor((req) {
+          expect(req.method, 'PATCH');
+          expect(req.url, 'https://api.example.com/orders/123');
+          expect(req.headers['Authorization'], 'Bearer test_token');
+          expect(req.body['status'], 'completed');
+          expect(req.body['qty'], 2);
+          return HttpResult(status: 200, data: {'success': true});
+        }),
+      );
+
+      await actionForTest.execute(ctxTest, NoopUiBridge());
+
+      expect(ctxTest.http.containsKey('patch_order'), isTrue);
+      expect(ctxTest.http['patch_order']?.status, 200);
+      expect(ctxTest.http['patch_order']?.data['success'], isTrue);
+    });
+
     test(
         'HttpAction should retry on failure and eventually throw if max retries exceeded',
         () async {
