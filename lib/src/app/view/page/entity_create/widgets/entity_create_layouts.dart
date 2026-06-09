@@ -16,22 +16,18 @@ class EntityCreateEmbeddedLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Form(
-            key: formKey,
-            child: Column(
-              children: [
-                form,
-                const Gap(24),
-                Row(
-                  children: [Expanded(child: submitButton)],
-                ),
-              ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: Form(
+        key: formKey,
+        child: Column(
+          children: [
+            form,
+            const Gap(24),
+            Row(
+              children: [Expanded(child: submitButton)],
             ),
-          ),
+          ],
         ),
       ),
     );

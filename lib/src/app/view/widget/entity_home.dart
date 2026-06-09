@@ -91,17 +91,6 @@ class MenuCustom extends StatelessWidget {
         '[MenuCustom] level: ${parentData.length + 1}, parentData: ${parentData.length}');
 
     final homeLayout = _findHomeLayout();
-    if (homeLayout != null) {
-      return EntityCreatePageOld.prepare(
-        parentData: parentData,
-        embedded: embedded,
-        entity: entity,
-        layoutForm: homeLayout,
-        onSuccess: (_) {},
-        noHeader: false,
-        autoBackWhenSuccess: false,
-      );
-    }
 
     return Scaffold(
       appBar: embedded ? _buildAppBar(context, entity) : null,
@@ -124,13 +113,23 @@ class MenuCustom extends StatelessWidget {
             ),
           SizedBox(
             width: MediaQuery.of(context).size.width,
-            child: MenuDataTableCustom.prepare(
-              parentData: parentData,
-              entity: entity,
-              initialFilters: initialFilters,
-              embedded: embedded,
-              bypassPermission: bypassPermission,
-            ),
+            child: homeLayout != null
+                ? EntityCreatePageOld.prepare(
+                    parentData: parentData,
+                    embedded: true,
+                    entity: entity,
+                    layoutForm: homeLayout,
+                    onSuccess: (_) {},
+                    noHeader: true,
+                    autoBackWhenSuccess: false,
+                  )
+                : MenuDataTableCustom.prepare(
+                    parentData: parentData,
+                    entity: entity,
+                    initialFilters: initialFilters,
+                    embedded: embedded,
+                    bypassPermission: bypassPermission,
+                  ),
           ),
         ],
       ),
