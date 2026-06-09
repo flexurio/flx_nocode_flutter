@@ -89,6 +89,20 @@ class MenuCustom extends StatelessWidget {
     }
     print(
         '[MenuCustom] level: ${parentData.length + 1}, parentData: ${parentData.length}');
+
+    final homeLayout = _findHomeLayout();
+    if (homeLayout != null) {
+      return EntityCreatePageOld.prepare(
+        parentData: parentData,
+        embedded: embedded,
+        entity: entity,
+        layoutForm: homeLayout,
+        onSuccess: (_) {},
+        noHeader: false,
+        autoBackWhenSuccess: false,
+      );
+    }
+
     return Scaffold(
       appBar: embedded ? _buildAppBar(context, entity) : null,
       body: ListView(
@@ -121,6 +135,13 @@ class MenuCustom extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  LayoutForm? _findHomeLayout() {
+    if (entity.homeLayoutId != null && entity.homeLayoutId!.isNotEmpty) {
+      return entity.layoutForm.findById(entity.homeLayoutId!);
+    }
+    return entity.layoutForm.home;
   }
 
   AppBar _buildAppBar(BuildContext context, EntityCustom entity) {

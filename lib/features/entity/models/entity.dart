@@ -44,6 +44,10 @@ class EntityCustom extends HiveObject {
   /// The layout definition for generating PDF printouts.
   final List<LayoutPrint> layoutPrint;
 
+  /// The ID of the layout form to be displayed on the home view.
+  /// If provided, this layout will be used instead of the default table view.
+  final String? homeLayoutId;
+
   /// Options for pagination and default sorting.
   final PaginationOption paginationOption;
 
@@ -83,11 +87,13 @@ class EntityCustom extends HiveObject {
     required this.views,
     required this.backend,
     required this.paginationOption,
-     required this.layoutForm,
+    required this.layoutForm,
     this.layoutPrint = const [],
+    this.homeLayoutId,
     required this.layoutListTile,
     required this.layoutTable,
     required this.exports,
+
     this.filters = const [],
     this.bypassAllPermissions = false,
   });
@@ -127,6 +133,7 @@ class EntityCustom extends HiveObject {
           'layout_form',
           (raw, _) => LayoutForm.fromMap(raw),
         ),
+        homeLayoutId: parser.parseStringOptional('home_layout_id'),
         layoutPrint: parser.parseListOptional<LayoutPrint>(
           'layout_print',
           (raw, _) => LayoutPrint.fromMap(raw),
@@ -171,6 +178,7 @@ class EntityCustom extends HiveObject {
         paginationOption = const PaginationOption(),
         layoutForm = [],
         layoutPrint = [],
+        homeLayoutId = null,
         layoutListTile = null,
         actions = [],
         actionsHome = [],
@@ -194,6 +202,7 @@ class EntityCustom extends HiveObject {
     PaginationOption? paginationOption,
     List<LayoutForm>? layoutForm,
     List<LayoutPrint>? layoutPrint,
+    String? homeLayoutId,
     LayoutListTile? layoutListTile,
     Map<String, int>? layoutTable,
     List<Export>? exports,
@@ -219,6 +228,7 @@ class EntityCustom extends HiveObject {
        views: views ?? this.views,
       layoutForm: layoutForm ?? this.layoutForm,
       layoutPrint: layoutPrint ?? this.layoutPrint,
+      homeLayoutId: homeLayoutId ?? this.homeLayoutId,
       layoutListTile:
           clearLayoutListTile ? null : (layoutListTile ?? this.layoutListTile),
       layoutTable: layoutTable ?? this.layoutTable,
@@ -337,6 +347,7 @@ class EntityCustom extends HiveObject {
       'pagination_option': paginationOption.toJson(),
       'layout_form': layoutForm.map((e) => e.toMap()).toList(),
       'layout_print': layoutPrint.map((e) => e.toMap()).toList(),
+      'home_layout_id': homeLayoutId,
       'layout_list_tile': layoutListTile?.toJson(),
       'layout_table': layoutTable,
       'actions': actions.map((e) => e.toJson()).toList(),
@@ -508,6 +519,18 @@ class _EntityCustomJsonParser {
     if (v is! T) {
       throw FormatException(
         "Invalid type for '$key': expected $T, got ${v.runtimeType}. Value: $v",
+      );
+    }
+    return v;
+  }
+
+  /// Parses an optional String.
+  String? parseStringOptional(String key) {
+    if (!json.containsKey(key) || json[key] == null) return null;
+    final v = json[key];
+    if (v is! String) {
+      throw FormatException(
+        "Invalid type for '$key': expected String, got ${v.runtimeType}. Value: $v",
       );
     }
     return v;

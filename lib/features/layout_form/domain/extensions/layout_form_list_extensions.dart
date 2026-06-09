@@ -15,4 +15,8 @@ extension LayoutFormListExtension on List<LayoutForm> {
   LayoutForm? get view => firstWhereOrNull((e) => e.isView);
   LayoutForm? get create => firstWhereOrNull((e) => e.isCreate);
   LayoutForm? get update => firstWhereOrNull((e) => e.isUpdate);
+
+  LayoutForm? findById(String id) {
+    return firstWhereOrNull((e) => e.id == id);
+  }
 }
