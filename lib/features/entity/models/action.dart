@@ -114,6 +114,9 @@ class ActionD extends HiveObject {
   /// Optional filter fields shown in the PrintFilterDialog before print executes.
   final List<Component> filterFields;
 
+  final bool canPrint;
+  final bool canDownload;
+
   ActionD({
     required this.isMultiple,
     required this.onSuccess,
@@ -144,6 +147,8 @@ class ActionD extends HiveObject {
     this.exportFormat,
     this.exportColumns,
     this.filterFields = const [],
+    this.canPrint = true,
+    this.canDownload = true,
   }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       assert(layoutFormId != null && layoutFormId!.isNotEmpty,
@@ -182,6 +187,8 @@ class ActionD extends HiveObject {
     String? exportFormat,
     List<TColumn>? exportColumns,
     List<Component>? filterFields,
+    bool? canPrint,
+    bool? canDownload,
   }) {
     return ActionD(
       exportFormat: exportFormat ?? this.exportFormat,
@@ -213,6 +220,8 @@ class ActionD extends HiveObject {
       copyValue: copyValue ?? this.copyValue,
       targetVariable: targetVariable ?? this.targetVariable,
       filterFields: filterFields ?? this.filterFields,
+      canPrint: canPrint ?? this.canPrint,
+      canDownload: canDownload ?? this.canDownload,
     );
   }
 
@@ -284,6 +293,8 @@ class ActionD extends HiveObject {
                   (e) => Component.fromMap(Map<String, dynamic>.from(e as Map)))
               .toList()
           : const [],
+      canPrint: json['print'] ?? true,
+      canDownload: json['download'] ?? true,
     );
   }
 
@@ -325,6 +336,8 @@ class ActionD extends HiveObject {
               })
           .toList(),
       'filter_fields': filterFields.map((e) => e.toMap()).toList(),
+      'print': canPrint,
+      'download': canDownload,
     };
   }
 

@@ -89,8 +89,12 @@ extension ActionExecutionExtension on ActionD {
           action: action,
           label: name,
           confirmationMessageText: confirmMessage,
-          onConfirm: (ctx) => executeHttpSingle(entity, ctx, data,
-              onSuccessCallback: onSuccessCallback),
+          onConfirm: (ctx) => executeHttpSingle(
+            entity,
+            ctx,
+            data,
+            onSuccessCallback: onSuccessCallback,
+          ),
         );
         break;
 
@@ -174,8 +178,12 @@ extension ActionExecutionExtension on ActionD {
           confirmationMessageText: confirmMessage,
           onConfirm: (ctx) async {
             if (http != null) {
-              await executeHttpSingle(entity, ctx, data,
-                  onSuccessCallback: onSuccessCallback);
+              await executeHttpSingle(
+                entity,
+                ctx,
+                data,
+                onSuccessCallback: onSuccessCallback,
+              );
             } else {
               await handleOnSuccessSingle(
                 entity: entity,
@@ -212,10 +220,7 @@ extension ActionExecutionExtension on ActionD {
                 formState[key] = ctrl.text;
               });
 
-              finalValue = {
-                ...controller.initialData,
-                ...formState,
-              };
+              finalValue = {...controller.initialData, ...formState};
             }
 
             controller.initialData[varName] = finalValue;
@@ -260,10 +265,7 @@ extension ActionExecutionExtension on ActionD {
               controller.controllers.forEach((key, ctrl) {
                 formState[key] = ctrl.text;
               });
-              itemValue = {
-                ...controller.initialData,
-                ...formState,
-              };
+              itemValue = {...controller.initialData, ...formState};
             }
 
             final currentData = controller.initialData[varName];
@@ -350,7 +352,8 @@ extension ActionExecutionExtension on ActionD {
             if (response.statusCode != null &&
                 response.statusCode! >= 200 &&
                 response.statusCode! < 300) {
-              final List<dynamic> rawList = (response.data is Map &&
+              final List<dynamic> rawList =
+                  (response.data is Map &&
                       (response.data as Map)['data'] is List)
                   ? (response.data as Map)['data']
                   : (response.data is List ? response.data : []);
@@ -361,7 +364,8 @@ extension ActionExecutionExtension on ActionD {
                 return;
               }
 
-              final fields = exportColumns?.map((e) => e.body).toList() ??
+              final fields =
+                  exportColumns?.map((e) => e.body).toList() ??
                   list.first.keys.toList();
 
               if (exportFormat == 'pdf') {
@@ -560,19 +564,28 @@ extension ActionExecutionExtension on ActionD {
               contextData['data'] = resData;
             }
           } else {
-            Toast(context)
-                .fail(response.message ?? 'Failed to fetch print data');
+            Toast(
+              context,
+            ).fail(response.message ?? 'Failed to fetch print data');
             return;
           }
         }
 
         // Generate PDF using dynamic data context
         final layoutJson = layout.toMap();
-        final pdfBytes =
-            await JsonPdfGenerator.generate(layoutJson, data: contextData);
+        final pdfBytes = await JsonPdfGenerator.generate(
+          layoutJson,
+          data: contextData,
+        );
 
         if (context.mounted) {
-          await PdfPreviewDialog.show(context, pdfBytes, layout.name);
+          await PdfPreviewDialog.show(
+            context,
+            pdfBytes,
+            layout.name,
+            canPrint: canPrint,
+            canDownload: canDownload,
+          );
         }
 
         onSuccessCallback?.call();
@@ -610,7 +623,9 @@ extension ActionExecutionExtension on ActionD {
 
     try {
       final hasDirectValue = value != null && value!.isNotEmpty;
-      if (http != null && !hasDirectValue) {
+      final shouldLoadMetadata =
+          http != null && !hasDirectValue && !_looksLikePdfUrl(url);
+      if (shouldLoadMetadata) {
         final metadata = await http!.execute(data);
         if (!metadata.isSuccess) {
           Toast(context).fail(metadata.message ?? 'Failed to load PDF data');
@@ -643,12 +658,20 @@ extension ActionExecutionExtension on ActionD {
         context,
         Uint8List.fromList(bytes),
         name.isNotEmpty ? name : 'Display File PDF',
+        canPrint: canPrint,
+        canDownload: canDownload,
       );
     } on DioException catch (e) {
       Toast(context).fail(e.message ?? 'Failed to load PDF');
     } catch (e) {
       Toast(context).fail('Failed to load PDF');
     }
+  }
+
+  bool _looksLikePdfUrl(String url) {
+    final uri = Uri.tryParse(url);
+    final path = (uri?.path ?? url).toLowerCase();
+    return path.endsWith(".pdf");
   }
 
   String? _extractDocumentUrl(Object? payload) {
