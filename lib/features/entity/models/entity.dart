@@ -64,6 +64,9 @@ class EntityCustom extends HiveObject {
   /// If true, the system will not check for specific user permissions before executing actions.
   final bool bypassAllPermissions;
 
+  /// Whether to hide the row actions column in the data table.
+  final bool hideRowActions;
+
   /// A map defining the layout of columns in a data table view.
   /// The key is the field reference, and the value is typically a flex factor or column width.
   Map<String, int> layoutTable = {};
@@ -90,6 +93,7 @@ class EntityCustom extends HiveObject {
     required this.exports,
     this.filters = const [],
     this.bypassAllPermissions = false,
+    this.hideRowActions = false,
   });
 
   /// The base path for entity assets (e.g., 'asset').
@@ -151,6 +155,7 @@ class EntityCustom extends HiveObject {
         paginationOption: parser.parsePaginationOption(),
         filters: parser.parseFilters(),
         bypassAllPermissions: parser.parseBypassAllPermissions(),
+        hideRowActions: parser.parseHideRowActions(),
       );
     } catch (e) {
       debugPrint("[EntityCustom] Entity: $id fromJson error: $e");
@@ -178,7 +183,8 @@ class EntityCustom extends HiveObject {
         layoutTable = {},
         exports = [],
         filters = [],
-        bypassAllPermissions = false;
+        bypassAllPermissions = false,
+        hideRowActions = false;
 
   /// Creates a copy of this [EntityCustom] instance with the given fields replaced.
   ///
@@ -202,6 +208,7 @@ class EntityCustom extends HiveObject {
     ActionD? actionPrimary,
     List<FilterOption>? filters,
     bool? bypassAllPermissions,
+    bool? hideRowActions,
     bool clearActionPrimary = false,
     bool clearLayoutListTile = false,
   }) {
@@ -225,6 +232,7 @@ class EntityCustom extends HiveObject {
       exports: exports ?? this.exports,
       filters: filters ?? this.filters,
       bypassAllPermissions: bypassAllPermissions ?? this.bypassAllPermissions,
+      hideRowActions: hideRowActions ?? this.hideRowActions,
     );
   }
 
@@ -344,6 +352,7 @@ class EntityCustom extends HiveObject {
       'action_primary': actionPrimary?.toJson(),
       'filters': filters.map((e) => e.toJson()).toList(),
       'bypass_all_permissions': bypassAllPermissions,
+      'hide_row_actions': hideRowActions,
     };
   }
 
@@ -658,6 +667,10 @@ class _EntityCustomJsonParser {
   ///
   /// Defaults to `true` if the key is missing (for backward compatibility or restrictive-by-default logic context).
   /// Note: [EntityCustom.fromJson] uses this to initialize the model.
+  bool parseHideRowActions() {
+    return json['hide_row_actions'] == true;
+  }
+
   bool parseBypassAllPermissions() {
     if (!json.containsKey('bypass_all_permissions')) return true;
     return json['bypass_all_permissions'] == true;
