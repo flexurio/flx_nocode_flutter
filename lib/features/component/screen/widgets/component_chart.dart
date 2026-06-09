@@ -145,6 +145,7 @@ class _ComponentGenericChartWidgetState extends State<_ComponentGenericChartWidg
           chartWidget = FlxBarChart(
             title: widget.component.title,
             dataSource: controller.chartData,
+            isHorizontal: widget.component.isHorizontal,
           );
           break;
       }

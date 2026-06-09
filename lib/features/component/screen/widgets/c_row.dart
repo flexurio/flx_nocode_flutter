@@ -25,9 +25,9 @@ extension ComponentRowWidgets on ComponentRow {
 
     if (widgets.isEmpty) return const SizedBox.shrink();
 
-    final mainAxisSize = (widthMode == ComponentSizeMode.hug)
-        ? MainAxisSize.min
-        : MainAxisSize.max;
+    final mainAxisSize = (widthMode == ComponentSizeMode.fill)
+        ? MainAxisSize.max
+        : MainAxisSize.min;
 
     final List<Widget> rowChildren = [];
     for (int i = 0; i < widgets.length; i++) {
@@ -69,6 +69,9 @@ extension ComponentRowWidgets on ComponentRow {
         childWidthMode = child.widthMode;
         fixedWidth = child.width;
         flexValue = child.flex;
+      } else if (child is ComponentChart) {
+        childWidthMode = child.widthMode;
+        fixedWidth = child.width;
       } else if (child is ComponentFieldDisplay) {
         childWidthMode = child.widthMode;
         fixedWidth = child.width;
@@ -119,9 +122,9 @@ extension ComponentRowWidgets on ComponentRow {
 
     if (widgets.isEmpty) return const SizedBox.shrink();
 
-    final mainAxisSize = (widthMode == ComponentSizeMode.hug)
-        ? MainAxisSize.min
-        : MainAxisSize.max;
+    final mainAxisSize = (widthMode == ComponentSizeMode.fill)
+        ? MainAxisSize.max
+        : MainAxisSize.min;
 
     final List<Widget> rowChildren = [];
     for (int i = 0; i < widgets.length; i++) {
@@ -163,6 +166,9 @@ extension ComponentRowWidgets on ComponentRow {
         childWidthMode = child.widthMode;
         fixedWidth = child.width;
         flexValue = child.flex;
+      } else if (child is ComponentChart) {
+        childWidthMode = child.widthMode;
+        fixedWidth = child.width;
       } else if (child is ComponentFieldDisplay) {
         childWidthMode = child.widthMode;
         fixedWidth = child.width;

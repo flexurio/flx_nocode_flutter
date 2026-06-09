@@ -13,6 +13,8 @@ abstract class ComponentChart extends Component {
     this.title = '',
     this.width,
     this.height,
+    this.widthMode,
+    this.heightMode,
     this.referenceId,
     super.visibilityCondition,
     super.events = const {},
@@ -36,6 +38,9 @@ abstract class ComponentChart extends Component {
   /// Optional height for the chart.
   final double? height;
 
+  final ComponentSizeMode? widthMode;
+  final ComponentSizeMode? heightMode;
+
   /// Optional reference ID for local data source.
   final String? referenceId;
 
@@ -48,6 +53,8 @@ abstract class ComponentChart extends Component {
         'title': title,
         'width': width,
         'height': height,
+        'widthMode': widthMode?.name,
+        'heightMode': heightMode?.name,
         'reference_id': referenceId,
       };
 }
@@ -63,13 +70,18 @@ class ComponentGenericChart extends ComponentChart {
     super.title = '',
     super.width,
     super.height,
+    super.widthMode,
+    super.heightMode,
     super.referenceId,
     super.visibilityCondition,
     super.events = const {},
   }) : super(type: 'chart');
 
-  /// The type of chart to display (e.g., 'bar', 'pie', 'donut').
+  /// The type of chart to display (e.g., 'bar', 'pie', 'donut', 'horizontalBar').
   final String chartType;
+
+  /// Whether the bar chart should be horizontal based on [chartType].
+  bool get isHorizontal => chartType.toLowerCase().contains('horizontal');
 
   /// Creates an empty [ComponentGenericChart] with default values.
   factory ComponentGenericChart.empty(String id) {
@@ -103,6 +115,8 @@ class ComponentGenericChart extends ComponentChart {
       title: (map['label'] ?? map['title'] ?? '').toString(),
       width: (map['width'] as num?)?.toDouble(),
       height: (map['height'] as num?)?.toDouble(),
+      widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
+      heightMode: ComponentSizeMode.fromString(map['heightMode']?.toString()),
       referenceId: map['reference_id']?.toString(),
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
