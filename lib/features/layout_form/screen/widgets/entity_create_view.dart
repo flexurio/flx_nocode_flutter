@@ -99,6 +99,10 @@ class CreateForm extends StatelessWidget {
             orElse: () {},
           );
 
+          final submitButton = layoutForm.showSubmitButton
+              ? _buildButtonSubmit(context, controller, entityCtrl)
+              : null;
+
           return popup
               ? Form(
                   key: controller.formKey,
@@ -126,16 +130,14 @@ class CreateForm extends StatelessWidget {
                   ? EntityCreateEmbeddedLayout(
                       formKey: controller.formKey,
                       form: _buildFormContent(controller),
-                      submitButton:
-                          _buildButtonSubmit(context, controller, entityCtrl),
+                      submitButton: submitButton,
                     )
                   : EntityCreatePanelLayout(
                       embedded: embedded,
                       theme: theme,
                       formKey: controller.formKey,
                       form: _buildFormContent(controller),
-                      submitButton:
-                          _buildButtonSubmit(context, controller, entityCtrl),
+                      submitButton: submitButton,
                       coreEntity: coreEntity,
                       title: controller.title,
                       action: layoutForm.isHome

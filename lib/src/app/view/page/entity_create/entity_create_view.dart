@@ -113,18 +113,22 @@ class _EntityCreateViewState extends State<EntityCreateView> {
         orElse: () {},
       );
 
+      final submitButton = widget.layoutForm.showSubmitButton
+          ? _buildButtonSubmit(controller)
+          : null;
+
       return widget.noHeader
           ? EntityCreateEmbeddedLayout(
               formKey: _formKey,
               form: form,
-              submitButton: _buildButtonSubmit(controller),
+              submitButton: submitButton,
             )
           : EntityCreatePanelLayout(
               embedded: widget.embedded,
               theme: theme,
               formKey: _formKey,
               form: form,
-              submitButton: _buildButtonSubmit(controller),
+              submitButton: submitButton,
               coreEntity: coreEntity,
               title: _buildTitle(),
               action: widget.layoutForm.isHome ? DataAction.reprocess : _action,
