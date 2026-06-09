@@ -22,6 +22,7 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_t
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_donut_chart.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_pie_chart.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_bar_chart.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_chart.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_file_picker.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_form.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_multi_dropdown.dart';
@@ -97,6 +98,8 @@ extension ComponentWidget on Component {
       return (this as ComponentPieChart).toWidget(data: fullData);
     } else if (this.type == ComponentBarChart.componentId) {
       return (this as ComponentBarChart).toWidget(data: fullData);
+    } else if (this.type == ComponentGenericChart.componentId) {
+      return (this as ComponentGenericChart).toWidget(data: fullData);
     } else if (this.type == ComponentFilePicker.componentId) {
       return (this as ComponentFilePicker).toWidget(fullData);
     } else if (this.type == ComponentForm.componentId) {
@@ -156,6 +159,8 @@ extension ComponentWidget on Component {
       return (this as ComponentPieChart).toMockWidget();
     } else if (this.type == ComponentBarChart.componentId) {
       return (this as ComponentBarChart).toMockWidget();
+    } else if (this.type == ComponentGenericChart.componentId) {
+      return (this as ComponentGenericChart).toMockWidget();
     } else if (this.type == ComponentFilePicker.componentId) {
       return (this as ComponentFilePicker).toMockWidget();
     } else if (this.type == ComponentForm.componentId) {

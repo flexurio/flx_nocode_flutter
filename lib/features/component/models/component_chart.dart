@@ -51,3 +51,67 @@ abstract class ComponentChart extends Component {
         'reference_id': referenceId,
       };
 }
+
+/// A generic chart component that supports multiple chart types.
+class ComponentGenericChart extends ComponentChart {
+  ComponentGenericChart({
+    required super.id,
+    required super.http,
+    required super.labelKey,
+    required super.valueKey,
+    required this.chartType,
+    super.title = '',
+    super.width,
+    super.height,
+    super.referenceId,
+    super.visibilityCondition,
+    super.events = const {},
+  }) : super(type: 'chart');
+
+  /// The type of chart to display (e.g., 'bar', 'pie', 'donut').
+  final String chartType;
+
+  /// Creates an empty [ComponentGenericChart] with default values.
+  factory ComponentGenericChart.empty(String id) {
+    return ComponentGenericChart(
+      id: id,
+      http: HttpData.empty(),
+      labelKey: 'label',
+      valueKey: 'value',
+      chartType: 'bar',
+    );
+  }
+
+  /// Static component type identifier.
+  static String get componentId => 'chart';
+
+  /// Creates a [ComponentGenericChart] instance from a JSON-compatible map.
+  factory ComponentGenericChart.fromMap(Map<String, dynamic> map) {
+    final id = map['id']?.toString().trim();
+    if (id == null || id.isEmpty) {
+      throw const FormatException('Component "id" is required');
+    }
+
+    return ComponentGenericChart(
+      id: id,
+      http: map['http'] == null
+          ? HttpData.empty()
+          : HttpData.fromJson(map['http'] as Map<String, dynamic>),
+      labelKey: (map['dataKey'] ?? map['label_key'] ?? 'label').toString(),
+      valueKey: (map['valueKey'] ?? map['value_key'] ?? 'value').toString(),
+      chartType: map['chartType']?.toString() ?? 'bar',
+      title: (map['label'] ?? map['title'] ?? '').toString(),
+      width: (map['width'] as num?)?.toDouble(),
+      height: (map['height'] as num?)?.toDouble(),
+      referenceId: map['reference_id']?.toString(),
+      visibilityCondition: map['visibilityCondition']?.toString(),
+      events: map['events'] as Map<String, dynamic>? ?? const {},
+    );
+  }
+
+  @override
+  JsonMap toMap() => {
+        ...super.toMap(),
+        'chartType': chartType,
+      };
+}

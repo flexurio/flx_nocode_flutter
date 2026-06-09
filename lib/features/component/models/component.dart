@@ -132,6 +132,8 @@ class Component {
         return ComponentPieChart.fromMap(map);
       case ComponentType.barChart:
         return ComponentBarChart.fromMap(map);
+      case ComponentType.chart:
+        return ComponentGenericChart.fromMap(map);
       case ComponentType.filePicker:
         return ComponentFilePicker.fromMap(map);
       case ComponentType.form:
@@ -201,6 +203,8 @@ class Component {
         return ComponentPieChart.empty(Component._generateId(type));
       case ComponentType.barChart:
         return ComponentBarChart.empty(Component._generateId(type));
+      case ComponentType.chart:
+        return ComponentGenericChart.empty(Component._generateId(type));
       case ComponentType.filePicker:
         return ComponentFilePicker.empty(Component._generateId(type));
       case ComponentType.form:
@@ -320,6 +324,7 @@ class ComponentType {
   static const String donutChart = 'donut_chart';
   static const String pieChart = 'pie_chart';
   static const String barChart = 'bar_chart';
+  static const String chart = 'chart';
   static const String filePicker = 'file_picker';
   static const String form = 'form';
   static const String conditional = 'conditional';
@@ -348,6 +353,7 @@ class ComponentType {
     ComponentTypeEntry(id: donutChart, label: 'Donut Chart'),
     ComponentTypeEntry(id: pieChart, label: 'Pie Chart'),
     ComponentTypeEntry(id: barChart, label: 'Bar Chart'),
+    ComponentTypeEntry(id: chart, label: 'Chart'),
     ComponentTypeEntry(id: filePicker, label: 'File Picker'),
     ComponentTypeEntry(id: form, label: 'Form'),
     ComponentTypeEntry(id: conditional, label: 'Conditional'),
