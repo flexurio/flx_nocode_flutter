@@ -397,6 +397,10 @@ extension ActionExecutionExtension on ActionD {
       case ActionType.displayPdf:
         await _handleDisplayPdf(context: context, data: data);
         break;
+      case ActionType.download:
+        await _handleDownload(context: context, data: data);
+        break;
+
 
       default:
         Toast(context).fail('Unhandled ActionType: $type');
@@ -605,6 +609,92 @@ extension ActionExecutionExtension on ActionD {
       );
     } else {
       await execute(context);
+    }
+  }
+
+  Future<void> _handleDownload({
+    required BuildContext context,
+    required JsonMap data,
+  }) async {
+    final request = http?.toRequestConfig(data);
+    final rawUrl = request?.url ?? value;
+    var url = rawUrl?.renderWithData(data).interpolateJavascript(data);
+
+    if (url == null || url.isEmpty) {
+      Toast(context).fail('No URL found for download');
+      return;
+    }
+
+    try {
+      final hasDirectValue = value != null && value!.isNotEmpty;
+      final shouldLoadMetadata =
+          http != null && !hasDirectValue && !_looksLikePdfUrl(url);
+      
+      if (shouldLoadMetadata) {
+        final metadata = await http!.execute(data);
+        if (!metadata.isSuccess) {
+          Toast(context).fail(metadata.message ?? 'Failed to load download data');
+          return;
+        }
+
+        final documentUrl = _extractDocumentUrl(metadata.data);
+        if (documentUrl != null && documentUrl.isNotEmpty) {
+          url = _normalizeDocumentUrl(documentUrl, request?.url ?? url);
+        }
+      }
+
+      final response = await Dio().request<List<int>>(
+        url,
+        options: Options(
+          method: 'GET',
+          headers: request?.headers ?? const <String, String>{},
+          responseType: ResponseType.bytes,
+        ),
+      );
+
+      final statusCode = response.statusCode ?? 0;
+      final bytes = response.data;
+      if (statusCode < 200 || statusCode >= 300 || bytes == null) {
+        Toast(context).fail('Failed to download file');
+        return;
+      }
+
+      // Try to get filename from content-disposition
+      String filename = name.isNotEmpty ? name : 'downloaded_file';
+      final contentDisposition = response.headers.value('content-disposition');
+      if (contentDisposition != null) {
+        final regExp = RegExp('filename="?([^"]+)"?');
+        final match = regExp.firstMatch(contentDisposition);
+        if (match != null && match.groupCount >= 1) {
+          filename = match.group(1)!;
+        }
+      } else {
+        // Fallback to URL path if filename not in header
+        final uri = Uri.tryParse(url);
+        if (uri != null && uri.pathSegments.isNotEmpty) {
+          final lastSegment = uri.pathSegments.last;
+          if (lastSegment.contains('.')) {
+            filename = lastSegment;
+          } else if (filename == name && name.isNotEmpty) {
+             // Keep name but maybe add extension if we know it?
+             // For now just keep name.
+          }
+        }
+      }
+      
+      // Ensure we have an extension if possible
+      if (!filename.contains('.')) {
+        if (_looksLikePdfUrl(url)) {
+          filename += '.pdf';
+        }
+      }
+
+      saveFile(bytes, filename);
+      Toast(context).success('Download success: $filename');
+    } on DioException catch (e) {
+      Toast(context).fail(e.message ?? 'Failed to download file');
+    } catch (e) {
+      Toast(context).fail('Failed to download file');
     }
   }
 

@@ -26,7 +26,8 @@ enum ActionType {
   removeVariable('remove_variable', 'Remove Variable'),
   clearForm('clear_form', 'Clear Form'),
   export('export', 'Export'),
-  displayPdf('display_pdf', 'Display PDF');
+  displayPdf('display_pdf', 'Display PDF'),
+  download('download', 'Download File');
 
   final String id;
   final String label;
@@ -358,6 +359,8 @@ class ActionD extends HiveObject {
         return DataAction.export;
       case ActionType.displayPdf:
         return DataAction.view;
+      case ActionType.download:
+        return DataAction.confirm;
       default:
         return DataAction.none;
     }
