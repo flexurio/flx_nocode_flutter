@@ -28,6 +28,7 @@ class CreateForm extends StatelessWidget {
     required this.parentData,
     this.popup = false,
     this.width,
+    this.showSubmitButton,
   });
 
   final Map<String, dynamic>? data;
@@ -41,6 +42,7 @@ class CreateForm extends StatelessWidget {
   final LayoutForm layoutForm;
   final bool popup;
   final double? width;
+  final bool? showSubmitButton;
 
   @override
   Widget build(BuildContext context) {
@@ -111,8 +113,7 @@ class CreateForm extends StatelessWidget {
                     width: width ?? 400,
                     title: controller.title,
                     icon: layoutForm.isHome ? Icons.home : Icons.edit_note,
-                    actions: layoutForm.showSubmitButton
-                        ? [
+                    actions: (showSubmitButton ?? layoutForm.showSubmitButton) ? [
                             Button.action(
                               permission: null,
                               isSecondary: true,
@@ -130,14 +131,18 @@ class CreateForm extends StatelessWidget {
                   ? EntityCreateEmbeddedLayout(
                       formKey: controller.formKey,
                       form: _buildFormContent(controller),
-                      submitButton: submitButton,
+                      submitButton:
+                          _buildButtonSubmit(context, controller, entityCtrl),
+                      showSubmitButton: showSubmitButton ?? layoutForm.showSubmitButton,
                     )
                   : EntityCreatePanelLayout(
                       embedded: embedded,
                       theme: theme,
                       formKey: controller.formKey,
                       form: _buildFormContent(controller),
-                      submitButton: submitButton,
+                      submitButton:
+                          _buildButtonSubmit(context, controller, entityCtrl),
+                      showSubmitButton: showSubmitButton ?? layoutForm.showSubmitButton,
                       coreEntity: coreEntity,
                       title: controller.title,
                       action: layoutForm.isHome
@@ -210,7 +215,7 @@ class CreateForm extends StatelessWidget {
       final inProgress =
           state.maybeWhen(loading: () => true, orElse: () => false);
 
-      if (!layoutForm.showSubmitButton) {
+      if (!(showSubmitButton ?? layoutForm.showSubmitButton)) {
         return const SizedBox.shrink();
       }
 

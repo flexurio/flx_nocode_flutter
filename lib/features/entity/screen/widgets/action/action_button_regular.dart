@@ -53,9 +53,10 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
                 embedded: true,
                 entity: widget.entity,
                 layoutFormId: action.layoutFormId ?? '',
-                parentData: widget.parentData,
+              parentData: widget.parentData,
                 filters: widget.filters,
                 width: action.width,
+                showSubmitButton: action.showSubmitButton,
                 onSuccess: (responseData) async {
                   widget.onSuccess();
                   await action.handleOnSuccessSingle(
@@ -145,6 +146,7 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
               parentData: widget.parentData,
               filters: widget.filters,
               layoutFormId: action.layoutFormId ?? '',
+              showSubmitButton: action.showSubmitButton,
             ),
           );
           break;

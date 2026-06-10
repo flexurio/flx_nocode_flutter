@@ -105,6 +105,7 @@ class ActionD extends HiveObject {
 
   /// Whether to validate the form before executing the action.
   final bool validate;
+  final bool? showSubmitButton;
 
   /// The format for export action (excel, csv, pdf).
   final String? exportFormat;
@@ -145,6 +146,7 @@ class ActionD extends HiveObject {
     this.targetVariable,
     this.value,
     this.validate = false,
+    this.showSubmitButton,
     this.exportFormat,
     this.exportColumns,
     this.filterFields = const [],
@@ -185,6 +187,7 @@ class ActionD extends HiveObject {
     String? targetVariable,
     String? value,
     bool? validate,
+    bool? showSubmitButton,
     String? exportFormat,
     List<TColumn>? exportColumns,
     List<Component>? filterFields,
@@ -196,6 +199,7 @@ class ActionD extends HiveObject {
       exportColumns: exportColumns ?? this.exportColumns,
       value: value ?? this.value,
       validate: validate ?? this.validate,
+      showSubmitButton: showSubmitButton ?? this.showSubmitButton,
       width: width ?? this.width,
       isMultiple: isMultiple ?? this.isMultiple,
       id: id ?? this.id,
@@ -282,6 +286,7 @@ class ActionD extends HiveObject {
       targetVariable: json['target_variable'],
       value: json['value'],
       validate: json['validate'] ?? false,
+      showSubmitButton: json['show_submit_button'] ?? json['showSubmitButton'],
       exportFormat: json['export_format'],
       exportColumns: json['export_columns'] != null
           ? (json['export_columns'] as List)
@@ -328,6 +333,7 @@ class ActionD extends HiveObject {
       'target_variable': targetVariable,
       'value': value,
       'validate': validate,
+      'show_submit_button': showSubmitButton,
       'export_format': exportFormat,
       'export_columns': exportColumns
           ?.map((e) => {
