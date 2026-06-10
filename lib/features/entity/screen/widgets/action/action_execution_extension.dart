@@ -110,6 +110,7 @@ extension ActionExecutionExtension on ActionD {
             entity: entity,
             embedded: false,
             layoutFormId: layoutFormId!,
+            showSubmitButton: showSubmitButton,
             onSuccess: (responseData) async {
               onSuccessCallback?.call();
               await handleOnSuccessSingle(
@@ -141,6 +142,7 @@ extension ActionExecutionExtension on ActionD {
               embedded: true,
               entity: entity,
               layoutFormId: layoutFormId!,
+            showSubmitButton: showSubmitButton,
               parentData: parentData,
               data: data,
               filters: const {},

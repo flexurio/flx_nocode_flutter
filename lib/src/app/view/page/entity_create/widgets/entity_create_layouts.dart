@@ -7,29 +7,33 @@ class EntityCreateEmbeddedLayout extends StatelessWidget {
     super.key,
     required this.formKey,
     required this.form,
-    this.submitButton,
+    required this.submitButton,
+    this.showSubmitButton = true,
   });
 
   final GlobalKey<FormState> formKey;
   final Widget form;
-  final Widget? submitButton;
+  final Widget submitButton;
+  final bool showSubmitButton;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Form(
-        key: formKey,
-        child: Column(
-          children: [
-            form,
-            if (submitButton != null) ...[
-              const Gap(24),
-              Row(
-                children: [Expanded(child: submitButton!)],
-              ),
-            ],
-          ],
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: [
+                form,
+                const Gap(24),
+                if (showSubmitButton) Row(
+                  children: [Expanded(child: submitButton)],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -43,7 +47,8 @@ class EntityCreatePanelLayout extends StatelessWidget {
     required this.theme,
     required this.formKey,
     required this.form,
-    this.submitButton,
+    required this.submitButton,
+    this.showSubmitButton = true,
     required this.coreEntity,
     required this.title,
     required this.action,
@@ -54,7 +59,8 @@ class EntityCreatePanelLayout extends StatelessWidget {
   final ThemeData theme;
   final GlobalKey<FormState> formKey;
   final Widget form;
-  final Widget? submitButton;
+  final Widget submitButton;
+  final bool showSubmitButton;
   final Entity coreEntity;
   final String title;
   final DataAction action;
@@ -72,7 +78,7 @@ class EntityCreatePanelLayout extends StatelessWidget {
         suffixText: suffixText,
         entity: coreEntity,
         titlePage: title,
-        actions: submitButton != null ? [submitButton!] : null,
+        actions: showSubmitButton ? [submitButton] : null,
         children: [form],
       ),
     );
