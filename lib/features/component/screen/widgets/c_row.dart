@@ -78,7 +78,7 @@ extension ComponentRowWidgets on ComponentRow {
         flexValue = child.flex;
       }
 
-      if (childWidthMode == ComponentSizeMode.fill) {
+      if (childWidthMode == ComponentSizeMode.fill || (flexValue != null && flexValue > 0)) {
         if (mainAxisSize == MainAxisSize.max) {
           rowChildren.add(Expanded(flex: flexValue ?? 1, child: rowChild));
         } else {
@@ -175,7 +175,7 @@ extension ComponentRowWidgets on ComponentRow {
         flexValue = child.flex;
       }
 
-      if (childWidthMode == ComponentSizeMode.fill) {
+      if (childWidthMode == ComponentSizeMode.fill || (flexValue != null && flexValue > 0)) {
         if (mainAxisSize == MainAxisSize.max) {
           rowChildren.add(Expanded(flex: flexValue ?? 1, child: rowChild));
         } else {

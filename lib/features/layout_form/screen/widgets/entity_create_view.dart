@@ -149,6 +149,7 @@ class CreateForm extends StatelessWidget {
                           ? DataAction.reprocess
                           : controller.action,
                       suffixText: controller.headerSuffix,
+                      width: width,
                     ));
         });
       },

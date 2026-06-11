@@ -53,6 +53,7 @@ class EntityCreatePanelLayout extends StatelessWidget {
     required this.title,
     required this.action,
     this.suffixText = '',
+    this.width,
   });
 
   final bool embedded;
@@ -65,6 +66,7 @@ class EntityCreatePanelLayout extends StatelessWidget {
   final String title;
   final DataAction action;
   final String suffixText;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +74,7 @@ class EntityCreatePanelLayout extends StatelessWidget {
       appBar: embedded ? _buildAppBar(context) : null,
       backgroundColor: embedded ? theme.cardColor : Colors.transparent,
       body: SingleFormPanel(
+        customWidth: width,
         hideHeader: embedded,
         formKey: formKey,
         action: action,

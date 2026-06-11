@@ -110,6 +110,7 @@ extension ActionExecutionExtension on ActionD {
             entity: entity,
             embedded: false,
             layoutFormId: layoutFormId!,
+            width: width,
             showSubmitButton: showSubmitButton,
             onSuccess: (responseData) async {
               onSuccessCallback?.call();
@@ -142,7 +143,7 @@ extension ActionExecutionExtension on ActionD {
               embedded: true,
               entity: entity,
               layoutFormId: layoutFormId!,
-            showSubmitButton: showSubmitButton,
+              showSubmitButton: showSubmitButton,
               parentData: parentData,
               data: data,
               filters: const {},
@@ -354,8 +355,7 @@ extension ActionExecutionExtension on ActionD {
             if (response.statusCode != null &&
                 response.statusCode! >= 200 &&
                 response.statusCode! < 300) {
-              final List<dynamic> rawList =
-                  (response.data is Map &&
+              final List<dynamic> rawList = (response.data is Map &&
                       (response.data as Map)['data'] is List)
                   ? (response.data as Map)['data']
                   : (response.data is List ? response.data : []);
@@ -366,8 +366,7 @@ extension ActionExecutionExtension on ActionD {
                 return;
               }
 
-              final fields =
-                  exportColumns?.map((e) => e.body).toList() ??
+              final fields = exportColumns?.map((e) => e.body).toList() ??
                   list.first.keys.toList();
 
               if (exportFormat == 'pdf') {
@@ -402,7 +401,6 @@ extension ActionExecutionExtension on ActionD {
       case ActionType.download:
         await _handleDownload(context: context, data: data);
         break;
-
 
       default:
         Toast(context).fail('Unhandled ActionType: $type');
@@ -631,11 +629,12 @@ extension ActionExecutionExtension on ActionD {
       final hasDirectValue = value != null && value!.isNotEmpty;
       final shouldLoadMetadata =
           http != null && !hasDirectValue && !_looksLikePdfUrl(url);
-      
+
       if (shouldLoadMetadata) {
         final metadata = await http!.execute(data);
         if (!metadata.isSuccess) {
-          Toast(context).fail(metadata.message ?? 'Failed to load download data');
+          Toast(context)
+              .fail(metadata.message ?? 'Failed to load download data');
           return;
         }
 
@@ -678,12 +677,12 @@ extension ActionExecutionExtension on ActionD {
           if (lastSegment.contains('.')) {
             filename = lastSegment;
           } else if (filename == name && name.isNotEmpty) {
-             // Keep name but maybe add extension if we know it?
-             // For now just keep name.
+            // Keep name but maybe add extension if we know it?
+            // For now just keep name.
           }
         }
       }
-      
+
       // Ensure we have an extension if possible
       if (!filename.contains('.')) {
         if (_looksLikePdfUrl(url)) {
