@@ -1,11 +1,10 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' hide TColumn;
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
-import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_widget_extension.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_tooltip.dart';
 import 'package:get/get.dart';
 import 'component_table_controller.dart';
 
@@ -255,15 +254,18 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
                 ? c.body
                 : (rawValue?.toString() ?? "");
 
-            return Text(
-              text.interpolateJavascript({
-                ...currentData,
-                ...row,
-                "current": row,
-                "row": row,
-                "data": row,
-                "columnBody": c.body,
-              }),
+            final String interpolatedText = text.interpolateJavascript({
+              ...currentData,
+              ...row,
+              "current": row,
+              "row": row,
+              "data": row,
+              "columnBody": c.body,
+            });
+
+            return EntityFieldTooltip(
+              message: interpolatedText,
+              child: Text(interpolatedText),
             );
           },
         );
