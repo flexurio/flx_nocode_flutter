@@ -17,6 +17,7 @@ class EntityCreatePageOld extends StatelessWidget {
     required this.autoBackWhenSuccess,
     this.filters = const {},
     required this.noHeader,
+    this.showSubmitButton,
     required this.layoutForm,
     required this.parentData,
   });
@@ -30,6 +31,7 @@ class EntityCreatePageOld extends StatelessWidget {
   final bool autoBackWhenSuccess;
   final bool noHeader;
   final LayoutForm layoutForm;
+  final bool? showSubmitButton;
 
   static Widget prepare({
     Key? key,
@@ -42,6 +44,7 @@ class EntityCreatePageOld extends StatelessWidget {
     required LayoutForm? layoutForm,
     required List<Map<String, dynamic>> parentData,
     required void Function(Map<String, dynamic>? data) onSuccess,
+    bool? showSubmitButton,
   }) {
     if (layoutForm == null) {
       return NoCodeError(
@@ -67,6 +70,7 @@ class EntityCreatePageOld extends StatelessWidget {
       key: key,
       filters: filters,
       noHeader: noHeader,
+      showSubmitButton: showSubmitButton,
       autoBackWhenSuccess: autoBackWhenSuccess,
     );
   }
@@ -80,6 +84,7 @@ class EntityCreatePageOld extends StatelessWidget {
     required Map<String, dynamic> filters,
     required List<Map<String, dynamic>> parentData,
     bool autoBackWhenSuccess = true,
+    bool? showSubmitButton,
   }) {
     return PageTransition(
       opaque: true,
@@ -93,6 +98,7 @@ class EntityCreatePageOld extends StatelessWidget {
         embedded: embedded,
         filters: filters,
         autoBackWhenSuccess: autoBackWhenSuccess,
+        showSubmitButton: showSubmitButton,
       ),
     );
   }
@@ -108,6 +114,7 @@ class EntityCreatePageOld extends StatelessWidget {
       embedded: embedded,
       filters: filters,
       noHeader: noHeader,
+      showSubmitButton: showSubmitButton,
       autoBackWhenSuccess: autoBackWhenSuccess,
     );
   }

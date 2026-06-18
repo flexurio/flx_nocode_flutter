@@ -9,7 +9,7 @@ class ComponentTimeField extends ComponentInputBase {
   ComponentTimeField({
     required super.id,
     required super.label,
-    required this.initialValue,
+    this.initialValue = '',
     super.required,
     super.enabled = true,
     super.widthMode,

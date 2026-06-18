@@ -6,7 +6,6 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_i
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockDataAction extends Mock implements DataAction {}
 
 void main() {
   group('ComponentIconButton', () {
@@ -43,11 +42,11 @@ void main() {
     testWidgets('should handle click and execute action', (tester) async {
       final action = ActionD(
         id: 'edit_action',
-        type: ActionType.none,
+        type: ActionType.showSuccessDialogWithData,
         name: 'Edit',
         isMultiple: false,
-        onSuccess: 'toast',
-        onFailure: 'toast',
+        onSuccess: const [],
+        onFailure: const [],
       );
       final entity = EntityCustom.empty().copyWith(id: 'test', label: 'Test');
       
@@ -67,7 +66,7 @@ void main() {
       );
 
       await tester.tap(find.byType(IconButton));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // We can't easily verify executeSingle since it's an extension and not easily mockable
       // but we can check if it doesn't crash.

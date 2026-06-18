@@ -22,6 +22,7 @@ class EntityCreateView extends StatefulWidget {
     required this.autoBackWhenSuccess,
     this.filters = const {},
     required this.noHeader,
+    this.showSubmitButton,
     required this.layoutForm,
     required this.parentData,
   });
@@ -35,6 +36,7 @@ class EntityCreateView extends StatefulWidget {
   final bool autoBackWhenSuccess;
   final bool noHeader;
   final LayoutForm layoutForm;
+  final bool? showSubmitButton;
 
   @override
   State<EntityCreateView> createState() => _EntityCreateViewState();
@@ -113,11 +115,16 @@ class _EntityCreateViewState extends State<EntityCreateView> {
         orElse: () {},
       );
 
+      final submitButton = widget.layoutForm.showSubmitButton
+          ? _buildButtonSubmit(controller)
+          : null;
+
       return widget.noHeader
           ? EntityCreateEmbeddedLayout(
               formKey: _formKey,
               form: form,
               submitButton: _buildButtonSubmit(controller),
+              showSubmitButton: widget.showSubmitButton ?? widget.layoutForm.showSubmitButton,
             )
           : EntityCreatePanelLayout(
               embedded: widget.embedded,
@@ -125,6 +132,7 @@ class _EntityCreateViewState extends State<EntityCreateView> {
               formKey: _formKey,
               form: form,
               submitButton: _buildButtonSubmit(controller),
+              showSubmitButton: widget.showSubmitButton ?? widget.layoutForm.showSubmitButton,
               coreEntity: coreEntity,
               title: _buildTitle(),
               action: widget.layoutForm.isHome ? DataAction.reprocess : _action,
@@ -222,6 +230,7 @@ class _EntityCreateViewState extends State<EntityCreateView> {
   }
 
   Widget _buildButtonSubmit(EntityController controller) {
+    if (!(widget.showSubmitButton ?? widget.layoutForm.showSubmitButton)) return const SizedBox.shrink();
     return Obx(() {
       final state = controller.state;
       final inProgress = state.maybeWhen(

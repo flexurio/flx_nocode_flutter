@@ -8,11 +8,13 @@ class EntityCreateEmbeddedLayout extends StatelessWidget {
     required this.formKey,
     required this.form,
     required this.submitButton,
+    this.showSubmitButton = true,
   });
 
   final GlobalKey<FormState> formKey;
   final Widget form;
   final Widget submitButton;
+  final bool showSubmitButton;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class EntityCreateEmbeddedLayout extends StatelessWidget {
               children: [
                 form,
                 const Gap(24),
-                Row(
+                if (showSubmitButton) Row(
                   children: [Expanded(child: submitButton)],
                 ),
               ],
@@ -46,10 +48,12 @@ class EntityCreatePanelLayout extends StatelessWidget {
     required this.formKey,
     required this.form,
     required this.submitButton,
+    this.showSubmitButton = true,
     required this.coreEntity,
     required this.title,
     required this.action,
     this.suffixText = '',
+    this.width,
   });
 
   final bool embedded;
@@ -57,10 +61,12 @@ class EntityCreatePanelLayout extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final Widget form;
   final Widget submitButton;
+  final bool showSubmitButton;
   final Entity coreEntity;
   final String title;
   final DataAction action;
   final String suffixText;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
@@ -68,13 +74,14 @@ class EntityCreatePanelLayout extends StatelessWidget {
       appBar: embedded ? _buildAppBar(context) : null,
       backgroundColor: embedded ? theme.cardColor : Colors.transparent,
       body: SingleFormPanel(
+        customWidth: width,
         hideHeader: embedded,
         formKey: formKey,
         action: action,
         suffixText: suffixText,
         entity: coreEntity,
         titlePage: title,
-        actions: [submitButton],
+        actions: showSubmitButton ? [submitButton] : null,
         children: [form],
       ),
     );

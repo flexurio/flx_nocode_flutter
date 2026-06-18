@@ -26,7 +26,8 @@ enum ActionType {
   removeVariable('remove_variable', 'Remove Variable'),
   clearForm('clear_form', 'Clear Form'),
   export('export', 'Export'),
-  displayPdf('display_pdf', 'Display PDF');
+  displayPdf('display_pdf', 'Display PDF'),
+  download('download', 'Download File');
 
   final String id;
   final String label;
@@ -81,6 +82,8 @@ class ActionD extends HiveObject {
   /// Optional conditional rule to decide when the action is available.
   final Rule? rule;
 
+  final VisibilityHttpD? visibilityHttp;
+
   final bool isMultiple;
   final double? width;
   final String? confirmTitle;
@@ -102,6 +105,7 @@ class ActionD extends HiveObject {
 
   /// Whether to validate the form before executing the action.
   final bool validate;
+  final bool? showSubmitButton;
 
   /// The format for export action (excel, csv, pdf).
   final String? exportFormat;
@@ -111,6 +115,9 @@ class ActionD extends HiveObject {
 
   /// Optional filter fields shown in the PrintFilterDialog before print executes.
   final List<Component> filterFields;
+
+  final bool canPrint;
+  final bool canDownload;
 
   ActionD({
     required this.isMultiple,
@@ -124,6 +131,7 @@ class ActionD extends HiveObject {
     this.icon,
     this.iconCode,
     this.rule,
+    this.visibilityHttp,
     required this.type,
     required this.name,
     this.width,
@@ -138,9 +146,12 @@ class ActionD extends HiveObject {
     this.targetVariable,
     this.value,
     this.validate = false,
+    this.showSubmitButton,
     this.exportFormat,
     this.exportColumns,
     this.filterFields = const [],
+    this.canPrint = true,
+    this.canDownload = true,
   }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       assert(layoutFormId != null && layoutFormId!.isNotEmpty,
@@ -163,6 +174,7 @@ class ActionD extends HiveObject {
     String? icon,
     int? iconCode,
     Rule? rule,
+    VisibilityHttpD? visibilityHttp,
     double? width,
     String? confirmTitle,
     String? confirmMessage,
@@ -175,15 +187,19 @@ class ActionD extends HiveObject {
     String? targetVariable,
     String? value,
     bool? validate,
+    bool? showSubmitButton,
     String? exportFormat,
     List<TColumn>? exportColumns,
     List<Component>? filterFields,
+    bool? canPrint,
+    bool? canDownload,
   }) {
     return ActionD(
       exportFormat: exportFormat ?? this.exportFormat,
       exportColumns: exportColumns ?? this.exportColumns,
       value: value ?? this.value,
       validate: validate ?? this.validate,
+      showSubmitButton: showSubmitButton ?? this.showSubmitButton,
       width: width ?? this.width,
       isMultiple: isMultiple ?? this.isMultiple,
       id: id ?? this.id,
@@ -198,6 +214,7 @@ class ActionD extends HiveObject {
       icon: icon ?? this.icon,
       iconCode: iconCode ?? this.iconCode,
       rule: rule ?? this.rule,
+      visibilityHttp: visibilityHttp ?? this.visibilityHttp,
       confirmTitle: confirmTitle ?? this.confirmTitle,
       confirmMessage: confirmMessage ?? this.confirmMessage,
       iconColor: iconColor ?? this.iconColor,
@@ -208,6 +225,8 @@ class ActionD extends HiveObject {
       copyValue: copyValue ?? this.copyValue,
       targetVariable: targetVariable ?? this.targetVariable,
       filterFields: filterFields ?? this.filterFields,
+      canPrint: canPrint ?? this.canPrint,
+      canDownload: canDownload ?? this.canDownload,
     );
   }
 
@@ -250,6 +269,11 @@ class ActionD extends HiveObject {
           : Rule.fromMap(
               Map<String, dynamic>.from(json['rule'] as Map),
             ),
+      visibilityHttp: json['visibility_http'] == null
+          ? null
+          : VisibilityHttpD.fromJson(
+              Map<String, dynamic>.from(json['visibility_http'] as Map),
+            ),
       width: json['width']?.toDouble(),
       confirmTitle: json['confirm_title'],
       confirmMessage: json['confirm_message'],
@@ -262,6 +286,7 @@ class ActionD extends HiveObject {
       targetVariable: json['target_variable'],
       value: json['value'],
       validate: json['validate'] ?? false,
+      showSubmitButton: json['show_submit_button'] ?? json['showSubmitButton'],
       exportFormat: json['export_format'],
       exportColumns: json['export_columns'] != null
           ? (json['export_columns'] as List)
@@ -274,6 +299,8 @@ class ActionD extends HiveObject {
                   (e) => Component.fromMap(Map<String, dynamic>.from(e as Map)))
               .toList()
           : const [],
+      canPrint: json['print'] ?? true,
+      canDownload: json['download'] ?? true,
     );
   }
 
@@ -292,6 +319,7 @@ class ActionD extends HiveObject {
       'icon': icon,
       'icon_code': iconCode,
       if (rule != null) 'rule': rule!.toMap(),
+      if (visibilityHttp != null) 'visibility_http': visibilityHttp!.toJson(),
       if (http != null) 'http': http!.toJson(),
       'width': width,
       'confirm_title': confirmTitle,
@@ -305,6 +333,7 @@ class ActionD extends HiveObject {
       'target_variable': targetVariable,
       'value': value,
       'validate': validate,
+      'show_submit_button': showSubmitButton,
       'export_format': exportFormat,
       'export_columns': exportColumns
           ?.map((e) => {
@@ -314,6 +343,8 @@ class ActionD extends HiveObject {
               })
           .toList(),
       'filter_fields': filterFields.map((e) => e.toMap()).toList(),
+      'print': canPrint,
+      'download': canDownload,
     };
   }
 
@@ -334,6 +365,8 @@ class ActionD extends HiveObject {
         return DataAction.export;
       case ActionType.displayPdf:
         return DataAction.view;
+      case ActionType.download:
+        return DataAction.confirm;
       default:
         return DataAction.none;
     }
@@ -352,3 +385,30 @@ extension ActionDListExtension on List<ActionD> {
   List<ActionD> get singleRow =>
       where((element) => !element.isMultiple).toList();
 }
+
+class VisibilityHttpD {
+  final HttpData http;
+  final Rule? rule;
+
+  VisibilityHttpD({
+    required this.http,
+    this.rule,
+  });
+
+  factory VisibilityHttpD.fromJson(Map<String, dynamic> json) {
+    return VisibilityHttpD(
+      http: HttpData.fromJson(Map<String, dynamic>.from(json['http'] as Map)),
+      rule: json['rule'] == null
+          ? null
+          : Rule.fromMap(Map<String, dynamic>.from(json['rule'] as Map)),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'http': http.toJson(),
+      if (rule != null) 'rule': rule!.toMap(),
+    };
+  }
+}
+

@@ -6,20 +6,32 @@ import 'package:printing/printing.dart';
 class PdfPreviewDialog extends StatefulWidget {
   final Uint8List pdfBytes;
   final String title;
+  final bool canPrint;
+  final bool canDownload;
 
   const PdfPreviewDialog({
     super.key,
     required this.pdfBytes,
     required this.title,
+    this.canPrint = true,
+    this.canDownload = true,
   });
 
-  static Future<void> show(BuildContext context, Uint8List pdfBytes, String title) {
+  static Future<void> show(
+    BuildContext context,
+    Uint8List pdfBytes,
+    String title, {
+    bool canPrint = true,
+    bool canDownload = true,
+  }) {
     return showDialog(
       context: context,
       barrierDismissible: true,
       builder: (context) => PdfPreviewDialog(
         pdfBytes: pdfBytes,
         title: title,
+        canPrint: canPrint,
+        canDownload: canDownload,
       ),
     );
   }
@@ -109,22 +121,27 @@ class _PdfPreviewDialogState extends State<PdfPreviewDialog> {
                     ),
                     const SizedBox(width: 20),
                     // Action Buttons
-                    _buildHeaderAction(
-                      icon: Icons.print,
-                      onPressed: () => Printing.layoutPdf(
-                        onLayout: (format) async => widget.pdfBytes,
-                        name: widget.title,
+                    if (widget.canPrint) ...[
+                      _buildHeaderAction(
+                        icon: Icons.print,
+                        onPressed: () => Printing.layoutPdf(
+                          onLayout: (format) async => widget.pdfBytes,
+                          name: widget.title,
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 10),
+                    ],
+                    if (widget.canDownload) ...[
+                      _buildHeaderAction(
+                        icon: Icons.download,
+                        onPressed: () => Printing.sharePdf(
+                          bytes: widget.pdfBytes,
+                          filename: '${widget.title.replaceAll(' ', '_')}.pdf',
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                    ],
                     const SizedBox(width: 10),
-                    _buildHeaderAction(
-                      icon: Icons.download,
-                      onPressed: () => Printing.sharePdf(
-                        bytes: widget.pdfBytes,
-                        filename: '${widget.title.replaceAll(' ', '_')}.pdf',
-                      ),
-                    ),
-                    const SizedBox(width: 20),
                     IconButton(
                       icon: const Icon(Icons.close, color: Colors.grey),
                       onPressed: () => Navigator.of(context).pop(),

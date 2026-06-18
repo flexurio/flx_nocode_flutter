@@ -89,8 +89,12 @@ extension ActionExecutionExtension on ActionD {
           action: action,
           label: name,
           confirmationMessageText: confirmMessage,
-          onConfirm: (ctx) => executeHttpSingle(entity, ctx, data,
-              onSuccessCallback: onSuccessCallback),
+          onConfirm: (ctx) => executeHttpSingle(
+            entity,
+            ctx,
+            data,
+            onSuccessCallback: onSuccessCallback,
+          ),
         );
         break;
 
@@ -106,6 +110,8 @@ extension ActionExecutionExtension on ActionD {
             entity: entity,
             embedded: false,
             layoutFormId: layoutFormId!,
+            width: width,
+            showSubmitButton: showSubmitButton,
             onSuccess: (responseData) async {
               onSuccessCallback?.call();
               await handleOnSuccessSingle(
@@ -137,6 +143,7 @@ extension ActionExecutionExtension on ActionD {
               embedded: true,
               entity: entity,
               layoutFormId: layoutFormId!,
+              showSubmitButton: showSubmitButton,
               parentData: parentData,
               data: data,
               filters: const {},
@@ -174,8 +181,12 @@ extension ActionExecutionExtension on ActionD {
           confirmationMessageText: confirmMessage,
           onConfirm: (ctx) async {
             if (http != null) {
-              await executeHttpSingle(entity, ctx, data,
-                  onSuccessCallback: onSuccessCallback);
+              await executeHttpSingle(
+                entity,
+                ctx,
+                data,
+                onSuccessCallback: onSuccessCallback,
+              );
             } else {
               await handleOnSuccessSingle(
                 entity: entity,
@@ -212,10 +223,7 @@ extension ActionExecutionExtension on ActionD {
                 formState[key] = ctrl.text;
               });
 
-              finalValue = {
-                ...controller.initialData,
-                ...formState,
-              };
+              finalValue = {...controller.initialData, ...formState};
             }
 
             controller.initialData[varName] = finalValue;
@@ -260,10 +268,7 @@ extension ActionExecutionExtension on ActionD {
               controller.controllers.forEach((key, ctrl) {
                 formState[key] = ctrl.text;
               });
-              itemValue = {
-                ...controller.initialData,
-                ...formState,
-              };
+              itemValue = {...controller.initialData, ...formState};
             }
 
             final currentData = controller.initialData[varName];
@@ -392,6 +397,9 @@ extension ActionExecutionExtension on ActionD {
 
       case ActionType.displayPdf:
         await _handleDisplayPdf(context: context, data: data);
+        break;
+      case ActionType.download:
+        await _handleDownload(context: context, data: data);
         break;
 
       default:
@@ -560,19 +568,28 @@ extension ActionExecutionExtension on ActionD {
               contextData['data'] = resData;
             }
           } else {
-            Toast(context)
-                .fail(response.message ?? 'Failed to fetch print data');
+            Toast(
+              context,
+            ).fail(response.message ?? 'Failed to fetch print data');
             return;
           }
         }
 
         // Generate PDF using dynamic data context
         final layoutJson = layout.toMap();
-        final pdfBytes =
-            await JsonPdfGenerator.generate(layoutJson, data: contextData);
+        final pdfBytes = await JsonPdfGenerator.generate(
+          layoutJson,
+          data: contextData,
+        );
 
         if (context.mounted) {
-          await PdfPreviewDialog.show(context, pdfBytes, layout.name);
+          await PdfPreviewDialog.show(
+            context,
+            pdfBytes,
+            layout.name,
+            canPrint: canPrint,
+            canDownload: canDownload,
+          );
         }
 
         onSuccessCallback?.call();
@@ -595,6 +612,93 @@ extension ActionExecutionExtension on ActionD {
     }
   }
 
+  Future<void> _handleDownload({
+    required BuildContext context,
+    required JsonMap data,
+  }) async {
+    final request = http?.toRequestConfig(data);
+    final rawUrl = request?.url ?? value;
+    var url = rawUrl?.renderWithData(data).interpolateJavascript(data);
+
+    if (url == null || url.isEmpty) {
+      Toast(context).fail('No URL found for download');
+      return;
+    }
+
+    try {
+      final hasDirectValue = value != null && value!.isNotEmpty;
+      final shouldLoadMetadata =
+          http != null && !hasDirectValue && !_looksLikePdfUrl(url);
+
+      if (shouldLoadMetadata) {
+        final metadata = await http!.execute(data);
+        if (!metadata.isSuccess) {
+          Toast(context)
+              .fail(metadata.message ?? 'Failed to load download data');
+          return;
+        }
+
+        final documentUrl = _extractDocumentUrl(metadata.data);
+        if (documentUrl != null && documentUrl.isNotEmpty) {
+          url = _normalizeDocumentUrl(documentUrl, request?.url ?? url);
+        }
+      }
+
+      final response = await Dio().request<List<int>>(
+        url,
+        options: Options(
+          method: 'GET',
+          headers: request?.headers ?? const <String, String>{},
+          responseType: ResponseType.bytes,
+        ),
+      );
+
+      final statusCode = response.statusCode ?? 0;
+      final bytes = response.data;
+      if (statusCode < 200 || statusCode >= 300 || bytes == null) {
+        Toast(context).fail('Failed to download file');
+        return;
+      }
+
+      // Try to get filename from content-disposition
+      String filename = name.isNotEmpty ? name : 'downloaded_file';
+      final contentDisposition = response.headers.value('content-disposition');
+      if (contentDisposition != null) {
+        final regExp = RegExp('filename="?([^"]+)"?');
+        final match = regExp.firstMatch(contentDisposition);
+        if (match != null && match.groupCount >= 1) {
+          filename = match.group(1)!;
+        }
+      } else {
+        // Fallback to URL path if filename not in header
+        final uri = Uri.tryParse(url);
+        if (uri != null && uri.pathSegments.isNotEmpty) {
+          final lastSegment = uri.pathSegments.last;
+          if (lastSegment.contains('.')) {
+            filename = lastSegment;
+          } else if (filename == name && name.isNotEmpty) {
+            // Keep name but maybe add extension if we know it?
+            // For now just keep name.
+          }
+        }
+      }
+
+      // Ensure we have an extension if possible
+      if (!filename.contains('.')) {
+        if (_looksLikePdfUrl(url)) {
+          filename += '.pdf';
+        }
+      }
+
+      saveFile(bytes, filename);
+      Toast(context).success('Download success: $filename');
+    } on DioException catch (e) {
+      Toast(context).fail(e.message ?? 'Failed to download file');
+    } catch (e) {
+      Toast(context).fail('Failed to download file');
+    }
+  }
+
   Future<void> _handleDisplayPdf({
     required BuildContext context,
     required JsonMap data,
@@ -610,7 +714,9 @@ extension ActionExecutionExtension on ActionD {
 
     try {
       final hasDirectValue = value != null && value!.isNotEmpty;
-      if (http != null && !hasDirectValue) {
+      final shouldLoadMetadata =
+          http != null && !hasDirectValue && !_looksLikePdfUrl(url);
+      if (shouldLoadMetadata) {
         final metadata = await http!.execute(data);
         if (!metadata.isSuccess) {
           Toast(context).fail(metadata.message ?? 'Failed to load PDF data');
@@ -643,12 +749,20 @@ extension ActionExecutionExtension on ActionD {
         context,
         Uint8List.fromList(bytes),
         name.isNotEmpty ? name : 'Display File PDF',
+        canPrint: canPrint,
+        canDownload: canDownload,
       );
     } on DioException catch (e) {
       Toast(context).fail(e.message ?? 'Failed to load PDF');
     } catch (e) {
       Toast(context).fail('Failed to load PDF');
     }
+  }
+
+  bool _looksLikePdfUrl(String url) {
+    final uri = Uri.tryParse(url);
+    final path = (uri?.path ?? url).toLowerCase();
+    return path.endsWith(".pdf");
   }
 
   String? _extractDocumentUrl(Object? payload) {

@@ -4,6 +4,7 @@ import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_button_regular.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_visibility_wrapper.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 typedef JsonList = List<Map<String, dynamic>>;
@@ -103,7 +104,7 @@ extension ActionWidgetExtension on ActionD {
     bool expanded = false,
     required VoidCallback onSuccess,
   }) {
-    return ActionButtonRegular(
+    final button = ActionButtonRegular(
       actionD: this,
       entity: entity,
       parentData: parentData,
@@ -112,6 +113,14 @@ extension ActionWidgetExtension on ActionD {
       bypassPermission: bypassPermission,
       expanded: expanded,
     );
+    if (visibilityHttp != null) {
+      return ActionVisibilityWrapper(
+        action: this,
+        data: filters,
+        child: button,
+      );
+    }
+    return button;
   }
 
   IconData? actionIcon(ActionD action) {
@@ -149,7 +158,7 @@ extension ActionWidgetExtension on ActionD {
     bool expanded = false,
     VoidCallback? onSuccessCallback,
   }) {
-    return LightButton(
+    final button = LightButton(
       title: name,
       permission: ((bypassPermission ?? false) || entity.bypassAllPermissions)
           ? null
@@ -165,6 +174,14 @@ extension ActionWidgetExtension on ActionD {
       iconOverride: actionIcon(this),
       expanded: expanded,
     );
+    if (visibilityHttp != null) {
+      return ActionVisibilityWrapper(
+        action: this,
+        data: data,
+        child: button,
+      );
+    }
+    return button;
   }
 
   Widget buttonMultiple(
@@ -178,7 +195,7 @@ extension ActionWidgetExtension on ActionD {
   }) {
     const actionType = DataAction.print;
 
-    return LightButton(
+    final button = LightButton(
       title: name,
       permission: ((bypassPermission ?? false) || entity.bypassAllPermissions)
           ? null
@@ -219,5 +236,13 @@ extension ActionWidgetExtension on ActionD {
       iconOverride: actionIcon(this),
       expanded: expanded,
     );
+    if (visibilityHttp != null) {
+      return ActionVisibilityWrapper(
+        action: this,
+        data: data.isNotEmpty ? data.first : {},
+        child: button,
+      );
+    }
+    return button;
   }
 }

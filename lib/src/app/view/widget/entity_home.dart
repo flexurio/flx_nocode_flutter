@@ -124,13 +124,23 @@ class MenuCustom extends StatelessWidget {
             ),
           SizedBox(
             width: MediaQuery.of(context).size.width,
-            child: MenuDataTableCustom.prepare(
-              parentData: parentData,
-              entity: entity,
-              initialFilters: initialFilters,
-              embedded: embedded,
-              bypassPermission: bypassPermission,
-            ),
+            child: homeLayout != null
+                ? EntityCreatePageOld.prepare(
+                    parentData: parentData,
+                    embedded: true,
+                    entity: entity,
+                    layoutForm: homeLayout,
+                    onSuccess: (_) {},
+                    noHeader: true,
+                    autoBackWhenSuccess: false,
+                  )
+                : MenuDataTableCustom.prepare(
+                    parentData: parentData,
+                    entity: entity,
+                    initialFilters: initialFilters,
+                    embedded: embedded,
+                    bypassPermission: bypassPermission,
+                  ),
           ),
         ],
       ),

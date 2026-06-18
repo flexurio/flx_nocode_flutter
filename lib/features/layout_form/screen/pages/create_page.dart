@@ -26,6 +26,7 @@ class CreatePage extends StatelessWidget {
     required this.parentData,
     this.popup = false,
     this.width,
+    this.showSubmitButton,
   });
 
   final Map<String, dynamic>? data;
@@ -39,6 +40,7 @@ class CreatePage extends StatelessWidget {
   final String layoutFormId;
   final bool popup;
   final double? width;
+  final bool? showSubmitButton;
 
   static Widget prepare({
     Key? key,
@@ -54,6 +56,7 @@ class CreatePage extends StatelessWidget {
     Configuration? configuration,
     bool popup = false,
     double? width,
+    bool? showSubmitButton,
   }) {
     if (configuration != null) {
       Configuration.instance = configuration;
@@ -77,6 +80,7 @@ class CreatePage extends StatelessWidget {
       autoBackWhenSuccess: autoBackWhenSuccess,
       popup: popup,
       width: width,
+          showSubmitButton: showSubmitButton,
     );
   }
 
@@ -91,6 +95,7 @@ class CreatePage extends StatelessWidget {
     bool autoBackWhenSuccess = true,
     bool popup = false,
     double? width,
+    bool? showSubmitButton,
   }) {
     print('CreatePage.route: layoutFormId: $layoutFormId');
     return PageTransition(
@@ -107,6 +112,7 @@ class CreatePage extends StatelessWidget {
         autoBackWhenSuccess: autoBackWhenSuccess,
         popup: popup,
         width: width,
+          showSubmitButton: showSubmitButton,
       ),
     );
   }
@@ -146,6 +152,7 @@ class CreatePage extends StatelessWidget {
           autoBackWhenSuccess: autoBackWhenSuccess,
           popup: popup,
           width: width,
+          showSubmitButton: showSubmitButton,
         );
       },
     );

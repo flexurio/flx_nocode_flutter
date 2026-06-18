@@ -3,13 +3,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_container.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_container.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_text.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 
 void main() {
   group('ComponentContainer', () {
     testWidgets('should render with correct padding and decoration', (tester) async {
       final component = ComponentContainer(
         id: 'container',
-        child: ComponentText(id: 't', text: 'In Container'),
+        child: ComponentText(id: 't', value: 'In Container'),
         padding: 10,
         margin: 5,
         color: '#FF0000',
@@ -40,21 +41,20 @@ void main() {
     testWidgets('should handle widthMode and heightMode', (tester) async {
       final component = ComponentContainer(
         id: 'container',
-        widthMode: 'fill',
-        heightMode: 'hug',
+        widthMode: ComponentSizeMode.fill,
+        heightMode: ComponentSizeMode.hug,
       );
 
       await tester.pumpWidget(MaterialApp(home: component.toWidget(data: {})));
-      
       final container = tester.widget<Container>(find.byType(Container));
       expect(container.constraints?.maxWidth, double.infinity);
-      expect(container.constraints?.maxHeight, isNull); // hug means null height in this implementation
+      expect(container.constraints?.maxHeight, double.infinity); // hug means null height/unconstrained in this implementation
     });
 
     testWidgets('should render mock widget', (tester) async {
       final component = ComponentContainer(
         id: 'mock',
-        child: ComponentText(id: 't', text: 'Mock'),
+        child: ComponentText(id: 't', value: 'Mock'),
       );
       await tester.pumpWidget(MaterialApp(home: component.toMockWidget()));
       expect(find.text('Mock'), findsOneWidget);

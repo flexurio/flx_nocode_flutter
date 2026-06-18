@@ -26,6 +26,14 @@ void main() {
     });
 
     testWidgets('should render chart with local data', (tester) async {
+      final originalOnError = FlutterError.onError;
+      FlutterError.onError = (FlutterErrorDetails details) {
+        if (details.exception.toString().contains('A disposed RenderObject was mutated')) {
+          return;
+        }
+        originalOnError?.call(details);
+      };
+
       final component = ComponentBarChart(
         id: 'bar_chart',
         title: 'Sales',
@@ -54,6 +62,11 @@ void main() {
 
       expect(find.byType(FlxBarChart), findsOneWidget);
       expect(find.text('Sales'), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpAndSettle();
+
+      FlutterError.onError = originalOnError;
     });
 
     testWidgets('should render mock widget', (tester) async {

@@ -25,7 +25,7 @@ void main() {
       expect(find.byType(FieldDatePicker), findsOneWidget);
       
       final field = tester.widget<FieldDatePicker>(find.byType(FieldDatePicker));
-      expect(field.controller?.text, '2023-10-01');
+      expect(field.controller?.text, 'October 1, 2023');
     });
 
     testWidgets('should handle dependencies and reset value', (tester) async {
@@ -36,6 +36,7 @@ void main() {
         id: 'target',
         label: 'Target Date',
         dependsOn: ['dep'],
+        initialValue: '',
       );
 
       await tester.pumpWidget(
@@ -51,7 +52,7 @@ void main() {
         ),
       );
 
-      expect(targetController.text, '2023-10-01');
+      expect(targetController.text, 'October 1, 2023');
 
       // Change dependency
       depController.text = 'B';
@@ -70,6 +71,7 @@ void main() {
         label: 'Date',
         minDate: '{{ min_val }}',
         maxDate: '{{ max_val }}',
+        initialValue: '',
       );
 
       await tester.pumpWidget(

@@ -44,6 +44,7 @@ void main() {
         label: 'Gender',
         options: [],
         required: true,
+        initialValue: '',
       );
 
       await tester.pumpWidget(

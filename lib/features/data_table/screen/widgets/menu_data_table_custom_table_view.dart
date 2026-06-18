@@ -75,7 +75,7 @@ class MenuDataTableCustomTableView extends StatelessWidget {
               },
         columns: [
           ..._buildColumns(context, fields, fieldsValue),
-          ..._buildRowActions(context),
+          if (!entity.hideRowActions) ..._buildRowActions(context),
         ],
       ),
     );

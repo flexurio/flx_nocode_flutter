@@ -77,6 +77,10 @@ clean: ## Clean build artifacts
 	flutter clean
 	rm -f pubspec.lock
 
+cl:
+	rm -rf pubspec.lock
+	flutter pub get
+
 pub-d:
 	dart pub publish --dry-run
 

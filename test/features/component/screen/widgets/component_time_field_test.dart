@@ -11,6 +11,7 @@ void main() {
         id: 'time_field',
         label: 'Start Time',
         required: true,
+        initialValue: '',
       );
 
       final controller = TextEditingController();
@@ -62,6 +63,7 @@ void main() {
       final component = ComponentTimeField(
         id: 'mock',
         label: 'Mock Time',
+        initialValue: '',
       );
 
       await tester.pumpWidget(

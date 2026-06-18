@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:get/get.dart';
-import 'component_bar_chart_controller.dart';
+import 'component_chart_controller.dart';
 
-extension ComponentBarChartWidgets on ComponentBarChart {
+extension ComponentGenericChartWidgets on ComponentGenericChart {
   Widget toWidget({required JsonMap data}) {
-    return _ComponentBarChartWidget(component: this, data: data);
+    return _ComponentGenericChartWidget(component: this, data: data);
   }
 
   Widget toMockWidget() {
@@ -18,13 +18,14 @@ extension ComponentBarChartWidgets on ComponentBarChart {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey.shade300),
       ),
-      child: const Center(
+      child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.bar_chart, size: 48, color: Colors.orange),
-            SizedBox(height: 8),
-            Text('Bar Chart Mock', style: TextStyle(color: Colors.grey)),
+            const Icon(Icons.bar_chart, size: 48, color: Colors.blue),
+            const SizedBox(height: 8),
+            Text('Generic Chart Mock ($chartType)',
+                style: const TextStyle(color: Colors.grey)),
           ],
         ),
       ),
@@ -32,30 +33,37 @@ extension ComponentBarChartWidgets on ComponentBarChart {
   }
 }
 
-class _ComponentBarChartWidget extends StatefulWidget {
-  const _ComponentBarChartWidget({
+class ComponentGenericChartController extends ComponentChartController {
+  ComponentGenericChartController({
+    required super.component,
+    required super.contextData,
+  });
+}
+
+class _ComponentGenericChartWidget extends StatefulWidget {
+  const _ComponentGenericChartWidget({
     required this.component,
     required this.data,
   });
 
-  final ComponentBarChart component;
+  final ComponentGenericChart component;
   final JsonMap data;
 
   @override
-  State<_ComponentBarChartWidget> createState() =>
-      _ComponentBarChartWidgetState();
+  State<_ComponentGenericChartWidget> createState() =>
+      _ComponentGenericChartWidgetState();
 }
 
-class _ComponentBarChartWidgetState extends State<_ComponentBarChartWidget> {
+class _ComponentGenericChartWidgetState extends State<_ComponentGenericChartWidget> {
   late String tag;
-  late ComponentBarChartController controller;
+  late ComponentGenericChartController controller;
 
   @override
   void initState() {
     super.initState();
-    tag = 'bar_chart_${widget.component.id}_${identityHashCode(this)}';
+    tag = 'generic_chart_${widget.component.id}_${identityHashCode(this)}';
     controller = Get.put(
-      ComponentBarChartController(
+      ComponentGenericChartController(
         component: widget.component,
         contextData: widget.data,
       ),
@@ -65,12 +73,12 @@ class _ComponentBarChartWidgetState extends State<_ComponentBarChartWidget> {
 
   @override
   void dispose() {
-    Get.delete<ComponentBarChartController>(tag: tag);
+    Get.delete<ComponentGenericChartController>(tag: tag);
     super.dispose();
   }
 
   @override
-  void didUpdateWidget(covariant _ComponentBarChartWidget oldWidget) {
+  void didUpdateWidget(covariant _ComponentGenericChartWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.data != widget.data) {
       controller.updateContextData(widget.data);
@@ -118,13 +126,34 @@ class _ComponentBarChartWidgetState extends State<_ComponentBarChartWidget> {
         );
       }
 
+      Widget chartWidget;
+      switch (widget.component.chartType.toLowerCase()) {
+        case 'pie':
+          chartWidget = FlxPieChart(
+            title: widget.component.title,
+            dataSource: controller.chartData,
+          );
+          break;
+        case 'donut':
+          chartWidget = FlxDonutChart(
+            title: widget.component.title,
+            dataSource: controller.chartData,
+          );
+          break;
+        case 'bar':
+        default:
+          chartWidget = FlxBarChart(
+            title: widget.component.title,
+            dataSource: controller.chartData,
+            isHorizontal: widget.component.isHorizontal,
+          );
+          break;
+      }
+
       return SizedBox(
         width: widget.component.width,
         height: widget.component.height,
-        child: FlxBarChart(
-          title: widget.component.title,
-          dataSource: controller.chartData,
-        ),
+        child: chartWidget,
       );
     });
   }
