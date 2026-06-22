@@ -171,7 +171,11 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
       controller.updateContextData(widget.data);
 
       if (_shouldReload(oldWidget.data, widget.data)) {
-        controller.loadData();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            controller.loadData();
+          }
+        });
       }
     }
   }
@@ -188,7 +192,15 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
       if (oldResolved != newResolved) return true;
     }
 
-    // 2. Check explicit dependencies
+    // 2. Check reference_id change
+    if (widget.component.referenceId != null &&
+        widget.component.referenceId!.isNotEmpty) {
+      final oldValue = oldData[widget.component.referenceId];
+      final newValue = newData[widget.component.referenceId];
+      if (oldValue != newValue) return true;
+    }
+
+    // 3. Check explicit dependencies
     if (widget.component.dependsOn.isEmpty) return false;
 
     for (final depId in widget.component.dependsOn) {
@@ -240,6 +252,8 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
                     "current": row,
                     "row": row,
                     "data": row,
+                    "tableId": widget.component.id,
+                    "rowIndex": index,
                     "columnBody": c.body,
                     "onRowChanged": (newData) =>
                         controller.onRowChanged(index, newData),

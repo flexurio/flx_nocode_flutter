@@ -42,6 +42,7 @@ class JsVariableProvider {
       'auth_token': userRepo?.token ?? '',
       'user_id': userRepo?.userApp?.id?.toString() ?? '',
       'auth_nik': userRepo?.userApp?.id?.toString() ?? '',
+      'user_name': userRepo?.userApp?.name ?? '',
       'backend_host': config?.backendHost ?? '',
     };
 

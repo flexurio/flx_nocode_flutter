@@ -207,7 +207,7 @@ extension ActionExecutionExtension on ActionD {
           return;
         }
 
-        final layoutId = data['layoutFormId'] as String?;
+        final layoutId = (data['rootLayoutFormId'] ?? data['layoutFormId']) as String?;
 
         if (layoutId != null) {
           final tag = 'create_page_$layoutId';
@@ -253,7 +253,7 @@ extension ActionExecutionExtension on ActionD {
           return;
         }
 
-        final layoutId = data['layoutFormId'] as String?;
+        final layoutId = (data['rootLayoutFormId'] ?? data['layoutFormId']) as String?;
 
         if (layoutId != null) {
           final tag = 'create_page_$layoutId';
@@ -266,17 +266,27 @@ extension ActionExecutionExtension on ActionD {
             } else {
               final formState = <String, dynamic>{};
               controller.controllers.forEach((key, ctrl) {
-                formState[key] = ctrl.text;
+                if (key != varName) {
+                  formState[key] = ctrl.text;
+                }
               });
-              itemValue = {...controller.initialData, ...formState};
+              final cleanInitialData = Map<String, dynamic>.from(controller.initialData);
+              cleanInitialData.remove(varName);
+              cleanInitialData.removeWhere((key, val) => val is List || val is Map);
+              itemValue = {...cleanInitialData, ...formState};
             }
 
+            List<dynamic> list = [];
             final currentData = controller.initialData[varName];
-            List<dynamic> list;
             if (currentData is List) {
               list = List.from(currentData);
-            } else {
-              list = [];
+            } else if (currentData is String && currentData.isNotEmpty) {
+              try {
+                final decoded = jsonDecode(currentData);
+                if (decoded is List) {
+                  list = List.from(decoded);
+                }
+              } catch (_) {}
             }
 
             list.add(itemValue);
@@ -301,17 +311,35 @@ extension ActionExecutionExtension on ActionD {
           return;
         }
 
-        final layoutId = data['layoutFormId'] as String?;
+        final layoutId = (data['rootLayoutFormId'] ?? data['layoutFormId']) as String?;
 
         if (layoutId != null) {
           final tag = 'create_page_$layoutId';
           if (Get.isRegistered<CreatePageController>(tag: tag)) {
             final controller = Get.find<CreatePageController>(tag: tag);
 
+            List<dynamic> list = [];
             final currentData = controller.initialData[varName];
             if (currentData is List) {
-              final list = List.from(currentData);
+              list = List.from(currentData);
+            } else if (currentData is String && currentData.isNotEmpty) {
+              try {
+                final decoded = jsonDecode(currentData);
+                if (decoded is List) {
+                  list = List.from(decoded);
+                }
+              } catch (_) {}
+            }
 
+            final rowIndexRaw = data['rowIndex'];
+            if (rowIndexRaw is int && rowIndexRaw >= 0 && rowIndexRaw < list.length) {
+              list.removeAt(rowIndexRaw);
+            } else if (rowIndexRaw is String && int.tryParse(rowIndexRaw) != null) {
+              final idx = int.parse(rowIndexRaw);
+              if (idx >= 0 && idx < list.length) {
+                list.removeAt(idx);
+              }
+            } else {
               // We want to remove the item that matches the current 'data' (the row).
               // Since 'data' might have extra fields, we iterate and check if all
               // keys in the list item match the values in 'data'.
@@ -324,18 +352,18 @@ extension ActionExecutionExtension on ActionD {
                 }
                 return true;
               });
-
-              controller.initialData[varName] = list;
-              controller.initialData.refresh();
-
-              await handleOnSuccessSingle(
-                entity: entity,
-                context: context,
-                responseData: null,
-                data: data,
-                onSuccessCallback: onSuccessCallback,
-              );
             }
+
+            controller.initialData[varName] = list;
+            controller.initialData.refresh();
+
+            await handleOnSuccessSingle(
+              entity: entity,
+              context: context,
+              responseData: null,
+              data: data,
+              onSuccessCallback: onSuccessCallback,
+            );
           }
         }
         break;

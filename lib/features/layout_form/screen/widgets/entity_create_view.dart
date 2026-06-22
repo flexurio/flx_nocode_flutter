@@ -172,8 +172,10 @@ class CreateForm extends StatelessWidget {
                   entity: entity,
                   dataAction: controller.action,
                   controllers: controller.controllers,
-                  initialData:
-                      Map<String, dynamic>.from(controller.initialData),
+                  initialData: {
+                    ...controller.initialData,
+                    'rootLayoutFormId': layoutForm.id,
+                  },
                 ),
               );
             }),
@@ -187,7 +189,10 @@ class CreateForm extends StatelessWidget {
           entity: entity,
           dataAction: controller.action,
           controllers: controller.controllers,
-          initialData: Map<String, dynamic>.from(controller.initialData),
+          initialData: {
+            ...controller.initialData,
+            'rootLayoutFormId': layoutForm.id,
+          },
         ));
   }
 

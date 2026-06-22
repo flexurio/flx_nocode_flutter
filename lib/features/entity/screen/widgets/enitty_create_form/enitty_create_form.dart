@@ -108,11 +108,20 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
           ..._localControllers,
         };
 
+        final mergedData = <String, dynamic>{
+          ...widget.initialData,
+          ...state,
+        };
+        widget.initialData.forEach((key, value) {
+          if (value is List || value is Map) {
+            mergedData[key] = value;
+          }
+        });
+
         final children = widget.layoutForm.components.map((c) {
           return c.toWidget(
             data: {
-              ...widget.initialData,
-              ...state,
+              ...mergedData,
               'form': state,
               'current': state,
               'entity': widget.entity,

@@ -3,15 +3,42 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/filter.dart';
 
+final _cellControllers = <String, TextEditingController>{};
+
 extension ComponentTextFieldWidgets on ComponentTextField {
   Widget toWidget(Map<String, dynamic> data, {bool isSmall = false}) {
-    final controller = data['controller'] as TextEditingController? ??
-        (data['allControllers'] != null
-            ? (data['allControllers'] as Map<String, TextEditingController>)[id]
-            : null);
+    TextEditingController? controller;
+    if (isSmall) {
+      final tableId = data['tableId']?.toString() ?? 'table';
+      final rowIndex = data['rowIndex']?.toString() ?? 'row';
+      final targetField = data['columnBody']?.toString() ?? id;
+      final cacheKey = '${tableId}_${rowIndex}_${targetField}';
+
+      final row = data['row'] is Map ? data['row'] as Map : null;
+      final currentText = row != null ? (row[targetField]?.toString() ?? '') : '';
+
+      controller = _cellControllers[cacheKey];
+      if (controller == null) {
+        controller = TextEditingController(text: currentText);
+        _cellControllers[cacheKey] = controller;
+      } else {
+        if (controller.text != currentText) {
+          controller.value = controller.value.copyWith(
+            text: currentText,
+            selection: TextSelection.collapsed(offset: currentText.length),
+          );
+        }
+      }
+    } else {
+      controller = data['controller'] as TextEditingController? ??
+          (data['allControllers'] != null
+              ? (data['allControllers'] as Map<String, TextEditingController>)[id]
+              : null);
+    }
+
     if (isSmall) {
       return FTextFieldSmall(
-        controller: controller ?? TextEditingController(),
+        controller: controller!,
         hintText: label,
         onChanged: (val) {
           final onRowChanged = data['onRowChanged'];
