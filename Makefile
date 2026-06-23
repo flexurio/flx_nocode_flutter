@@ -88,6 +88,9 @@ pub:
 	dart pub publish
 
 build-macos-zip: ## Build and package macOS app as zip for asset/bin/frontend
+	@echo "Cleaning build artifacts..."
+	flutter clean
+	rm -f pubspec.lock
 	@echo "Building macOS application..."
 	flutter build macos --release
 	@rm -rf build/macos/Build/Products/Release/macos
