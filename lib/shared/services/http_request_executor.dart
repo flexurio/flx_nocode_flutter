@@ -1,8 +1,13 @@
 // core/network/http_request_executor.dart
 
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/src/app/util/file_picker_upload_registry.dart';
+import 'package:uuid/uuid.dart';
+import 'package:flx_nocode_flutter/shared/services/network_logger.dart';
 
 typedef Json = Map<String, dynamic>;
 
@@ -151,11 +156,54 @@ class HttpRequestExecutor {
       headers: sanitizedHeaders,
     );
 
+    final String requestId = const Uuid().v4();
+    final DateTime startTime = DateTime.now();
+
+    // Send log request to Studio local server
+    _sendStudioLog({
+      'type': 'request',
+      'id': requestId,
+      'method': methodUpper,
+      'url': processedUrl,
+      'headers': sanitizedHeaders,
+      'body': config.body,
+      'timestamp': startTime.toIso8601String(),
+    });
+
+    // Log the request to NetworkLogger
+    NetworkLogger.instance.logRequest(
+      NetworkLogEntry(
+        id: requestId,
+        method: methodUpper,
+        url: processedUrl,
+        requestHeaders: sanitizedHeaders,
+        requestBody: config.body,
+        timestamp: startTime,
+      ),
+    );
+
     if (config.mockEnabled) {
       _logMockRequest(
         method: methodUpper,
         url: processedUrl,
         data: config.mockData,
+      );
+      final duration = DateTime.now().difference(startTime);
+      _sendStudioLog({
+        'type': 'response',
+        'id': requestId,
+        'statusCode': 200,
+        'headers': {'Mocked': 'true'},
+        'body': config.mockData,
+        'durationMs': duration.inMilliseconds,
+      });
+      NetworkLogger.instance.updateResponse(
+        requestId,
+        responseStatus: 200,
+        responseHeaders: {'Mocked': 'true'},
+        responseBody: config.mockData,
+        error: null,
+        duration: duration,
       );
       return HttpRequestResult.success(
         statusCode: 200,
@@ -184,6 +232,30 @@ class HttpRequestExecutor {
         data: response.data,
       );
 
+      final duration = DateTime.now().difference(startTime);
+      final responseHeadersMap = <String, dynamic>{};
+      response.headers.forEach((name, values) {
+        responseHeadersMap[name] = values.length == 1 ? values.first : values;
+      });
+
+      _sendStudioLog({
+        'type': 'response',
+        'id': requestId,
+        'statusCode': response.statusCode,
+        'headers': responseHeadersMap,
+        'body': response.data,
+        'durationMs': duration.inMilliseconds,
+      });
+
+      NetworkLogger.instance.updateResponse(
+        requestId,
+        responseStatus: response.statusCode,
+        responseHeaders: responseHeadersMap,
+        responseBody: response.data,
+        error: null,
+        duration: duration,
+      );
+
       final int status = response.statusCode ?? 0;
       if (status >= 200 && status < 300) {
         return HttpRequestResult.success(
@@ -209,6 +281,30 @@ class HttpRequestExecutor {
         message: e.message ?? '-',
         response: e.response?.data,
       );
+      final duration = DateTime.now().difference(startTime);
+      final responseHeadersMap = <String, dynamic>{};
+      e.response?.headers.forEach((name, values) {
+        responseHeadersMap[name] = values.length == 1 ? values.first : values;
+      });
+
+      _sendStudioLog({
+        'type': 'error',
+        'id': requestId,
+        'statusCode': e.response?.statusCode,
+        'headers': responseHeadersMap.isEmpty ? null : responseHeadersMap,
+        'body': e.response?.data,
+        'error': e.toString(),
+        'durationMs': duration.inMilliseconds,
+      });
+
+      NetworkLogger.instance.updateResponse(
+        requestId,
+        responseStatus: e.response?.statusCode,
+        responseHeaders: responseHeadersMap.isEmpty ? null : responseHeadersMap,
+        responseBody: e.response?.data,
+        error: e.toString(),
+        duration: duration,
+      );
       final String message = _extractErrorMessage(
         e.response?.data,
         path: config.errorMessagePath,
@@ -222,6 +318,26 @@ class HttpRequestExecutor {
       );
     } catch (e) {
       _logUnexpectedError(e);
+      final duration = DateTime.now().difference(startTime);
+
+      _sendStudioLog({
+        'type': 'error',
+        'id': requestId,
+        'statusCode': null,
+        'headers': null,
+        'body': null,
+        'error': e.toString(),
+        'durationMs': duration.inMilliseconds,
+      });
+
+      NetworkLogger.instance.updateResponse(
+        requestId,
+        responseStatus: null,
+        responseHeaders: null,
+        responseBody: null,
+        error: e.toString(),
+        duration: duration,
+      );
       return HttpRequestResult.failure(
         statusCode: null,
         message: 'Unexpected error: $e',
@@ -343,5 +459,23 @@ class HttpRequestExecutor {
       }
     }
     return current;
+  }
+
+  void _sendStudioLog(Map<String, dynamic> payload) {
+    final studioPort = Platform.environment['STUDIO_PORT'];
+    if (studioPort == null || studioPort.isEmpty) return;
+
+    scheduleMicrotask(() async {
+      try {
+        final client = HttpClient();
+        final uri = Uri.parse('http://127.0.0.1:$studioPort/network_log');
+        final request = await client.postUrl(uri);
+        request.headers.contentType = ContentType.json;
+        request.write(jsonEncode(payload));
+        final response = await request.close();
+        await response.drain();
+        client.close();
+      } catch (_) {}
+    });
   }
 }

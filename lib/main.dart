@@ -11,6 +11,7 @@ import 'package:flx_nocode_flutter/src/app/view/page/landing/landing_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
+import 'package:flx_nocode_flutter/shared/services/studio_network_log_interceptor.dart';
 
 const _cliConfigurationFileSystemBasePath =
     String.fromEnvironment('CONFIGURATION_FS_BASE_PATH', defaultValue: '');
@@ -155,6 +156,7 @@ Future<void> main() async {
     config: configuration.flavorConfig,
     app: app,
     initialized: () {
+      Api.dio.interceptors.add(StudioNetworkLogInterceptor());
       AuthenticationRepository.initialize(
         userRepository: UserRepositoryApp.instance,
         onLogin: (data) {},
