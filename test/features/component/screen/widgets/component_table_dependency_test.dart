@@ -3,9 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
-import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table.dart';
-import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 
 class MockHttpRequestExecutor extends Mock implements HttpRequestExecutor {}
 

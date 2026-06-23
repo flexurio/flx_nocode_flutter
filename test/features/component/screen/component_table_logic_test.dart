@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table_controller.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:get/get.dart';

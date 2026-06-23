@@ -48,7 +48,7 @@ class _DraggableDialogContainerState extends State<DraggableDialogContainer> {
           child: GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
-              color: Colors.black.withOpacity(0.35),
+              color: Colors.black.withValues(alpha: 0.35),
             ),
           ),
         ),

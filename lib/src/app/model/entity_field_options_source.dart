@@ -1,7 +1,6 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
-import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 
 /// A helper that parses and fetches dropdown options from either:
 /// 1) a static `values(...)` string, or

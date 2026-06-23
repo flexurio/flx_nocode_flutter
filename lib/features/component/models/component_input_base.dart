@@ -1,5 +1,4 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 abstract class ComponentInputBase extends Component {

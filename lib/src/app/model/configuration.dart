@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flutter/material.dart';
@@ -148,9 +150,9 @@ class Configuration extends HiveObject {
         overrideBasePath: basePath,
       );
       Configuration.instance = Configuration.fromJson(json.decode(data));
-      print('[Configuration] Configuration found');
+      debugPrint('[Configuration] Configuration found');
     } catch (e) {
-      print('[Configuration] Error loading configuration: $e');
+      debugPrint('[Configuration] Error loading configuration: $e');
       throw Exception('Failed to parse configuration: $e');
     }
   }
@@ -187,7 +189,6 @@ class Configuration extends HiveObject {
                             label: e.label,
                             home: MenuCustom.fromId(
                                 entityId: e.entity, parentData: []),
-                            permissions: [],
                             permission: e.entity + '_read',
                           ),
                         )

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_bar_chart.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_bar_chart.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_bar_chart_controller.dart';
 import 'package:get/get.dart';

@@ -10,7 +10,6 @@ import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/print/presentation/widgets/pdf_preview_dialog.dart';
 import 'package:flx_nocode_flutter/features/print/presentation/widgets/print_filter_dialog.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
-import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/src/app/util/string.dart';
 import 'package:get/get.dart';
 import 'package:pdf/widgets.dart' as pw;

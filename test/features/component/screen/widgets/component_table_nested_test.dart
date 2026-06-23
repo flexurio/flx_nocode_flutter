@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_dropdown_widget.dart';
-import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 
 void main() {
   setUp(() {

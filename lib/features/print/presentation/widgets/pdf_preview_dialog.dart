@@ -58,7 +58,7 @@ class _PdfPreviewDialogState extends State<PdfPreviewDialog> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black.withOpacity(0.4),
+      backgroundColor: Colors.black.withValues(alpha: 0.4),
       body: Center(
         child: Container(
           width: MediaQuery.of(context).size.width * 0.9,
@@ -68,7 +68,7 @@ class _PdfPreviewDialogState extends State<PdfPreviewDialog> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withValues(alpha: 0.2),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -174,7 +174,7 @@ class _PdfPreviewDialogState extends State<PdfPreviewDialog> {
   Widget _buildHeaderAction({required IconData icon, required VoidCallback onPressed}) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
+        color: Colors.blue.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: IconButton(

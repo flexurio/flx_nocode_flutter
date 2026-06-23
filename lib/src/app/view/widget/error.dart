@@ -97,18 +97,18 @@ class _NoCodeErrorState extends State<NoCodeError>
               ),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Colors.redAccent.withOpacity(0.5),
+                color: Colors.redAccent.withValues(alpha: 0.5),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.redAccent.withOpacity(0.3),
+                  color: Colors.redAccent.withValues(alpha: 0.3),
                   blurRadius: 20,
                   spreadRadius: 2,
                   offset: const Offset(0, 4),
                 ),
                 BoxShadow(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   blurRadius: 40,
                   spreadRadius: 5,
                 ),
@@ -153,15 +153,15 @@ class _NoCodeErrorState extends State<NoCodeError>
                                       decoration: BoxDecoration(
                                         gradient: RadialGradient(
                                           colors: [
-                                            Colors.redAccent.withOpacity(0.4),
-                                            Colors.redAccent.withOpacity(0.1),
+                                            Colors.redAccent.withValues(alpha: 0.4),
+                                            Colors.redAccent.withValues(alpha: 0.1),
                                           ],
                                         ),
                                         shape: BoxShape.circle,
                                         boxShadow: [
                                           BoxShadow(
                                             color: Colors.redAccent
-                                                .withOpacity(0.5),
+                                                .withValues(alpha: 0.5),
                                             blurRadius: 15,
                                             spreadRadius: 2,
                                           ),
@@ -212,11 +212,11 @@ class _NoCodeErrorState extends State<NoCodeError>
                                         vertical: 6,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: Colors.red.withOpacity(0.15),
+                                        color: Colors.red.withValues(alpha: 0.15),
                                         borderRadius: BorderRadius.circular(6),
                                         border: Border.all(
                                           color:
-                                              Colors.redAccent.withOpacity(0.3),
+                                              Colors.redAccent.withValues(alpha: 0.3),
                                         ),
                                       ),
                                       child: Text(
@@ -241,10 +241,10 @@ class _NoCodeErrorState extends State<NoCodeError>
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.05),
+                                color: Colors.white.withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.1),
+                                  color: Colors.white.withValues(alpha: 0.1),
                                 ),
                               ),
                               child: Row(
@@ -283,13 +283,13 @@ class _NoCodeErrorState extends State<NoCodeError>
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    Colors.amber.withOpacity(0.15),
-                                    Colors.orange.withOpacity(0.1),
+                                    Colors.amber.withValues(alpha: 0.15),
+                                    Colors.orange.withValues(alpha: 0.1),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: Colors.amber.withOpacity(0.3),
+                                  color: Colors.amber.withValues(alpha: 0.3),
                                 ),
                               ),
                               child: Row(
@@ -457,7 +457,7 @@ class _NoCodeErrorState extends State<NoCodeError>
                                         boxShadow: [
                                           BoxShadow(
                                             color: Colors.redAccent
-                                                .withOpacity(0.4),
+                                                .withValues(alpha: 0.4),
                                             blurRadius: 10,
                                             offset: const Offset(0, 4),
                                           ),
@@ -511,7 +511,7 @@ class ErrorPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.redAccent.withOpacity(0.03)
+      ..color = Colors.redAccent.withValues(alpha: 0.03)
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
 

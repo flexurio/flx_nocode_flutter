@@ -116,7 +116,7 @@ class _ConfigurationErrorPageState extends State<ConfigurationErrorPage>
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.red.shade300.withOpacity(0.5),
+                                  color: Colors.red.shade300.withValues(alpha: 0.5),
                                   blurRadius: 30,
                                   spreadRadius: 5,
                                 ),
@@ -205,15 +205,15 @@ class _ConfigurationErrorPageState extends State<ConfigurationErrorPage>
                           child: Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha: 0.7),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.5),
+                                color: Colors.white.withValues(alpha: 0.5),
                                 width: 1.5,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.red.shade200.withOpacity(0.3),
+                                  color: Colors.red.shade200.withValues(alpha: 0.3),
                                   blurRadius: 20,
                                   spreadRadius: 2,
                                   offset: const Offset(0, 10),
@@ -326,8 +326,8 @@ class _ConfigurationErrorPageState extends State<ConfigurationErrorPage>
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
                     colors: [
-                      Colors.red.shade200.withOpacity(0.3),
-                      Colors.orange.shade200.withOpacity(0.2),
+                      Colors.red.shade200.withValues(alpha: 0.3),
+                      Colors.orange.shade200.withValues(alpha: 0.2),
                     ],
                   ),
                 ),
@@ -351,8 +351,8 @@ class _ConfigurationErrorPageState extends State<ConfigurationErrorPage>
                   shape: BoxShape.circle,
                   gradient: LinearGradient(
                     colors: [
-                      Colors.pink.shade200.withOpacity(0.3),
-                      Colors.red.shade200.withOpacity(0.2),
+                      Colors.pink.shade200.withValues(alpha: 0.3),
+                      Colors.red.shade200.withValues(alpha: 0.2),
                     ],
                   ),
                 ),
@@ -374,8 +374,8 @@ class _ConfigurationErrorPageState extends State<ConfigurationErrorPage>
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
                   colors: [
-                    Colors.orange.shade100.withOpacity(0.2),
-                    Colors.red.shade100.withOpacity(0.1),
+                    Colors.orange.shade100.withValues(alpha: 0.2),
+                    Colors.red.shade100.withValues(alpha: 0.1),
                   ],
                 ),
               ),
@@ -406,7 +406,7 @@ class _AnimatedButtonState extends State<_AnimatedButton> {
       onExit: (_) => setState(() => _isHovered = false),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        transform: Matrix4.identity()..scale(_isHovered ? 1.05 : 1.0),
+        transform: Matrix4.identity()..scaleByDouble(_isHovered ? 1.05 : 1.0),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
@@ -423,7 +423,7 @@ class _AnimatedButtonState extends State<_AnimatedButton> {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.red.shade300.withOpacity(_isHovered ? 0.6 : 0.4),
+                color: Colors.red.shade300.withValues(alpha: _isHovered ? 0.6 : 0.4),
                 blurRadius: _isHovered ? 20 : 15,
                 spreadRadius: _isHovered ? 2 : 0,
                 offset: const Offset(0, 8),

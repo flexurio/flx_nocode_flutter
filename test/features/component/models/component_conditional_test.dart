@@ -1,7 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_conditional.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_text.dart';
 
 void main() {
   group('ComponentConditional Model Tests', () {

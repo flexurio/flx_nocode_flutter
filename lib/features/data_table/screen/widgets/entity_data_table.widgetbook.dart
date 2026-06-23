@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
-import 'package:flx_nocode_flutter/features/data_table/screen/widgets/entity_data_table.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 
 @UseCase(name: 'From JSON (Users)', type: MenuDataTableCustom)

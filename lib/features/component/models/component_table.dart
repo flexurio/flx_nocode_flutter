@@ -4,7 +4,6 @@ import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 
 /// A table component that retrieves its data from an HTTP endpoint.
 ///

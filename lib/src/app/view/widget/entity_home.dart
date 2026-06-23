@@ -1,7 +1,6 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
-import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -202,7 +201,7 @@ class BreadcrumbWithBack extends StatelessWidget {
                 child: Icon(
                   Icons.arrow_back_ios_new,
                   size: 20,
-                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ),
@@ -224,7 +223,7 @@ class BreadcrumbWithBack extends StatelessWidget {
                         fontSize: 14,
                         color: i == items.length - 1
                             ? theme.colorScheme.onSurface
-                            : theme.colorScheme.onSurface.withOpacity(0.6),
+                            : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                         fontWeight: i == items.length - 1
                             ? FontWeight.w600
                             : FontWeight.w400,
@@ -239,7 +238,7 @@ class BreadcrumbWithBack extends StatelessWidget {
                         child: Icon(
                           Icons.chevron_right,
                           size: 16,
-                          color: theme.colorScheme.onSurface.withOpacity(0.4),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
                         ),
                       ),
                   ]

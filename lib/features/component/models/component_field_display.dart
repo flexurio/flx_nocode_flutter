@@ -1,6 +1,5 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 
 /// A non-editable field component used to display a read-only value.
 ///

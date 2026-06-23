@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_chart.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'component_donut_chart.dart';

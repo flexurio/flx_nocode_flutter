@@ -73,7 +73,7 @@ class BackendOther extends HiveObject {
       'url': url,
       'title': title,
       'visible': visible,
-      'color': '#${color.value.toRadixString(16).padLeft(8, '0')}',
+      'color': '#${color.toARGB32().toRadixString(16).padLeft(8, '0')}',
       'headers': headers,
       'mock_enabled': mockEnabled,
       'mock_data': mockData,

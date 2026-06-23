@@ -166,7 +166,7 @@ class _LandingPageState extends State<LandingPage>
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: isMobile ? 16 : 20,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           height: 1.6,
                         ),
                       ),
@@ -304,7 +304,7 @@ class _LandingPageState extends State<LandingPage>
                 width: 4 + (index % 3) * 2,
                 height: 4 + (index % 3) * 2,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -404,7 +404,7 @@ class _LandingPageState extends State<LandingPage>
   //       borderRadius: BorderRadius.circular(16),
   //       boxShadow: [
   //         BoxShadow(
-  //           color: Colors.black.withOpacity(0.1),
+  //           color: Colors.black.withValues(alpha: 0.1),
   //           blurRadius: 20,
   //           offset: Offset(0, 10),
   //         ),
@@ -416,7 +416,7 @@ class _LandingPageState extends State<LandingPage>
   //           width: 70,
   //           height: 70,
   //           decoration: BoxDecoration(
-  //             color: color.withOpacity(0.1),
+  //             color: color.withValues(alpha: 0.1),
   //             borderRadius: BorderRadius.circular(16),
   //           ),
   //           child: Icon(icon, color: color, size: 35),
@@ -529,7 +529,7 @@ class _LandingPageState extends State<LandingPage>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: Offset(0, 10),
           ),
@@ -589,12 +589,12 @@ class _LandingPageState extends State<LandingPage>
                                 horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: hexToColor(themeData["colors"]["primary"])
-                                  .withOpacity(0.1),
+                                  .withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
                                   color:
                                       hexToColor(themeData["colors"]["primary"])
-                                          .withOpacity(0.3)),
+                                          .withValues(alpha: 0.3)),
                             ),
                             child: Text(
                               tech,
@@ -676,7 +676,7 @@ class _LandingPageState extends State<LandingPage>
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: isMobile ? 16 : 18,
-            color: Colors.white.withOpacity(0.9),
+            color: Colors.white.withValues(alpha: 0.9),
           ),
         ),
       ],
@@ -760,7 +760,7 @@ class _LandingPageState extends State<LandingPage>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: Offset(0, 10),
           ),
@@ -795,7 +795,7 @@ class _LandingPageState extends State<LandingPage>
               CircleAvatar(
                 radius: 25,
                 backgroundColor:
-                    hexToColor(themeData["colors"]["primary"]).withOpacity(0.1),
+                    hexToColor(themeData["colors"]["primary"]).withValues(alpha: 0.1),
                 child: Text(
                   name.split(' ').map((n) => n[0]).join(),
                   style: TextStyle(
@@ -1044,7 +1044,7 @@ class _LandingPageState extends State<LandingPage>
             : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: Offset(0, 10),
           ),
@@ -1246,7 +1246,7 @@ class _LandingPageState extends State<LandingPage>
           width: 50,
           height: 50,
           decoration: BoxDecoration(
-            color: hexToColor(themeData["colors"]["primary"]).withOpacity(0.1),
+            color: hexToColor(themeData["colors"]["primary"]).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon,
@@ -1303,7 +1303,7 @@ class _LandingPageState extends State<LandingPage>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: Offset(0, 10),
           ),
@@ -1558,9 +1558,9 @@ class _LandingPageState extends State<LandingPage>
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
+        color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: IconButton(
         onPressed: () {},

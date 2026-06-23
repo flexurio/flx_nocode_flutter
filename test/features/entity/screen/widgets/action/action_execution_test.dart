@@ -3,8 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
-import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
-import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/src/app/model/user.dart';
 
 class MockEntityCustom extends Mock implements EntityCustom {}
