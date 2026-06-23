@@ -4,7 +4,6 @@ import 'package:flx_nocode_flutter/features/component/models/component_dropdown.
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_dropdown_controller.dart';
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flx_nocode_flutter/core/utils/js/js_eval_flutter_js.dart';
-import 'package:get/get.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

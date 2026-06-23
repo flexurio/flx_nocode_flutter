@@ -6,8 +6,6 @@ import 'package:dio/dio.dart';
 import 'package:mocktail/mocktail.dart';
 import '../../domain/json_pdf_generator.dart';
 
-import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
-
 class MockDio extends Mock implements Dio {}
 
 @widgetbook.UseCase(

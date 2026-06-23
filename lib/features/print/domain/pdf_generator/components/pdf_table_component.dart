@@ -161,10 +161,6 @@ class PdfTableComponent {
       }
     }
 
-    int headerCount = 0;
-    if (model.header.isNotEmpty) {
-      headerCount = model.header.first is List ? model.header.length : 1;
-    }
 
     return pw.Table(
       columnWidths: columnWidths,

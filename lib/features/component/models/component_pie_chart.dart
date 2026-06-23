@@ -1,6 +1,5 @@
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_chart.dart';
-import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 /// A pie chart component that retrieves its data from an HTTP endpoint or other data source.
 class ComponentPieChart extends ComponentChart {

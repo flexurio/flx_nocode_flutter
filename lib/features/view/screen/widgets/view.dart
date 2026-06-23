@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/error.dart';
@@ -105,38 +104,15 @@ extension ListDViewWidget on List<DView> {
   List<Widget> buildButtons(BuildContext context, Map<String, dynamic> data,
       List<Map<String, dynamic>> parentData, bool bypassPermission,
       {bool expanded = false, VoidCallback? onRefresh}) {
-    const bool enableLog = false;
-
-    if (enableLog) {
-      print('\n======================================================');
-      print('[View] buildButtons | Total items: ${this.length}');
-    }
-
     final filtered = this.where((e) {
       if (e.rule == null) {
-        if (enableLog) {
-          print('------------------------------------------------------');
-          print('[View] "${e.label}" -> SHOW (No Rule)');
-        }
         return true;
       }
 
       final result = e.rule!.evaluate(data);
 
-      if (enableLog) {
-        print('------------------------------------------------------');
-        print('[View] Checking Rule for "${e.label}"');
-        print('Result    : ${result ? "✅ MATCH" : "❌ NO MATCH"}');
-        print('Rules     : ${e.rule?.toMap()}');
-        print('Data      : $data');
-      }
-
       return result;
     }).toList();
-
-    if (enableLog) {
-      print('======================================================\n');
-    }
 
     return filtered
         .map(

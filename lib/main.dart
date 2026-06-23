@@ -55,25 +55,12 @@ Future<void> main() async {
     logoNamedUrl: configuration.logoNamedUrl,
     logoUrl: configuration.logoUrl,
   );
-  Widget Function({required VoidCallback onSuccess}) signUpPage =
-      ({required VoidCallback onSuccess}) => Container();
   final entityRegistration = configuration.entityRegistration;
   if (entityRegistration != null) {
     try {
       final entity = await EntityCustom.getEntity(entityRegistration);
       if (entity != null) {
-        signUpPage = ({required VoidCallback onSuccess}) {
-          return EntityCreatePageOld.prepare(
-            parentData: [],
-            layoutForm: entity.layoutForm.create,
-            entity: entity,
-            embedded: true,
-            noHeader: true,
-            filters: {},
-            onSuccess: (_) => onSuccess(),
-            autoBackWhenSuccess: false,
-          );
-        };
+        // Pre-loaded registration entity if any
       }
     } catch (e) {
       print(

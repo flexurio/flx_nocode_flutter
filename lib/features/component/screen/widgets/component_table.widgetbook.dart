@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_table.dart';
-import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 import 'package:get/get.dart';
 import 'package:mocktail/mocktail.dart';
@@ -312,7 +311,7 @@ Widget mockComponentTableReactiveForm(BuildContext context) {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.black12),
                 ),

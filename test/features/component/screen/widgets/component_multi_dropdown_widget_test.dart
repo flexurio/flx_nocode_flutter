@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_multi_dropdown.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_multi_dropdown_widget.dart';
-import 'package:flx_nocode_flutter/features/component/screen/widgets/component_multi_dropdown_controller.dart';
 
 void main() {
   group('ComponentMultiDropdownWidget Tests', () {

@@ -115,9 +115,6 @@ class _EntityCreateViewState extends State<EntityCreateView> {
         orElse: () {},
       );
 
-      final submitButton = widget.layoutForm.showSubmitButton
-          ? _buildButtonSubmit(controller)
-          : null;
 
       return widget.noHeader
           ? EntityCreateEmbeddedLayout(

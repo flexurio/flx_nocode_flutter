@@ -9,7 +9,6 @@ class MockUiBridge extends Mock implements UiBridge {}
 
 void main() {
   late MockHttpExecutor mockHttpExecutor;
-  late MockUiBridge mockUiBridge;
 
   setUpAll(() {
     registerFallbackValue(HttpData.empty());
@@ -17,7 +16,6 @@ void main() {
 
   setUp(() {
     mockHttpExecutor = MockHttpExecutor();
-    mockUiBridge = MockUiBridge();
   });
 
   group('Workflow Execution - Loop with HTTP', () {

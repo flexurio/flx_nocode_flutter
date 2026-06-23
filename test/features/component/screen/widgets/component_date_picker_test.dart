@@ -25,7 +25,7 @@ void main() {
       expect(find.byType(FieldDatePicker), findsOneWidget);
       
       final field = tester.widget<FieldDatePicker>(find.byType(FieldDatePicker));
-      expect(field.controller?.text, 'October 1, 2023');
+      expect(field.controller.text, 'October 1, 2023');
     });
 
     testWidgets('should handle dependencies and reset value', (tester) async {

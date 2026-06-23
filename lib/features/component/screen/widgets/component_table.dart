@@ -1,9 +1,7 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' hide TColumn;
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
-import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_widget_extension.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:get/get.dart';

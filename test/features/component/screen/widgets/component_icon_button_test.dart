@@ -4,7 +4,6 @@ import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_icon_button.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_icon_button.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
-import 'package:mocktail/mocktail.dart';
 
 
 void main() {

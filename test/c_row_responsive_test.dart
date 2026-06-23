@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/c_row.dart';
-import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
 
 void main() {
   group('ComponentRow Widget Tests', () {

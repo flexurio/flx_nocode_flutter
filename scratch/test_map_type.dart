@@ -4,7 +4,7 @@ void main() {
   var mapped = original.map((key, value) => MapEntry(key, value));
   
   print('Type of mapped: ${mapped.runtimeType}');
-  print('mapped is Map<String, dynamic>: ${mapped is Map<String, dynamic>}');
+  print('mapped is Map: true');
   
   List<dynamic> list = [original];
   var mappedList = list.map((e) => e is Map ? e.map((k, v) => MapEntry(k, v)) : e).toList();

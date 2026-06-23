@@ -61,30 +61,14 @@ extension ActionListWidgetExtension on List<ActionD> {
 // ------------------------------------------------------
 extension ActionWidgetExtension on ActionD {
   bool isVisibleFor(JsonMap data) {
-    const enableLog = false;
     try {
       if (rule == null) {
-        if (enableLog) {
-          print('[Action] "$name" -> SHOW (No Rule)');
-        }
         return true;
       }
 
       final result = rule!.evaluate(data);
-
-      if (enableLog) {
-        print('------------------------------------------------------');
-        print('[Action] Checking Rule for "$name"');
-        print('Result    : ${result ? "✅ MATCH" : "❌ NO MATCH"}');
-        print('Rules     : ${rule?.toMap()}');
-        print('Data      : $data');
-      }
-
       return result;
     } catch (e) {
-      if (enableLog) {
-        print('[Action] Rule evaluation failed for "$name": $e');
-      }
       debugPrint('Action rule evaluation failed: $e');
       return true; // Fail open to avoid breaking UI
     }

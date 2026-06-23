@@ -101,9 +101,6 @@ class CreateForm extends StatelessWidget {
             orElse: () {},
           );
 
-          final submitButton = layoutForm.showSubmitButton
-              ? _buildButtonSubmit(context, controller, entityCtrl)
-              : null;
 
           return popup
               ? Form(

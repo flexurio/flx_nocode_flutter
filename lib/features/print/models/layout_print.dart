@@ -1,5 +1,4 @@
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
-import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 
 class LayoutPrint {
   final String id;
