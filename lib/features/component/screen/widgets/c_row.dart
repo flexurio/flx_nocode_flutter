@@ -25,7 +25,7 @@ extension ComponentRowWidgets on ComponentRow {
 
     if (widgets.isEmpty) return const SizedBox.shrink();
 
-    final mainAxisSize = (widthMode == ComponentSizeMode.fill)
+    final mainAxisSize = (widthMode == null || widthMode == ComponentSizeMode.fill)
         ? MainAxisSize.max
         : MainAxisSize.min;
 
@@ -122,7 +122,7 @@ extension ComponentRowWidgets on ComponentRow {
 
     if (widgets.isEmpty) return const SizedBox.shrink();
 
-    final mainAxisSize = (widthMode == ComponentSizeMode.fill)
+    final mainAxisSize = (widthMode == null || widthMode == ComponentSizeMode.fill)
         ? MainAxisSize.max
         : MainAxisSize.min;
 
