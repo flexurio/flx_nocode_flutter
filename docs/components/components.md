@@ -48,6 +48,7 @@ Many components share these layout and behavioral properties:
 | `donut_chart` | Chart | Donut chart. |
 | `pie_chart` | Chart | Pie chart. |
 | `bar_chart` | Chart | Bar chart. |
+| `chart` | Chart | Generic chart component with dynamic type switcher. |
 | `form` | Structural | Nested validation group. |
 | `conditional` | Logic | Render `then` or `else` component based on a condition. |
 

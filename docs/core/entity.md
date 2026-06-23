@@ -19,6 +19,7 @@ The root of the JSON file is a single object that contains all the properties fo
 | `views` | Array<Object> | No | A list of custom view configurations for displaying entity data in different ways. See [View Object](#view-object). |
 | `exports` | Array<Object> | No | A list of configurations for exporting entity data. See [Export Object](#export-object). |
 | `actions` | Array<Object> | No | A list of custom actions that can be performed on the entity. See [Action Object](#action-object). |
+| `hide_row_actions`| Boolean | No | Whether to hide row action buttons (default `false`) on the data table. |
 
 ---
 
@@ -44,6 +45,7 @@ Defines a single data field within the entity's schema. For a more detailed expl
 | `allow_create` | Boolean | No | Whether this field is allowed to be set on create. |
 | `allow_update` | Boolean | No | Whether this field can be updated after creation. |
 | `is_copyable` | Boolean | No | Whether the field value can be copied from UI. |
+| `is_tooltip` | Boolean | No | Whether hovering over the cell shows a tooltip with the value. |
 | `options` | Object | No | Additional options for dropdown/lookup type fields. See [Field Options Object](#field-options-object). |
 
 ### Backend Object

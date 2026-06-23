@@ -26,6 +26,7 @@ The `EntityField` class represents a single field definition. It describes how a
 | `allow_create` | bool? | No | A flag that determines if this field should be included in creation forms. |
 | `allow_update` | bool? | No | A flag that determines if this field can be modified after its initial creation. |
 | `is_copyable` | bool? | No | A flag that indicates whether the field's value can be copied from the UI, often used for displaying a copy icon next to the field. |
+| `is_tooltip` | bool? | No | A flag that indicates whether hovering over the field cell in a table shows a tooltip with the value. |
 | `options` | FieldOptions? | No | A nested configuration object for fields that require a list of options, such as dropdowns. See [FieldOptions Class](#fieldoptions-class) for more details. |
 
 ### JSON Representation
@@ -41,6 +42,7 @@ The `EntityField` is typically created from a JSON object. Here is an example of
   "auto_generated": false,
   "required": true,
   "is_copyable": true,
+  "is_tooltip": true,
   "pattern": "^[A-Za-z]+$",
   "pattern_error": "Only letters are allowed.",
   "min_length": 2,

@@ -52,7 +52,7 @@ Arranges children horizontally.
 | `x_align` | String | `left` | Horizontal alignment (`left`, `center`, `right`, `between`, `around`, `evenly`). |
 | `y_align` | String | `top` | Vertical alignment (`top`, `center`, `bottom`, `stretch`). |
 | `horizontal_gap` | Double | `12.0` | Horizontal spacing. |
-| `widthMode` / `heightMode` | String | - | `fill`, `hug`, or `fixed`. |
+| `widthMode` / `heightMode` | String | `widthMode` defaults to `fill` | `fill`, `hug`, or `fixed`. |
 | `width` / `height` | Double | - | Fixed dimensions. |
 | `flex` | Integer | - | Flex factor in parent layout. |
 

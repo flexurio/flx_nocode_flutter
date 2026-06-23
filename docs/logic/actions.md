@@ -28,6 +28,9 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `permission` | String | No | Override permission key. Default is `{entity_id}_{action_id}`. |
 | `export_format`| String | No | Format for export actions: `pdf`, `excel`, `csv`. |
 | `export_columns`| Array | No | List of columns to export `[{ "header": "Name", "body": "field_ref" }]`. |
+| `show_submit_button`| Boolean | No | Whether to show the submit button (default `true`) in layout forms opened by this action. |
+| `print` | Boolean | No | For PDF action type `display_pdf`: whether to allow printing (default `true`). |
+| `download` | Boolean | No | For PDF action type `display_pdf`: whether to allow downloading (default `true`). |
 
 ---
 

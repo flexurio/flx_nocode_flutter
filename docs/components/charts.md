@@ -39,6 +39,13 @@ Displays data as a traditional pie chart.
 ### `bar_chart`
 Displays data as a vertical bar chart (column chart).
 
+### `chart`
+A generic chart component that dynamically switches chart visualization types based on configuration.
+
+| Key | Type | Default | Description |
+| --- | --- | --- | --- |
+| `chartType` | String | `bar` | The type of chart to display: `bar`, `pie`, `donut`, or `horizontalBar`. |
+
 ## Data Shape
 
 Chart data should resolve to a list of objects. `label_key` is used for labels and `value_key` is parsed as the numeric value.
