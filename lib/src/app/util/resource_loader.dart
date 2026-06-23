@@ -15,7 +15,22 @@ Future<String> loadFromAssetOrFile({
   final resolvedBasePath = overrideBasePath ??
       (shouldUseFileSystem ? fileSystemBasePath : assetBasePath);
   final path = '$resolvedBasePath/$relativePath';
-  return shouldUseFileSystem
-      ? File(path).readAsString()
-      : rootBundle.loadString(path);
+  
+  if (shouldUseFileSystem) {
+    return File(path).readAsString();
+  } else {
+    try {
+      return await rootBundle.loadString(path);
+    } catch (e) {
+      if (!path.startsWith('packages/')) {
+        try {
+          final packagePath = 'packages/flx_nocode_flutter/$path';
+          return await rootBundle.loadString(packagePath);
+        } catch (_) {
+          // Ignore and rethrow original error
+        }
+      }
+      rethrow;
+    }
+  }
 }
