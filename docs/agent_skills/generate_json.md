@@ -145,24 +145,36 @@ Components are dynamically instantiated from their `type` field.
 
 ## 5. Actions
 
-Custom action rules triggered by buttons:
+Two common patterns for row actions:
 
+**Edit** — opens a form page:
 ```json
 {
-  "id": "approve_request",
-  "type": "http",
-  "name": "Approve",
-  "confirm_title": "Approve Confirmation",
-  "confirm_message": "Are you sure you want to approve this?",
+  "id": "edit",
+  "type": "open_page",
+  "name": "Edit",
+  "layout_form_id": "edit_item",
+  "icon": "Edit",
+  "icon_color": "#2196F3",
+  "on_success": "refresh"
+}
+```
+
+**Delete** — confirmation dialog + HTTP DELETE:
+```json
+{
+  "id": "delete",
+  "type": "show_confirmation_dialog",
+  "name": "Delete",
+  "icon": "Delete",
+  "icon_color": "#F44336",
+  "confirm_title": "Delete Item",
+  "confirm_message": "Are you sure you want to delete this item?",
   "http": {
-    "method": "POST",
-    "url": "{backend_host}/requests/{id}/approve",
-    "payload": {
-      "status": "APPROVED"
-    }
+    "method": "DELETE",
+    "url": "{{backend_host}}/items/{{id}}"
   },
-  "on_success": ["toast", "refresh"],
-  "on_failure": ["toast"]
+  "on_success": "refresh"
 }
 ```
 
@@ -175,16 +187,21 @@ Custom action rules triggered by buttons:
 > | `ActionD` (row/home/primary actions) | `"refresh"` or `["refresh", "toast"]` |
 > | `SubmitWorkflow.on_success` | `[{ "type": "close_modal" }, { "type": "refresh" }]` |
 
+> **⚠️ `workflow` is NOT a valid `type`.** Using `"type": "workflow"` results in an `"Unhandled ActionType"` error. Use `show_confirmation_dialog` with an `http` field for delete actions.
+
 ### Action Types
-- `print`: Renders printable PDF using a `layout_print_id`.
-- `create`: Navigates to a create workflow.
 - `open_page` / `show_dialog`: Displays a layout form using `layout_form_id`.
+- `show_confirmation_dialog`: Shows a confirm dialog, then executes `http` on confirm. Use for **delete actions**.
+- `http`: Performs an API request directly (no dialog).
+- `print`: Renders printable PDF using a `layout_print_id`.
+- `export`: Exports to csv/excel/pdf.
 - `list_json_view_as_table`: Visualizes raw JSON lists.
-- `http`: Performs API requests.
-- `toast`: Triggers snackbar message.
 - `refresh`: Refreshes current dataset.
 - `navigate_back`: Goes back in screen stack.
-- `export`: Exports to csv/excel.
+- `display_pdf`: Shows a PDF preview dialog.
+- `download`: Downloads a file.
+- `set_variable` / `append_variable` / `remove_variable`: Manages local state.
+- `clear_form`: Clears all form inputs.
 
 ---
 

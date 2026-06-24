@@ -38,10 +38,10 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 
 | Type | Description | Required Parameters |
 | --- | --- | --- |
-| `http` | Executes a network request. | `http` |
+| `http` | Executes a network request directly (no dialog). | `http` |
 | `open_page` | Navigates to a new page using a specific layout. | `layout_form_id` |
 | `show_dialog` | Opens a modal dialog. | `layout_form_id` |
-| `show_confirmation_dialog` | Shows a confirmation prompt before execution. | `confirm_title`, `confirm_message` |
+| `show_confirmation_dialog` | Shows a confirmation prompt, then executes the `http` call on confirm. Use this for **delete actions**. | `confirm_title`, `confirm_message`, `http` |
 | `export` | Exports data to a file (Excel/PDF). | `export_format`, `http` (to fetch data) |
 | `set_variable` | Updates a local state variable. | `target_variable`, `value` |
 | `append_variable` | Appends a value to a local state list. | `target_variable`, `value` |
@@ -52,7 +52,11 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `navigate_back` | Navigates to the previous screen. | - |
 | `print` | Triggers a PDF print workflow. | `layout_print_id`, `http` (optional) |
 | `list_json_view_as_table` | Renders nested JSON as a sub-table. | `reference` (field name) |
-| `update_row` | Updates the data of the current row in a table. | `reference` (optional field name) |
+| `display_pdf` | Displays a PDF in a preview dialog. | `http` or `value` (URL) |
+| `download` | Downloads a file. | `http` or `value` (URL) |
+| `clear_form` | Clears all form inputs. | - |
+
+> **⚠️ `workflow` is NOT a valid type.** Using `"type": "workflow"` will result in `ActionType.none` and trigger an `"Unhandled ActionType"` error. Use `show_confirmation_dialog` with an `http` field instead.
 
 ---
 
