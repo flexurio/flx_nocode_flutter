@@ -11,8 +11,8 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `id` | String | Yes | Unique identifier for the action. |
 | `type` | String | Yes | The type of behavior (see [Supported Types](#2-supported-types)). |
 | `name` | String | Yes | Display text for the action button. |
-| `icon` | String | No | Material Icon name (e.g., `check`, `print`, `visibility`). |
-| `icon_color` | String | No | Hex color code for the icon (e.g., `#4CAF50`). |
+| `icon` | String | No | Icon name matching one of the supported keys (e.g., `Edit`, `Delete`, `Visibility`). See [Available Icons](#available-icons) below. |
+| `icon_color` | String | No | Hex color code for the icon (e.g., `#4CAF50`), or a color name like `red`. |
 | `http` | Object | No | [HttpData](./http_data.md) configuration if the action involves a network request. |
 | `on_success` | String \| Array\<String\> | No | Behavior(s) on success. Must be a **plain string** or **array of strings**. Valid values: `toast`, `refresh`, `navigate_back`, `navigate_home`, `navigate_home`, `clear_form`, `show_success_dialog_with_data`. |
 | `on_failure` | String \| Array\<String\> | No | Behavior(s) on failure. Must be a **plain string** or **array of strings**. Valid values: `toast`, `show_error_dialog`, `navigate_back`. |
@@ -227,3 +227,40 @@ This example shows how to use a dropdown inside a table to update a specific fie
 }
 ```
 When a value is selected in this dropdown, it will update the `department_id` field in the current table row and notify the parent form of the change.
+
+---
+
+## Available Icons
+
+The `icon` value must exactly match one of the following keys (case-sensitive):
+
+| Key | Description |
+|---|---|
+| `Add` | Plus / Add |
+| `Edit` | Pencil / Edit |
+| `Delete` | Trash / Delete |
+| `Print` | Printer |
+| `Save` | Save |
+| `Search` | Magnifier |
+| `Refresh` | Refresh / Reload |
+| `Home` | House / Home |
+| `Settings` | Gear |
+| `Table` | Table / Grid |
+| `List` | List |
+| `Visibility` | Eye / View |
+| `Upload` | Upload Arrow |
+| `Download` | Download Arrow |
+| `Check` | Checkmark |
+| `Close` | X / Close |
+| `Info` | Info Circle |
+| `Warning` | Warning Triangle |
+| `Error` | Error Circle |
+| `Open in New` | Open External |
+| `Launch` | Launch |
+| `Touch App` | Touch / Hand |
+| `Person` | Person |
+| `Email` | Envelope |
+| `Phone` | Phone |
+| `Location` | Map Pin |
+| `Date` | Calendar |
+| `Time` | Clock |
