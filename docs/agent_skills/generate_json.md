@@ -166,6 +166,15 @@ Custom action rules triggered by buttons:
 }
 ```
 
+> **⚠️ `on_success` / `on_failure` Format Rule (ActionD Level)**
+>
+> At the **ActionD level** (`actions`, `actions_home`, `action_primary`), `on_success` and `on_failure` must be a **plain string** or an **array of strings**.
+>
+> | Context | Format |
+> |---|---|
+> | `ActionD` (row/home/primary actions) | `"refresh"` or `["refresh", "toast"]` |
+> | `SubmitWorkflow.on_success` | `[{ "type": "close_modal" }, { "type": "refresh" }]` |
+
 ### Action Types
 - `print`: Renders printable PDF using a `layout_print_id`.
 - `create`: Navigates to a create workflow.

@@ -14,8 +14,8 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `icon` | String | No | Material Icon name (e.g., `check`, `print`, `visibility`). |
 | `icon_color` | String | No | Hex color code for the icon (e.g., `#4CAF50`). |
 | `http` | Object | No | [HttpData](./http_data.md) configuration if the action involves a network request. |
-| `on_success` | String | No | Behavior on success: `toast`, `refresh`, `navigate_back`, `navigate_home`, `show_success_dialog_with_data`. |
-| `on_failure` | String | No | Behavior on failure: `toast`, `show_error_dialog`. (Uses cleaned API messages automatically). |
+| `on_success` | String \| Array\<String\> | No | Behavior(s) on success. Must be a **plain string** or **array of strings**. Valid values: `toast`, `refresh`, `navigate_back`, `navigate_home`, `navigate_home`, `clear_form`, `show_success_dialog_with_data`. |
+| `on_failure` | String \| Array\<String\> | No | Behavior(s) on failure. Must be a **plain string** or **array of strings**. Valid values: `toast`, `show_error_dialog`, `navigate_back`. |
 | `is_multiple`| Boolean | No | If `true`, this action is enabled when multiple items are selected in a table. |
 | `rule` | Object | No | A [Rule](#4-rule-based-visibility) object to determine if this action is visible for a specific row. |
 | `layout_form_id`| String| No* | The ID of the form layout to open (required for `open_page` or `show_dialog`). |
@@ -107,7 +107,31 @@ A rule consists of `all` (AND), `any` (OR), or `not` (NOT) groups of conditions.
 
 ---
 
-## 5. Templating & Variables
+## 5. `on_success` / `on_failure` Format Rules
+
+> **⚠️ Note:** `on_success` and `on_failure` on an `ActionD` (row actions, home actions, primary action) must be a **plain string** or an **array of strings**.
+
+```json
+"on_success": "refresh"
+```
+```json
+"on_success": ["refresh", "toast"]
+```
+
+### Context distinction
+
+There are **two different parsers** for `on_success` in this system:
+
+| Context | Parser | `on_success` format |
+|---|---|---|
+| `ActionD` (row/home/primary actions) | `ActionD.fromJson` | **String** or **Array\<String\>** |
+| `SubmitWorkflow` (inside `submit_workflow`) | `SubmitWorkflow.fromMap` → `WorkflowAction.fromMap` | **Array\<WorkflowAction object\>** |
+
+The `submit_workflow.on_success` uses full `WorkflowAction` objects (e.g. `{ "type": "close_modal" }`, `{ "type": "refresh" }`) because it has access to the full workflow engine. The `ActionD.on_success` is a simpler post-action handler that only resolves string identifiers.
+
+---
+
+## 6. Templating & Variables
 
 You can use `{{ ... }}` syntax in many properties (URLs, Headers, Body, `value`) to access dynamic data.
 
@@ -118,7 +142,7 @@ You can use `{{ ... }}` syntax in many properties (URLs, Headers, Body, `value`)
 
 ---
 
-## 6. Comprehensive Example
+## 7. Comprehensive Example
 
 ### Confirmation with HTTP Request & Refresh
 ```json
