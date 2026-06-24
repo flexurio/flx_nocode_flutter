@@ -89,26 +89,45 @@ Placeholders like `{backend_host}` and `{id}` are resolved at runtime.
 "backend": {
   "read_all": {
     "method": "GET",
-    "url": "{backend_host}/banks"
+    "url": "{{backend_host}}/banks",
+    "headers": { "Authorization": "Bearer {{auth_token}}" }
   },
   "read": {
     "method": "GET",
-    "url": "{backend_host}/banks/{id}"
+    "url": "{{backend_host}}/banks/{{id}}",
+    "headers": { "Authorization": "Bearer {{auth_token}}" }
   },
   "create": {
     "method": "POST",
-    "url": "{backend_host}/banks"
+    "url": "{{backend_host}}/banks",
+    "headers": { "Authorization": "Bearer {{auth_token}}" }
   },
   "update": {
     "method": "PUT",
-    "url": "{backend_host}/banks/{id}"
+    "url": "{{backend_host}}/banks/{{id}}",
+    "headers": { "Authorization": "Bearer {{auth_token}}" }
   },
   "delete": {
     "method": "DELETE",
-    "url": "{backend_host}/banks/{id}"
+    "url": "{{backend_host}}/banks/{{id}}",
+    "headers": { "Authorization": "Bearer {{auth_token}}" }
   }
 }
 ```
+
+> **Template Variable Reference**
+>
+> All `url`, `headers`, and `body` values support `{{ }}` double-brace interpolation via the JavaScript engine.
+>
+> | Variable | Description |
+> |---|---|
+> | `{{backend_host}}` | Base URL of the backend, set in app config |
+> | `{{auth_token}}` | JWT token of the logged-in user |
+> | `{{id}}` | The `id` field of the current row |
+> | `{{field_name}}` | Any field value from the current row |
+> | `{{form.field_name}}` | Field value from the current form |
+> | `{{user_id}}` | ID of the logged-in user |
+> | `{{user_name}}` | Name of the logged-in user |
 
 ---
 
@@ -172,7 +191,8 @@ Two common patterns for row actions:
   "confirm_message": "Are you sure you want to delete this item?",
   "http": {
     "method": "DELETE",
-    "url": "{{backend_host}}/items/{{id}}"
+    "url": "{{backend_host}}/items/{{id}}",
+    "headers": { "Authorization": "Bearer {{auth_token}}" }
   },
   "on_success": "refresh"
 }
