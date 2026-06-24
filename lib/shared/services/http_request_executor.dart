@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/src/app/util/file_picker_upload_registry.dart';
 import 'package:uuid/uuid.dart';
@@ -462,6 +463,7 @@ class HttpRequestExecutor {
   }
 
   void _sendStudioLog(Map<String, dynamic> payload) {
+    if (kIsWeb) return;
     final studioPort = Platform.environment['STUDIO_PORT'];
     if (studioPort == null || studioPort.isEmpty) return;
 

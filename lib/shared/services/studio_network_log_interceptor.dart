@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 class StudioNetworkLogInterceptor extends Interceptor {
@@ -84,6 +85,7 @@ class StudioNetworkLogInterceptor extends Interceptor {
   }
 
   void _sendStudioLog(Map<String, dynamic> payload) {
+    if (kIsWeb) return;
     final studioPort = Platform.environment['STUDIO_PORT'];
     if (studioPort == null || studioPort.isEmpty) return;
 
