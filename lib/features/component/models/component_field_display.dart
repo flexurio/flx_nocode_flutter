@@ -34,6 +34,9 @@ class ComponentFieldDisplay extends Component {
   /// The non-editable value displayed under the label.
   final String value;
 
+  /// The type of data to format or resolve (e.g. 'user_name', 'user_name_with_id').
+  final String? valueType;
+
   final ComponentSizeMode? widthMode;
   final double? width;
   final int? flex;
@@ -42,6 +45,7 @@ class ComponentFieldDisplay extends Component {
     required super.id,
     required this.label,
     required this.value,
+    this.valueType,
     this.widthMode,
     this.width,
     this.flex,
@@ -66,11 +70,13 @@ class ComponentFieldDisplay extends Component {
 
     final label = map['label']?.toString().trim() ?? '';
     final value = map['value']?.toString().trim() ?? '';
+    final valueType = map['valueType']?.toString().trim() ?? map['value_type']?.toString().trim();
 
     return ComponentFieldDisplay(
       id: id,
       label: label,
       value: value,
+      valueType: valueType,
       widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: double.tryParse(map['width']?.toString() ?? ''),
       flex: int.tryParse(map['flex']?.toString() ?? ''),
@@ -94,6 +100,7 @@ class ComponentFieldDisplay extends Component {
         ...super.toMap(),
         'label': label,
         'value': value,
+        if (valueType != null) 'valueType': valueType,
         'widthMode': widthMode?.name,
         'width': width,
         'flex': flex,

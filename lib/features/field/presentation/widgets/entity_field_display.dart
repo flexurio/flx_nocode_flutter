@@ -6,6 +6,8 @@ import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/src/app/model/layout_list_tile.dart';
+import 'package:flx_nocode_flutter/shared/services/employee_cache.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 
 class EntityFieldDisplay {
   const EntityFieldDisplay._();
@@ -67,6 +69,33 @@ class EntityFieldDisplay {
         final parsed = num.tryParse(value.toString());
         widget = Text(parsed?.format(field.decimal) ?? 'type is not number');
       }
+    } else if (field.isUserName) {
+      // Tampilkan nama user berdasarkan ID (nip/user_id)
+      final token = UserRepositoryApp.instance.token ?? '';
+      widget = FutureBuilder<String?>(
+        future: EmployeeCache.instance.findName(
+          accessToken: token,
+          userId: value,
+        ),
+        builder: (context, snapshot) {
+          return Text(snapshot.data ?? '-');
+        },
+      );
+    } else if (field.isUserNameWithId) {
+      // Tampilkan NIP - Nama user, contoh: "1801005 - Bimo Fikri Wicaksono"
+      final token = UserRepositoryApp.instance.token ?? '';
+      widget = FutureBuilder<String?>(
+        future: EmployeeCache.instance.findNameWithId(
+          accessToken: token,
+          userId: value,
+        ),
+        builder: (context, snapshot) {
+          return Text(snapshot.data ?? value.toString());
+        },
+      );
+    } else if (field.isUserId) {
+      // Tampilkan NIP/ID saja, contoh: "1801005"
+      widget = Text(value.toString());
     } else {
       widget = Text(LayoutListTile.getValue(value));
     }

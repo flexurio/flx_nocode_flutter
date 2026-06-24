@@ -7,6 +7,9 @@ extension EntityFieldDomainX on EntityField {
   bool get isBool => typeEnum == EntityFieldType.bool;
   bool get isPermission => type == 'permission';
   bool get isNumber => typeEnum == EntityFieldType.number;
+  bool get isUserName => type == 'user_name';
+  bool get isUserNameWithId => type == 'user_name_with_id';
+  bool get isUserId => type == 'user_id';
 
   /// Returns the enum representation of the field type.
   EntityFieldType get typeEnum {
