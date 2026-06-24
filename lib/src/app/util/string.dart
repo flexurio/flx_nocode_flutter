@@ -12,19 +12,19 @@ extension StringReplaceExtension on String {
       {bool urlEncode = false}) {
     var url = this;
 
-    // {user.token}
-    url = url.replaceAll(
-      '{user.token}',
-      UserRepositoryApp.instance.token ?? '',
+    // {user.token} — but not when inside {{...}}
+    url = url.replaceAllMapped(
+      RegExp(r'(?<!\{)\{user\.token\}(?!\})'),
+      (match) => UserRepositoryApp.instance.token ?? '',
     );
 
-    // {key}
+    // {key} — but not when inside {{...}} (double braces)
     for (final key in data.keys) {
       final value = data[key];
       final str = value?.toString() ?? '';
-      url = url.replaceAll(
-        '{$key}',
-        urlEncode ? Uri.encodeComponent(str) : str,
+      url = url.replaceAllMapped(
+        RegExp('(?<!\\{)\\{${RegExp.escape(key)}\\}(?!\\})'),
+        (match) => urlEncode ? Uri.encodeComponent(str) : str,
       );
     }
     return url;
@@ -34,14 +34,14 @@ extension StringReplaceExtension on String {
       {bool urlEncode = false}) {
     var url = this;
 
-    // {user.token}
-    url = url.replaceAll(
-      '{user.token}',
-      UserRepositoryApp.instance.token ?? '',
+    // {user.token} — but not when inside {{...}}
+    url = url.replaceAllMapped(
+      RegExp(r'(?<!\{)\{user\.token\}(?!\})'),
+      (match) => UserRepositoryApp.instance.token ?? '',
     );
 
-    // {selected.<field>} -> gabungan nilai dari setiap item data untuk field tsb, dipisah koma
-    final selectedFieldRegex = RegExp(r'\{selected\.([a-zA-Z0-9_]+)\}');
+    // {selected.<field>} — but not when inside {{...}}
+    final selectedFieldRegex = RegExp(r'(?<!\{)\{selected\.([a-zA-Z0-9_]+)\}(?!\})');
     url = url.replaceAllMapped(selectedFieldRegex, (match) {
       final field = match.group(1)!;
       final parts = <String>[];
