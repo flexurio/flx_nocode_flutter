@@ -27,6 +27,7 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_f
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_form.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_multi_dropdown.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_conditional.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_user_name.dart';
 
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
@@ -107,6 +108,8 @@ extension ComponentWidget on Component {
     } else if (this.type == ComponentConditional.componentId) {
       return (this as ComponentConditional)
           .toWidget(fullData, isSmall: isSmall);
+    } else if (this.type == ComponentUserName.componentId) {
+      return (this as ComponentUserName).toWidget(fullData);
     }
 
     return NoCodeError('Unknown component type: ${this.type}');
@@ -167,6 +170,8 @@ extension ComponentWidget on Component {
       return (this as ComponentForm).toMockWidget();
     } else if (this.type == ComponentConditional.componentId) {
       return (this as ComponentConditional).toMockWidget();
+    } else if (this.type == ComponentUserName.componentId) {
+      return (this as ComponentUserName).toMockWidget();
     }
 
     return Text('Mock Widget: $type');

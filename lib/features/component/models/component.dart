@@ -27,6 +27,7 @@ export 'package:flx_nocode_flutter/features/component/models/component_form.dart
 export 'package:flx_nocode_flutter/features/component/models/component_multi_dropdown.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_conditional.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
+export 'package:flx_nocode_flutter/features/component/models/component_user_name.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
 import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
 import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
@@ -55,6 +56,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_file_pick
 import 'package:flx_nocode_flutter/features/component/models/component_form.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_multi_dropdown.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_conditional.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_user_name.dart';
 
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
@@ -140,6 +142,8 @@ class Component {
         return ComponentForm.fromMap(map);
       case ComponentType.conditional:
         return ComponentConditional.fromMap(map);
+      case ComponentType.userName:
+        return ComponentUserName.fromMap(map);
 
       default:
         throw FormatException('Unknown component type "$type"');
@@ -211,6 +215,8 @@ class Component {
         return ComponentForm.empty(Component._generateId(type));
       case ComponentType.conditional:
         return ComponentConditional.empty(Component._generateId(type));
+      case ComponentType.userName:
+        return ComponentUserName.empty(Component._generateId(type));
 
       default:
         throw FormatException('Unknown component type "$type"');
@@ -328,6 +334,7 @@ class ComponentType {
   static const String filePicker = 'file_picker';
   static const String form = 'form';
   static const String conditional = 'conditional';
+  static const String userName = 'user_name';
 
   static const List<ComponentTypeEntry> values = [
     ComponentTypeEntry(id: table, label: 'Table'),
@@ -357,6 +364,7 @@ class ComponentType {
     ComponentTypeEntry(id: filePicker, label: 'File Picker'),
     ComponentTypeEntry(id: form, label: 'Form'),
     ComponentTypeEntry(id: conditional, label: 'Conditional'),
+    ComponentTypeEntry(id: userName, label: 'User Name'),
   ];
 
   static String labelOf(String type) => values

@@ -40,6 +40,7 @@ Renders a read-only labeled value.
 | --- | --- | --- | --- |
 | `label` | String | - | Label displayed above the value. |
 | `value` | String | - | Text value to display. |
+| `valueType` / `value_type` | String | - | Tipe data resolusi user/employee. Opsi: `"user_name"`, `"user_name_with_id"`, `"user_id"`. |
 | `widthMode` | String | `hug` | `fill`, `hug`, or `fixed`. |
 | `flex` | Integer | - | Flex factor. |
 
@@ -52,6 +53,18 @@ Example:
   "label": "Customer",
   "value": "{{data.customer.name}}",
   "widthMode": "fill"
+}
+```
+
+Example with User Resolution:
+
+```json
+{
+  "id": "created_by_display",
+  "type": "field_display",
+  "label": "Created By",
+  "value": "{{data.created_by_id}}",
+  "valueType": "user_name"
 }
 ```
 
@@ -128,3 +141,100 @@ Example:
   "fit": "cover"
 }
 ```
+
+---
+
+## User Field Types
+
+Tiga tipe field khusus untuk menampilkan data user/employee berdasarkan ID (nip/user_id).
+
+Ketiga tipe ini menggunakan `EmployeeCache` — data di-fetch sekali dari endpoint `/users`
+lalu disimpan di cache lokal. Pencarian menggunakan ID yang bisa bertipe `int` maupun `String`,
+keduanya diperlakukan sama (mis. `1801005` dan `"1801005"` menghasilkan hasil yang sama).
+
+### Perbandingan Tipe
+
+| Type | Contoh Output | Keterangan |
+| --- | --- | --- |
+| `user_id` | `1801005` | Hanya NIP/ID — tidak perlu lookup ke cache |
+| `user_name` | `Bimo Fikri Wicaksono` | Hanya nama — lookup ke cache |
+| `user_name_with_id` | `1801005 - Bimo Fikri Wicaksono` | NIP + nama — lookup ke cache |
+
+---
+
+### `user_id`
+Menampilkan nilai NIP/ID user **apa adanya** tanpa lookup nama. Cocok ketika hanya perlu
+menampilkan kode identifikasi user.
+
+**Contoh penggunaan di `fields`:**
+
+```json
+{
+  "label": "NIP Inisiator",
+  "reference": "created_by_id",
+  "type": "user_id"
+}
+```
+
+> Tidak membutuhkan jaringan/cache — langsung render nilai dari data.
+
+---
+
+### `user_name`
+Menampilkan **nama user** berdasarkan ID-nya. Data diambil dari `EmployeeCache`.
+
+**Contoh penggunaan di `fields`:**
+
+```json
+{
+  "label": "Inisiator",
+  "reference": "created_by_id",
+  "type": "user_name"
+}
+```
+
+> Jika user tidak ditemukan di cache, menampilkan tanda `-`.
+
+---
+
+### `user_name_with_id`
+Menampilkan **NIP dan nama** sekaligus dalam format `"NIP - Nama"`.
+Cocok untuk kolom tabel yang membutuhkan identifikasi sekaligus keterbacaan nama.
+
+**Contoh penggunaan di `fields`:**
+
+```json
+{
+  "label": "Inisiator",
+  "reference": "created_by_id",
+  "type": "user_name_with_id"
+}
+```
+
+> Jika nama tidak ditemukan, hanya menampilkan ID-nya saja.
+
+---
+
+### `user_name` (sebagai Component)
+
+Selain sebagai field type di `entity.json`, `user_name` juga tersedia sebagai **komponen nocode**
+yang dapat digunakan di `layout_form` atau komponen lainnya.
+
+| Key | Type | Default | Description |
+| --- | --- | --- | --- |
+| `label` | String | `""` | Label opsional yang ditampilkan di atas nama. |
+| `userId` | String | - | Ekspresi user ID. Mendukung interpolasi `{{data.created_by_id}}`. |
+| `widthMode` | String | - | `fill`, `hug`, atau `fixed`. |
+| `width` | Double | - | Lebar tetap. |
+| `flex` | Integer | - | Flex factor. |
+
+```json
+{
+  "id": "created_by_name",
+  "type": "user_name",
+  "label": "Dibuat Oleh",
+  "userId": "{{data.created_by_id}}"
+}
+```
+
+> Jika user tidak ditemukan atau `userId` kosong, komponen menampilkan tanda `-`.

@@ -51,6 +51,10 @@ Many components share these layout and behavioral properties:
 | `chart` | Chart | Generic chart component with dynamic type switcher. |
 | `form` | Structural | Nested validation group. |
 | `conditional` | Logic | Render `then` or `else` component based on a condition. |
+| `user_name` | Display | Nocode component to display a user's name from their ID (nip/user_id). |
+
+> **Note on User Resolution**:
+> Resolusi nama user berdasarkan ID/NIP didukung secara native menggunakan komponen `user_name`. Anda juga bisa me-resolve nama user di dalam komponen `field_display` menggunakan properti `valueType` dengan opsi `"user_name"`, `"user_name_with_id"`, atau `"user_id"`.
 
 ## Data Binding Notes
 
