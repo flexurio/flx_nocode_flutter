@@ -56,6 +56,12 @@ class LayoutForm extends HiveObject {
         _collectComponents(c.children, dest);
       } else if (c is ComponentContainer && c.child != null) {
         _collectComponents([c.child!], dest);
+      } else if (c is ComponentConditional) {
+        final branches = <Component>[c.then];
+        if (c.otherwise != null) {
+          branches.add(c.otherwise!);
+        }
+        _collectComponents(branches, dest);
       }
     }
   }

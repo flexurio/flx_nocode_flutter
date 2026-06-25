@@ -62,6 +62,12 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
         _collectComponentIds(c.children, ids);
       } else if (c is ComponentContainer && c.child != null) {
         _collectComponentIds([c.child!], ids);
+      } else if (c is ComponentConditional) {
+        final branches = <Component>[c.then];
+        if (c.otherwise != null) {
+          branches.add(c.otherwise!);
+        }
+        _collectComponentIds(branches, ids);
       }
     }
   }
