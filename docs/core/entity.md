@@ -97,9 +97,21 @@ Defines the options for a dropdown or lookup field.
 | `label_field` | String | Yes | The field from the source data to use as the display label. |
 | `value_field` | String | Yes | The field from the source data to use as the selected value. |
 
-### View, Export, and Action Objects
+### View Object
 
-These objects define custom behaviors. Their structure can vary. Please refer to the source code for `DView` and `Export` for detailed implementation. For the `Action` object, see the [Action Documentation](./actions.md).
+Defines a custom view navigation action on a data table row to link to another entity page. Natively renders a back button and breadcrumb trails for navigation.
+
+| Key | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | String | No | Unique identifier of the view configuration (optional, defaults to label). |
+| `label` | String | Yes | Display label on the UI (e.g., in row action popup menus). |
+| `entity` | String | Yes | The ID of the target entity JSON configuration to navigate to. |
+| `filter` | Object | Yes | A mapping of target field references (keys) to current row field references (values) used as initial filters on target entity page. |
+| `rule` | Object | No | Optional conditional rule layout defining when the view action is visible. |
+
+### Export and Action Objects
+
+These objects define custom behaviors. Their structure can vary. Please refer to the source code for `Export` for detailed implementation. For the `Action` object, see the [Action Documentation](./actions.md).
 
 ---
 
@@ -187,6 +199,16 @@ These objects define custom behaviors. Their structure can vary. Please refer to
     "product_name": 3,
     "category_id": 2,
     "price": 1
-  }
+  },
+  "views": [
+    {
+      "id": "view_product_transactions",
+      "label": "Product Transactions",
+      "entity": "product_transactions",
+      "filter": {
+        "product_id": "id"
+      }
+    }
+  ]
 }
 ```
