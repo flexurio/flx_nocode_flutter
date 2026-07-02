@@ -47,8 +47,11 @@ class FilePickerUploadRegistry {
       return Future.wait(value.map(toMultipartIfRegistered));
     }
 
-    if (value is Map<String, dynamic>) {
-      return prepareFormDataMap(value);
+    if (value is Map) {
+      if (value.containsKey('id')) {
+        return value['id'];
+      }
+      return prepareFormDataMap(Map<String, dynamic>.from(value));
     }
 
     return value;
