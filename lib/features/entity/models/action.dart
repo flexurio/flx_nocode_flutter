@@ -27,7 +27,8 @@ enum ActionType {
   clearForm('clear_form', 'Clear Form'),
   export('export', 'Export'),
   displayPdf('display_pdf', 'Display PDF'),
-  download('download', 'Download File');
+  download('download', 'Download File'),
+  workflow('workflow', 'Workflow');
 
   final String id;
   final String label;
@@ -119,6 +120,9 @@ class ActionD extends HiveObject {
   final bool canPrint;
   final bool canDownload;
 
+  /// The workflow to execute for workflow action type.
+  final Map<String, dynamic>? workflow;
+
   ActionD({
     required this.isMultiple,
     required this.onSuccess,
@@ -152,6 +156,7 @@ class ActionD extends HiveObject {
     this.filterFields = const [],
     this.canPrint = true,
     this.canDownload = true,
+    this.workflow,
   }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       assert(layoutFormId != null && layoutFormId!.isNotEmpty,
@@ -193,6 +198,7 @@ class ActionD extends HiveObject {
     List<Component>? filterFields,
     bool? canPrint,
     bool? canDownload,
+    Map<String, dynamic>? workflow,
   }) {
     return ActionD(
       exportFormat: exportFormat ?? this.exportFormat,
@@ -227,6 +233,7 @@ class ActionD extends HiveObject {
       filterFields: filterFields ?? this.filterFields,
       canPrint: canPrint ?? this.canPrint,
       canDownload: canDownload ?? this.canDownload,
+      workflow: workflow ?? this.workflow,
     );
   }
 
@@ -301,6 +308,7 @@ class ActionD extends HiveObject {
           : const [],
       canPrint: json['print'] ?? true,
       canDownload: json['download'] ?? true,
+      workflow: json['workflow'] != null ? Map<String, dynamic>.from(json['workflow'] as Map) : null,
     );
   }
 
@@ -345,6 +353,7 @@ class ActionD extends HiveObject {
       'filter_fields': filterFields.map((e) => e.toMap()).toList(),
       'print': canPrint,
       'download': canDownload,
+      if (workflow != null) 'workflow': workflow,
     };
   }
 
@@ -360,6 +369,7 @@ class ActionD extends HiveObject {
         return DataAction.add;
       case ActionType.showConfirmationDialog:
       case ActionType.http:
+      case ActionType.workflow:
         return DataAction.confirm;
       case ActionType.export:
         return DataAction.export;

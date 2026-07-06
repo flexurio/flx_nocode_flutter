@@ -17,6 +17,8 @@ import 'package:printing/printing.dart';
 import 'package:flx_nocode_flutter/src/app/util/general_xlsx.dart';
 import 'package:flx_nocode_flutter/src/app/util/picker_file.dart';
 import 'package:flx_nocode_flutter/features/print/domain/json_pdf_generator.dart';
+import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
+import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
 
 import 'action_confirm_dialog_extension.dart';
 import 'action_handler_extension.dart';
@@ -94,6 +96,15 @@ extension ActionExecutionExtension on ActionD {
             data,
             onSuccessCallback: onSuccessCallback,
           ),
+        );
+        break;
+
+      case ActionType.workflow:
+        await executeWorkflowSingle(
+          entity,
+          context,
+          data,
+          onSuccessCallback: onSuccessCallback,
         );
         break;
 
@@ -433,6 +444,66 @@ extension ActionExecutionExtension on ActionD {
         Toast(context).fail('Unhandled ActionType: $type');
         break;
     }
+  }
+
+  Future<void> executeWorkflowSingle(
+    EntityCustom entity,
+    BuildContext context,
+    JsonMap data, {
+    VoidCallback? onSuccessCallback,
+  }) async {
+    if (workflow == null) {
+      Toast(context).fail('No workflow definition found');
+      handleOnFailure(context, 'No workflow definition found');
+      return;
+    }
+
+    await showConfirmDialog(
+      context: context,
+      action: action,
+      label: name,
+      confirmationMessageText: confirmMessage,
+      onConfirm: (ctx) async {
+        try {
+          final formMap = data['form'] is Map ? Map<String, dynamic>.from(data['form'] as Map) : <String, dynamic>{};
+          final recordMap = data['data'] is Map ? Map<String, dynamic>.from(data['data'] as Map) : Map<String, dynamic>.from(data);
+          
+          final definition = WorkflowDefinition.fromJson(workflow!);
+          final executor = GetxHttpExecutor();
+
+          final workflowCtx = WorkflowContext(
+            form: formMap,
+            data: recordMap,
+            auth: AuthContext(
+              permissions: UserRepositoryApp.instance.permissions,
+            ),
+            httpExecutor: executor,
+            validator: (scope, _) async {},
+          );
+
+          final result = await WorkflowExecutor(definition).run(workflowCtx);
+
+          if (result.isSuccess) {
+            Toast(context).success('Workflow completed successfully');
+            await handleOnSuccessSingle(
+              entity: entity,
+              context: context,
+              responseData: result.data,
+              data: data,
+              onSuccessCallback: onSuccessCallback,
+            );
+          } else {
+            final message = workflowCtx.vars['last_error']?.toString() ?? result.error?.message ?? 'Workflow failed';
+            Toast(context).fail(message);
+            handleOnFailure(context, message);
+          }
+        } catch (e) {
+          final message = e.toString();
+          Toast(context).fail(message);
+          handleOnFailure(context, message, raw: e);
+        }
+      },
+    );
   }
 
   Future<void> executeHttpSingle(

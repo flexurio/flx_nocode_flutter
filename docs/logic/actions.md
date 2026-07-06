@@ -21,8 +21,8 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `layout_form_id`| String| No* | The ID of the form layout to open (required for `open_page` or `show_dialog`). |
 | `layout_print_id`| String| No* | The ID of the print layout to use (required for `print`). |
 | `width` | Double | No | Custom width for the dialog or side panel (default depends on platform). |
-| `confirm_title`| String | No | Title for the confirmation dialog (for `show_confirmation_dialog`). |
-| `confirm_message`| String| No | Message for the confirmation dialog. |
+| `confirm_title`| String | No | Title for the confirmation dialog (for `show_confirmation_dialog` or `workflow`). |
+| `confirm_message`| String| No | Message for the confirmation dialog (for `show_confirmation_dialog` or `workflow`). |
 | `target_variable`| String| No | Name of the variable to store the result in (for `set_variable` or `http` results). |
 | `value` | String | No | The value to set (supports JS interpolation for `set_variable`). |
 | `permission` | String | No | Override permission key. Default is `{entity_id}_{action_id}`. |
@@ -31,6 +31,7 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `show_submit_button`| Boolean | No | Whether to show the submit button (default `true`) in layout forms opened by this action. |
 | `print` | Boolean | No | For PDF action type `display_pdf`: whether to allow printing (default `true`). |
 | `download` | Boolean | No | For PDF action type `display_pdf`: whether to allow downloading (default `true`). |
+| `workflow` | Object | No* | The workflow configuration to execute (required for `workflow` type). See [Submit Workflow](./submit_workflow.md). |
 
 ---
 
@@ -55,8 +56,10 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `display_pdf` | Displays a PDF in a preview dialog. | `http` or `value` (URL) |
 | `download` | Downloads a file. | `http` or `value` (URL) |
 | `clear_form` | Clears all form inputs. | - |
+| `workflow` | Executes a custom workflow definition. | `workflow` |
 
-> **⚠️ `workflow` is NOT a valid type.** Using `"type": "workflow"` will result in `ActionType.none` and trigger an `"Unhandled ActionType"` error. Use `show_confirmation_dialog` with an `http` field instead.
+> **💡 `workflow` is a valid action type.** Using `"type": "workflow"` will execute a custom workflow definition. See [submit_workflow.md](./submit_workflow.md) for details on how to configure the `workflow` object structure.
+
 
 ---
 
