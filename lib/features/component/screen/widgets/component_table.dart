@@ -7,16 +7,6 @@ import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:get/get.dart';
 import 'component_table_controller.dart';
 
-/// Indicates why a table reload was triggered.
-///
-/// - [dependsOn]: An explicitly declared dependency field changed (e.g. product_id).
-///   This means upstream data has changed and we MUST fetch fresh data from HTTP,
-///   discarding any cached local data held in the referenceId controller.
-/// - [referenceId]: The referenceId field itself changed (e.g. from append_variable).
-///   Local data is valid; no need to force HTTP.
-/// - [initialValue]: The resolved initial_value template changed.
-enum _ReloadReason { dependsOn, referenceId, initialValue }
-
 extension ComponentTableWidgets on ComponentTable {
   Widget toWidget(JsonMap data) {
     return _ComponentTableWidget(component: this, data: data);
@@ -178,14 +168,7 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
     if (oldWidget.data != widget.data) {
       controller.updateContextData(widget.data);
 
-      final reloadReason = _getReloadReason(oldWidget.data, widget.data);
-      if (reloadReason != null) {
-        // If reload is triggered by a dependsOn field change (not just referenceId),
-        // we must clear the referenceId controller first. Otherwise loadData() will
-        // early-return with stale local data instead of fetching from HTTP.
-        if (reloadReason == _ReloadReason.dependsOn) {
-          _clearReferenceIdController();
-        }
+      if (_shouldReload(oldWidget.data, widget.data)) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             controller.loadData();
@@ -195,26 +178,7 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
     }
   }
 
-  /// Clears the referenceId controller so that loadData() is forced to fetch
-  /// from HTTP instead of early-returning with stale local data.
-  /// Also updates contextData immediately so the cleared value is visible
-  /// when loadData() executes in the next frame.
-  void _clearReferenceIdController() {
-    final refId = widget.component.referenceId;
-    if (refId == null || refId.isEmpty) return;
-
-    final allControllers =
-        widget.data['allControllers'] as Map<String, dynamic>?;
-    final ctrl = allControllers?[refId];
-    if (ctrl is TextEditingController && ctrl.text.isNotEmpty) {
-      ctrl.text = '';
-      // Update contextData immediately so loadData() (called via postFrameCallback)
-      // sees the empty referenceId value and proceeds to HTTP fetch.
-      controller.updateContextData({...controller.contextData, refId: ''});
-    }
-  }
-
-  _ReloadReason? _getReloadReason(JsonMap oldData, JsonMap newData) {
+  bool _shouldReload(JsonMap oldData, JsonMap newData) {
     // 1. Check if the resolved initial_value has changed
     if (widget.component.initial_value is String &&
         (widget.component.initial_value as String).contains('{{')) {
@@ -223,33 +187,29 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
       final newResolved = (widget.component.initial_value as String)
           .interpolateJavascript(newData);
 
-      if (oldResolved != newResolved) return _ReloadReason.initialValue;
+      if (oldResolved != newResolved) return true;
     }
 
-    // 2. Check explicit dependsOn fields FIRST — these represent intentional
-    //    upstream data changes (e.g. product_id changed) and must force an
-    //    HTTP reload, clearing any cached local data.
-    if (widget.component.dependsOn.isNotEmpty) {
-      for (final depId in widget.component.dependsOn) {
-        final oldValue = _getValue(oldData, depId);
-        final newValue = _getValue(newData, depId);
-        if (oldValue != newValue) return _ReloadReason.dependsOn;
-      }
-    }
-
-    // 3. Check reference_id change (lower priority — may be triggered by
-    //    notifyChanged itself; does NOT clear local cache)
+    // 2. Check reference_id change
     if (widget.component.referenceId != null &&
         widget.component.referenceId!.isNotEmpty) {
       final oldValue = oldData[widget.component.referenceId];
       final newValue = newData[widget.component.referenceId];
-      if (oldValue != newValue) return _ReloadReason.referenceId;
+      if (oldValue != newValue) return true;
     }
 
-    return null;
+    // 3. Check explicit dependencies
+    if (widget.component.dependsOn.isEmpty) return false;
+
+    for (final depId in widget.component.dependsOn) {
+      final oldValue = _getValue(oldData, depId);
+      final newValue = _getValue(newData, depId);
+
+      if (oldValue != newValue) return true;
+    }
+
+    return false;
   }
-
-
 
   dynamic _getValue(JsonMap data, String id) {
     final val = data[id];
