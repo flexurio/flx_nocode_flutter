@@ -111,7 +111,7 @@ class ComponentTableController extends GetxController {
           }
         }
 
-        if (localData is List) {
+        if (localData is List && localData.isNotEmpty) {
           rows.value = _parseRows(localData);
           isLoading.value = false;
           notifyChanged();
