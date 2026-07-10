@@ -77,3 +77,29 @@ If a JavaScript expression inside `{{ ... }}` has an error, or if it evaluates t
 **Example:**
 
 If `user.profile` does not exist, the string `Your profile is at {{ user.profile.url }}` will remain unchanged, making it easier to spot and debug the issue.
+
+## Release Mode (Web/WASM) & CSP Compatibility
+
+When compiling the application for Web (specifically in **Release Mode** or targeting **WASM**) or deploying under strict **Content Security Policy (CSP)** headers, standard JavaScript dynamic execution (`eval()`) is restricted or completely blocked by the browser.
+
+To prevent runtime crashes and ensure templates compile successfully in all environments, the framework includes a built-in Dart-based **Shortcut Evaluator**.
+
+### Supported Optimization Patterns
+
+The following patterns are evaluated natively in Dart and **do not** require browser `eval()`:
+
+1. **Path Access**: Standard property lookup (e.g. `form.product_id`, `item.name`).
+2. **Literals**: Quoted strings (e.g., `'default'`, `"value"`), numbers, `null`, `true`, `false`, and `undefined`.
+3. **Parentheses Stripping**: Sub-expressions wrapped in outer balanced parentheses (e.g., `(a + b)` is parsed as `a + b`).
+4. **String Concatenation**: String addition (e.g., `item.specification_code + '-' + form.product_no`).
+5. **Logical OR (`||`)**: Fallbacks (e.g., `item.nie_code || ''` or `item.nie || 'default'`).
+6. **Logical AND (`&&`)**: Guard conditions (e.g., `form.nie_code && 'yes'`).
+7. **Ternary Operators**: Conditionals (e.g., `condition ? 'yes' : 'no'`).
+8. **Date Helpers**: `now()`, `now(format)`, `formatDate(new Date(val), format)`.
+9. **Basic Comparisons**: Equality check operators (`==`, `!=`, `===`, `!==`).
+
+### Best Practices
+
+> [!IMPORTANT]
+> To ensure compatibility in Web release and WASM environments, **avoid** using complex JavaScript functions, array operations (e.g. `map`, `filter`, `reduce`), regex, or standard JS prototype methods (e.g. `.indexOf()`, `.trim()`, `.toUpperCase()`) in your layout configuration expressions. Keep expressions simple and align them with the supported shortcut evaluator patterns.
+

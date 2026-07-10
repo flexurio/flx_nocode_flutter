@@ -204,5 +204,71 @@ void main() {
             '2605');
       });
     });
+
+    group('Shortcut Evaluator Enhancements', () {
+      test('should strip outer parentheses and evaluate concatenation', () {
+        final variables = {
+          'form': {
+            'product_no': 'P01',
+          },
+          'item': {
+            'specification_code': 'SPEC',
+          }
+        };
+        final result = '{{ (item.specification_code + "-" + form.product_no) }}'.interpolateJavascript(variables);
+        expect(result, 'SPEC-P01');
+      });
+
+      test('should resolve logical OR expressions correctly', () {
+        final variables = {
+          'item': {
+            'nie_code': '',
+            'nie': 'NIE123',
+          }
+        };
+        expect('{{ item.nie_code || "default" }}'.interpolateJavascript(variables), 'default');
+        expect('{{ item.nie_code || item.nie || "default" }}'.interpolateJavascript(variables), 'NIE123');
+      });
+
+      test('should resolve logical AND expressions correctly', () {
+        final variables = {
+          'form': {
+            'nie_code': 'POMSD123',
+          }
+        };
+        expect('{{ form.nie_code && "yes" }}'.interpolateJavascript(variables), 'yes');
+        
+        final variablesEmpty = {
+          'form': {
+            'nie_code': '',
+          }
+        };
+        expect('{{ form.nie_code && "yes" }}'.interpolateJavascript(variablesEmpty), '');
+      });
+
+      test('should evaluate complex ternary with concatenation and logical OR', () {
+        final variables = {
+          'form': {
+            'specification_code': 'SPEC',
+          },
+          'item': {
+            'product_no': 'P01',
+          }
+        };
+        final result = '{{ form.specification_code ? (form.specification_code + "-" + item.product_no) : "" }}'.interpolateJavascript(variables);
+        expect(result, 'SPEC-P01');
+
+        final variablesEmpty = {
+          'form': {
+            'specification_code': '',
+          },
+          'item': {
+            'product_no': 'P01',
+          }
+        };
+        final resultEmpty = '{{ form.specification_code ? (form.specification_code + "-" + item.product_no) : "" }}'.interpolateJavascript(variablesEmpty);
+        expect(resultEmpty, '');
+      });
+    });
   });
 }

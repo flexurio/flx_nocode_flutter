@@ -24,8 +24,28 @@ class JsShortcutEvaluator {
   /// Returns [EvaluationResult.success] with the result if patterns were matched,
   /// otherwise returns [EvaluationResult.failure].
   EvaluationResult tryEvaluate(String expr, Map<String, dynamic> variables) {
-    final trimmed = expr.trim();
+    var trimmed = expr.trim();
     if (trimmed.isEmpty) return EvaluationResult.success('');
+
+    // Strip outer parentheses if balanced (e.g. "(a + b)" -> "a + b")
+    if (trimmed.startsWith('(') && trimmed.endsWith(')')) {
+      var count = 0;
+      var balanced = true;
+      for (var i = 0; i < trimmed.length; i++) {
+        if (trimmed[i] == '(') {
+          count++;
+        } else if (trimmed[i] == ')') {
+          count--;
+          if (count == 0 && i < trimmed.length - 1) {
+            balanced = false;
+            break;
+          }
+        }
+      }
+      if (balanced && count == 0) {
+        trimmed = trimmed.substring(1, trimmed.length - 1).trim();
+      }
+    }
 
     // 1. Simple path access (e.g. "form.name") or literals (e.g. "null", "true", "'Hello'")
     if (_isSimplePath(trimmed)) {
@@ -78,7 +98,19 @@ class JsShortcutEvaluator {
       if (val != null) return EvaluationResult.success(val);
     }
 
-    // 8. Basic Equality Comparisons (e.g. "a === b")
+    // 8. Logical OR expressions (e.g. "a || b")
+    if (trimmed.contains('||')) {
+      final val = _resolveLogicalOr(trimmed, variables);
+      if (val != null) return EvaluationResult.success(val);
+    }
+
+    // 9. Logical AND expressions (e.g. "a && b")
+    if (trimmed.contains('&&')) {
+      final val = _resolveLogicalAnd(trimmed, variables);
+      if (val != null) return EvaluationResult.success(val);
+    }
+
+    // 10. Basic Equality Comparisons (e.g. "a === b")
     if (trimmed.contains('==') || trimmed.contains('!=')) {
       final val = _resolveComparison(trimmed, variables);
       if (val != null) return EvaluationResult.success(val);
@@ -249,5 +281,94 @@ class JsShortcutEvaluator {
       return true;
     }
     return true;
+  }
+
+  /// Resolves logical OR expressions: a || b
+  dynamic _resolveLogicalOr(String expr, Map<String, dynamic> vars) {
+    final parts = _splitByLogicalOr(expr);
+    if (parts.length <= 1) return null;
+
+    for (final part in parts) {
+      final eval = tryEvaluate(part, vars);
+      if (eval.success) {
+        if (asBool(eval.value)) {
+          return eval.value;
+        }
+      } else {
+        final val = _resolvePath(part, vars);
+        if (val != null && asBool(val)) {
+          return val;
+        }
+      }
+    }
+    final lastPart = parts.last;
+    final lastEval = tryEvaluate(lastPart, vars);
+    if (lastEval.success) return lastEval.value;
+    return _resolvePath(lastPart, vars) ?? '';
+  }
+
+  List<String> _splitByLogicalOr(String expr) {
+    final parts = <String>[];
+    var start = 0;
+    var inSingleQuote = false;
+    var inDoubleQuote = false;
+    for (var i = 0; i < expr.length; i++) {
+      final char = expr[i];
+      if (char == "'" && !inDoubleQuote) {
+        inSingleQuote = !inSingleQuote;
+      } else if (char == '"' && !inSingleQuote) {
+        inDoubleQuote = !inDoubleQuote;
+      } else if (!inSingleQuote && !inDoubleQuote && i < expr.length - 1 && expr[i] == '|' && expr[i + 1] == '|') {
+        parts.add(expr.substring(start, i).trim());
+        start = i + 2;
+        i++;
+      }
+    }
+    parts.add(expr.substring(start).trim());
+    return parts;
+  }
+
+  /// Resolves logical AND expressions: a && b
+  dynamic _resolveLogicalAnd(String expr, Map<String, dynamic> vars) {
+    final parts = _splitByLogicalAnd(expr);
+    if (parts.length <= 1) return null;
+
+    dynamic lastValue;
+    for (final part in parts) {
+      final eval = tryEvaluate(part, vars);
+      dynamic val;
+      if (eval.success) {
+        val = eval.value;
+      } else {
+        val = _resolvePath(part, vars);
+      }
+
+      lastValue = val;
+      if (!asBool(val)) {
+        return val ?? false;
+      }
+    }
+    return lastValue;
+  }
+
+  List<String> _splitByLogicalAnd(String expr) {
+    final parts = <String>[];
+    var start = 0;
+    var inSingleQuote = false;
+    var inDoubleQuote = false;
+    for (var i = 0; i < expr.length; i++) {
+      final char = expr[i];
+      if (char == "'" && !inDoubleQuote) {
+        inSingleQuote = !inSingleQuote;
+      } else if (char == '"' && !inSingleQuote) {
+        inDoubleQuote = !inDoubleQuote;
+      } else if (!inSingleQuote && !inDoubleQuote && i < expr.length - 1 && expr[i] == '&' && expr[i + 1] == '&') {
+        parts.add(expr.substring(start, i).trim());
+        start = i + 2;
+        i++;
+      }
+    }
+    parts.add(expr.substring(start).trim());
+    return parts;
   }
 }

@@ -120,7 +120,16 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
         };
         widget.initialData.forEach((key, value) {
           if (value is List || value is Map) {
-            mergedData[key] = value;
+            final ctrl = allControllers[key];
+            if (ctrl != null) {
+              if (ctrl.text.isEmpty) {
+                mergedData[key] = '';
+              } else {
+                mergedData[key] = value;
+              }
+            } else {
+              mergedData[key] = value;
+            }
           }
         });
 
