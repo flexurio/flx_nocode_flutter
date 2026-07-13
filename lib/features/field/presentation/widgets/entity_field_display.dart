@@ -4,6 +4,7 @@ import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
+import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_tooltip.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/src/app/model/layout_list_tile.dart';
 import 'package:flx_nocode_flutter/shared/services/employee_cache.dart';
@@ -103,18 +104,40 @@ class EntityFieldDisplay {
     // Gunakan extension yang sudah ada: canCopy / clickable
     if (widget is Text) {
       final text = widget;
+      final displayStr = text.data ?? value.toString();
 
       // Prioritas: kalau field copyable → pakai canCopy
       if (field.isCopyable == true) {
-        return text.canCopy(onTap: onTap);
+        widget = text.canCopy(onTap: onTap);
+        return _maybeWrapWithTooltip(widget, field, displayStr);
       }
 
       // Kalau tidak copyable tapi ada onTap → pakai clickable (link biru + underline)
       if (onTap != null) {
-        return text.clickable(onTap: onTap);
+        widget = text.clickable(onTap: onTap);
+        return _maybeWrapWithTooltip(widget, field, displayStr);
       }
     }
 
-    return widget;
+    final String displayStr;
+    if (widget is Text) {
+      displayStr = widget.data ?? value.toString();
+    } else {
+      displayStr = value.toString();
+    }
+    return _maybeWrapWithTooltip(widget, field, displayStr);
+  }
+
+  /// Wraps [child] with [EntityFieldTooltip] when the field is configured to
+  /// show a tooltip. Otherwise returns [child] unchanged so existing rendering
+  /// behavior is preserved when `is_tooltip` is absent or `false`.
+  static Widget _maybeWrapWithTooltip(Widget child, EntityField field, String message) {
+    if (field.isTooltip != true) {
+      return child;
+    }
+    return EntityFieldTooltip(
+      message: message,
+      child: child,
+    );
   }
 }

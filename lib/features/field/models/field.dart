@@ -53,6 +53,12 @@ class EntityField extends HiveObject {
   /// Whether the field value can be copied from UI.
   final bool? isCopyable;
 
+  /// Whether hovering over the cell shows a tooltip with extra information.
+  ///
+  /// When `true`, the rendered cell is wrapped in a `Tooltip` whose message is
+  /// the field's [label]. When `false` or `null`, the cell renders normally.
+  final bool? isTooltip;
+
   /// Additional options for dropdown/lookup type fields.
   final FieldOptions? options;
 
@@ -72,6 +78,7 @@ class EntityField extends HiveObject {
     this.allowCreate,
     this.allowUpdate,
     this.isCopyable,
+    this.isTooltip,
     this.options,
   });
 
@@ -105,6 +112,7 @@ class EntityField extends HiveObject {
       allowCreate: json['allow_create'] as bool?,
       allowUpdate: json['allow_update'] as bool?,
       isCopyable: json['is_copyable'] as bool?,
+      isTooltip: json['is_tooltip'] as bool?,
     );
   }
 
@@ -131,6 +139,7 @@ class EntityField extends HiveObject {
     bool? allowCreate,
     bool? allowUpdate,
     bool? isCopyable,
+    bool? isTooltip,
     FieldOptions? options,
   }) {
     return EntityField(
@@ -148,6 +157,7 @@ class EntityField extends HiveObject {
       allowCreate: allowCreate ?? this.allowCreate,
       allowUpdate: allowUpdate ?? this.allowUpdate,
       isCopyable: isCopyable ?? this.isCopyable,
+      isTooltip: isTooltip ?? this.isTooltip,
       options: options ?? this.options,
     );
   }
@@ -169,6 +179,7 @@ class EntityField extends HiveObject {
       'allow_create': allowCreate,
       'allow_update': allowUpdate,
       'is_copyable': isCopyable,
+      'is_tooltip': isTooltip,
     };
   }
 }
