@@ -106,6 +106,9 @@ Manage temporary state within the workflow.
 
 - **`condition`**: Basic `if/then/else` logic.
 - **`loop`**: Iterates through a list. Exposes current item as `vars.ITEM_VAR`.
+    > [!NOTE]
+    > **Auto-decoding JSON String to List:** If the resolved value is a JSON array string (e.g. from table controllers storing stringified arrays `"[{\"id\": 1}]"`), the engine will automatically parse it into a List before iteration. You do not need to use `JSON.parse` wrappers. Empty strings `""` are handled safely as empty lists (loop is skipped).
+
 - **`try_catch`**: Wraps actions in a safety block. If `try` fails, `catch` runs.
 
 **Loop Example:**
@@ -123,6 +126,7 @@ Manage temporary state within the workflow.
   ]
 }
 ```
+
 
 ### 6. Data Export (`export`)
 Generates and downloads files (Excel, CSV, PDF).

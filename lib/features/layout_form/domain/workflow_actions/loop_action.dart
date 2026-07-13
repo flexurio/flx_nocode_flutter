@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
 
 /// An action that iterates over a list of items and executes a sequence of actions for each.
@@ -57,7 +59,7 @@ class LoopAction implements WorkflowAction {
   @override
   Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
     print('[LoopAction] Resolving items: $items');
-    final resolved = Template.resolve(items, ctx);
+    var resolved = Template.resolve(items, ctx);
     print('[LoopAction] Resolved value: $resolved');
     print('[LoopAction] Resolved type: ${resolved.runtimeType}');
 
@@ -65,6 +67,23 @@ class LoopAction implements WorkflowAction {
       print('[LoopAction] Items resolved to null, skipping loop.');
       return;
     }
+
+    if (resolved is String && resolved.trim().isEmpty) {
+      print('[LoopAction] Items resolved to empty string, skipping loop.');
+      return;
+    }
+
+    if (resolved is String) {
+      try {
+        final decoded = jsonDecode(resolved);
+        if (decoded is List) {
+          resolved = decoded;
+        }
+      } catch (e) {
+        // Not a JSON list, fall through to error
+      }
+    }
+
     if (resolved is! List) {
       throw WorkflowExecutionException(
         'Loop items must resolve to a list, got ${resolved.runtimeType}. Value: $resolved',
