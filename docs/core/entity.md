@@ -21,6 +21,13 @@ The root of the JSON file is a single object that contains all the properties fo
 | `actions` | Array<Object> | No | A list of custom actions that can be performed on the entity. See [Action Object](#action-object). |
 | `hide_row_actions`| Boolean | No | Whether to hide row action buttons (default `false`) on the data table. |
 
+### Row Actions Visibility (`hide_row_actions`)
+
+The `hide_row_actions` property controls whether the dynamic data table displays the "Actions" column (usually rendered as a column with three dots menu button containing operations like view, edit, delete, or custom actions).
+
+- **`true`**: The actions column is hidden entirely, even if row-level actions are defined.
+- **`false` (or omitted)**: The actions column is displayed on the right-hand side of the table if there is at least one active row-level action.
+
 ---
 
 ## Nested Objects
