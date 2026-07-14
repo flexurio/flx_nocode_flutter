@@ -59,6 +59,12 @@ class EntityField extends HiveObject {
   /// the field's [label]. When `false` or `null`, the cell renders normally.
   final bool? isTooltip;
 
+  /// Whether to render this field as a chip.
+  final bool? isChip;
+
+  /// Custom color overrides for chips based on values.
+  final Map<String, String>? chipColors;
+
   /// Additional options for dropdown/lookup type fields.
   final FieldOptions? options;
 
@@ -79,6 +85,8 @@ class EntityField extends HiveObject {
     this.allowUpdate,
     this.isCopyable,
     this.isTooltip,
+    this.isChip,
+    this.chipColors,
     this.options,
   });
 
@@ -113,6 +121,8 @@ class EntityField extends HiveObject {
       allowUpdate: json['allow_update'] as bool?,
       isCopyable: json['is_copyable'] as bool?,
       isTooltip: json['is_tooltip'] as bool?,
+      isChip: json['is_chip'] as bool?,
+      chipColors: (json['chip_colors'] as Map?)?.cast<String, String>(),
     );
   }
 
@@ -140,6 +150,8 @@ class EntityField extends HiveObject {
     bool? allowUpdate,
     bool? isCopyable,
     bool? isTooltip,
+    bool? isChip,
+    Map<String, String>? chipColors,
     FieldOptions? options,
   }) {
     return EntityField(
@@ -158,6 +170,8 @@ class EntityField extends HiveObject {
       allowUpdate: allowUpdate ?? this.allowUpdate,
       isCopyable: isCopyable ?? this.isCopyable,
       isTooltip: isTooltip ?? this.isTooltip,
+      isChip: isChip ?? this.isChip,
+      chipColors: chipColors ?? this.chipColors,
       options: options ?? this.options,
     );
   }
@@ -180,6 +194,8 @@ class EntityField extends HiveObject {
       'allow_update': allowUpdate,
       'is_copyable': isCopyable,
       'is_tooltip': isTooltip,
+      'is_chip': isChip,
+      'chip_colors': chipColors,
     };
   }
 }

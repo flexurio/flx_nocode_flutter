@@ -46,6 +46,8 @@ Defines a single data field within the entity's schema. For a more detailed expl
 | `allow_update` | Boolean | No | Whether this field can be updated after creation. |
 | `is_copyable` | Boolean | No | Whether the field value can be copied from UI. |
 | `is_tooltip` | Boolean | No | Whether hovering over the cell shows a tooltip with the value. |
+| `is_chip` | Boolean | No | Whether to render the field value as a colored status chip. |
+| `chip_colors` | Object | No | Map of custom color overrides for chips (key is status name, value is hex color). |
 | `options` | Object | No | Additional options for dropdown/lookup type fields. See [Field Options Object](#field-options-object). |
 
 ### Backend Object

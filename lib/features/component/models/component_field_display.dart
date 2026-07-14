@@ -41,6 +41,12 @@ class ComponentFieldDisplay extends Component {
   final double? width;
   final int? flex;
 
+  /// Whether to render this display component as a chip.
+  final bool? isChip;
+
+  /// Custom color overrides for chips based on values.
+  final Map<String, String>? chipColors;
+
   ComponentFieldDisplay({
     required super.id,
     required this.label,
@@ -49,6 +55,8 @@ class ComponentFieldDisplay extends Component {
     this.widthMode,
     this.width,
     this.flex,
+    this.isChip,
+    this.chipColors,
     super.visibilityCondition,
     super.events = const {},
   }) : super(type: 'field_display');
@@ -80,6 +88,8 @@ class ComponentFieldDisplay extends Component {
       widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: double.tryParse(map['width']?.toString() ?? ''),
       flex: int.tryParse(map['flex']?.toString() ?? ''),
+      isChip: map['is_chip'] as bool? ?? map['isChip'] as bool?,
+      chipColors: (map['chip_colors'] as Map? ?? map['chipColors'] as Map?)?.cast<String, String>(),
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
     );
@@ -104,5 +114,7 @@ class ComponentFieldDisplay extends Component {
         'widthMode': widthMode?.name,
         'width': width,
         'flex': flex,
+        if (isChip != null) 'is_chip': isChip,
+        if (chipColors != null) 'chip_colors': chipColors,
       };
 }

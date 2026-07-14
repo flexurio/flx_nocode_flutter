@@ -43,6 +43,8 @@ Renders a read-only labeled value.
 | `valueType` / `value_type` | String | - | Tipe data resolusi user/employee. Opsi: `"user_name"`, `"user_name_with_id"`, `"user_id"`. |
 | `widthMode` | String | `hug` | `fill`, `hug`, or `fixed`. |
 | `flex` | Integer | - | Flex factor. |
+| `is_chip` / `isChip` | Boolean | `false` | Whether to render the field value as a colored status chip. |
+| `chip_colors` / `chipColors` | Object | - | Map of custom color overrides for chips (key is status name, value is hex color). |
 
 Example:
 
@@ -53,6 +55,24 @@ Example:
   "label": "Customer",
   "value": "{{data.customer.name}}",
   "widthMode": "fill"
+}
+```
+
+Example with Status Chip:
+
+```json
+{
+  "id": "rv_status",
+  "type": "field_display",
+  "label": "Status",
+  "value": "{{data.status}}",
+  "is_chip": true,
+  "chip_colors": {
+    "REJECT": "#E53935",
+    "APPROVE": "#43A047",
+    "INPUT": "#1E88E5",
+    "CANCEL": "#757575"
+  }
 }
 ```
 

@@ -27,6 +27,8 @@ The `EntityField` class represents a single field definition. It describes how a
 | `allow_update` | bool? | No | A flag that determines if this field can be modified after its initial creation. |
 | `is_copyable` | bool? | No | A flag that indicates whether the field's value can be copied from the UI, often used for displaying a copy icon next to the field. |
 | `is_tooltip` | bool? | No | A flag that indicates whether hovering over the field cell in a table shows a tooltip with the value. |
+| `is_chip` | bool? | No | Whether to render the field value as a colored status chip. |
+| `chip_colors` | Map<String, String>? | No | Custom color overrides for status chips. Key is status name (case-insensitive substring match), value is hex color (e.g., `"#FF9800"`). |
 | `options` | FieldOptions? | No | A nested configuration object for fields that require a list of options, such as dropdowns. See [FieldOptions Class](#fieldoptions-class) for more details. |
 
 ### JSON Representation
@@ -43,6 +45,11 @@ The `EntityField` is typically created from a JSON object. Here is an example of
   "required": true,
   "is_copyable": true,
   "is_tooltip": true,
+  "is_chip": true,
+  "chip_colors": {
+    "REJECT": "#E53935",
+    "APPROVE": "#43A047"
+  },
   "pattern": "^[A-Za-z]+$",
   "pattern_error": "Only letters are allowed.",
   "min_length": 2,

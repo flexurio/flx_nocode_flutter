@@ -101,31 +101,123 @@ class EntityFieldDisplay {
       widget = Text(LayoutListTile.getValue(value));
     }
 
-    // Gunakan extension yang sudah ada: canCopy / clickable
-    if (widget is Text) {
-      final text = widget;
-      final displayStr = text.data ?? value.toString();
-
-      // Prioritas: kalau field copyable → pakai canCopy
-      if (field.isCopyable == true) {
-        widget = text.canCopy(onTap: onTap);
-        return _maybeWrapWithTooltip(widget, field, displayStr);
-      }
-
-      // Kalau tidak copyable tapi ada onTap → pakai clickable (link biru + underline)
-      if (onTap != null) {
-        widget = text.clickable(onTap: onTap);
-        return _maybeWrapWithTooltip(widget, field, displayStr);
-      }
-    }
-
     final String displayStr;
     if (widget is Text) {
       displayStr = widget.data ?? value.toString();
     } else {
       displayStr = value.toString();
     }
+
+    if (field.isChip == true) {
+      widget = Builder(
+        builder: (context) {
+          final isDark = Theme.of(context).brightness == Brightness.dark;
+          final baseColor = _resolveChipColor(displayStr, field.chipColors);
+          final backgroundColor = baseColor.withValues(alpha: isDark ? 0.2 : 0.12);
+          final textColor = isDark ? baseColor.lighten(0.1) : baseColor;
+
+          Widget chipContent = Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(
+                color: baseColor.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+            child: Text(
+              displayStr,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          );
+
+          if (onTap != null) {
+            chipContent = InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(6),
+              child: chipContent,
+            );
+          }
+
+          return chipContent;
+        },
+      );
+    } else {
+      // Gunakan extension yang sudah ada: canCopy / clickable
+      if (widget is Text) {
+        final text = widget;
+
+        // Prioritas: kalau field copyable → pakai canCopy
+        if (field.isCopyable == true) {
+          widget = text.canCopy(onTap: onTap);
+          return _maybeWrapWithTooltip(widget, field, displayStr);
+        }
+
+        // Kalau tidak copyable tapi ada onTap → pakai clickable (link biru + underline)
+        if (onTap != null) {
+          widget = text.clickable(onTap: onTap);
+          return _maybeWrapWithTooltip(widget, field, displayStr);
+        }
+      }
+    }
+
     return _maybeWrapWithTooltip(widget, field, displayStr);
+  }
+
+  static Color _resolveChipColor(String value, Map<String, String>? customColors) {
+    final upperVal = value.toUpperCase();
+
+    if (customColors != null) {
+      for (final entry in customColors.entries) {
+        if (upperVal.contains(entry.key.toUpperCase())) {
+          final color = _parseHexColor(entry.value);
+          if (color != null) return color;
+        }
+      }
+    }
+
+    if (upperVal.contains('REJECT') || upperVal.contains('FAIL')) {
+      return const Color(0XFFE53935); // Red
+    }
+    if (upperVal.contains('APPROVE') ||
+        upperVal.contains('SUCCESS') ||
+        upperVal.contains('DONE') ||
+        upperVal.contains('OK')) {
+      return const Color(0XFF43A047); // Green
+    }
+    if (upperVal.contains('INPUT') ||
+        upperVal.contains('DRAFT') ||
+        upperVal.contains('PENDING')) {
+      return const Color(0XFF1E88E5); // Blue
+    }
+    if (upperVal.contains('CANCEL') || upperVal.contains('CLOSE')) {
+      return const Color(0XFF757575); // Grey
+    }
+    if (upperVal.contains('PROGRESS') ||
+        upperVal.contains('PROCESS') ||
+        upperVal.contains('ACTIVE')) {
+      return const Color(0XFFF57C00); // Orange
+    }
+
+    return const Color(0XFF607D8B); // Fallback Grey-Blue
+  }
+
+  static Color? _parseHexColor(String? hex) {
+    if (hex == null || hex.isEmpty) return null;
+    try {
+      String cleanHex = hex.replaceAll('#', '');
+      if (cleanHex.length == 6) {
+        cleanHex = 'FF' + cleanHex;
+      }
+      return Color(int.parse(cleanHex, radix: 16));
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Wraps [child] with [EntityFieldTooltip] when the field is configured to
