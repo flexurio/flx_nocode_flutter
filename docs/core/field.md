@@ -70,8 +70,39 @@ The `type` property in an `EntityField` determines its data type and how it is r
 | --- | --- |
 | `text` | For string values. Renders as a standard text input field. |
 | `number` | For numeric values (integers or doubles). Renders as a numeric input field. |
-| `datetime` | For date and time values. Renders as a date and/or time picker. |
+| `date` or `date(<format>)` | For date-only values (defaults to `yyyy-MM-dd`). Renders as a date picker. Supports custom formats (e.g. `date(MMMM DD, YYYY)`). |
+| `datetime` or `datetime(<format>)` | For date and time values (defaults to `yyyy-MM-dd HH:mm:ss`). Renders as a date and/or time picker. Supports custom formats. |
 | `bool` | For boolean (true/false) values. Renders as a switch or checkbox. |
+
+### Date & Datetime Custom Formats
+
+For `date` and `datetime` fields, you can optionally supply a format inside parentheses, such as `date(MMMM DD, YYYY)` or `datetime(YYYY-MM-DD HH:mm:ss)`.
+
+The framework supports JavaScript-style (e.g., Moment.js) date tokens, which are automatically translated to Dart `DateFormat` patterns under the hood:
+
+- `YYYY` or `yyyy` -> Full year (e.g. `2026`)
+- `YY` or `yy` -> Two-digit year (e.g. `26`)
+- `MMMM` -> Full month name (e.g. `May`)
+- `MMM` -> Short month name (e.g. `May`)
+- `MM` -> Two-digit month number (e.g. `05`)
+- `M` -> Month number (e.g. `5`)
+- `DD` or `dd` -> Two-digit day of month (e.g. `16`)
+- `D` or `d` -> Day of month (e.g. `16`)
+- `HH` -> Hour 24h format (e.g. `14`)
+- `mm` -> Minutes (e.g. `30`)
+- `ss` -> Seconds (e.g. `45`)
+
+#### Example
+
+```json
+{
+  "label": "Date Created",
+  "reference": "created_at",
+  "type": "date(MMMM DD, YYYY)",
+  "required": true
+}
+```
+This configuration renders the date in a format like `May 16, 2026`.
 
 ---
 

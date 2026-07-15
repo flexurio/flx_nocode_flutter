@@ -15,7 +15,7 @@ extension EntityFieldDomainX on EntityField {
   EntityFieldType get typeEnum {
     if (type.contains('number')) return EntityFieldType.number;
     if (type == 'bool') return EntityFieldType.bool;
-    if (type.contains('datetime')) return EntityFieldType.dateTime;
+    if (type.contains('datetime') || type.contains('date')) return EntityFieldType.dateTime;
     return EntityFieldType.text;
   }
 
@@ -50,8 +50,21 @@ extension EntityFieldDomainX on EntityField {
 
   /// Returns the configured datetime format; defaults to 'yyyy-MM-dd HH:mm:ss'.
   String get dateTimeFormat {
-    final match = RegExp(r'datetime\((.*?)\)').firstMatch(type);
+    final match = RegExp(r'(?:datetime|date)\((.*?)\)').firstMatch(type);
     final fmt = match?.group(1);
-    return (fmt != null && fmt.isNotEmpty) ? fmt : 'yyyy-MM-dd HH:mm:ss';
+    if (fmt != null && fmt.isNotEmpty) {
+      return fmt
+          .replaceAll('YYYY', 'yyyy')
+          .replaceAll('YY', 'yy')
+          .replaceAll('DD', 'dd')
+          .replaceAll('D', 'd');
+    }
+    if (type.contains('datetime')) {
+      return 'yyyy-MM-dd HH:mm:ss';
+    }
+    if (type.contains('date')) {
+      return 'yyyy-MM-dd';
+    }
+    return 'yyyy-MM-dd HH:mm:ss';
   }
 }

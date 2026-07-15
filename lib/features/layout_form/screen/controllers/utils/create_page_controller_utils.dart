@@ -98,11 +98,17 @@ class CreatePageControllerUtils {
   }) {
     if (value.isEmpty) return value;
 
-    final fmt = customFormat?.isNotEmpty == true
+    var fmt = customFormat?.isNotEmpty == true
         ? customFormat!
         : (field?.dateTimeFormat.isNotEmpty == true)
             ? field!.dateTimeFormat
             : 'yyyy-MM-dd HH:mm:ss';
+
+    fmt = fmt
+        .replaceAll('YYYY', 'yyyy')
+        .replaceAll('YY', 'yy')
+        .replaceAll('DD', 'dd')
+        .replaceAll('D', 'd');
 
     final formatter = DateFormat(fmt);
 
