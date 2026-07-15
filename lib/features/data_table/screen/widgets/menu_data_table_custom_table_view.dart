@@ -38,6 +38,9 @@ class MenuDataTableCustomTableView extends StatelessWidget {
   final void Function(PageOptions<Map<String, dynamic>>?) onChanged;
   final FutureOr<void> Function([PageOptions<Map<String, dynamic>>?]) onRefresh;
 
+
+
+
   @override
   Widget build(BuildContext context) {
     final fields = entity.layoutTable.keys.toList();
@@ -97,18 +100,27 @@ class MenuDataTableCustomTableView extends StatelessWidget {
       }
 
       final width = fieldsValue[index] as int?;
+      // Columns with backgroundColors manage their own padding inside the
+      // colored Container. Pass zeroPadding: true so YuhuTable's TableData
+      // wrapper adds no extra horizontal padding and the color fills edge-to-edge.
+      final hasColumnBgColors = field.backgroundColors != null &&
+          field.backgroundColors!.isNotEmpty;
+
       return DTColumn(
         widthFlex: (width ?? 1).toDouble(),
+        zeroPadding: hasColumnBgColors,
         head: DTHead(
           backendKeySort: field.reference,
           label: field.label,
           numeric: (field.isNumber) && index != 0,
         ),
-        body: (row) => DataCell(
-          EntityFieldDisplay.build(
+        body: (row) {
+          final value = row[field.reference];
+
+          final cellChild = EntityFieldDisplay.build(
             entity,
             field.reference,
-            row[field.reference],
+            value,
             onTap: index != 0 || entity.actionPrimary == null
                 ? null
                 : () async {
@@ -134,8 +146,10 @@ class MenuDataTableCustomTableView extends StatelessWidget {
                       onRefresh();
                     }
                   },
-          ),
-        ),
+          );
+
+          return DataCell(cellChild);
+        },
       );
     });
   }
@@ -166,3 +180,5 @@ class MenuDataTableCustomTableView extends StatelessWidget {
     ];
   }
 }
+
+

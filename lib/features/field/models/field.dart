@@ -68,6 +68,12 @@ class EntityField extends HiveObject {
   /// Additional options for dropdown/lookup type fields.
   final FieldOptions? options;
 
+  /// Custom background colors based on values.
+  final Map<String, String>? backgroundColors;
+
+  /// Custom text colors based on values.
+  final Map<String, String>? textColors;
+
   /// Creates a new [EntityField] configuration.
   EntityField({
     required this.label,
@@ -88,6 +94,8 @@ class EntityField extends HiveObject {
     this.isChip,
     this.chipColors,
     this.options,
+    this.backgroundColors,
+    this.textColors,
   });
 
   /// Creates an [EntityField] instance from JSON.
@@ -123,6 +131,16 @@ class EntityField extends HiveObject {
       isTooltip: json['is_tooltip'] as bool?,
       isChip: json['is_chip'] as bool?,
       chipColors: (json['chip_colors'] as Map?)?.cast<String, String>(),
+      backgroundColors: json['background_colors'] is Map
+          ? (json['background_colors'] as Map).cast<String, String>()
+          : (json['background_colors'] is String
+              ? {'*': json['background_colors'] as String}
+              : null),
+      textColors: json['text_colors'] is Map
+          ? (json['text_colors'] as Map).cast<String, String>()
+          : (json['text_colors'] is String
+              ? {'*': json['text_colors'] as String}
+              : null),
     );
   }
 
@@ -153,6 +171,8 @@ class EntityField extends HiveObject {
     bool? isChip,
     Map<String, String>? chipColors,
     FieldOptions? options,
+    Map<String, String>? backgroundColors,
+    Map<String, String>? textColors,
   }) {
     return EntityField(
       label: label ?? this.label,
@@ -173,6 +193,8 @@ class EntityField extends HiveObject {
       isChip: isChip ?? this.isChip,
       chipColors: chipColors ?? this.chipColors,
       options: options ?? this.options,
+      backgroundColors: backgroundColors ?? this.backgroundColors,
+      textColors: textColors ?? this.textColors,
     );
   }
 
@@ -196,6 +218,12 @@ class EntityField extends HiveObject {
       'is_tooltip': isTooltip,
       'is_chip': isChip,
       'chip_colors': chipColors,
+      'background_colors': (backgroundColors?.length == 1 && backgroundColors!.containsKey('*'))
+          ? backgroundColors!['*']
+          : backgroundColors,
+      'text_colors': (textColors?.length == 1 && textColors!.containsKey('*'))
+          ? textColors!['*']
+          : textColors,
     };
   }
 }

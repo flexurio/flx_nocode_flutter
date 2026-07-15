@@ -108,7 +108,45 @@ class EntityFieldDisplay {
       displayStr = value.toString();
     }
 
-    if (field.isChip == true) {
+    final customColors = _resolveCustomColors(displayStr, field.backgroundColors, field.textColors);
+    if (customColors.$1 != null) {
+      widget = Builder(
+        builder: (context) {
+          final bgColor = customColors.$1!;
+          final textColor = customColors.$2 ??
+              (ThemeData.estimateBrightnessForColor(bgColor) == Brightness.dark
+                  ? Colors.white
+                  : Colors.black87);
+
+          Widget bgContent = Container(
+            width: double.infinity,
+            height: double.infinity,
+            alignment: Alignment.centerLeft,
+            // 8px inner padding keeps text legible while the background fills
+            // as close to the cell borders as the DataTable theme allows.
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            color: bgColor,
+            child: Text(
+              displayStr,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 13,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          );
+
+          if (onTap != null) {
+            bgContent = InkWell(
+              onTap: onTap,
+              child: bgContent,
+            );
+          }
+
+          return bgContent;
+        },
+      );
+    } else if (field.isChip == true) {
       widget = Builder(
         builder: (context) {
           final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -220,6 +258,42 @@ class EntityFieldDisplay {
     }
   }
 
+  static (Color?, Color?) _resolveCustomColors(
+    String value,
+    Map<String, String>? backgroundColors,
+    Map<String, String>? textColors,
+  ) {
+    final upperVal = value.toUpperCase();
+    Color? bg;
+    Color? text;
+
+    if (backgroundColors != null) {
+      for (final entry in backgroundColors.entries) {
+        if (entry.key != '*' && upperVal.contains(entry.key.toUpperCase())) {
+          bg = _parseHexColor(entry.value);
+          break;
+        }
+      }
+      if (bg == null && backgroundColors.containsKey('*')) {
+        bg = _parseHexColor(backgroundColors['*']!);
+      }
+    }
+
+    if (textColors != null) {
+      for (final entry in textColors.entries) {
+        if (entry.key != '*' && upperVal.contains(entry.key.toUpperCase())) {
+          text = _parseHexColor(entry.value);
+          break;
+        }
+      }
+      if (text == null && textColors.containsKey('*')) {
+        text = _parseHexColor(textColors['*']!);
+      }
+    }
+
+    return (bg, text);
+  }
+
   /// Wraps [child] with [EntityFieldTooltip] when the field is configured to
   /// show a tooltip. Otherwise returns [child] unchanged so existing rendering
   /// behavior is preserved when `is_tooltip` is absent or `false`.
@@ -233,3 +307,5 @@ class EntityFieldDisplay {
     );
   }
 }
+
+

@@ -29,6 +29,8 @@ The `EntityField` class represents a single field definition. It describes how a
 | `is_tooltip` | bool? | No | A flag that indicates whether hovering over the field cell in a table shows a tooltip with the value. |
 | `is_chip` | bool? | No | Whether to render the field value as a colored status chip. |
 | `chip_colors` | Map<String, String>? | No | Custom color overrides for status chips. Key is status name (case-insensitive substring match), value is hex color (e.g., `"#FF9800"`). |
+| `background_colors` | Map<String, String>? or String? | No | Custom background colors. Can be a map mapped to values (e.g. `{"BFW": "#E8F5E9"}`) or a single string (e.g. `"#E8F5E9"`) to apply the color to all values. |
+| `text_colors` | Map<String, String>? or String? | No | Custom text colors. Can be a map mapped to values (e.g. `{"BFW": "#2E7D32"}`) or a single string (e.g. `"#2E7D32"`) to apply to all values. Automatically selects contrast color if omitted. |
 | `options` | FieldOptions? | No | A nested configuration object for fields that require a list of options, such as dropdowns. See [FieldOptions Class](#fieldoptions-class) for more details. |
 
 ### JSON Representation
@@ -103,6 +105,45 @@ The framework supports JavaScript-style (e.g., Moment.js) date tokens, which are
 }
 ```
 This configuration renders the date in a format like `May 16, 2026`.
+
+### Custom Column & Background Colors
+
+You can customize the background and text colors of cells in a column. The framework supports two formats for `background_colors` and `text_colors`:
+
+1. **Mapping by specific values (Map format)**: Key names are case-insensitive substrings of the values to match.
+2. **Applying to all values (String format)**: A single hex string color is applied to all values in the column.
+
+If `text_colors` are not specified or omitted, the framework automatically uses white text for dark background colors and black text for light background colors based on brightness estimation.
+
+#### Example: Specific Value Matching (Map format)
+```json
+{
+  "label": "PIC Initial",
+  "reference": "initiator_initials",
+  "type": "text",
+  "background_colors": {
+    "BFW": "#E8F5E9",
+    "ABN": "#E3F2FD",
+    "MAL": "#FFF3E0"
+  },
+  "text_colors": {
+    "BFW": "#2E7D32",
+    "ABN": "#1565C0",
+    "MAL": "#EF6C00"
+  }
+}
+```
+
+#### Example: All Values (String format)
+```json
+{
+  "label": "Change Control Number",
+  "reference": "change_control_number",
+  "type": "text",
+  "background_colors": "#E8F5E9",
+  "text_colors": "#2E7D32"
+}
+```
 
 ---
 
