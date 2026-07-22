@@ -269,6 +269,31 @@ void main() {
         final resultEmpty = '{{ form.specification_code ? (form.specification_code + "-" + item.product_no) : "" }}'.interpolateJavascript(variablesEmpty);
         expect(resultEmpty, '');
       });
+
+      test('should fall back to full JS evaluation and succeed when ternary contains complex functions like encodeURIComponent', () {
+        final variables = {
+          'form': {
+            'history_selector': '',
+          },
+          'data': {
+            'id': 5,
+          },
+          'backend_host': 'https://erp-metiska-farma.flexurio.com',
+        };
+        final template = "{{ (form.history_selector != null && form.history_selector != '') ? backend_host + '/cc_change_control_detail_histories?id_change_control_header_history.eq=' + encodeURIComponent(form.history_selector) : backend_host + '/cc_change_control_details?id_change_control.eq=' + encodeURIComponent(data.id) }}";
+        final result = template.interpolateJavascript(variables);
+        expect(result, endsWith('/cc_change_control_details?id_change_control.eq=5'));
+      });
+
+      test('should fall back to full JS evaluation and succeed when logic or comparison contains parentheses grouping', () {
+        final variables = {
+          'is_qrm': 1,
+          'status_qrm_document': 'EMPTY',
+        };
+        final template = "{{ (is_qrm == 1 || is_qrm == '1' || is_qrm == true || is_qrm == 'true') && status_qrm_document != 'FILL' }}";
+        final result = template.interpolateJavascript(variables);
+        expect(result, 'true');
+      });
     });
   });
 }

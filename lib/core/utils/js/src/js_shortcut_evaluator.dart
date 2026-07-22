@@ -96,24 +96,31 @@ class JsShortcutEvaluator {
     if (trimmed.contains('?') && trimmed.contains(':')) {
       final val = _resolveTernary(trimmed, variables);
       if (val != null) return EvaluationResult.success(val);
+      return EvaluationResult.failure();
     }
 
     // 8. Logical OR expressions (e.g. "a || b")
     if (trimmed.contains('||')) {
+      if (trimmed.contains('(')) return EvaluationResult.failure();
       final val = _resolveLogicalOr(trimmed, variables);
       if (val != null) return EvaluationResult.success(val);
+      return EvaluationResult.failure();
     }
 
     // 9. Logical AND expressions (e.g. "a && b")
     if (trimmed.contains('&&')) {
+      if (trimmed.contains('(')) return EvaluationResult.failure();
       final val = _resolveLogicalAnd(trimmed, variables);
       if (val != null) return EvaluationResult.success(val);
+      return EvaluationResult.failure();
     }
 
     // 10. Basic Equality Comparisons (e.g. "a === b")
     if (trimmed.contains('==') || trimmed.contains('!=')) {
+      if (trimmed.contains('(')) return EvaluationResult.failure();
       final val = _resolveComparison(trimmed, variables);
       if (val != null) return EvaluationResult.success(val);
+      return EvaluationResult.failure();
     }
 
     return EvaluationResult.failure();
