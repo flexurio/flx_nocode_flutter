@@ -7,6 +7,7 @@ import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:flx_nocode_flutter/src/app/view/widget/entity_drop_down.dart';
 
 class InlineFilter extends StatefulWidget {
   const InlineFilter({
@@ -15,12 +16,14 @@ class InlineFilter extends StatefulWidget {
     this.initialValue,
     required this.onChanged,
     this.config = const {},
+    this.parentData = const [],
   });
 
   final EntityField field;
   final String? initialValue;
   final ValueChanged<String?> onChanged;
   final Map<String, dynamic> config;
+  final List<Map<String, dynamic>> parentData;
 
   @override
   State<InlineFilter> createState() => _InlineFilterState();
@@ -88,7 +91,11 @@ class _InlineFilterState extends State<InlineFilter> {
               _selectedDateRange = PickerDateRange(date, date);
             }
           } else if (mode == 'year_month') {
-            _selectedDate = DateTime.tryParse('$val-01');
+            try {
+              _selectedDate = DateFormat(widget.field.dateTimeFormat).parse(val);
+            } catch (_) {
+              _selectedDate = DateTime.tryParse('$val-01');
+            }
           } else if (mode == 'year') {
             _selectedDate = DateTime(int.tryParse(val) ?? DateTime.now().year);
           } else {
@@ -176,7 +183,7 @@ class _InlineFilterState extends State<InlineFilter> {
         return DropDownSmallYearMonth(
           labelText: widget.field.label,
           initialValue: _selectedDate,
-          onChanged: (date) => _onDateChanged(date, 'yyyy-MM'),
+          onChanged: (date) => _onDateChanged(date, widget.field.dateTimeFormat),
         );
       } else if (mode == 'year') {
         return DropDownSmallYearPicker(
@@ -192,6 +199,25 @@ class _InlineFilterState extends State<InlineFilter> {
           onChanged: (date) => _onDateChanged(date, 'yyyy-MM-dd'),
         );
       }
+    }
+
+    // Handle Dropdown Type
+    if (widget.field.type == 'select') {
+      return SizedBox(
+        width: 200,
+        child: FDropDownSearchEntity(
+          parentData: widget.parentData,
+          entityField: widget.field,
+          label: widget.field.label,
+          isRequired: false,
+          isSmall: true,
+          itemAsString: (id, label) => '$label',
+          initialValue: widget.initialValue != null ? MapEntry(widget.initialValue, '') : null,
+          onChanged: (entry) {
+            widget.onChanged(entry?.key?.toString());
+          },
+        ),
+      );
     }
 
     // Default Text Input

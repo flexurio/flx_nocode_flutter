@@ -17,7 +17,10 @@ class FDropDownSearchEntity extends StatefulWidget
     required this.itemAsString,
     required this.entityField,
     required this.parentData,
+    this.isSmall = false,
   });
+
+  final bool isSmall;
 
   @override
   final MapEntry? initialValue;
@@ -54,24 +57,52 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
   @override
   void initState() {
     super.initState();
-    () async {
-      try {
-        _options =
-            await OptionsSource(optionsSource: widget.entityField.optionsSource)
-                .options(parentData: widget.parentData);
-        _loading = false;
-        print('[FDropDownSearchEntity] newValue');
-        setState(() {});
-      } catch (e) {
-        _loading = false;
-        if (e is ArgumentError) {
-          _errorMessage = 'DropDown Argument Error: ${e.message}';
-        } else {
-          _errorMessage = 'DropDown Error: $e';
-        }
-        setState(() {});
+    _fetchOptions();
+  }
+
+  @override
+  void didUpdateWidget(covariant FDropDownSearchEntity oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!_areListsEqual(widget.parentData, oldWidget.parentData)) {
+      _fetchOptions();
+    }
+  }
+
+  bool _areListsEqual(
+      List<Map<String, dynamic>> a, List<Map<String, dynamic>> b) {
+    if (a.length != b.length) return false;
+    for (int i = 0; i < a.length; i++) {
+      final mapA = a[i];
+      final mapB = b[i];
+      if (mapA.length != mapB.length) return false;
+      for (final key in mapA.keys) {
+        if (mapA[key] != mapB[key]) return false;
       }
-    }();
+    }
+    return true;
+  }
+
+  Future<void> _fetchOptions() async {
+    setState(() {
+      _loading = true;
+      _errorMessage = null;
+    });
+    try {
+      _options =
+          await OptionsSource(optionsSource: widget.entityField.optionsSource)
+              .options(parentData: widget.parentData);
+      _loading = false;
+      print('[FDropDownSearchEntity] newValue');
+      setState(() {});
+    } catch (e) {
+      _loading = false;
+      if (e is ArgumentError) {
+        _errorMessage = 'DropDown Argument Error: ${e.message}';
+      } else {
+        _errorMessage = 'DropDown Error: $e';
+      }
+      setState(() {});
+    }
   }
 
   MapEntry? _getInitialValue() {
@@ -108,6 +139,23 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
     }
 
     print('[FDropDownSearchEntity] initialValue ${widget.initialValue}');
+    if (widget.isSmall) {
+      return FDropDownSearchSmall<MapEntry>(
+        key: ValueKey(_options.length),
+        enabled: widget.enabled,
+        labelText: widget.label ?? '(none)',
+        onChanged: widget.onChanged,
+        initialValue: _getInitialValue(),
+        validator: validator,
+        itemAsString: (data) => widget.itemAsString(data.key, data.value),
+        items: _options.entries.toList(),
+        status: _loading
+            ? Status.progress
+            : (_errorMessage != null ? Status.error : Status.loaded),
+        iconField: Icons.filter_alt_outlined,
+      );
+    }
+
     return FDropDownSearch<MapEntry>(
       key: ValueKey(_options.length),
       enabled: widget.enabled,

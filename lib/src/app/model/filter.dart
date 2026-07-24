@@ -3,16 +3,19 @@ import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 class Filter {
   final String reference;
   final String value;
+  final String? backendKey;
 
-  Filter({required this.reference, required this.value});
+  Filter({required this.reference, required this.value, this.backendKey});
 
   Filter copyWith({
     String? reference,
     String? value,
+    String? backendKey,
   }) {
     return Filter(
       reference: reference ?? this.reference,
       value: value ?? this.value,
+      backendKey: backendKey ?? this.backendKey,
     );
   }
 
@@ -32,6 +35,9 @@ class Filter {
   }
 
   String getKeyBackend() {
+    if (backendKey != null && backendKey!.isNotEmpty) {
+      return backendKey!;
+    }
     if (reference.contains('|')) {
       final keys = reference.split('|');
       return keys.map((e) => '$e.like').join('|');

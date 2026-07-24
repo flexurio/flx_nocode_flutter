@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/data_table/screen/widgets/inline_filter.dart';
+import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:gap/gap.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
@@ -9,6 +10,7 @@ import 'package:flx_nocode_flutter/src/app/model/entity_custom_query/entity_cust
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:screen_identifier/screen_identifier.dart';
 
 import '../../../../src/app/view/widget/error.dart';
@@ -61,6 +63,31 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   void initState() {
     super.initState();
     _filters.addAll(widget.initialFilters);
+    for (final f in widget.entity.filters) {
+      if (_filters.any((filter) => filter.reference == f.reference)) {
+        continue;
+      }
+      final defaultValue = f.config['default']?.toString();
+      if (defaultValue != null) {
+        String? resolvedValue;
+        if (defaultValue == 'now') {
+          final field = widget.entity.getField(f.reference);
+          final format = field?.dateTimeFormat ?? 'yyyy-MM';
+          resolvedValue = DateFormat(format).format(DateTime.now());
+        } else {
+          resolvedValue = defaultValue;
+        }
+        if (resolvedValue != null) {
+          _filters.add(
+            Filter(
+              reference: f.reference,
+              value: resolvedValue,
+              backendKey: f.config['backend_key']?.toString(),
+            ),
+          );
+        }
+      }
+    }
     _initialPageOptions = PageOptions<Map<String, dynamic>>.empty(
       sortBy: widget.entity.paginationOption.sortBy,
       ascending: widget.entity.paginationOption.ascending,
@@ -196,6 +223,15 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     final widgets = <Widget>[];
 
     if (widget.entity.filters.isNotEmpty) {
+      final activeFiltersMap = <String, dynamic>{};
+      for (final filterItem in _filters) {
+        activeFiltersMap[filterItem.reference] = filterItem.value;
+      }
+      final scopeList = <Map<String, dynamic>>[
+        activeFiltersMap,
+        ...widget.parentData,
+      ];
+
       for (final f in widget.entity.filters) {
         final fieldRef = f.reference;
         final field = widget.entity.getField(fieldRef);
@@ -211,8 +247,13 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             key: ValueKey('filter_$fieldRef'),
             field: field,
             config: f.config,
+            parentData: scopeList,
             initialValue: currentFilter?.value,
-            onChanged: (val) => _onInlineFilterChanged(fieldRef, val),
+            onChanged: (val) => _onInlineFilterChanged(
+              fieldRef,
+              val,
+              backendKey: f.config['backend_key']?.toString(),
+            ),
           ),
         );
         widgets.add(const Gap(12));
@@ -227,11 +268,11 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     return widgets;
   }
 
-  void _onInlineFilterChanged(String ref, String? val) {
+  void _onInlineFilterChanged(String ref, String? val, {String? backendKey}) {
     setState(() {
       _filters.removeWhere((f) => f.reference == ref);
       if (val != null && val.isNotEmpty) {
-        _filters.add(Filter(reference: ref, value: val));
+        _filters.add(Filter(reference: ref, value: val, backendKey: backendKey));
       }
     });
     _fetch();

@@ -20,6 +20,7 @@ The root of the JSON file is a single object that contains all the properties fo
 | `exports` | Array<Object> | No | A list of configurations for exporting entity data. See [Export Object](#export-object). |
 | `actions` | Array<Object> | No | A list of custom actions that can be performed on the entity. See [Action Object](#action-object). |
 | `hide_row_actions`| Boolean | No | Whether to hide row action buttons (default `false`) on the data table. |
+| `filters` | Array<Object> | No | List of inline filter configurations. See [Filter Object](#filter-object). |
 
 ### Row Actions Visibility (`hide_row_actions`)
 
@@ -105,6 +106,17 @@ Defines the options for a dropdown or lookup field.
 | `source` | String | Yes | The source of the data (e.g., an API endpoint or a Hive box name). |
 | `label_field` | String | Yes | The field from the source data to use as the display label. |
 | `value_field` | String | Yes | The field from the source data to use as the selected value. |
+
+### Filter Object
+
+Defines an inline filter configuration.
+
+| Key | Type | Required | Description |
+| --- | --- | --- | --- |
+| `reference` | String | Yes | The field reference that this filter applies to. |
+| `mode` | String | No | Filter mode for date type. Options: `"date_range"`, `"year_month"`, `"year"`, `"date"`. |
+| `default` | String | No | Default value of filter. Can be `"now"` for date type. |
+| `backend_key` | String | No | Overrides the query parameter key sent to backend. E.g. `visit_customers.period.eq`. |
 
 ### View Object
 
