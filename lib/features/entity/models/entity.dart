@@ -71,6 +71,9 @@ class EntityCustom extends HiveObject {
   /// Whether to hide the row actions column in the data table.
   final bool hideRowActions;
 
+  /// A list of custom layout configurations for switching table columns dynamically.
+  final List<CustomeLayout> customeLayout;
+
   /// A map defining the layout of columns in a data table view.
   /// The key is the field reference, and the value is typically a flex factor or column width.
   Map<String, int> layoutTable = {};
@@ -96,10 +99,10 @@ class EntityCustom extends HiveObject {
     required this.layoutListTile,
     required this.layoutTable,
     required this.exports,
-
     this.filters = const [],
     this.bypassAllPermissions = false,
     this.hideRowActions = false,
+    this.customeLayout = const [],
   });
 
   /// The base path for entity assets (e.g., 'asset').
@@ -133,7 +136,7 @@ class EntityCustom extends HiveObject {
           'views',
           (raw, _) => view.DView.fromJson(raw),
         ),
-         layoutForm: parser.parseListOptional<LayoutForm>(
+        layoutForm: parser.parseListOptional<LayoutForm>(
           'layout_form',
           (raw, _) => LayoutForm.fromMap(raw),
         ),
@@ -163,6 +166,7 @@ class EntityCustom extends HiveObject {
         filters: parser.parseFilters(),
         bypassAllPermissions: parser.parseBypassAllPermissions(),
         hideRowActions: parser.parseHideRowActions(),
+        customeLayout: parser.parseCustomeLayout(),
       );
     } catch (e) {
       debugPrint("[EntityCustom] Entity: $id fromJson error: $e");
@@ -192,7 +196,8 @@ class EntityCustom extends HiveObject {
         exports = [],
         filters = [],
         bypassAllPermissions = false,
-        hideRowActions = false;
+        hideRowActions = false,
+        customeLayout = const [];
 
   /// Creates a copy of this [EntityCustom] instance with the given fields replaced.
   ///
@@ -204,7 +209,7 @@ class EntityCustom extends HiveObject {
     String? description,
     List<EntityField>? fields,
     List<view.DView>? views,
-     Backend? backend,
+    Backend? backend,
     PaginationOption? paginationOption,
     List<LayoutForm>? layoutForm,
     List<LayoutPrint>? layoutPrint,
@@ -218,6 +223,7 @@ class EntityCustom extends HiveObject {
     List<FilterOption>? filters,
     bool? bypassAllPermissions,
     bool? hideRowActions,
+    List<CustomeLayout>? customeLayout,
     bool clearActionPrimary = false,
     bool clearLayoutListTile = false,
   }) {
@@ -232,7 +238,7 @@ class EntityCustom extends HiveObject {
       fields: fields ?? this.fields,
       backend: backend ?? this.backend,
       paginationOption: paginationOption ?? this.paginationOption,
-       views: views ?? this.views,
+      views: views ?? this.views,
       layoutForm: layoutForm ?? this.layoutForm,
       layoutPrint: layoutPrint ?? this.layoutPrint,
       homeLayoutId: homeLayoutId ?? this.homeLayoutId,
@@ -243,6 +249,7 @@ class EntityCustom extends HiveObject {
       filters: filters ?? this.filters,
       bypassAllPermissions: bypassAllPermissions ?? this.bypassAllPermissions,
       hideRowActions: hideRowActions ?? this.hideRowActions,
+      customeLayout: customeLayout ?? this.customeLayout,
     );
   }
 
@@ -364,6 +371,7 @@ class EntityCustom extends HiveObject {
       'filters': filters.map((e) => e.toJson()).toList(),
       'bypass_all_permissions': bypassAllPermissions,
       'hide_row_actions': hideRowActions,
+      'custome_layout': customeLayout.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -426,6 +434,36 @@ class EntityCustom extends HiveObject {
           ),
         )
         .toList();
+  }
+}
+
+class CustomeLayout {
+  final String label;
+  final String key;
+  final Map<String, int> layoutTable;
+
+  CustomeLayout({
+    required this.label,
+    required this.key,
+    required this.layoutTable,
+  });
+
+  factory CustomeLayout.fromJson(Map<String, dynamic> json) {
+    final layoutTableRaw = json['layout_table'] as Map<String, dynamic>? ?? {};
+    final layoutTable = layoutTableRaw.map((k, v) => MapEntry(k, (v as num).toInt()));
+    return CustomeLayout(
+      label: json['label'] as String? ?? '',
+      key: json['key'] as String? ?? '',
+      layoutTable: layoutTable,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'label': label,
+      'key': key,
+      'layout_table': layoutTable,
+    };
   }
 }
 
@@ -726,5 +764,22 @@ class _EntityCustomJsonParser {
         config: configMap[ref] ?? {},
       );
     }).toList();
+  }
+
+  List<CustomeLayout> parseCustomeLayout() {
+    final raw = json['custome_layout'] ?? json['custom_layout'];
+    if (raw == null) return <CustomeLayout>[];
+    if (raw is! List) {
+      throw const FormatException(
+        "Invalid type for 'custome_layout': expected List.",
+      );
+    }
+    return List.generate(raw.length, (i) {
+      try {
+        return CustomeLayout.fromJson(Map<String, dynamic>.from(raw[i]));
+      } catch (e) {
+        throw FormatException("Error on 'custome_layout'[$i]: $e");
+      }
+    });
   }
 }

@@ -16,6 +16,7 @@ The root of the JSON file is a single object that contains all the properties fo
 | `layout_form` | Array<Object> | No | An array of objects that define the layout of the entity's creation and editing form. See the [Layout Form Documentation](./layout_form.md) for details. |
 | `layout_list_tile`| Object | No | Defines the layout for displaying a single entity instance in a list. See [Layout List Tile Object](#layout-list-tile-object). |
 | `layout_table` | Object | No | A map defining the columns and their flex-based widths in a data table view. The key is the field reference, and the value is an integer flex factor. |
+| `custome_layout`| Array<Object> | No | An array of custom table column layout presets that can be dynamically switched using checkboxes. |
 | `views` | Array<Object> | No | A list of custom view configurations for displaying entity data in different ways. See [View Object](#view-object). |
 | `exports` | Array<Object> | No | A list of configurations for exporting entity data. See [Export Object](#export-object). |
 | `actions` | Array<Object> | No | A list of custom actions that can be performed on the entity. See [Action Object](#action-object). |
@@ -129,6 +130,16 @@ Defines a custom view navigation action on a data table row to link to another e
 | `entity` | String | Yes | The ID of the target entity JSON configuration to navigate to. |
 | `filter` | Object | Yes | A mapping of target field references (keys) to current row field references (values) used as initial filters on target entity page. |
 | `rule` | Object | No | Optional conditional rule layout defining when the view action is visible. |
+
+### Custom Layout Object
+
+Defines a custom table layout configuration. Multiple custom layouts can be defined to allow users to dynamically switch visible table columns. By default, all checkboxes are unchecked and the root `layout_table` configuration is used to display all columns. Checking an option filters the table to that layout, and unchecking it reverts back to the root `layout_table`.
+
+| Key | Type | Required | Description |
+| --- | --- | --- | --- |
+| `label` | String | Yes | The display label of the layout option (rendered next to the checkbox). |
+| `key` | String | Yes | Unique key for identifying the layout state. |
+| `layout_table` | Object | Yes | A map of field references to column flex weights (e.g. `{"period": 5, "name": 8}`). |
 
 ### Export and Action Objects
 

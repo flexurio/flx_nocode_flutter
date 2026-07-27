@@ -58,6 +58,7 @@ class MenuDataTableCustom extends StatefulWidget {
 class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   var _filters = <Filter>[];
   late final PageOptions<Map<String, dynamic>> _initialPageOptions;
+  String? _activeLayoutKey;
 
   @override
   void initState() {
@@ -130,11 +131,19 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           orElse: PageOptions<Map<String, dynamic>>.empty,
         );
 
+        final activeLayoutTable = _activeLayoutKey != null
+            ? widget.entity.customeLayout
+                .firstWhere((l) => l.key == _activeLayoutKey)
+                .layoutTable
+            : widget.entity.layoutTable;
+
+        final activeEntity = widget.entity.copyWith(layoutTable: activeLayoutTable);
+
         return ScreenIdentifierBuilder(
           builder: (context, screenIdentifier) {
             return screenIdentifier.conditions(
               md: MenuDataTableCustomTableView(
-                entity: widget.entity,
+                entity: activeEntity,
                 status: status,
                 pageOptions: pageOptions,
                 embedded: widget.embedded,
@@ -150,6 +159,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 parentData: widget.parentData,
                 status: status,
                 pageOptions: pageOptions,
+                activeEntity: activeEntity,
               ),
             );
           },
@@ -162,6 +172,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     required Status status,
     required PageOptions<Map<String, dynamic>> pageOptions,
     required List<Map<String, dynamic>> parentData,
+    required EntityCustom activeEntity,
   }) {
     return DataListView(
       actionLeft: _buildActionLeft(),
@@ -171,15 +182,15 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       status: status,
       pageOptions: pageOptions,
       builder: (data) {
-        final layoutListTile = widget.entity.layoutListTile;
+        final layoutListTile = activeEntity.layoutListTile;
         if (layoutListTile == null) {
           return NoCodeError('layout_list_tile is null');
         }
         return layoutListTile.build(
           context: context,
-          entity: widget.entity,
+          entity: activeEntity,
           data: data,
-          onTap: () => _handleItemTap(data, parentData),
+          onTap: () => _handleItemTap(data, parentData, activeEntity),
           parentData: parentData,
           onRefresh: (ctx) => _fetch(),
           filters: _filters.toMap(),
@@ -192,12 +203,13 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   Future<void> _handleItemTap(
     Map<String, dynamic> data,
     List<Map<String, dynamic>> parentData,
+    EntityCustom activeEntity,
   ) async {
-    final actionPrimary = widget.entity.actionPrimary;
+    final actionPrimary = activeEntity.actionPrimary;
 
     if (actionPrimary != null) {
       await actionPrimary.executeSingle(
-        entity: widget.entity,
+        entity: activeEntity,
         context: context,
         data: data,
         parentData: parentData,
@@ -211,7 +223,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       EntityViewPage.route(
         parentData: parentData,
         embedded: true,
-        entity: widget.entity,
+        entity: activeEntity,
         data: data,
         filters: _filters.toMap(),
       ),
@@ -219,8 +231,63 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     _fetch();
   }
 
+  Widget _buildLayoutSelector() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Wrap(
+        spacing: 16,
+        runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: widget.entity.customeLayout.map((layout) {
+          final isSelected = _activeLayoutKey == layout.key;
+          return InkWell(
+            onTap: () {
+              setState(() {
+                if (isSelected) {
+                  _activeLayoutKey = null;
+                } else {
+                  _activeLayoutKey = layout.key;
+                }
+              });
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Checkbox(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  value: isSelected,
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  onChanged: (value) {
+                    setState(() {
+                      if (isSelected) {
+                        _activeLayoutKey = null;
+                      } else {
+                        _activeLayoutKey = layout.key;
+                      }
+                    });
+                  },
+                ),
+                const Gap(4),
+                Text(
+                  layout.label,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   List<Widget> _buildActionLeft() {
     final widgets = <Widget>[];
+    final filterWidgets = <Widget>[];
 
     if (widget.entity.filters.isNotEmpty) {
       final activeFiltersMap = <String, dynamic>{};
@@ -242,7 +309,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           currentFilter = _filters.firstWhere((f) => f.reference == fieldRef);
         } catch (_) {}
 
-        widgets.add(
+        filterWidgets.add(
           InlineFilter(
             key: ValueKey('filter_$fieldRef'),
             field: field,
@@ -256,8 +323,28 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             ),
           ),
         );
-        widgets.add(const Gap(12));
+        filterWidgets.add(const Gap(12));
       }
+    }
+
+    if (widget.entity.customeLayout.isNotEmpty) {
+      widgets.add(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (filterWidgets.isNotEmpty)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: filterWidgets,
+              ),
+            if (filterWidgets.isNotEmpty) const Gap(12),
+            _buildLayoutSelector(),
+          ],
+        ),
+      );
+    } else {
+      widgets.addAll(filterWidgets);
     }
 
     if (_filters.isNotEmpty) {
