@@ -369,11 +369,12 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase>
     if (interpolatedUrl.isEmpty) return;
 
     try {
-      final token = context['auth_token'] ?? '';
+      final resolvedContext = JsVariableProvider().prepare(context);
+      final token = resolvedContext['auth_token'] ?? '';
       final dio = Dio();
       final options = Options(
         method: 'GET',
-        headers: token.isNotEmpty ? {'Authorization': 'Bearer $token'} : null,
+        headers: token.toString().isNotEmpty ? {'Authorization': 'Bearer $token'} : null,
       );
       final response = await dio.get(interpolatedUrl, options: options);
       if (response.statusCode != null &&
