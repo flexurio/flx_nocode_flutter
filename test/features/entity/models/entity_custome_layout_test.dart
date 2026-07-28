@@ -105,5 +105,30 @@ void main() {
       expect(list[0]['key'], 'test_key');
       expect(list[0]['layout_table']['field1'], 10);
     });
+
+    test('EntityCustom merging layout tables logic matches requirement', () {
+      final baseEntity = EntityCustom.empty().copyWith(
+        layoutTable: {'root_col': 5},
+        customeLayout: [
+          CustomeLayout(label: 'L1', key: 'l1', layoutTable: {'l1_col': 10}),
+          CustomeLayout(label: 'L2', key: 'l2', layoutTable: {'l2_col': 8}),
+        ],
+      );
+
+      final activeLayoutKeys = {'l1', 'l2'};
+
+      final activeLayoutTable = Map<String, int>.from(baseEntity.layoutTable);
+      for (final layout in baseEntity.customeLayout) {
+        if (activeLayoutKeys.contains(layout.key)) {
+          activeLayoutTable.addAll(layout.layoutTable);
+        }
+      }
+
+      expect(activeLayoutTable, {
+        'root_col': 5,
+        'l1_col': 10,
+        'l2_col': 8,
+      });
+    });
   });
 }

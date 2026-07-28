@@ -23,7 +23,7 @@ An entity configuration is represented by the `EntityCustom` class. Below is the
 | `actions_home` | Array | No | Actions displayed on the home page/dashboard. |
 | `action_primary` | Object | No | The primary FAB action (e.g., creating a new item). |
 | `filters` | Array | No | List of field references or filter configs to display as filters. |
-| `custome_layout` | Array | No | Custom table column layouts. When unchecked, defaults to root `layout_table`. |
+| `custome_layout` | Array | No | Custom table column layouts. Defaults to root `layout_table` when all checkboxes are unchecked; checked options append their columns dynamically to the root layout. |
 | `bypass_all_permissions`| Boolean | No | Bypasses all system permission checks (defaults to `true`). |
 
 ---

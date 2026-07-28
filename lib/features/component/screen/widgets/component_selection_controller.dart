@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
@@ -306,6 +307,9 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase>
         case 'update_row':
           handleUpdateRowAction(action, context, selection);
           break;
+        case 'http':
+          handleHttpAction(action, context);
+          break;
       }
     }
   }
@@ -350,5 +354,49 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase>
       row[key] = value;
     }
     onRowChanged(row);
+  }
+
+  Future<void> handleHttpAction(
+      ComponentAction action, Map<String, dynamic> context) async {
+    final targetId = action.targetId;
+    final targetCtrl = allControllers[targetId];
+    if (targetCtrl == null) return;
+
+    final urlTemplate = action.value ?? '';
+    if (urlTemplate.isEmpty) return;
+
+    final interpolatedUrl = urlTemplate.interpolateJavascript(context);
+    if (interpolatedUrl.isEmpty) return;
+
+    try {
+      final token = context['auth_token'] ?? '';
+      final dio = Dio();
+      final options = Options(
+        method: 'GET',
+        headers: token.isNotEmpty ? {'Authorization': 'Bearer $token'} : null,
+      );
+      final response = await dio.get(interpolatedUrl, options: options);
+      if (response.statusCode != null &&
+          response.statusCode! >= 200 &&
+          response.statusCode! < 300) {
+        final resData = response.data;
+        final reference = action.reference ?? '';
+        dynamic valueToSet = resData;
+        if (reference.isNotEmpty) {
+          final parts = reference.split('.');
+          for (final part in parts) {
+            if (valueToSet is Map && valueToSet.containsKey(part)) {
+              valueToSet = valueToSet[part];
+            } else {
+              valueToSet = null;
+              break;
+            }
+          }
+        }
+        safeUpdateController(targetCtrl, valueToSet?.toString() ?? '');
+      }
+    } catch (e) {
+      debugPrint('[Nocode Selection] http action error: $e');
+    }
   }
 }

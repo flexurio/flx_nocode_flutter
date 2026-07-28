@@ -58,7 +58,7 @@ class MenuDataTableCustom extends StatefulWidget {
 class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   var _filters = <Filter>[];
   late final PageOptions<Map<String, dynamic>> _initialPageOptions;
-  String? _activeLayoutKey;
+  final _activeLayoutKeys = <String>{};
 
   @override
   void initState() {
@@ -131,11 +131,12 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           orElse: PageOptions<Map<String, dynamic>>.empty,
         );
 
-        final activeLayoutTable = _activeLayoutKey != null
-            ? widget.entity.customeLayout
-                .firstWhere((l) => l.key == _activeLayoutKey)
-                .layoutTable
-            : widget.entity.layoutTable;
+        final activeLayoutTable = Map<String, int>.from(widget.entity.layoutTable);
+        for (final layout in widget.entity.customeLayout) {
+          if (_activeLayoutKeys.contains(layout.key)) {
+            activeLayoutTable.addAll(layout.layoutTable);
+          }
+        }
 
         final activeEntity = widget.entity.copyWith(layoutTable: activeLayoutTable);
 
@@ -239,14 +240,14 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
         runSpacing: 8,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: widget.entity.customeLayout.map((layout) {
-          final isSelected = _activeLayoutKey == layout.key;
+          final isSelected = _activeLayoutKeys.contains(layout.key);
           return InkWell(
             onTap: () {
               setState(() {
                 if (isSelected) {
-                  _activeLayoutKey = null;
+                  _activeLayoutKeys.remove(layout.key);
                 } else {
-                  _activeLayoutKey = layout.key;
+                  _activeLayoutKeys.add(layout.key);
                 }
               });
             },
@@ -262,9 +263,9 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                   onChanged: (value) {
                     setState(() {
                       if (isSelected) {
-                        _activeLayoutKey = null;
+                        _activeLayoutKeys.remove(layout.key);
                       } else {
-                        _activeLayoutKey = layout.key;
+                        _activeLayoutKeys.add(layout.key);
                       }
                     });
                   },

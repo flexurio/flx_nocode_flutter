@@ -16,7 +16,7 @@ The root of the JSON file is a single object that contains all the properties fo
 | `layout_form` | Array<Object> | No | An array of objects that define the layout of the entity's creation and editing form. See the [Layout Form Documentation](./layout_form.md) for details. |
 | `layout_list_tile`| Object | No | Defines the layout for displaying a single entity instance in a list. See [Layout List Tile Object](#layout-list-tile-object). |
 | `layout_table` | Object | No | A map defining the columns and their flex-based widths in a data table view. The key is the field reference, and the value is an integer flex factor. |
-| `custome_layout`| Array<Object> | No | An array of custom table column layout presets that can be dynamically switched using checkboxes. |
+| `custome_layout`| Array<Object> | No | An array of custom table column layout presets that can be dynamically switched using checkboxes. Defaults to showing only root `layout_table` columns when all checkboxes are unchecked. |
 | `views` | Array<Object> | No | A list of custom view configurations for displaying entity data in different ways. See [View Object](#view-object). |
 | `exports` | Array<Object> | No | A list of configurations for exporting entity data. See [Export Object](#export-object). |
 | `actions` | Array<Object> | No | A list of custom actions that can be performed on the entity. See [Action Object](#action-object). |
@@ -133,7 +133,7 @@ Defines a custom view navigation action on a data table row to link to another e
 
 ### Custom Layout Object
 
-Defines a custom table layout configuration. Multiple custom layouts can be defined to allow users to dynamically switch visible table columns. By default, all checkboxes are unchecked and the root `layout_table` configuration is used to display all columns. Checking an option filters the table to that layout, and unchecking it reverts back to the root `layout_table`.
+Defines a custom table layout configuration. Multiple custom layouts can be defined to allow users to dynamically switch visible table columns via a multi-select checkbox group. By default, all checkboxes are unchecked and only the base columns defined in the root `layout_table` configuration are displayed. When one or more checkboxes are checked, their respective layout columns are appended dynamically to the base columns. Unchecking a checkbox hides the columns belonging to that layout, returning to the combination of the remaining active checkboxes (or only the root columns if no checkboxes are checked).
 
 | Key | Type | Required | Description |
 | --- | --- | --- | --- |
