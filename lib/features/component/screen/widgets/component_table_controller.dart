@@ -50,7 +50,28 @@ class ComponentTableController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    final layoutFormId = contextData['layoutFormId'];
+    if (layoutFormId != null) {
+      final pageCtrl = Get.isRegistered<CreatePageController>(tag: 'create_page_$layoutFormId')
+          ? Get.find<CreatePageController>(tag: 'create_page_$layoutFormId')
+          : null;
+      if (pageCtrl != null) {
+        pageCtrl.tableReloadListeners[component.id] = () => loadData();
+      }
+    }
     loadData();
+  }
+
+  @override
+  void onClose() {
+    final layoutFormId = contextData['layoutFormId'];
+    if (layoutFormId != null) {
+      final pageCtrl = Get.isRegistered<CreatePageController>(tag: 'create_page_$layoutFormId')
+          ? Get.find<CreatePageController>(tag: 'create_page_$layoutFormId')
+          : null;
+      pageCtrl?.tableReloadListeners.remove(component.id);
+    }
+    super.onClose();
   }
 
   /// Robustly resolves a value from a row using dot notation or direct key.

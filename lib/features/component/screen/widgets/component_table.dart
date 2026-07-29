@@ -254,6 +254,7 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
                     "tableId": widget.component.id,
                     "rowIndex": index,
                     "columnBody": c.body,
+                    "_on_success_callback": () => controller.loadData(),
                     "onRowChanged": (newData) =>
                         controller.onRowChanged(index, newData),
                   },
@@ -326,18 +327,55 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
         columns: tableColumns,
       );
 
+      final refreshButton = Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          TextButton.icon(
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+                side: BorderSide(color: Colors.grey.shade300),
+              ),
+            ),
+            icon: const Icon(Icons.refresh, size: 16),
+            label: const Text(
+              'Refresh',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            onPressed: () => controller.loadData(),
+          ),
+        ],
+      );
+
       if (controller.error.value != null) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            refreshButton,
+            const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Tooltip(
                 message: 'Failed to load data: ${controller.error.value}',
-                child: Icon(
-                  Icons.error,
-                  color: Theme.of(context).colorScheme.error,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Failed to load data',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -346,7 +384,15 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
         );
       }
 
-      return table;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          refreshButton,
+          const SizedBox(height: 8),
+          table,
+        ],
+      );
     });
   }
 }

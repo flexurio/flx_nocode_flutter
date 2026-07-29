@@ -67,6 +67,7 @@ class Component {
   final String type;
   final String? visibilityCondition;
   final Map<String, dynamic> events;
+  String? key;
 
   static final Map<String, int> _typeCounters = {};
 
@@ -75,6 +76,7 @@ class Component {
     required this.type,
     this.visibilityCondition,
     this.events = const {},
+    this.key,
   });
 
   factory Component.fromMap(Map<String, dynamic> map) {
@@ -87,67 +89,99 @@ class Component {
 
     final type = map['type'].toString().trim().toLowerCase();
 
+    final Component component;
     switch (type) {
       case ComponentType.table:
-        return ComponentTable.fromMap(map);
+        component = ComponentTable.fromMap(map);
+        break;
       case ComponentType.listView:
-        return ComponentListView.fromMap(map);
+        component = ComponentListView.fromMap(map);
+        break;
       case ComponentType.text:
-        return ComponentText.fromMap(map);
+        component = ComponentText.fromMap(map);
+        break;
       case ComponentType.textField:
-        return ComponentTextField.fromMap(map);
+        component = ComponentTextField.fromMap(map);
+        break;
       case ComponentType.datePicker:
-        return ComponentDatePicker.fromMap(map);
+        component = ComponentDatePicker.fromMap(map);
+        break;
       case ComponentType.timeField:
-        return ComponentTimeField.fromMap(map);
+        component = ComponentTimeField.fromMap(map);
+        break;
       case ComponentType.checkbox:
-        return ComponentCheckbox.fromMap(map);
+        component = ComponentCheckbox.fromMap(map);
+        break;
       case ComponentType.dropdown:
-        return ComponentDropdown.fromMap(map);
+        component = ComponentDropdown.fromMap(map);
+        break;
       case ComponentType.multiDropdown:
-        return ComponentMultiDropdown.fromMap(map);
+        component = ComponentMultiDropdown.fromMap(map);
+        break;
       case ComponentType.radio:
-        return ComponentRadio.fromMap(map);
+        component = ComponentRadio.fromMap(map);
+        break;
       case ComponentType.button:
-        return ComponentButton.fromMap(map);
+        component = ComponentButton.fromMap(map);
+        break;
       case ComponentType.iconButton:
-        return ComponentIconButton.fromMap(map);
+        component = ComponentIconButton.fromMap(map);
+        break;
       case ComponentType.column:
-        return ComponentColumn.fromMap(map);
+        component = ComponentColumn.fromMap(map);
+        break;
       case ComponentType.row:
-        return ComponentRow.fromMap(map);
+        component = ComponentRow.fromMap(map);
+        break;
       case ComponentType.fieldDisplay:
-        return ComponentFieldDisplay.fromMap(map);
+        component = ComponentFieldDisplay.fromMap(map);
+        break;
       case ComponentType.numberField:
-        return ComponentNumberField.fromMap(map);
+        component = ComponentNumberField.fromMap(map);
+        break;
       case ComponentType.container:
-        return ComponentContainer.fromMap(map);
+        component = ComponentContainer.fromMap(map);
+        break;
       case ComponentType.switchType:
-        return ComponentSwitch.fromMap(map);
+        component = ComponentSwitch.fromMap(map);
+        break;
       case ComponentType.image:
-        return ComponentImage.fromMap(map);
+        component = ComponentImage.fromMap(map);
+        break;
       case ComponentType.divider:
-        return ComponentDivider.fromMap(map);
+        component = ComponentDivider.fromMap(map);
+        break;
       case ComponentType.donutChart:
-        return ComponentDonutChart.fromMap(map);
+        component = ComponentDonutChart.fromMap(map);
+        break;
       case ComponentType.pieChart:
-        return ComponentPieChart.fromMap(map);
+        component = ComponentPieChart.fromMap(map);
+        break;
       case ComponentType.barChart:
-        return ComponentBarChart.fromMap(map);
+        component = ComponentBarChart.fromMap(map);
+        break;
       case ComponentType.chart:
-        return ComponentGenericChart.fromMap(map);
+        component = ComponentGenericChart.fromMap(map);
+        break;
       case ComponentType.filePicker:
-        return ComponentFilePicker.fromMap(map);
+        component = ComponentFilePicker.fromMap(map);
+        break;
       case ComponentType.form:
-        return ComponentForm.fromMap(map);
+        component = ComponentForm.fromMap(map);
+        break;
       case ComponentType.conditional:
-        return ComponentConditional.fromMap(map);
+        component = ComponentConditional.fromMap(map);
+        break;
       case ComponentType.userName:
-        return ComponentUserName.fromMap(map);
+        component = ComponentUserName.fromMap(map);
+        break;
 
       default:
         throw FormatException('Unknown component type "$type"');
     }
+
+    component.key = map['key']?.toString();
+    return component;
   }
 
   JsonMap toMap() => {
@@ -155,6 +189,8 @@ class Component {
         'type': type,
         if (visibilityCondition != null)
           'visibilityCondition': visibilityCondition,
+        if (key != null)
+          'key': key,
         'events': events,
       };
 

@@ -52,67 +52,78 @@ extension ComponentWidget on Component {
     final isVisible = visibilityCondition?.evaluateVisibility(fullData) ?? true;
     if (!isVisible) return const SizedBox.shrink();
 
+    final Widget resultWidget;
     if (this.type == ComponentText.componentId) {
-      return (this as ComponentText).toWidget(fullData);
+      resultWidget = (this as ComponentText).toWidget(fullData);
     } else if (this.type == ComponentTable.componentId) {
-      return (this as ComponentTable).toWidget(fullData);
+      resultWidget = (this as ComponentTable).toWidget(fullData);
     } else if (this.type == ComponentListView.componentId) {
-      return (this as ComponentListView).toWidget(fullData);
+      resultWidget = (this as ComponentListView).toWidget(fullData);
     } else if (this.type == ComponentFieldDisplay.componentId) {
-      return (this as ComponentFieldDisplay).toWidget(fullData);
+      resultWidget = (this as ComponentFieldDisplay).toWidget(fullData);
     } else if (this.type == ComponentRow.componentId) {
-      return (this as ComponentRow).toWidget(fullData);
+      resultWidget = (this as ComponentRow).toWidget(fullData);
     } else if (this.type == ComponentColumn.componentId) {
-      return (this as ComponentColumn).toWidget(fullData);
+      resultWidget = (this as ComponentColumn).toWidget(fullData);
     } else if (this.type == ComponentTextField.componentId) {
-      return (this as ComponentTextField).toWidget(fullData, isSmall: isSmall);
+      resultWidget = (this as ComponentTextField).toWidget(fullData, isSmall: isSmall);
     } else if (this.type == ComponentDatePicker.componentId) {
-      return (this as ComponentDatePicker).toWidget(fullData);
+      resultWidget = (this as ComponentDatePicker).toWidget(fullData);
     } else if (this.type == ComponentCheckbox.componentId) {
-      return (this as ComponentCheckbox).toWidget(fullData);
+      resultWidget = (this as ComponentCheckbox).toWidget(fullData);
     } else if (this.type == ComponentDropdown.componentId) {
-      return (this as ComponentDropdown).toWidget(fullData, isSmall: isSmall);
+      resultWidget = (this as ComponentDropdown).toWidget(fullData, isSmall: isSmall);
     } else if (this.type == ComponentMultiDropdown.componentId) {
-      return (this as ComponentMultiDropdown)
+      resultWidget = (this as ComponentMultiDropdown)
           .toWidget(fullData, isSmall: isSmall);
     } else if (this.type == ComponentRadio.componentId) {
-      return (this as ComponentRadio).toWidget(fullData);
+      resultWidget = (this as ComponentRadio).toWidget(fullData);
     } else if (this.type == ComponentButton.componentId) {
-      return (this as ComponentButton).toWidget(fullData);
+      resultWidget = (this as ComponentButton).toWidget(fullData);
     } else if (this.type == ComponentIconButton.componentId) {
-      return (this as ComponentIconButton).toWidget(fullData);
+      resultWidget = (this as ComponentIconButton).toWidget(fullData);
     } else if (this.type == ComponentNumberField.componentId) {
-      return (this as ComponentNumberField).toWidget(fullData);
+      resultWidget = (this as ComponentNumberField).toWidget(fullData);
     } else if (this.type == ComponentContainer.componentId) {
-      return (this as ComponentContainer).toWidget(data: fullData);
+      resultWidget = (this as ComponentContainer).toWidget(data: fullData);
     } else if (this.type == ComponentSwitch.componentId) {
-      return (this as ComponentSwitch).toWidget(fullData);
+      resultWidget = (this as ComponentSwitch).toWidget(fullData);
     } else if (this.type == ComponentImage.componentId) {
-      return (this as ComponentImage).toWidget(fullData);
+      resultWidget = (this as ComponentImage).toWidget(fullData);
     } else if (this.type == ComponentDivider.componentId) {
-      return (this as ComponentDivider).toWidget(fullData);
+      resultWidget = (this as ComponentDivider).toWidget(fullData);
     } else if (this.type == ComponentTimeField.componentId) {
-      return (this as ComponentTimeField).toWidget(fullData);
+      resultWidget = (this as ComponentTimeField).toWidget(fullData);
     } else if (this.type == ComponentDonutChart.componentId) {
-      return (this as ComponentDonutChart).toWidget(data: fullData);
+      resultWidget = (this as ComponentDonutChart).toWidget(data: fullData);
     } else if (this.type == ComponentPieChart.componentId) {
-      return (this as ComponentPieChart).toWidget(data: fullData);
+      resultWidget = (this as ComponentPieChart).toWidget(data: fullData);
     } else if (this.type == ComponentBarChart.componentId) {
-      return (this as ComponentBarChart).toWidget(data: fullData);
+      resultWidget = (this as ComponentBarChart).toWidget(data: fullData);
     } else if (this.type == ComponentGenericChart.componentId) {
-      return (this as ComponentGenericChart).toWidget(data: fullData);
+      resultWidget = (this as ComponentGenericChart).toWidget(data: fullData);
     } else if (this.type == ComponentFilePicker.componentId) {
-      return (this as ComponentFilePicker).toWidget(fullData);
+      resultWidget = (this as ComponentFilePicker).toWidget(fullData);
     } else if (this.type == ComponentForm.componentId) {
-      return (this as ComponentForm).toWidget(fullData);
+      resultWidget = (this as ComponentForm).toWidget(fullData);
     } else if (this.type == ComponentConditional.componentId) {
-      return (this as ComponentConditional)
+      resultWidget = (this as ComponentConditional)
           .toWidget(fullData, isSmall: isSmall);
     } else if (this.type == ComponentUserName.componentId) {
-      return (this as ComponentUserName).toWidget(fullData);
+      resultWidget = (this as ComponentUserName).toWidget(fullData);
+    } else {
+      resultWidget = NoCodeError('Unknown component type: ${this.type}');
     }
 
-    return NoCodeError('Unknown component type: ${this.type}');
+    if (this.key != null && this.key!.isNotEmpty) {
+      final resolvedKey = this.key!.interpolateJavascript(fullData);
+      return KeyedSubtree(
+        key: ValueKey(resolvedKey),
+        child: resultWidget,
+      );
+    }
+
+    return resultWidget;
   }
 
   Widget toMockWidget() {

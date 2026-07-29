@@ -481,7 +481,12 @@ extension ActionExecutionExtension on ActionD {
             validator: (scope, _) async {},
           );
 
-          final result = await WorkflowExecutor(definition).run(workflowCtx);
+          final result = await WorkflowExecutor(
+            definition,
+            ui: ProductionUiBridge(
+              layoutFormId: data['layoutFormId']?.toString(),
+            ),
+          ).run(workflowCtx);
 
           if (result.isSuccess) {
             Toast(context).success('Workflow completed successfully');

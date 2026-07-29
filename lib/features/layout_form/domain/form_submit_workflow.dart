@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:get/get.dart';
+import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
@@ -168,6 +170,40 @@ class NoopUiBridge implements UiBridge {
 
   @override
   void log(String message) {}
+}
+
+class ProductionUiBridge implements UiBridge {
+  final String? layoutFormId;
+  ProductionUiBridge({this.layoutFormId});
+
+  @override
+  Future<void> toast(String variant, String message) async {}
+
+  @override
+  Future<void> closeModal() async {}
+
+  @override
+  Future<void> refresh(String target) async {
+    print('[ProductionUiBridge] refresh called for target: $target');
+    if (layoutFormId != null) {
+      final pageCtrl = Get.isRegistered<CreatePageController>(tag: 'create_page_$layoutFormId')
+          ? Get.find<CreatePageController>(tag: 'create_page_$layoutFormId')
+          : null;
+      if (pageCtrl != null) {
+        final reloadCallback = pageCtrl.tableReloadListeners[target];
+        if (reloadCallback != null) {
+          print('[ProductionUiBridge] Found reload callback for target $target. Executing...');
+          reloadCallback();
+          return;
+        }
+      }
+    }
+  }
+
+  @override
+  void log(String message) {
+    print('[ProductionUiBridge] $message');
+  }
 }
 
 /// ============================================================================

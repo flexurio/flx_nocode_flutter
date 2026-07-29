@@ -85,6 +85,9 @@ class CreatePageController extends GetxController {
   /// The current page index for multi-step forms.
   final RxInt currentPage = 0.obs;
 
+  /// Reload listeners for table components inside this form.
+  final Map<String, VoidCallback> tableReloadListeners = {};
+
   @override
   void onInit() {
     super.onInit();
@@ -327,7 +330,10 @@ class CreatePageController extends GetxController {
           httpExecutor: executor,
         );
 
-        final result = await WorkflowExecutor(definition).run(ctx);
+        final result = await WorkflowExecutor(
+          definition,
+          ui: ProductionUiBridge(layoutFormId: layoutFormId),
+        ).run(ctx);
         debugPrint(
             '[CreatePageController] onInit Workflow result: ${result.status}');
 
