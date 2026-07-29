@@ -100,7 +100,7 @@ Manage temporary state within the workflow.
 
 - **`toast`**: Shows a message to the user. `variant` can be `success`, `error`, `info`, or `warning`.
 - **`close_modal`**: Closes the current view.
-- **`refresh`**: Reloads a component or data source by ID.
+- **`refresh`**: Reloads a component or data source by ID. Specify the ID of the component to refresh using the `target` parameter (e.g. `{ "type": "refresh", "target": "customer_table" }`).
 
 ### 5. Control Flow (`condition`, `loop`, `try_catch`)
 
