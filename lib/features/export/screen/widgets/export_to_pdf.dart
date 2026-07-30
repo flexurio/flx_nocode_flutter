@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/export/screen/models/export_section.dart';
 import 'package:flx_nocode_flutter/features/export/screen/models/export_table_section.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
@@ -215,8 +216,10 @@ Future<List<List<String>>> fetchTableData(
     if (headerProvider != null) ...(await headerProvider()),
   };
 
-  final uri = Uri.parse(
-      section.endpoint!.replaceStringWithValues(data, urlEncode: true));
+  final processedUrl = section.endpoint!
+      .replaceStringWithValues(data, urlEncode: true)
+      .interpolateJavascript(data);
+  final uri = Uri.parse(processedUrl);
   final method = (section.method ?? 'GET').toUpperCase();
 
   print('[ExportPDF] 🚀 Fetching data...');
