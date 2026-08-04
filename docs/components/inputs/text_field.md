@@ -1,6 +1,6 @@
 # `text_field`
 
-A standard text input field.
+A standard text input field with optional special character & symbol picker support (`is_symbol` / `isSymbol`).
 
 | Key | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -15,8 +15,9 @@ A standard text input field.
 | `regexErrorMessage` | String | - | Error text shown when regex validation fails. |
 | `helperText` | String | - | Helper text below the field. |
 | `obscure` | Boolean | `false` | Hides entered text, useful for password fields. |
+| `isSymbol` / `is_symbol` | Boolean | `false` | Enables special character & symbol picker modal (`Ω` icon button). |
 
-Example:
+Example with Symbol Picker enabled (`is_symbol: true`):
 
 ```json
 {
@@ -27,6 +28,7 @@ Example:
   "required": true,
   "regex": "^[^@]+@[^@]+\\.[^@]+$",
   "regexErrorMessage": "Email is not valid",
+  "is_symbol": true,
   "widthMode": "fill"
 }
 ```

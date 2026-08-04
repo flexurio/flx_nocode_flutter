@@ -11,6 +11,7 @@ class ComponentTextField extends ComponentInputBase {
   final String? regexErrorMessage;
   final String? helperText;
   final bool obscure;
+  final bool isSymbol;
 
   ComponentTextField({
     required super.id,
@@ -28,6 +29,7 @@ class ComponentTextField extends ComponentInputBase {
     super.width,
     super.flex,
     this.obscure = false,
+    this.isSymbol = false,
     super.visibilityCondition,
     super.events,
     super.dependsOn,
@@ -50,6 +52,7 @@ class ComponentTextField extends ComponentInputBase {
       helperText: null,
       widthMode: ComponentSizeMode.fill,
       obscure: false,
+      isSymbol: false,
     );
   }
 
@@ -79,6 +82,7 @@ class ComponentTextField extends ComponentInputBase {
     final visibilityCondition = map['visibilityCondition']?.toString();
     final events = map['events'] as Map<String, dynamic>? ?? {};
     final obscure = map['obscure'] == true;
+    final isSymbol = map['isSymbol'] == true || map['is_symbol'] == true;
     final rawDependsOn = map['dependsOn'];
     final dependsOn = <String>[];
     if (rawDependsOn is List) {
@@ -103,6 +107,7 @@ class ComponentTextField extends ComponentInputBase {
       width: double.tryParse(map['width']?.toString() ?? ''),
       flex: int.tryParse(map['flex']?.toString() ?? ''),
       obscure: obscure,
+      isSymbol: isSymbol,
       visibilityCondition: visibilityCondition,
       events: events,
       dependsOn: dependsOn,
@@ -120,5 +125,6 @@ class ComponentTextField extends ComponentInputBase {
         if (regexErrorMessage != null) 'regexErrorMessage': regexErrorMessage,
         if (helperText != null) 'helperText': helperText,
         'obscure': obscure,
+        if (isSymbol) 'isSymbol': isSymbol,
       };
 }

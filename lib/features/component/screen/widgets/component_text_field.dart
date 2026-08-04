@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/filter.dart';
+import 'symbol_picker_dialog.dart';
 
 final _cellControllers = <String, TextEditingController>{};
 
@@ -63,6 +64,39 @@ extension ComponentTextFieldWidgets on ComponentTextField {
       helperText: helperText,
       enabled: enabled,
       obscureText: obscure,
+      suffixIcon: isSymbol
+          ? Builder(
+              builder: (context) {
+                final iconBtn = IconButton(
+                  icon: const Icon(Icons.functions, size: 20),
+                  tooltip: 'Sisipkan Simbol',
+                  onPressed: () {
+                    if (controller != null) {
+                      showSymbolPickerDialog(
+                        context: context,
+                        controller: controller,
+                      );
+                    }
+                  },
+                );
+
+                if (maxLines > 1) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        iconBtn,
+                      ],
+                    ),
+                  );
+                }
+
+                return iconBtn;
+              },
+            )
+          : null,
       validator: (value) {
         final actualValue = controller?.text ?? value;
         if (this.required) {
