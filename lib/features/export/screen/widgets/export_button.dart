@@ -64,22 +64,29 @@ class ButtonExport extends StatelessWidget {
       },
       child: BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
         builder: (context, state) {
+          final isProgress = state.maybeWhen(
+            loading: (_) => true,
+            orElse: () => false,
+          );
           return LightButtonSmall(
+            status: isProgress ? Status.progress : Status.loaded,
             action:
                 export.isPdf ? DataAction.exportPdf : DataAction.exportExcel,
             title: export.name,
             permissions: null,
-            onPressed: () async {
-              context.read<EntityCustomQueryBloc>().add(
-                    EntityCustomQueryEvent.fetch(
-                      method: 'GET',
-                      url: export.backend,
-                      filters: filters,
-                      cachedDurationSeconds: null,
-                      pageOptions: PageOptions.emptyNoLimit(sortBy: ''),
-                    ),
-                  );
-            },
+            onPressed: !isProgress
+                ? () async {
+                    context.read<EntityCustomQueryBloc>().add(
+                          EntityCustomQueryEvent.fetch(
+                            method: 'GET',
+                            url: export.backend,
+                            filters: filters,
+                            cachedDurationSeconds: null,
+                            pageOptions: PageOptions.emptyNoLimit(sortBy: ''),
+                          ),
+                        );
+                  }
+                : null,
           );
         },
       ),
