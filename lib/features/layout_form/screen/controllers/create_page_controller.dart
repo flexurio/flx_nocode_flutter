@@ -244,7 +244,15 @@ class CreatePageController extends GetxController {
         workflow: layoutForm.submitWorkflow!.toMap(),
       );
     } else {
-      Toast(context).fail('Submit workflow not found');
+      final entityCtrl =
+          Get.find<EntityController>(tag: 'entity_ctrl_$layoutFormId');
+      final isEdit =
+          initialDataInput != null && initialDataInput!['id'] != null;
+      if (isEdit) {
+        entityCtrl.edit(data: currentData, filters: filters);
+      } else {
+        entityCtrl.create(data: currentData, filters: filters);
+      }
     }
   }
 

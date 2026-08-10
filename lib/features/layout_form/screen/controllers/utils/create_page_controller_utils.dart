@@ -25,16 +25,20 @@ class CreatePageControllerUtils {
         ComponentTimeField c => c.initialValue,
         ComponentNumberField c => c.initialValue,
         ComponentDropdown c => c.initialValue,
+        ComponentRadio c => c.initialValue,
         _ => null,
       };
 
       if (initialValue != null && initialValue.isNotEmpty) {
-        data[component.id] = initialValue.interpolateJavascript({
+        final val = initialValue.interpolateJavascript({
           'data': data,
+          'current': data,
+          'form': data,
           if (parentData.isNotEmpty) 'parent': parentData.last,
         });
-      } else if (initialValue != null) {
-        data.remove(component.id);
+        if (val.isNotEmpty && val != 'undefined') {
+          data[component.id] = val;
+        }
       }
     }
     return data;
@@ -115,9 +119,21 @@ class CreatePageControllerUtils {
     final parsed = () {
       try {
         return formatter.parse(value);
-      } catch (_) {
-        return DateTime.tryParse(value);
+      } catch (_) {}
+
+      final isoParsed = DateTime.tryParse(value);
+      if (isoParsed != null) return isoParsed;
+
+      final str = value.trim();
+      if (str.length == 8 && RegExp(r'^\d{8}$').hasMatch(str)) {
+        try {
+          final year = int.parse(str.substring(0, 4));
+          final month = int.parse(str.substring(4, 6));
+          final day = int.parse(str.substring(6, 8));
+          return DateTime(year, month, day);
+        } catch (_) {}
       }
+      return null;
     }();
 
     return parsed != null ? formatter.format(parsed) : value;

@@ -1,4 +1,5 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 import 'package:hive/hive.dart';
 import 'submit_workflow.dart';
 
@@ -156,12 +157,17 @@ class LayoutForm extends HiveObject {
     }
 
     final rawComponents = map['components'] as List?;
-    final components = rawComponents?.map((e) {
-      if (e is! Map) {
-        throw const FormatException('Each component must be an object');
-      }
-      return Component.fromMap(Map<String, dynamic>.from(e));
-    }).toList(growable: false);
+    List<Component>? components;
+    if (rawComponents != null && rawComponents.isNotEmpty) {
+      components = rawComponents.map((e) {
+        if (e is! Map) {
+          throw const FormatException('Each component must be an object');
+        }
+        return Component.fromMap(Map<String, dynamic>.from(e));
+      }).toList(growable: false);
+    } else if (map.containsKey('groups') && map['groups'] is List) {
+      components = _convertGroupsToComponents(map['groups'] as List);
+    }
 
     final rawMultiForms = allowMultiForms ? map['multi_forms'] : null;
     List<LayoutForm> multiForms = const [];
@@ -275,5 +281,42 @@ class LayoutForm extends HiveObject {
       submitWorkflow: submitWorkflow ?? this.submitWorkflow,
       onInit: onInit ?? this.onInit,
     );
+  }
+
+  static List<Component> _convertGroupsToComponents(List groups) {
+    final result = <Component>[];
+    for (final group in groups) {
+      if (group is! Map) continue;
+      final rows = group['rows'] is List ? group['rows'] as List : [group];
+      for (final row in rows) {
+        if (row is! Map) continue;
+        final fields = row['fields'];
+        if (fields is! List) continue;
+        final rowComponents = <Component>[];
+        for (final fieldRef in fields) {
+          final refStr = fieldRef.toString();
+          rowComponents.add(
+            ComponentTextField(
+              id: refStr,
+              label: refStr,
+              flex: 1,
+              widthMode: fields.length > 1 ? ComponentSizeMode.fill : null,
+            ),
+          );
+        }
+        if (rowComponents.length == 1) {
+          result.add(rowComponents.first);
+        } else if (rowComponents.length > 1) {
+          result.add(
+            ComponentRow(
+              id: 'row_${rowComponents.first.id}',
+              children: rowComponents,
+              horizontalGap: 16,
+            ),
+          );
+        }
+      }
+    }
+    return result;
   }
 }

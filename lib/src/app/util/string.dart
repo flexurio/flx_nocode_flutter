@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 
 extension StringReplaceExtension on String {
@@ -12,10 +13,16 @@ extension StringReplaceExtension on String {
       {bool urlEncode = false}) {
     var url = this;
 
-    // {user.token} — but not when inside {{...}}
+    // {user.token} & {auth_token} — but not when inside {{...}}
     url = url.replaceAllMapped(
-      RegExp(r'(?<!\{)\{user\.token\}(?!\})'),
+      RegExp(r'(?<!\{)\{(?:user\.token|auth_token)\}(?!\})'),
       (match) => UserRepositoryApp.instance.token ?? '',
+    );
+
+    // {backend_host} — but not when inside {{...}}
+    url = url.replaceAllMapped(
+      RegExp(r'(?<!\{)\{backend_host\}(?!\})'),
+      (match) => Configuration.instance.backendHost,
     );
 
     // {key} — but not when inside {{...}} (double braces)

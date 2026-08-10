@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_date_picker.dart';
@@ -87,6 +88,31 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
     _setupListeners();
   }
 
+  DateTime? _parseDate(String val) {
+    final str = val.trim();
+    if (str.isEmpty) return null;
+    var parsed = DateTime.tryParse(str);
+    if (parsed != null) return parsed;
+
+    final fmt = widget.component.dateFormat;
+    if (fmt != null && fmt.isNotEmpty) {
+      try {
+        parsed = DateFormat(fmt).parse(str);
+        if (parsed != null) return parsed;
+      } catch (_) {}
+    }
+
+    if (str.length == 8 && RegExp(r'^\d{8}$').hasMatch(str)) {
+      try {
+        final year = int.parse(str.substring(0, 4));
+        final month = int.parse(str.substring(4, 6));
+        final day = int.parse(str.substring(6, 8));
+        return DateTime(year, month, day);
+      } catch (_) {}
+    }
+    return null;
+  }
+
   void _initController() {
     final allControllers = widget.data['allControllers']
             as Map<String, TextEditingController>? ??
@@ -97,13 +123,22 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
         TextEditingController();
 
     if (_controller.text.isEmpty && widget.component.initialValue.isNotEmpty) {
-      // Handle initial value interpolation if necessary
       final variables =
           allControllers.map((key, value) => MapEntry(key, value.text));
       final interpolated =
           widget.component.initialValue.interpolateJavascript(variables);
       if (interpolated.isNotEmpty) {
         _controller.text = interpolated;
+      }
+    }
+
+    if (_controller.text.isNotEmpty) {
+      final parsed = _parseDate(_controller.text);
+      if (parsed != null &&
+          widget.component.dateFormat != null &&
+          widget.component.dateFormat!.isNotEmpty) {
+        _controller.text =
+            DateFormat(widget.component.dateFormat!).format(parsed);
       }
     }
   }
@@ -122,13 +157,11 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
 
   void _onDependencyChanged() {
     if (mounted) {
-      // Reset the date picker value when dependency changes
       if (_controller.text.isNotEmpty) {
         setState(() {
           _controller.text = '';
         });
 
-        // Also notify row change if inside a table
         final onRowChanged = widget.data['onRowChanged'];
         if (onRowChanged is Function) {
           final row =
@@ -141,7 +174,6 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
           }
         }
       } else {
-        // Even if empty, we might need to rebuild because min/max dates might have changed
         setState(() {});
       }
     }
@@ -169,28 +201,25 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
     final variables =
         allControllers.map((key, value) => MapEntry(key, value.text));
 
-    // Handle initial date (for the picker UI)
     final String interpolatedInitial =
         widget.component.initialValue.interpolateJavascript(variables);
-    final initialDate = DateTime.tryParse(interpolatedInitial) ??
-        DateTime.tryParse(_controller.text);
+    final initialDate = _parseDate(interpolatedInitial) ??
+        _parseDate(_controller.text);
 
-    // Handle min date
     DateTime? min;
     if (widget.component.minDate != null &&
         widget.component.minDate!.isNotEmpty) {
       final String interpolatedMin =
           widget.component.minDate!.interpolateJavascript(variables);
-      min = DateTime.tryParse(interpolatedMin);
+      min = _parseDate(interpolatedMin);
     }
 
-    // Handle max date
     DateTime? max;
     if (widget.component.maxDate != null &&
         widget.component.maxDate!.isNotEmpty) {
       final String interpolatedMax =
           widget.component.maxDate!.interpolateJavascript(variables);
-      max = DateTime.tryParse(interpolatedMax);
+      max = _parseDate(interpolatedMax);
     }
 
     return FieldDatePicker(

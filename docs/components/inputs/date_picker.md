@@ -8,19 +8,21 @@ Input for date values.
 | `initialValue` | String | - | Initial date value. |
 | `minDate` | String | - | Minimum selectable date. |
 | `maxDate` | String | - | Maximum selectable date. |
-| `dateFormat` | String | - | Date display/parse format used by renderer. |
+| `dateFormat` | String | - | Date display/parse format (e.g. `yyyyMMdd`, `yyyy-MM-dd`). Supports 8-digit string parsing (`YYYYMMDD`). |
 | `required` | Boolean | `false` | Validation requirement. |
 | `enabled` | Boolean | `true` | Editability. |
 
-Example:
+Example (using `yyyyMMdd` payload format):
 
 ```json
 {
-  "id": "delivery_date",
+  "id": "period_start",
   "type": "date_picker",
-  "label": "Delivery Date",
-  "initialValue": "{{current.delivery_date}}",
-  "dateFormat": "yyyy-MM-dd",
+  "label": "Period Monitoring Start",
+  "initialValue": "{{data.period_start}}",
+  "dateFormat": "yyyyMMdd",
   "required": true
 }
 ```
+
+> **Note**: Both initial value parsing and payload output automatically handle 8-digit date strings such as `"20251231"` or `"20250401"`.

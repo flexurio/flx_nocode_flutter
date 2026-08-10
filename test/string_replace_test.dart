@@ -3,11 +3,16 @@ import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:flx_nocode_flutter/src/app/model/user.dart';
 import 'package:flx_nocode_flutter/src/app/util/string.dart';
 
+import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('replaceStringWithValues', () {
     setUp(() {
+      Configuration.instance = Configuration.empty().copyWith(
+        backendHost: 'http://127.0.0.1:8000',
+      );
       UserRepositoryApp.instance = UserRepositoryApp();
       UserRepositoryApp.instance.userApp = UserApp(
         id: 1,
@@ -15,6 +20,14 @@ void main() {
         role: 'admin',
       );
       UserRepositoryApp.instance.token = 'test_token_value';
+    });
+
+    test('replaces {backend_host} and {auth_token} placeholders', () {
+      final result = '{backend_host}/projects/{id}'.replaceStringWithValues({'id': '42'});
+      expect(result, 'http://127.0.0.1:8000/projects/42');
+
+      final authResult = 'Bearer {auth_token}'.replaceStringWithValues({});
+      expect(authResult, 'Bearer test_token_value');
     });
 
     test('replaces {key} with value', () {
