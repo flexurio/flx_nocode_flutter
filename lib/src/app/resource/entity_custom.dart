@@ -199,7 +199,11 @@ class EntityCustomRepository extends Repository {
       );
 
       if (cachedDurationSeconds != null) {
-        await EntityCustomCache.put(cacheKey, newPageOptions.data);
+        await EntityCustomCache.put(
+          cacheKey,
+          newPageOptions.data,
+          durationSeconds: cachedDurationSeconds,
+        );
       }
       return newPageOptions;
     } catch (error) {

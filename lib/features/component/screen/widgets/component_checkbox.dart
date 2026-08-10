@@ -102,9 +102,13 @@ class _CheckboxTileState extends State<_CheckboxTile> {
 
     return CheckboxListTile(
       dense: true,
+      controlAffinity: ListTileControlAffinity.leading,
       contentPadding: EdgeInsets.zero,
       value: _checked,
-      title: Text(widget.label),
+      title: Text(
+        widget.label,
+        style: const TextStyle(fontSize: 14, color: Colors.black87),
+      ),
       onChanged: (val) => _updateController(val ?? false),
     );
   }

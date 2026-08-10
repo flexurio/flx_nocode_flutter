@@ -4,11 +4,13 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 
 class ComponentCheckbox extends ComponentInputBase {
   final bool value;
+  final String initialValue;
 
   ComponentCheckbox({
     required super.id,
     required super.label,
     required this.value,
+    this.initialValue = '',
     super.required,
     super.enabled = true,
     super.widthMode,
@@ -36,6 +38,7 @@ class ComponentCheckbox extends ComponentInputBase {
     }
     final label = map['label']?.toString().trim() ?? 'Checkbox';
     final rawValue = map['value'];
+    final initialValueStr = map['initialValue']?.toString().trim() ?? '';
     final value = () {
       if (rawValue == null) return false;
       if (rawValue is bool) return rawValue;
@@ -56,6 +59,7 @@ class ComponentCheckbox extends ComponentInputBase {
       id: id,
       label: label,
       value: value,
+      initialValue: initialValueStr,
       required: map['required'] == true,
       enabled: enabled,
       widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),

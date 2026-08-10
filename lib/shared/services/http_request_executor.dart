@@ -9,6 +9,7 @@ import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/src/app/util/file_picker_upload_registry.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flx_nocode_flutter/shared/services/network_logger.dart';
+import 'package:flx_nocode_flutter/src/app/model/entity_cache.dart';
 
 typedef Json = Map<String, dynamic>;
 
@@ -212,6 +213,46 @@ class HttpRequestExecutor {
       );
     }
 
+    if (methodUpper == 'GET') {
+      final cacheKey = EntityCustomCache.buildKey(
+        url: processedUrl,
+        method: methodUpper,
+        filterMap: queryParameters,
+      );
+      final cachedData = await EntityCustomCache.get(cacheKey);
+      if (cachedData != null) {
+        if (enableLog) {
+          debugPrint('⚡ [HttpRequestExecutor] Loaded from cache ($cacheKey)');
+        }
+        final cachedMockData = {
+          'data': cachedData,
+          'total_data': cachedData.length,
+          'message': 'Loaded from cache',
+        };
+        final duration = DateTime.now().difference(startTime);
+        _sendStudioLog({
+          'type': 'response',
+          'id': requestId,
+          'statusCode': 200,
+          'headers': {'Cached': 'true'},
+          'body': cachedMockData,
+          'durationMs': duration.inMilliseconds,
+        });
+        NetworkLogger.instance.updateResponse(
+          requestId,
+          responseStatus: 200,
+          responseHeaders: {'Cached': 'true'},
+          responseBody: cachedMockData,
+          error: null,
+          duration: duration,
+        );
+        return HttpRequestResult.success(
+          statusCode: 200,
+          data: cachedMockData,
+        );
+      }
+    }
+
     _logHttpRequest(
       method: methodUpper,
       url: processedUrl,
@@ -256,6 +297,20 @@ class HttpRequestExecutor {
         error: null,
         duration: duration,
       );
+
+      if (methodUpper == 'GET' && response.data is Map) {
+        final resMap = response.data as Map;
+        if (resMap['data'] is List) {
+          final dataList =
+              (resMap['data'] as List).cast<Map<String, dynamic>>();
+          final cacheKey = EntityCustomCache.buildKey(
+            url: processedUrl,
+            method: methodUpper,
+            filterMap: queryParameters,
+          );
+          await EntityCustomCache.put(cacheKey, dataList);
+        }
+      }
 
       final int status = response.statusCode ?? 0;
       if (status >= 200 && status < 300) {

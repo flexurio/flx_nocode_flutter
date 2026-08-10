@@ -26,6 +26,7 @@ class CreatePageControllerUtils {
         ComponentNumberField c => c.initialValue,
         ComponentDropdown c => c.initialValue,
         ComponentRadio c => c.initialValue,
+        ComponentCheckbox c => c.initialValue,
         _ => null,
       };
 

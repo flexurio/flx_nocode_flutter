@@ -15,10 +15,20 @@ The root of the JSON file is a single object that contains all configuration pro
 | `logo_named_url`     | String        | No       | The URL or asset path for the company logo that includes the name (larger version).                     |
 | `show_landing_page`  | Boolean       | No       | If `true`, a landing page is shown before the login screen. Defaults to `false`.                        |
 | `entity_registration`| String        | No       | The entity ID to be used for the self-registration page. If null, registration is disabled.            |
-| `preload`            | Array<String> | No       | A list of entity IDs to preload data for when the application starts.                                   |
+| `preload`            | Array<String> | No       | A list of entity IDs to preload data for when the application starts (cached in Hive via `cache_duration`). |
 | `company`            | Object        | Yes      | An object containing details about the company. See [Company Object](#company-object).                  |
 | `theme`              | Object        | Yes      | An object defining the application's color scheme. See [Theme Object](#theme-object).                   |
 | `menu_group`         | Array<Object> | Yes      | An array of objects that define the structure of the navigation menu. See [Menu Group Object](#menu-group-object). |
+
+---
+
+### Data Preloading & HTTP Caching (`preload` & `cache_duration`)
+
+When an entity ID (e.g. `"customers"`) is listed in the root `preload` array:
+1. Upon login / app startup, the app automatically executes the entity's `read_all` GET endpoint.
+2. The response data is saved in local `EntityCustomCache` (Hive) with a Time-To-Live (TTL) defined by the entity's `cache_duration` (e.g. `"1h"` = 3600 seconds).
+3. Any subsequent GET requests (such as dropdown option fetching via `httpData`) matching the preloaded URL check `EntityCustomCache` first. If valid, the cached response is served instantly without repeated network requests.
+4. After `cache_duration` expires, the cache entry is invalidated, causing the next request to fetch fresh data from the server.
 
 ---
 

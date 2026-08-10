@@ -239,6 +239,8 @@ class CreatePageController extends GetxController {
         form: currentData,
         data: {
           ...initialData,
+          if (filters.isNotEmpty) 'filter': filters,
+          if (filters.isNotEmpty) 'filters': filters,
           if (parentData.isNotEmpty) 'parent': parentData.last,
         },
         workflow: layoutForm.submitWorkflow!.toMap(),
