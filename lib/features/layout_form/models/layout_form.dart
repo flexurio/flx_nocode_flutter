@@ -104,11 +104,16 @@ class LayoutForm extends HiveObject {
     JsonMap map, {
     required bool allowMultiForms,
   }) {
-    final id = map['id']?.toString().trim() ?? '';
+    final id = map['id']?.toString().trim() ??
+        map['name']?.toString().trim() ??
+        map['type']?.toString().trim() ??
+        '';
 
-    if (map['label'] == null || map['label'].toString().trim().isEmpty) {
-      throw const FormatException('Action "label" is required');
-    }
+    final label = map['label']?.toString().trim() ??
+        map['name']?.toString().trim() ??
+        map['title']?.toString().trim() ??
+        map['type']?.toString().trim() ??
+        (id.isNotEmpty ? id : 'Form');
 
     final dynamic rawActions =
         map.containsKey('buttons') ? map['buttons'] : null;
@@ -201,7 +206,7 @@ class LayoutForm extends HiveObject {
     return LayoutForm(
       id: id,
       components: components ?? const [],
-      label: map['label'].toString().trim(),
+      label: label,
       title: map['title']?.toString().trim(),
       visibleIf: map['visible_if'] == null
           ? null
