@@ -31,7 +31,7 @@ void main() {
         {'id': 2, 'name': 'Customer B'},
       ];
 
-      await EntityCustomCache.put(key, dummyData, durationSeconds: 3600);
+      await EntityCustomCache.put(key, dummyData);
 
       final cached = await EntityCustomCache.get(key, durationSeconds: 3600);
       expect(cached, isNotNull);
@@ -49,9 +49,10 @@ void main() {
         {'id': 99, 'name': 'Expired Item'},
       ];
 
-      // Store with negative durationSeconds (expired timestamp check)
-      await EntityCustomCache.put(key, dummyData, durationSeconds: -10);
+      // Store cache entry
+      await EntityCustomCache.put(key, dummyData);
 
+      // Retrieve with negative durationSeconds to trigger expiration
       final cached = await EntityCustomCache.get(key, durationSeconds: -10);
       expect(cached, isNull);
     });
