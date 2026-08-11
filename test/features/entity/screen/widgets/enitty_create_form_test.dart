@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/enitty_create_form.dart';
-import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/controller.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
@@ -20,7 +19,9 @@ void main() {
   });
 
   group('EntityCreateForm List/Map Override Tests', () {
-    testWidgets('should preserve list from initialData when controller text is not empty', (tester) async {
+    testWidgets(
+        'should preserve list from initialData when controller text is not empty',
+        (tester) async {
       final inspectComp = ComponentText(
         id: 'composition_list',
         value: '{{composition_list}}',
@@ -64,7 +65,9 @@ void main() {
       expect(find.textContaining('id: 1'), findsOneWidget);
     });
 
-    testWidgets('should clear list to empty string in mergedData when controller text is empty', (tester) async {
+    testWidgets(
+        'should clear list to empty string in mergedData when controller text is empty',
+        (tester) async {
       final inspectComp = ComponentText(
         id: 'composition_list',
         value: '{{composition_list}}',
@@ -80,7 +83,8 @@ void main() {
       );
 
       final controllers = {
-        'composition_list': TextEditingController(text: ''), // explicitly cleared
+        'composition_list':
+            TextEditingController(text: ''), // explicitly cleared
       };
 
       await tester.pumpWidget(
