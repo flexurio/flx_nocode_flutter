@@ -4,6 +4,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
 import 'package:flx_nocode_flutter/src/app/model/user.dart';
+import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 
 class MockEntityCustom extends Mock implements EntityCustom {}
 
@@ -14,6 +15,9 @@ class MockUserApp extends Mock implements UserApp {}
 void main() {
   setUpAll(() {
     registerFallbackValue(const <String, dynamic>{});
+    Configuration.instance = Configuration.empty().copyWith(
+      backendHost: 'http://localhost:8080',
+    );
   });
 
   testWidgets(

@@ -2,6 +2,9 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flx_nocode_flutter/features/print/domain/json_pdf_generator.dart';
 import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
+import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
+import 'package:flx_nocode_flutter/src/app/model/user.dart';
+import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockHttpRequestExecutor extends Mock implements HttpRequestExecutor {}
@@ -13,6 +16,12 @@ void main() {
       url: '',
       headers: {},
     ));
+    Configuration.instance = Configuration.empty().copyWith(
+      backendHost: 'http://localhost:8080',
+    );
+    UserRepositoryApp.instance = UserRepositoryApp();
+    UserRepositoryApp.instance.userApp = UserApp(id: 1, name: 'Test', role: 'admin');
+    UserRepositoryApp.instance.token = 'test_token';
   });
 
   group('JsonPdfGenerator Integration Tests', () {

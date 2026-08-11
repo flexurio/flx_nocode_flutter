@@ -13,6 +13,22 @@ extension StringReplaceExtension on String {
       {bool urlEncode = false}) {
     var url = this;
 
+    // {{user.token}} & {{auth_token}} — double-brace shorthand variants
+    url = url.replaceAll(
+      '{{user.token}}',
+      UserRepositoryApp.instance.token ?? '',
+    );
+    url = url.replaceAll(
+      '{{auth_token}}',
+      UserRepositoryApp.instance.token ?? '',
+    );
+
+    // {{backend_host}} — double-brace shorthand variant
+    url = url.replaceAll(
+      '{{backend_host}}',
+      Configuration.instance.backendHost,
+    );
+
     // {user.token} & {auth_token} — but not when inside {{...}}
     url = url.replaceAllMapped(
       RegExp(r'(?<!\{)\{(?:user\.token|auth_token)\}(?!\})'),
@@ -36,6 +52,7 @@ extension StringReplaceExtension on String {
     }
     return url;
   }
+
 
   String replaceStringWithValuesMultiple(List<Map<String, dynamic>> data,
       {bool urlEncode = false}) {
