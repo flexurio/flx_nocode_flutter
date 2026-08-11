@@ -256,6 +256,22 @@ class EntityCustom extends HiveObject {
   /// A static cache to store loaded entity configurations.
   static final Map<String, EntityCustom> _entityCache = {};
 
+  /// Returns true if this entity has mock configuration enabled for any of its backend endpoints.
+  bool get hasMock {
+    return (backend.readAll?.mockEnabled == true &&
+            backend.readAll?.url.isNotEmpty == true) ||
+        (backend.read?.mockEnabled == true &&
+            backend.read?.url.isNotEmpty == true) ||
+        (backend.create?.mockEnabled == true &&
+            backend.create?.url.isNotEmpty == true) ||
+        (backend.update?.mockEnabled == true &&
+            backend.update?.url.isNotEmpty == true) ||
+        (backend.deleteX?.mockEnabled == true &&
+            backend.deleteX?.url.isNotEmpty == true) ||
+        backend.others.any((other) =>
+            other.mockEnabled == true && other.url.isNotEmpty == true);
+  }
+
   /// Generates a map of dummy data based on the entity's fields.
   ///
   /// This is useful for testing or populating forms with placeholder values.
@@ -450,7 +466,8 @@ class CustomeLayout {
 
   factory CustomeLayout.fromJson(Map<String, dynamic> json) {
     final layoutTableRaw = json['layout_table'] as Map<String, dynamic>? ?? {};
-    final layoutTable = layoutTableRaw.map((k, v) => MapEntry(k, (v as num).toInt()));
+    final layoutTable =
+        layoutTableRaw.map((k, v) => MapEntry(k, (v as num).toInt()));
     return CustomeLayout(
       label: json['label'] as String? ?? '',
       key: json['key'] as String? ?? '',
