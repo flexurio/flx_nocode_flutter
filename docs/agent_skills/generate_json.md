@@ -139,6 +139,8 @@ Form pages are defined in `layout_form`. Each form contains dynamic components.
 ### Form Schema
 - `id` (String, required): Form identifier.
 - `label` (String, required): Header label.
+- `popup` (Boolean, optional): If `true`, form renders as a modal dialog popup with close button (**X** icon).
+- `submit_button` (Boolean, optional): Controls whether bottom action buttons (Cancel / Submit bar) appear (default `true`). Set to `false` for view-only popups.
 - `visible_if` (Object, optional): Conditional rule to show/hide the form.
 - `components` (Array, required): Nested widgets (see [Component Types](#component-types)).
 - `buttons` (Array, optional): Custom actions/buttons.

@@ -102,7 +102,8 @@ class CreateForm extends StatelessWidget {
           );
 
 
-          return popup
+          final isPopup = popup || layoutForm.popup;
+          return isPopup
               ? Form(
                   key: controller.formKey,
                   child: CardForm(

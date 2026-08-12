@@ -26,12 +26,14 @@ class LayoutForm extends HiveObject {
   final SubmitWorkflow? submitWorkflow;
   final dynamic
       onInit; // Map<String, dynamic> (Workflow) or List<ActionD> (Legacy)
+  final bool popup;
+  final bool? submitButton;
 
   List<String> get componentIds => components.map((e) => e.id).toList();
   bool get useNewForm => components.isNotEmpty;
   bool get showSubmitButton {
-    if (submitWorkflow == null) return true;
-    if (submitWorkflow!.showSubmitButton != null) {
+    if (submitButton != null) return submitButton!;
+    if (submitWorkflow != null && submitWorkflow!.showSubmitButton != null) {
       return submitWorkflow!.showSubmitButton == true;
     }
     return true;
@@ -76,7 +78,9 @@ class LayoutForm extends HiveObject {
         buttons = const [],
         multiForms = const [],
         submitWorkflow = null,
-        onInit = null;
+        onInit = null,
+        popup = false,
+        submitButton = null;
 
   LayoutForm({
     required this.id,
@@ -88,6 +92,8 @@ class LayoutForm extends HiveObject {
     List<LayoutForm>? multiForms,
     SubmitWorkflow? submitWorkflow,
     dynamic onInit,
+    this.popup = false,
+    this.submitButton,
   })  : assert(label.trim().isNotEmpty, 'label is required'),
         buttons = List<ButtonAction>.unmodifiable(buttons ?? const []),
         submitWorkflow = submitWorkflow,
@@ -209,6 +215,16 @@ class LayoutForm extends HiveObject {
       onInit = Map<String, dynamic>.from(rawOnInit);
     }
 
+    final popup = map['popup'] == true ||
+        map['is_popup'] == true ||
+        map['type'] == 'popup';
+
+    final bool? submitButton = map.containsKey('submit_button')
+        ? (map['submit_button'] == true)
+        : (map.containsKey('show_submit_button')
+            ? (map['show_submit_button'] == true)
+            : null);
+
     return LayoutForm(
       id: id,
       components: components ?? const [],
@@ -221,6 +237,8 @@ class LayoutForm extends HiveObject {
       multiForms: multiForms,
       submitWorkflow: submitWorkflow,
       onInit: onInit,
+      popup: popup,
+      submitButton: submitButton,
     );
   }
 
@@ -229,6 +247,8 @@ class LayoutForm extends HiveObject {
       'id': id,
       'label': label,
       if (title != null && title!.isNotEmpty) 'title': title,
+      if (popup) 'popup': true,
+      if (submitButton != null) 'submit_button': submitButton,
       'components': components.map((e) => e.toMap()).toList(growable: false),
     };
 
@@ -269,6 +289,8 @@ class LayoutForm extends HiveObject {
     List<LayoutForm>? multiForms,
     SubmitWorkflow? submitWorkflow,
     dynamic onInit,
+    bool? popup,
+    bool? submitButton,
   }) {
     return LayoutForm(
       id: id ?? this.id,
@@ -280,6 +302,8 @@ class LayoutForm extends HiveObject {
       multiForms: multiForms ?? this.multiForms,
       submitWorkflow: submitWorkflow ?? this.submitWorkflow,
       onInit: onInit ?? this.onInit,
+      popup: popup ?? this.popup,
+      submitButton: submitButton ?? this.submitButton,
     );
   }
 

@@ -127,28 +127,58 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
           break;
 
         case ActionType.openPage:
-        default:
-          await Navigator.push(
-            context,
-            CreatePage.route(
-              entity: widget.entity,
-              onSuccess: (responseData) async {
-                widget.onSuccess();
-                await action.handleOnSuccessSingle(
+          if (action.popup) {
+            await showDialog(
+              context: context,
+              useRootNavigator: false,
+              barrierDismissible: false,
+              builder: (ctx) {
+                return CreatePage.prepare(
+                  popup: true,
+                  embedded: true,
                   entity: widget.entity,
-                  context: context,
-                  responseData: responseData,
-                  data: widget.filters,
-                  onSuccessCallback: widget.onSuccess,
+                  layoutFormId: action.layoutFormId ?? '',
+                  parentData: widget.parentData,
+                  filters: widget.filters,
+                  width: action.width,
+                  showSubmitButton: action.showSubmitButton,
+                  onSuccess: (responseData) async {
+                    widget.onSuccess();
+                    await action.handleOnSuccessSingle(
+                      entity: widget.entity,
+                      context: context,
+                      responseData: responseData,
+                      data: widget.filters,
+                    );
+                  },
                 );
               },
-              embedded: false,
-              parentData: widget.parentData,
-              filters: widget.filters,
-              layoutFormId: action.layoutFormId ?? '',
-              showSubmitButton: action.showSubmitButton,
-            ),
-          );
+            );
+          } else {
+            await Navigator.push(
+              context,
+              CreatePage.route(
+                entity: widget.entity,
+                onSuccess: (responseData) async {
+                  widget.onSuccess();
+                  await action.handleOnSuccessSingle(
+                    entity: widget.entity,
+                    context: context,
+                    responseData: responseData,
+                    data: widget.filters,
+                    onSuccessCallback: widget.onSuccess,
+                  );
+                },
+                embedded: false,
+                parentData: widget.parentData,
+                filters: widget.filters,
+                layoutFormId: action.layoutFormId ?? '',
+                showSubmitButton: action.showSubmitButton,
+              ),
+            );
+          }
+          break;
+        default:
           break;
       }
     } catch (e) {

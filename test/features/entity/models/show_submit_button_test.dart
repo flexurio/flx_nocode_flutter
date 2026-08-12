@@ -74,5 +74,51 @@ void main() {
 
       expect(layout.showSubmitButton, isTrue);
     });
+
+    test('ActionD.fromJson should parse submit_button: false', () {
+      final json = {
+        'id': 'view_detail',
+        'type': 'open_page',
+        'name': 'View Detail',
+        'layout_form_id': 'detail_page',
+        'submit_button': false,
+      };
+
+      final action = ActionD.fromJson(json);
+
+      expect(action.showSubmitButton, isFalse);
+    });
+
+    test('LayoutForm.fromMap should parse top-level submit_button: false', () {
+      final map = {
+        'id': 'test_popup_form',
+        'label': 'Test Popup Form',
+        'popup': true,
+        'submit_button': false,
+        'components': [],
+      };
+
+      final layout = LayoutForm.fromMap(map);
+
+      expect(layout.popup, isTrue);
+      expect(layout.submitButton, isFalse);
+      expect(layout.showSubmitButton, isFalse);
+    });
+
+    test('LayoutForm.fromMap should parse top-level submit_button: true', () {
+      final map = {
+        'id': 'test_popup_form',
+        'label': 'Test Popup Form',
+        'popup': true,
+        'submit_button': true,
+        'components': [],
+      };
+
+      final layout = LayoutForm.fromMap(map);
+
+      expect(layout.popup, isTrue);
+      expect(layout.submitButton, isTrue);
+      expect(layout.showSubmitButton, isTrue);
+    });
   });
 }

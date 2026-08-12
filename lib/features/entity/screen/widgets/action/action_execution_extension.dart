@@ -113,29 +113,60 @@ extension ActionExecutionExtension on ActionD {
           Toast(context).fail('No page found');
           return;
         }
-        await Navigator.push(
-          context,
-          CreatePage.route(
-            data: data,
-            entity: entity,
-            embedded: false,
-            layoutFormId: layoutFormId!,
-            width: width,
-            showSubmitButton: showSubmitButton,
-            onSuccess: (responseData) async {
-              onSuccessCallback?.call();
-              await handleOnSuccessSingle(
+        if (popup || this.popup) {
+          await showDialog(
+            context: context,
+            useRootNavigator: false,
+            barrierDismissible: false,
+            builder: (ctx) {
+              return CreatePage.prepare(
+                popup: true,
+                embedded: true,
                 entity: entity,
-                context: context,
-                responseData: responseData,
+                layoutFormId: layoutFormId!,
+                showSubmitButton: showSubmitButton,
+                parentData: parentData,
                 data: data,
-                onSuccessCallback: onSuccessCallback,
+                filters: const {},
+                width: width,
+                onSuccess: (responseData) async {
+                  onSuccessCallback?.call();
+                  await handleOnSuccessSingle(
+                    entity: entity,
+                    context: context,
+                    responseData: responseData,
+                    data: data,
+                    onSuccessCallback: onSuccessCallback,
+                  );
+                },
               );
             },
-            filters: const <String, dynamic>{},
-            parentData: parentData,
-          ),
-        );
+          );
+        } else {
+          await Navigator.push(
+            context,
+            CreatePage.route(
+              data: data,
+              entity: entity,
+              embedded: false,
+              layoutFormId: layoutFormId!,
+              width: width,
+              showSubmitButton: showSubmitButton,
+              onSuccess: (responseData) async {
+                onSuccessCallback?.call();
+                await handleOnSuccessSingle(
+                  entity: entity,
+                  context: context,
+                  responseData: responseData,
+                  data: data,
+                  onSuccessCallback: onSuccessCallback,
+                );
+              },
+              filters: const <String, dynamic>{},
+              parentData: parentData,
+            ),
+          );
+        }
         break;
 
       case ActionType.showDialog:

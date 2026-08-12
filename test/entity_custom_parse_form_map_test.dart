@@ -185,5 +185,29 @@ void main() {
       final entity = EntityCustom.fromJson(decoded);
       expect(entity, isNotNull);
     });
+
+    test('parses popup: true in LayoutForm and ActionD correctly', () {
+      final formMap = <String, dynamic>{
+        'id': 'test_popup_form',
+        'label': 'Test Popup Form',
+        'popup': true,
+        'components': [
+          {'id': 'name', 'type': 'text_field', 'label': 'Name'}
+        ]
+      };
+      final form = LayoutForm.fromMap(formMap);
+      expect(form.popup, isTrue);
+
+      final actionMap = <String, dynamic>{
+        'id': 'open_popup_action',
+        'type': 'open_page',
+        'name': 'Open Popup',
+        'layout_form_id': 'test_popup_form',
+        'popup': true,
+      };
+      final action = ActionD.fromJson(actionMap);
+      expect(action.popup, isTrue);
+    });
   });
 }
+

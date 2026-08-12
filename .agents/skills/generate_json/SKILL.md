@@ -306,7 +306,7 @@ Actions represent entity and row-level operations.
 #### Action Types (`type`)
 - `print`: Renders a PDF template identified by `layout_print_id`.
 - `create`: Navigates to a create page.
-- `open_page` / `show_dialog`: Opens form defined by `layout_form_id`.
+- `open_page` / `show_dialog`: Opens form defined by `layout_form_id`. Supports `"popup": true` (renders as modal popup with close **X** button) and `"submit_button": false` (hides bottom cancel/submit bar).
 - `list_json_view_as_table`: Renders a raw JSON list field as a data table (requires `reference` key).
 - `http`: Performs network request.
 - `toast`: Triggers snackbar notification.

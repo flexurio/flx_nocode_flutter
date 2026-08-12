@@ -391,6 +391,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                     .wizardLayoutFormUseCase,
           ),
           _widgetbook.WidgetbookUseCase(
+            name: 'Popup Form (With Close Button X)',
+            builder:
+                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
+                    .popupFormUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Simple Form (From JSON)',
             builder:
                 _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:get/get.dart' hide Response;
@@ -8,7 +9,7 @@ import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:dio/dio.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'layout_form.dart';
 
 class MockDio extends Mock implements Dio {}
@@ -545,5 +546,44 @@ Widget interactiveDateRestrictionUseCase(BuildContext context) {
         );
       });
     },
+  );
+}
+
+@UseCase(name: 'Popup Form (With Close Button X)', type: Column)
+Widget popupFormUseCase(BuildContext context) {
+  return Center(
+    child: SingleChildScrollView(
+      padding: const EdgeInsets.all(24.0),
+      child: CardForm(
+        popup: true,
+        width: 500,
+        title: 'Lihat Detail Outbox',
+        icon: Icons.tune,
+        onClose: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Close button X pressed!')),
+          );
+        },
+        actions: [
+          ElevatedButton(
+            onPressed: () {},
+            child: const Text('Close'),
+          ),
+        ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Text('Phone Number: 6283105084189'),
+            SizedBox(height: 12),
+            Text('Status: sent'),
+            SizedBox(height: 12),
+            Text('Type: activate_installation'),
+            SizedBox(height: 12),
+            Text('Message: Kode OTP anda 1395'),
+          ],
+        ),
+      ),
+    ),
   );
 }

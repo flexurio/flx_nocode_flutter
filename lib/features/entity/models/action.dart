@@ -119,6 +119,7 @@ class ActionD extends HiveObject {
 
   final bool canPrint;
   final bool canDownload;
+  final bool popup;
 
   /// The workflow to execute for workflow action type.
   final Map<String, dynamic>? workflow;
@@ -156,6 +157,7 @@ class ActionD extends HiveObject {
     this.filterFields = const [],
     this.canPrint = true,
     this.canDownload = true,
+    this.popup = false,
     this.workflow,
   }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
@@ -198,6 +200,7 @@ class ActionD extends HiveObject {
     List<Component>? filterFields,
     bool? canPrint,
     bool? canDownload,
+    bool? popup,
     Map<String, dynamic>? workflow,
   }) {
     return ActionD(
@@ -233,6 +236,7 @@ class ActionD extends HiveObject {
       filterFields: filterFields ?? this.filterFields,
       canPrint: canPrint ?? this.canPrint,
       canDownload: canDownload ?? this.canDownload,
+      popup: popup ?? this.popup,
       workflow: workflow ?? this.workflow,
     );
   }
@@ -293,7 +297,9 @@ class ActionD extends HiveObject {
       targetVariable: json['target_variable'],
       value: json['value'],
       validate: json['validate'] ?? false,
-      showSubmitButton: json['show_submit_button'] ?? json['showSubmitButton'],
+      showSubmitButton: json.containsKey('submit_button')
+          ? (json['submit_button'] == true)
+          : (json['show_submit_button'] ?? json['showSubmitButton']),
       exportFormat: json['export_format'],
       exportColumns: json['export_columns'] != null
           ? (json['export_columns'] as List)
@@ -308,6 +314,7 @@ class ActionD extends HiveObject {
           : const [],
       canPrint: json['print'] ?? true,
       canDownload: json['download'] ?? true,
+      popup: json['popup'] == true || json['is_popup'] == true,
       workflow: json['workflow'] != null ? Map<String, dynamic>.from(json['workflow'] as Map) : null,
     );
   }
@@ -318,6 +325,7 @@ class ActionD extends HiveObject {
       'id': id,
       'type': type.id,
       'name': name,
+      if (popup) 'popup': true,
       'on_success': onSuccess,
       'on_failure': onFailure,
       'is_multiple': isMultiple,
