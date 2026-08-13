@@ -59,8 +59,8 @@ class MenuDataTableCustomTableView extends StatelessWidget {
         pageOptions: pageOptions,
         onChanged: onChanged,
         onRefresh: onRefresh,
-        freezeFirstColumn: true,
-        freezeLastColumn: true,
+        freezeFirstColumn: entity.freezeFirstColumn,
+        freezeLastColumn: entity.freezeLastColumn,
         actionLeft: actionLeft,
         actionRight: actionRightBuilder,
         actionMultiple: multipleRowActions.isEmpty

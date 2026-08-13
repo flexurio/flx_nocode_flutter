@@ -21,7 +21,9 @@ The root of the JSON file is a single object that contains all the properties fo
 | `exports` | Array<Object> | No | A list of configurations for exporting entity data. See [Export Object](#export-object). |
 | `actions` | Array<Object> | No | A list of custom actions that can be performed on the entity. See [Action Object](#action-object). |
 | `hide_row_actions`| Boolean | No | Whether to hide row action buttons (default `false`) on the data table. |
-| `filters` | Array<Object> | No | List of inline filter configurations. See [Filter Object](#filter-object). |
+| `freezed_column` | Boolean / String | No | Controls whether the first and last (actions) columns are frozen in the table. If `false`, no columns are frozen. If `true` (default), both first and last columns are frozen. String values `"first"` or `"last"` freeze only that specific column. |
+| `freeze_first_column` | Boolean | No | Fine-grained override to freeze or unfreeze only the first column (`true`/`false`). |
+| `freeze_last_column` | Boolean | No | Fine-grained override to freeze or unfreeze only the last column/actions (`true`/`false`). |
 
 ### Row Actions Visibility (`hide_row_actions`)
 

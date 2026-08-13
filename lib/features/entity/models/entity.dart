@@ -71,6 +71,12 @@ class EntityCustom extends HiveObject {
   /// Whether to hide the row actions column in the data table.
   final bool hideRowActions;
 
+  /// Whether to freeze the first column in the data table. Defaults to true.
+  final bool freezeFirstColumn;
+
+  /// Whether to freeze the last column (row actions) in the data table. Defaults to true.
+  final bool freezeLastColumn;
+
   /// A list of custom layout configurations for switching table columns dynamically.
   final List<CustomeLayout> customeLayout;
 
@@ -102,6 +108,8 @@ class EntityCustom extends HiveObject {
     this.filters = const [],
     this.bypassAllPermissions = false,
     this.hideRowActions = false,
+    this.freezeFirstColumn = true,
+    this.freezeLastColumn = true,
     this.customeLayout = const [],
   });
 
@@ -166,6 +174,8 @@ class EntityCustom extends HiveObject {
         filters: parser.parseFilters(),
         bypassAllPermissions: parser.parseBypassAllPermissions(),
         hideRowActions: parser.parseHideRowActions(),
+        freezeFirstColumn: parser.parseFreezeFirstColumn(),
+        freezeLastColumn: parser.parseFreezeLastColumn(),
         customeLayout: parser.parseCustomeLayout(),
       );
     } catch (e) {
@@ -197,6 +207,8 @@ class EntityCustom extends HiveObject {
         filters = [],
         bypassAllPermissions = false,
         hideRowActions = false,
+        freezeFirstColumn = true,
+        freezeLastColumn = true,
         customeLayout = const [];
 
   /// Creates a copy of this [EntityCustom] instance with the given fields replaced.
@@ -223,6 +235,8 @@ class EntityCustom extends HiveObject {
     List<FilterOption>? filters,
     bool? bypassAllPermissions,
     bool? hideRowActions,
+    bool? freezeFirstColumn,
+    bool? freezeLastColumn,
     List<CustomeLayout>? customeLayout,
     bool clearActionPrimary = false,
     bool clearLayoutListTile = false,
@@ -249,6 +263,8 @@ class EntityCustom extends HiveObject {
       filters: filters ?? this.filters,
       bypassAllPermissions: bypassAllPermissions ?? this.bypassAllPermissions,
       hideRowActions: hideRowActions ?? this.hideRowActions,
+      freezeFirstColumn: freezeFirstColumn ?? this.freezeFirstColumn,
+      freezeLastColumn: freezeLastColumn ?? this.freezeLastColumn,
       customeLayout: customeLayout ?? this.customeLayout,
     );
   }
@@ -387,6 +403,9 @@ class EntityCustom extends HiveObject {
       'filters': filters.map((e) => e.toJson()).toList(),
       'bypass_all_permissions': bypassAllPermissions,
       'hide_row_actions': hideRowActions,
+      'freezed_column': freezeFirstColumn && freezeLastColumn,
+      'freeze_first_column': freezeFirstColumn,
+      'freeze_last_column': freezeLastColumn,
       'custome_layout': customeLayout.map((e) => e.toJson()).toList(),
     };
   }
@@ -752,6 +771,42 @@ class _EntityCustomJsonParser {
   bool parseBypassAllPermissions() {
     if (!json.containsKey('bypass_all_permissions')) return true;
     return json['bypass_all_permissions'] == true;
+  }
+
+  bool parseFreezeFirstColumn() {
+    if (json.containsKey('freeze_first_column')) {
+      return json['freeze_first_column'] == true;
+    }
+    if (json.containsKey('freezed_first_column')) {
+      return json['freezed_first_column'] == true;
+    }
+    if (json.containsKey('freezed_column')) {
+      final val = json['freezed_column'];
+      if (val is bool) return val;
+      if (val is String) {
+        if (val == 'none' || val == 'false') return false;
+        if (val == 'last' || val == 'last_only') return false;
+      }
+    }
+    return true;
+  }
+
+  bool parseFreezeLastColumn() {
+    if (json.containsKey('freeze_last_column')) {
+      return json['freeze_last_column'] == true;
+    }
+    if (json.containsKey('freezed_last_column')) {
+      return json['freezed_last_column'] == true;
+    }
+    if (json.containsKey('freezed_column')) {
+      final val = json['freezed_column'];
+      if (val is bool) return val;
+      if (val is String) {
+        if (val == 'none' || val == 'false') return false;
+        if (val == 'first' || val == 'first_only') return false;
+      }
+    }
+    return true;
   }
 
   /// Parses a single [ActionD] from the JSON if present.
