@@ -43,11 +43,9 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
 
       switch (type) {
         case ActionType.showDialog:
-          final form = action.layoutFormId != null ? widget.entity.getLayoutForm(action.layoutFormId!) : null;
-          final isFullBg = action.fullBackground || (form?.fullBackground == true);
           await showDialog(
             context: context,
-            useRootNavigator: isFullBg,
+            useRootNavigator: true,
             barrierDismissible: false,
             builder: (ctx) {
               return CreatePage.prepare(
@@ -130,11 +128,9 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
 
         case ActionType.openPage:
           if (action.popup) {
-            final form = action.layoutFormId != null ? widget.entity.getLayoutForm(action.layoutFormId!) : null;
-            final isFullBg = action.fullBackground || (form?.fullBackground == true);
             await showDialog(
               context: context,
-              useRootNavigator: isFullBg,
+              useRootNavigator: true,
               barrierDismissible: false,
               builder: (ctx) {
                 return CreatePage.prepare(

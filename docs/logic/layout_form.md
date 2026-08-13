@@ -11,8 +11,7 @@
 | `id` | String | Yes | Unique identifier (e.g., `create`, `update`, `view`). See [Form Roles](#2-form-roles). |
 | `label` | String | Yes | Title displayed at the top of the form or modal. |
 | `title` | String | No | Explicit page title. If omitted, submit forms use the entity title without a `submit` prefix. |
-| `popup` | Boolean | No | If `true`, the form renders automatically inside a modal dialog popup with a close button (**X** icon) in the header. (Also supports `is_popup: true` or `type: "popup"`). |
-| `full_background` | Boolean | No | If `true`, the dark backdrop overlay covers the entire screen (including top navbar and left sidebar). If `false` (default), backdrop covers only the main content area. |
+| `popup` | Boolean | No | If `true`, the form renders automatically inside a modal dialog popup with a close button (**X** icon) in the header. Popups automatically cover full-screen backdrop including top navbar and sidebar. (Also supports `is_popup: true` or `type: "popup"`). |
 | `submit_button` | Boolean | No | Controls whether bottom action buttons (Cancel / Submit bar) are shown. Default is `true`. Set to `false` to hide bottom action buttons (e.g. for view-only detail popups). |
 | `components` | Array | No* | List of [UI Components](./components.md) to render. *Required if `multi_forms` is not used. |
 | `multi_forms` | Array | No | List of `LayoutForm` objects for [Multi-Step Wizards](#3-multi-step-forms). |
