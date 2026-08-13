@@ -265,8 +265,17 @@ class EntityCustom extends HiveObject {
       hideRowActions: hideRowActions ?? this.hideRowActions,
       freezeFirstColumn: freezeFirstColumn ?? this.freezeFirstColumn,
       freezeLastColumn: freezeLastColumn ?? this.freezeLastColumn,
-      customeLayout: customeLayout ?? this.customeLayout,
     );
+  }
+
+  /// Helper to get a [LayoutForm] by its ID.
+  LayoutForm? getLayoutForm(String? layoutFormId) {
+    if (layoutFormId == null || layoutFormId.isEmpty) return null;
+    try {
+      return layoutForm.firstWhere((e) => e.id == layoutFormId);
+    } catch (_) {
+      return null;
+    }
   }
 
   /// A static cache to store loaded entity configurations.

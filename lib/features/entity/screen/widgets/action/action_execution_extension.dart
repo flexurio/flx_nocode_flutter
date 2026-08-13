@@ -114,9 +114,11 @@ extension ActionExecutionExtension on ActionD {
           return;
         }
         if (popup || this.popup) {
+          final form = layoutFormId != null ? entity.getLayoutForm(layoutFormId!) : null;
+          final isFullBg = fullBackground || (form?.fullBackground == true);
           await showDialog(
             context: context,
-            useRootNavigator: false,
+            useRootNavigator: isFullBg,
             barrierDismissible: false,
             builder: (ctx) {
               return CreatePage.prepare(
@@ -174,9 +176,11 @@ extension ActionExecutionExtension on ActionD {
           Toast(context).fail('No page found');
           return;
         }
+        final form = entity.getLayoutForm(layoutFormId!);
+        final isFullBg = fullBackground || (form?.fullBackground == true);
         await showDialog(
           context: context,
-          useRootNavigator: false,
+          useRootNavigator: isFullBg,
           barrierDismissible: false,
           builder: (ctx) {
             return CreatePage.prepare(

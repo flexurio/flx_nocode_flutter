@@ -1,5 +1,4 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
-import 'package:flx_nocode_flutter/features/component/models/component_size_mode.dart';
 import 'package:hive/hive.dart';
 import 'submit_workflow.dart';
 
@@ -27,6 +26,7 @@ class LayoutForm extends HiveObject {
   final dynamic
       onInit; // Map<String, dynamic> (Workflow) or List<ActionD> (Legacy)
   final bool popup;
+  final bool fullBackground;
   final bool? submitButton;
 
   List<String> get componentIds => components.map((e) => e.id).toList();
@@ -80,6 +80,7 @@ class LayoutForm extends HiveObject {
         submitWorkflow = null,
         onInit = null,
         popup = false,
+        fullBackground = false,
         submitButton = null;
 
   LayoutForm({
@@ -93,6 +94,7 @@ class LayoutForm extends HiveObject {
     SubmitWorkflow? submitWorkflow,
     dynamic onInit,
     this.popup = false,
+    this.fullBackground = false,
     this.submitButton,
   })  : assert(label.trim().isNotEmpty, 'label is required'),
         buttons = List<ButtonAction>.unmodifiable(buttons ?? const []),
@@ -219,6 +221,9 @@ class LayoutForm extends HiveObject {
         map['is_popup'] == true ||
         map['type'] == 'popup';
 
+    final fullBackground = map['full_background'] == true ||
+        map['fullBackground'] == true;
+
     final bool? submitButton = map.containsKey('submit_button')
         ? (map['submit_button'] == true)
         : (map.containsKey('show_submit_button')
@@ -238,6 +243,7 @@ class LayoutForm extends HiveObject {
       submitWorkflow: submitWorkflow,
       onInit: onInit,
       popup: popup,
+      fullBackground: fullBackground,
       submitButton: submitButton,
     );
   }
@@ -248,6 +254,7 @@ class LayoutForm extends HiveObject {
       'label': label,
       if (title != null && title!.isNotEmpty) 'title': title,
       if (popup) 'popup': true,
+      if (fullBackground) 'full_background': true,
       if (submitButton != null) 'submit_button': submitButton,
       'components': components.map((e) => e.toMap()).toList(growable: false),
     };
@@ -290,6 +297,7 @@ class LayoutForm extends HiveObject {
     SubmitWorkflow? submitWorkflow,
     dynamic onInit,
     bool? popup,
+    bool? fullBackground,
     bool? submitButton,
   }) {
     return LayoutForm(
@@ -303,6 +311,7 @@ class LayoutForm extends HiveObject {
       submitWorkflow: submitWorkflow ?? this.submitWorkflow,
       onInit: onInit ?? this.onInit,
       popup: popup ?? this.popup,
+      fullBackground: fullBackground ?? this.fullBackground,
       submitButton: submitButton ?? this.submitButton,
     );
   }

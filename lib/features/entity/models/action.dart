@@ -120,6 +120,7 @@ class ActionD extends HiveObject {
   final bool canPrint;
   final bool canDownload;
   final bool popup;
+  final bool fullBackground;
 
   /// The workflow to execute for workflow action type.
   final Map<String, dynamic>? workflow;
@@ -158,6 +159,7 @@ class ActionD extends HiveObject {
     this.canPrint = true,
     this.canDownload = true,
     this.popup = false,
+    this.fullBackground = false,
     this.workflow,
   }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
@@ -201,6 +203,7 @@ class ActionD extends HiveObject {
     bool? canPrint,
     bool? canDownload,
     bool? popup,
+    bool? fullBackground,
     Map<String, dynamic>? workflow,
   }) {
     return ActionD(
@@ -237,6 +240,7 @@ class ActionD extends HiveObject {
       canPrint: canPrint ?? this.canPrint,
       canDownload: canDownload ?? this.canDownload,
       popup: popup ?? this.popup,
+      fullBackground: fullBackground ?? this.fullBackground,
       workflow: workflow ?? this.workflow,
     );
   }
@@ -315,6 +319,7 @@ class ActionD extends HiveObject {
       canPrint: json['print'] ?? true,
       canDownload: json['download'] ?? true,
       popup: json['popup'] == true || json['is_popup'] == true,
+      fullBackground: json['full_background'] == true || json['fullBackground'] == true,
       workflow: json['workflow'] != null ? Map<String, dynamic>.from(json['workflow'] as Map) : null,
     );
   }
@@ -326,6 +331,7 @@ class ActionD extends HiveObject {
       'type': type.id,
       'name': name,
       if (popup) 'popup': true,
+      if (fullBackground) 'full_background': true,
       'on_success': onSuccess,
       'on_failure': onFailure,
       'is_multiple': isMultiple,
