@@ -5,7 +5,7 @@ import 'package:hive/hive.dart';
 class UserRepositoryApp extends UserRepository {
   static UserRepositoryApp instance = UserRepositoryApp();
 
-  UserApp? userApp;
+  UserAppNocode? userApp;
 
   @override
   bool checkPermission(String permission) => permissions.contains(permission);
@@ -17,7 +17,7 @@ class UserRepositoryApp extends UserRepository {
   ) {
     token = accessToken;
     final userPayload = extractPayloadFromJwt(accessToken);
-    userApp = UserApp.fromJson(userPayload);
+    userApp = UserAppNocode.fromJson(userPayload);
     if (permission.isNotEmpty) {
       permissions = permission;
       setPermissions(permission);

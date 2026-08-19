@@ -20,7 +20,7 @@ void main() {
       backendHost: 'http://localhost:8080',
     );
     UserRepositoryApp.instance = UserRepositoryApp();
-    UserRepositoryApp.instance.userApp = UserApp(id: 1, name: 'Test', role: 'admin');
+    UserRepositoryApp.instance.userApp = UserAppNocode(id: 1, name: 'Test', role: 'admin');
     UserRepositoryApp.instance.token = 'test_token';
   });
 

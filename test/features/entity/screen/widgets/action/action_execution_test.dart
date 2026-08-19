@@ -10,7 +10,7 @@ class MockEntityCustom extends Mock implements EntityCustom {}
 
 class MockUserRepositoryApp extends Mock implements UserRepositoryApp {}
 
-class MockUserApp extends Mock implements UserApp {}
+class MockUserAppNocode extends Mock implements UserAppNocode {}
 
 void main() {
   setUpAll(() {
@@ -28,7 +28,7 @@ void main() {
     // Setup Mock User Repository
     final mockUserRepo = MockUserRepositoryApp();
     UserRepositoryApp.instance = mockUserRepo;
-    final mockUser = MockUserApp();
+    final mockUser = MockUserAppNocode();
     when(() => mockUser.name).thenReturn('Test User');
     when(() => mockUserRepo.user).thenReturn(mockUser);
 

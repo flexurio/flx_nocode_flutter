@@ -13,7 +13,7 @@ void main() {
 
       // Initialize UserRepositoryApp singleton
       UserRepositoryApp.instance = UserRepositoryApp();
-      UserRepositoryApp.instance.userApp = UserApp(
+      UserRepositoryApp.instance.userApp = UserAppNocode(
         id: 1801008, // Dynamic User ID from "JWT"
         name: 'Test User',
         role: 'admin',

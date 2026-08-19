@@ -14,7 +14,7 @@ void main() {
         backendHost: 'http://127.0.0.1:8000',
       );
       UserRepositoryApp.instance = UserRepositoryApp();
-      UserRepositoryApp.instance.userApp = UserApp(
+      UserRepositoryApp.instance.userApp = UserAppNocode(
         id: 1,
         name: 'Test',
         role: 'admin',
@@ -87,7 +87,7 @@ void main() {
         backendHost: 'http://127.0.0.1:8000',
       );
       UserRepositoryApp.instance = UserRepositoryApp();
-      UserRepositoryApp.instance.userApp = UserApp(
+      UserRepositoryApp.instance.userApp = UserAppNocode(
         id: 1,
         name: 'Test',
         role: 'admin',
@@ -148,7 +148,7 @@ void main() {
   group('replaceStringWithValuesMultiple', () {
     setUp(() {
       UserRepositoryApp.instance = UserRepositoryApp();
-      UserRepositoryApp.instance.userApp = UserApp(
+      UserRepositoryApp.instance.userApp = UserAppNocode(
         id: 1,
         name: 'Test',
         role: 'admin',
@@ -194,7 +194,7 @@ void main() {
         backendHost: 'http://127.0.0.1:8000',
       );
       UserRepositoryApp.instance = UserRepositoryApp();
-      UserRepositoryApp.instance.userApp = UserApp(
+      UserRepositoryApp.instance.userApp = UserAppNocode(
         id: 1,
         name: 'Test',
         role: 'admin',

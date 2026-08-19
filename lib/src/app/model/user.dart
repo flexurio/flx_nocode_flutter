@@ -1,13 +1,13 @@
 import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
 
-class UserApp extends User {
-  UserApp({
+class UserAppNocode extends User {
+  UserAppNocode({
     required super.id,
     required super.name,
     required this.role,
   }) : super();
 
-  factory UserApp.fromJson(Map<String, dynamic> json) {
+  factory UserAppNocode.fromJson(Map<String, dynamic> json) {
     final idRaw = json['id'];
     int parsedId = 0;
     if (idRaw is int) {
@@ -16,7 +16,7 @@ class UserApp extends User {
       parsedId = int.tryParse(idRaw) ?? 0;
     }
 
-    return UserApp(
+    return UserAppNocode(
       id: parsedId,
       name: (json['nm'] ?? json['name'] ?? '').toString(),
       role: (json['cs'] ?? json['role'] ?? '').toString(),
