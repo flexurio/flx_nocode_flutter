@@ -47,7 +47,7 @@ void main() {
     test('HttpAction execute should resolve templates and execute request',
         () async {
       // Inject token since AuthContext doesn't pass it directly to building the scope
-      // in the test without UserRepositoryApp instance mock. So we use vars instead as workaround.
+      // in the test without UserRepositoryAppNocode instance mock. So we use vars instead as workaround.
 
       // We'll replace the auth.token with vars token for the test
       final actionForTest = HttpAction(

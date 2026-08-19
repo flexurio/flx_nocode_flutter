@@ -13,13 +13,13 @@ void main() {
       Configuration.instance = Configuration.empty().copyWith(
         backendHost: 'http://127.0.0.1:8000',
       );
-      UserRepositoryApp.instance = UserRepositoryApp();
-      UserRepositoryApp.instance.userApp = UserAppNocode(
+      UserRepositoryAppNocode.instance = UserRepositoryAppNocode();
+      UserRepositoryAppNocode.instance.userApp = UserAppNocode(
         id: 1,
         name: 'Test',
         role: 'admin',
       );
-      UserRepositoryApp.instance.token = 'test_token_value';
+      UserRepositoryAppNocode.instance.token = 'test_token_value';
     });
 
     test('replaces {backend_host} and {auth_token} placeholders', () {
@@ -86,13 +86,13 @@ void main() {
       Configuration.instance = Configuration.empty().copyWith(
         backendHost: 'http://127.0.0.1:8000',
       );
-      UserRepositoryApp.instance = UserRepositoryApp();
-      UserRepositoryApp.instance.userApp = UserAppNocode(
+      UserRepositoryAppNocode.instance = UserRepositoryAppNocode();
+      UserRepositoryAppNocode.instance.userApp = UserAppNocode(
         id: 1,
         name: 'Test',
         role: 'admin',
       );
-      UserRepositoryApp.instance.token = 'test_token_value';
+      UserRepositoryAppNocode.instance.token = 'test_token_value';
     });
 
     test('replaces {{backend_host}} with backendHost', () {
@@ -133,13 +133,13 @@ void main() {
     });
 
     test('null token replaced with empty string for {{auth_token}}', () {
-      UserRepositoryApp.instance.token = null;
+      UserRepositoryAppNocode.instance.token = null;
       final result = 'Bearer {{auth_token}}'.replaceStringWithValues({});
       expect(result, 'Bearer ');
     });
 
     test('null token replaced with empty string for {{user.token}}', () {
-      UserRepositoryApp.instance.token = null;
+      UserRepositoryAppNocode.instance.token = null;
       final result = 'Bearer {{user.token}}'.replaceStringWithValues({});
       expect(result, 'Bearer ');
     });
@@ -147,13 +147,13 @@ void main() {
 
   group('replaceStringWithValuesMultiple', () {
     setUp(() {
-      UserRepositoryApp.instance = UserRepositoryApp();
-      UserRepositoryApp.instance.userApp = UserAppNocode(
+      UserRepositoryAppNocode.instance = UserRepositoryAppNocode();
+      UserRepositoryAppNocode.instance.userApp = UserAppNocode(
         id: 1,
         name: 'Test',
         role: 'admin',
       );
-      UserRepositoryApp.instance.token = 'multi_token';
+      UserRepositoryAppNocode.instance.token = 'multi_token';
     });
 
     test('replaces {user.token} outside {{...}}', () {
@@ -193,13 +193,13 @@ void main() {
       Configuration.instance = Configuration.empty().copyWith(
         backendHost: 'http://127.0.0.1:8000',
       );
-      UserRepositoryApp.instance = UserRepositoryApp();
-      UserRepositoryApp.instance.userApp = UserAppNocode(
+      UserRepositoryAppNocode.instance = UserRepositoryAppNocode();
+      UserRepositoryAppNocode.instance.userApp = UserAppNocode(
         id: 1,
         name: 'Test',
         role: 'admin',
       );
-      UserRepositoryApp.instance.token = 'test_token_value';
+      UserRepositoryAppNocode.instance.token = 'test_token_value';
     });
 
     test('{{backend_host}} is now resolved by renderWithData', () {

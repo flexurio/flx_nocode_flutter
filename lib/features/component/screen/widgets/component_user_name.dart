@@ -17,7 +17,7 @@ extension ComponentUserNameWidgets on ComponentUserName {
       return _buildDisplay(label, '-');
     }
 
-    final token = UserRepositoryApp.instance.token ?? '';
+    final token = UserRepositoryAppNocode.instance.token ?? '';
 
     return FutureBuilder<String?>(
       future: EmployeeCache.instance.findName(

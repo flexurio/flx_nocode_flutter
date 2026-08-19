@@ -64,7 +64,7 @@ class EntityCustomQueryBloc
               print(
                   'EntityCustomQueryBloc.fetchById: calling repository with path: $finalUrl, headers: $headers');
               final data = await EntityCustomRepository.instance.fetchById(
-                accessToken: UserRepositoryApp.instance.token,
+                accessToken: UserRepositoryAppNocode.instance.token,
                 id: id,
                 method: method,
                 path: finalUrl,
@@ -111,7 +111,7 @@ class EntityCustomQueryBloc
                   'EntityCustomQueryBloc.fetch: calling repository with path: $finalUrl, filterMap=$filterMap');
 
               _pageOptions = await EntityCustomRepository.instance.fetch(
-                accessToken: UserRepositoryApp.instance.token,
+                accessToken: UserRepositoryAppNocode.instance.token,
                 pageOptions: _pageOptions,
                 method: method,
                 path: finalUrl,

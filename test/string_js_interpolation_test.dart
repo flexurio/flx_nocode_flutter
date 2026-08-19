@@ -11,14 +11,14 @@ void main() {
       // Initialize Configuration singleton
       Configuration.instance = Configuration.empty();
 
-      // Initialize UserRepositoryApp singleton
-      UserRepositoryApp.instance = UserRepositoryApp();
-      UserRepositoryApp.instance.userApp = UserAppNocode(
+      // Initialize UserRepositoryAppNocode singleton
+      UserRepositoryAppNocode.instance = UserRepositoryAppNocode();
+      UserRepositoryAppNocode.instance.userApp = UserAppNocode(
         id: 1801008, // Dynamic User ID from "JWT"
         name: 'Test User',
         role: 'admin',
       );
-      UserRepositoryApp.instance.token = 'dummy_token';
+      UserRepositoryAppNocode.instance.token = 'dummy_token';
     });
 
     test('user_id from JWT should take precedence over record variable', () {

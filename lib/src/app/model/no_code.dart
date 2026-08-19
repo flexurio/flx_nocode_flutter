@@ -21,7 +21,7 @@ class NoCode {
     final permission = data.containsKey('rl')
         ? Access.fetchPermissions(data['rl'] as String)
         : <String>[];
-    UserRepositoryApp.instance.setUserFromJwt(accessToken, permission);
+    UserRepositoryAppNocode.instance.setUserFromJwt(accessToken, permission);
   }
 
   static Map<String, dynamic> pageData = {};

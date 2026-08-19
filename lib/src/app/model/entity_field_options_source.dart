@@ -151,7 +151,7 @@ class OptionsSource {
           _resolveQueryParams(backend.queryParams, parentData);
 
       final data = await EntityCustomRepository.instance.fetch(
-        accessToken: UserRepositoryApp.instance.token ?? '',
+        accessToken: UserRepositoryAppNocode.instance.token ?? '',
         pageOptions: PageOptions.emptyNoLimit(),
         method: entity.backend.readAll!.method,
         path: entity.backend.readAll!.urlWithValues,

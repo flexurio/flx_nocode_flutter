@@ -89,9 +89,9 @@ Future<void> main() async {
   );
   final home = AuthenticationBuilder(
     authenticated: () {
-      final user = UserRepositoryApp.instance.userApp!;
+      final user = UserRepositoryAppNocode.instance.userApp!;
       final name = user.name;
-      final permissions = UserRepositoryApp.instance.permissions;
+      final permissions = UserRepositoryAppNocode.instance.permissions;
       return MenuPage.prepare(
         bypassPermission: true,
         initialState: () async {
@@ -100,7 +100,7 @@ Future<void> main() async {
             try {
               final e = await EntityCustom.getEntity(preload);
               EntityCustomRepository.instance.fetch(
-                accessToken: UserRepositoryApp.instance.token ?? '',
+                accessToken: UserRepositoryAppNocode.instance.token ?? '',
                 pageOptions: PageOptions.emptyNoLimit(),
                 method: e!.backend.readAll!.method,
                 path: e.backend.readAll!.urlWithValues,
@@ -158,7 +158,7 @@ Future<void> main() async {
     initialized: () {
       Api.dio.interceptors.add(StudioNetworkLogInterceptor());
       AuthenticationRepository.initialize(
-        userRepository: UserRepositoryApp.instance,
+        userRepository: UserRepositoryAppNocode.instance,
         onLogin: (data) {},
       );
     },

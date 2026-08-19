@@ -11,9 +11,9 @@ class JsVariableProvider {
       config = Configuration.instance;
     } catch (_) {}
 
-    UserRepositoryApp? userRepo;
+    UserRepositoryAppNocode? userRepo;
     try {
-      userRepo = UserRepositoryApp.instance;
+      userRepo = UserRepositoryAppNocode.instance;
     } catch (_) {}
 
     final allVars = <String, dynamic>{

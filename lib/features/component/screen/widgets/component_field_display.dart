@@ -50,7 +50,7 @@ extension ComponentFieldDisplayWidgets on ComponentFieldDisplay {
     }
 
     if (valueType == 'user_name') {
-      final token = UserRepositoryApp.instance.token ?? '';
+      final token = UserRepositoryAppNocode.instance.token ?? '';
       return FutureBuilder<String?>(
         future: EmployeeCache.instance.findName(
           accessToken: token,
@@ -65,7 +65,7 @@ extension ComponentFieldDisplayWidgets on ComponentFieldDisplay {
         },
       );
     } else if (valueType == 'user_name_with_id') {
-      final token = UserRepositoryApp.instance.token ?? '';
+      final token = UserRepositoryAppNocode.instance.token ?? '';
       return FutureBuilder<String?>(
         future: EmployeeCache.instance.findNameWithId(
           accessToken: token,

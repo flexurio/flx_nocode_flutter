@@ -2,8 +2,8 @@ import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/user.dart';
 import 'package:hive/hive.dart';
 
-class UserRepositoryApp extends UserRepository {
-  static UserRepositoryApp instance = UserRepositoryApp();
+class UserRepositoryAppNocode extends UserRepository {
+  static UserRepositoryAppNocode instance = UserRepositoryAppNocode();
 
   UserAppNocode? userApp;
 
@@ -32,9 +32,9 @@ class UserRepositoryApp extends UserRepository {
         'permission',
         permissions,
       );
-      print('[UserRepositoryApp] setPermissions');
+      print('[UserRepositoryAppNocode] setPermissions');
     } catch (e) {
-      print('[UserRepositoryApp] error $e');
+      print('[UserRepositoryAppNocode] error $e');
     }
   }
 

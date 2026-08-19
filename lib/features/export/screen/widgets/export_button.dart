@@ -39,7 +39,7 @@ class ButtonExport extends StatelessWidget {
                       data: data.data,
                       title: export.name,
                       fields: export.fields,
-                      printedBy: UserRepositoryApp.instance.user?.name ?? '-',
+                      printedBy: UserRepositoryAppNocode.instance.user?.name ?? '-',
                     ),
                   );
                 await Printing.sharePdf(

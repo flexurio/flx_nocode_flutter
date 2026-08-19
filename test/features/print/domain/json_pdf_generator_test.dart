@@ -19,9 +19,9 @@ void main() {
     Configuration.instance = Configuration.empty().copyWith(
       backendHost: 'http://localhost:8080',
     );
-    UserRepositoryApp.instance = UserRepositoryApp();
-    UserRepositoryApp.instance.userApp = UserAppNocode(id: 1, name: 'Test', role: 'admin');
-    UserRepositoryApp.instance.token = 'test_token';
+    UserRepositoryAppNocode.instance = UserRepositoryAppNocode();
+    UserRepositoryAppNocode.instance.userApp = UserAppNocode(id: 1, name: 'Test', role: 'admin');
+    UserRepositoryAppNocode.instance.token = 'test_token';
   });
 
   group('JsonPdfGenerator Integration Tests', () {

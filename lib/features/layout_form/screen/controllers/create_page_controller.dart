@@ -335,7 +335,7 @@ class CreatePageController extends GetxController {
           form: currentData,
           data: contextData,
           auth: AuthContext(
-            permissions: UserRepositoryApp.instance.permissions,
+            permissions: UserRepositoryAppNocode.instance.permissions,
           ),
           httpExecutor: executor,
         );

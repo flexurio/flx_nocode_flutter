@@ -72,7 +72,7 @@ class EntityFieldDisplay {
       }
     } else if (field.isUserName) {
       // Tampilkan nama user berdasarkan ID (nip/user_id)
-      final token = UserRepositoryApp.instance.token ?? '';
+      final token = UserRepositoryAppNocode.instance.token ?? '';
       widget = FutureBuilder<String?>(
         future: EmployeeCache.instance.findName(
           accessToken: token,
@@ -84,7 +84,7 @@ class EntityFieldDisplay {
       );
     } else if (field.isUserNameWithId) {
       // Tampilkan NIP - Nama user, contoh: "1801005 - Bimo Fikri Wicaksono"
-      final token = UserRepositoryApp.instance.token ?? '';
+      final token = UserRepositoryAppNocode.instance.token ?? '';
       widget = FutureBuilder<String?>(
         future: EmployeeCache.instance.findNameWithId(
           accessToken: token,

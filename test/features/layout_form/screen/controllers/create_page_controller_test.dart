@@ -17,8 +17,8 @@ void main() {
     setUp(() {
       // 1. Setup global singletons
       Configuration.instance = Configuration.empty();
-      UserRepositoryApp.instance = UserRepositoryApp();
-      UserRepositoryApp.instance.userApp = UserAppNocode(
+      UserRepositoryAppNocode.instance = UserRepositoryAppNocode();
+      UserRepositoryAppNocode.instance.userApp = UserAppNocode(
         id: 1801008, // Dynamic User ID from JWT
         name: 'Logged In User',
         role: 'admin',

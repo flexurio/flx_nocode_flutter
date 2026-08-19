@@ -311,7 +311,7 @@ class _WorkflowScopeBuilder {
 
   static String _safeGetToken() {
     try {
-      return UserRepositoryApp.instance.token ?? '';
+      return UserRepositoryAppNocode.instance.token ?? '';
     } catch (_) {
       return '';
     }
@@ -319,7 +319,7 @@ class _WorkflowScopeBuilder {
 
   static String _safeGetUserId() {
     try {
-      return UserRepositoryApp.instance.userApp?.id?.toString() ?? '';
+      return UserRepositoryAppNocode.instance.userApp?.id?.toString() ?? '';
     } catch (_) {
       return '';
     }

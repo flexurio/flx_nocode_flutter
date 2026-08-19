@@ -16,11 +16,11 @@ extension StringReplaceExtension on String {
     // {{user.token}} & {{auth_token}} — double-brace shorthand variants
     url = url.replaceAll(
       '{{user.token}}',
-      UserRepositoryApp.instance.token ?? '',
+      UserRepositoryAppNocode.instance.token ?? '',
     );
     url = url.replaceAll(
       '{{auth_token}}',
-      UserRepositoryApp.instance.token ?? '',
+      UserRepositoryAppNocode.instance.token ?? '',
     );
 
     // {{backend_host}} — double-brace shorthand variant
@@ -32,7 +32,7 @@ extension StringReplaceExtension on String {
     // {user.token} & {auth_token} — but not when inside {{...}}
     url = url.replaceAllMapped(
       RegExp(r'(?<!\{)\{(?:user\.token|auth_token)\}(?!\})'),
-      (match) => UserRepositoryApp.instance.token ?? '',
+      (match) => UserRepositoryAppNocode.instance.token ?? '',
     );
 
     // {backend_host} — but not when inside {{...}}
@@ -61,7 +61,7 @@ extension StringReplaceExtension on String {
     // {user.token} — but not when inside {{...}}
     url = url.replaceAllMapped(
       RegExp(r'(?<!\{)\{user\.token\}(?!\})'),
-      (match) => UserRepositoryApp.instance.token ?? '',
+      (match) => UserRepositoryAppNocode.instance.token ?? '',
     );
 
     // {selected.<field>} — but not when inside {{...}}

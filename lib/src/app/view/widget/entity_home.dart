@@ -289,7 +289,7 @@ class _NoCodePageLoaderState extends State<NoCodePageLoader> {
   void initState() {
     super.initState();
     if (widget.getAccess != null) {
-      UserRepositoryApp.instance.token = widget.getAccess!();
+      UserRepositoryAppNocode.instance.token = widget.getAccess!();
     }
     if (widget.getConfiguration != null) {
       Configuration.instance = widget.getConfiguration!();

@@ -445,7 +445,7 @@ extension ActionExecutionExtension on ActionD {
                       data: list,
                       title: name,
                       fields: fields,
-                      printedBy: UserRepositoryApp.instance.user?.name ?? '-',
+                      printedBy: UserRepositoryAppNocode.instance.user?.name ?? '-',
                     ),
                   );
                 await Printing.sharePdf(
@@ -506,7 +506,7 @@ extension ActionExecutionExtension on ActionD {
             form: formMap,
             data: recordMap,
             auth: AuthContext(
-              permissions: UserRepositoryApp.instance.permissions,
+              permissions: UserRepositoryAppNocode.instance.permissions,
             ),
             httpExecutor: executor,
             validator: (scope, _) async {},

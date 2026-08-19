@@ -47,7 +47,7 @@ class EntityController extends GetxController {
 
     try {
       final response = await EntityCustomRepository.instance.modify(
-        accessToken: UserRepositoryApp.instance.token,
+        accessToken: UserRepositoryAppNocode.instance.token,
         path: url,
         method: method,
         headers: entity.backend.create?.headers,
@@ -76,7 +76,7 @@ class EntityController extends GetxController {
 
     try {
       final response = await EntityCustomRepository.instance.modify(
-        accessToken: UserRepositoryApp.instance.token,
+        accessToken: UserRepositoryAppNocode.instance.token,
         path: resolvedUrl,
         method: event.method,
         headers: event.headers,
@@ -109,7 +109,7 @@ class EntityController extends GetxController {
       }
 
       final response = await EntityCustomRepository.instance.modify(
-        accessToken: UserRepositoryApp.instance.token,
+        accessToken: UserRepositoryAppNocode.instance.token,
         path: entity.backend.create!.url,
         method: entity.backend.create!.method,
         headers: entity.backend.create!.headers,
@@ -148,7 +148,7 @@ class EntityController extends GetxController {
       }
 
       final response = await EntityCustomRepository.instance.modify(
-        accessToken: UserRepositoryApp.instance.token,
+        accessToken: UserRepositoryAppNocode.instance.token,
         path: entity.backend.update!.url.replaceFirst(
           '{id}',
           Uri.encodeComponent(data['id']),
@@ -176,7 +176,7 @@ class EntityController extends GetxController {
 
     try {
       await EntityCustomRepository.instance.modify(
-        accessToken: UserRepositoryApp.instance.token,
+        accessToken: UserRepositoryAppNocode.instance.token,
         path: entity.backend.deleteX!.url.replaceFirst(
           '{id}',
           Uri.encodeComponent(id),
@@ -212,7 +212,7 @@ class EntityController extends GetxController {
         form: form,
         data: data,
         auth: AuthContext(
-          permissions: UserRepositoryApp.instance.permissions,
+          permissions: UserRepositoryAppNocode.instance.permissions,
         ),
         httpExecutor: executor,
         validator: (scope, _) async {},
@@ -294,7 +294,7 @@ class GetxHttpExecutor implements HttpExecutor {
 
     try {
       final response = await EntityCustomRepository.instance.modify(
-        accessToken: UserRepositoryApp.instance.token,
+        accessToken: UserRepositoryAppNocode.instance.token,
         path: request.url,
         method: request.method,
         headers: request.headers,

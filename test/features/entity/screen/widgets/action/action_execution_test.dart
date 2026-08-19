@@ -8,7 +8,7 @@ import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 
 class MockEntityCustom extends Mock implements EntityCustom {}
 
-class MockUserRepositoryApp extends Mock implements UserRepositoryApp {}
+class MockUserRepositoryApp extends Mock implements UserRepositoryAppNocode {}
 
 class MockUserAppNocode extends Mock implements UserAppNocode {}
 
@@ -27,7 +27,7 @@ void main() {
 
     // Setup Mock User Repository
     final mockUserRepo = MockUserRepositoryApp();
-    UserRepositoryApp.instance = mockUserRepo;
+    UserRepositoryAppNocode.instance = mockUserRepo;
     final mockUser = MockUserAppNocode();
     when(() => mockUser.name).thenReturn('Test User');
     when(() => mockUserRepo.user).thenReturn(mockUser);
