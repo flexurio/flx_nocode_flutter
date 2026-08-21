@@ -38,7 +38,7 @@ dependencies:
 
   flx_authentication_flutter:
     git:
-      url: https://github.com/flexurio/flx_authentication_flutter.git
+      url: https://github.com/flexurio/flx_authentication_flutter
       ref: main
   # flx_authentication_flutter:
   #   path: packages/flx_authentication_flutter
