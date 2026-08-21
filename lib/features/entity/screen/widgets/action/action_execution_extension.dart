@@ -248,7 +248,8 @@ extension ActionExecutionExtension on ActionD {
           return;
         }
 
-        final layoutId = (data['rootLayoutFormId'] ?? data['layoutFormId']) as String?;
+        final layoutId =
+            (data['rootLayoutFormId'] ?? data['layoutFormId']) as String?;
 
         if (layoutId != null) {
           final tag = 'create_page_$layoutId';
@@ -294,7 +295,8 @@ extension ActionExecutionExtension on ActionD {
           return;
         }
 
-        final layoutId = (data['rootLayoutFormId'] ?? data['layoutFormId']) as String?;
+        final layoutId =
+            (data['rootLayoutFormId'] ?? data['layoutFormId']) as String?;
 
         if (layoutId != null) {
           final tag = 'create_page_$layoutId';
@@ -311,9 +313,11 @@ extension ActionExecutionExtension on ActionD {
                   formState[key] = ctrl.text;
                 }
               });
-              final cleanInitialData = Map<String, dynamic>.from(controller.initialData);
+              final cleanInitialData =
+                  Map<String, dynamic>.from(controller.initialData);
               cleanInitialData.remove(varName);
-              cleanInitialData.removeWhere((key, val) => val is List || val is Map);
+              cleanInitialData
+                  .removeWhere((key, val) => val is List || val is Map);
               itemValue = {...cleanInitialData, ...formState};
             }
 
@@ -352,7 +356,8 @@ extension ActionExecutionExtension on ActionD {
           return;
         }
 
-        final layoutId = (data['rootLayoutFormId'] ?? data['layoutFormId']) as String?;
+        final layoutId =
+            (data['rootLayoutFormId'] ?? data['layoutFormId']) as String?;
 
         if (layoutId != null) {
           final tag = 'create_page_$layoutId';
@@ -373,9 +378,12 @@ extension ActionExecutionExtension on ActionD {
             }
 
             final rowIndexRaw = data['rowIndex'];
-            if (rowIndexRaw is int && rowIndexRaw >= 0 && rowIndexRaw < list.length) {
+            if (rowIndexRaw is int &&
+                rowIndexRaw >= 0 &&
+                rowIndexRaw < list.length) {
               list.removeAt(rowIndexRaw);
-            } else if (rowIndexRaw is String && int.tryParse(rowIndexRaw) != null) {
+            } else if (rowIndexRaw is String &&
+                int.tryParse(rowIndexRaw) != null) {
               final idx = int.parse(rowIndexRaw);
               if (idx >= 0 && idx < list.length) {
                 list.removeAt(idx);
@@ -445,7 +453,8 @@ extension ActionExecutionExtension on ActionD {
                       data: list,
                       title: name,
                       fields: fields,
-                      printedBy: UserRepositoryAppNocode.instance.user?.name ?? '-',
+                      printedBy:
+                          UserRepositoryAppNocode.instance.user?.name ?? '-',
                     ),
                   );
                 await Printing.sharePdf(
@@ -454,7 +463,7 @@ extension ActionExecutionExtension on ActionD {
                 );
               } else {
                 final bytes = generalXlsxNoCode(context, list, fields);
-                saveFile(bytes, '$name.xlsx');
+                saveFileNocode(bytes, '$name.xlsx');
               }
               Toast(context).success('Export success');
             } else {
@@ -496,9 +505,13 @@ extension ActionExecutionExtension on ActionD {
       confirmationMessageText: confirmMessage,
       onConfirm: (ctx) async {
         try {
-          final formMap = data['form'] is Map ? Map<String, dynamic>.from(data['form'] as Map) : <String, dynamic>{};
-          final recordMap = data['data'] is Map ? Map<String, dynamic>.from(data['data'] as Map) : Map<String, dynamic>.from(data);
-          
+          final formMap = data['form'] is Map
+              ? Map<String, dynamic>.from(data['form'] as Map)
+              : <String, dynamic>{};
+          final recordMap = data['data'] is Map
+              ? Map<String, dynamic>.from(data['data'] as Map)
+              : Map<String, dynamic>.from(data);
+
           final definition = WorkflowDefinition.fromJson(workflow!);
           final executor = GetxHttpExecutor();
 
@@ -529,7 +542,9 @@ extension ActionExecutionExtension on ActionD {
               onSuccessCallback: onSuccessCallback,
             );
           } else {
-            final message = workflowCtx.vars['last_error']?.toString() ?? result.error?.message ?? 'Workflow failed';
+            final message = workflowCtx.vars['last_error']?.toString() ??
+                result.error?.message ??
+                'Workflow failed';
             Toast(context).fail(message);
             handleOnFailure(context, message);
           }
@@ -824,7 +839,7 @@ extension ActionExecutionExtension on ActionD {
         }
       }
 
-      saveFile(bytes, filename);
+      saveFileNocode(bytes, filename);
       Toast(context).success('Download success: $filename');
     } on DioException catch (e) {
       Toast(context).fail(e.message ?? 'Failed to download file');

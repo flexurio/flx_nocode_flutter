@@ -265,6 +265,7 @@ class EntityCustom extends HiveObject {
       hideRowActions: hideRowActions ?? this.hideRowActions,
       freezeFirstColumn: freezeFirstColumn ?? this.freezeFirstColumn,
       freezeLastColumn: freezeLastColumn ?? this.freezeLastColumn,
+      customeLayout: customeLayout ?? this.customeLayout,
     );
   }
 

@@ -86,7 +86,7 @@ class _FilePickerWidgetState extends State<_FilePickerWidget> {
   Future<void> _pickFile() async {
     if (!widget.enabled) return;
 
-    final result = await pickFile(
+    final result = await pickFileNocode(
       file: widget.allowedExtensions,
     );
 

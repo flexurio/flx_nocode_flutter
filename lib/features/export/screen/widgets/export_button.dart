@@ -39,7 +39,8 @@ class ButtonExport extends StatelessWidget {
                       data: data.data,
                       title: export.name,
                       fields: export.fields,
-                      printedBy: UserRepositoryAppNocode.instance.user?.name ?? '-',
+                      printedBy:
+                          UserRepositoryAppNocode.instance.user?.name ?? '-',
                     ),
                   );
                 await Printing.sharePdf(
@@ -47,9 +48,10 @@ class ButtonExport extends StatelessWidget {
                   filename: '${export.name}.pdf',
                 );
               } else {
-                final bytes = generalXlsxNoCode(context, data.data, export.fields);
+                final bytes =
+                    generalXlsxNoCode(context, data.data, export.fields);
                 final filename = '${export.name}.xlsx';
-                saveFile(bytes, filename);
+                saveFileNocode(bytes, filename);
               }
               Toast(context).notify('Exported successfully');
             } on Exception catch (e) {

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
-Future<void> saveFile(List<int> bytes, String filename) async {
+Future<void> saveFileNocodeCore(List<int> bytes, String filename) async {
   try {
     final dir = await getApplicationDocumentsDirectory();
     final filePath = p.join(dir.path, filename);

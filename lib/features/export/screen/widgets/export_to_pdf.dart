@@ -190,7 +190,7 @@ Future<void> exportToPdf(
   try {
     final filename = '${export.name}.pdf';
     print('[ExportPDF] 🖨 Opening file...');
-    saveFile(await pdf.save(), filename);
+    saveFileNocode(await pdf.save(), filename);
     print('[ExportPDF] 🎉 Export complete!');
   } catch (e) {
     print('[ExportPDF] ❌ Failed to save or open file: $e');

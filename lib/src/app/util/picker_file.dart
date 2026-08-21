@@ -2,7 +2,7 @@ import 'package:file_picker/file_picker.dart';
 
 import 'save_file_io.dart' if (dart.library.html) 'save_file_web.dart' as saver;
 
-Future<FilePickerResult?> pickFile({
+Future<FilePickerResult?> pickFileNocode({
   List<String>? file,
   FileType type = FileType.any,
 }) async {
@@ -17,6 +17,6 @@ Future<FilePickerResult?> pickFile({
   return result;
 }
 
-void saveFile(List<int> bytes, String filename) {
-  saver.saveFile(bytes, filename);
+void saveFileNocode(List<int> bytes, String filename) {
+  saver.saveFileNocodeCore(bytes, filename);
 }
