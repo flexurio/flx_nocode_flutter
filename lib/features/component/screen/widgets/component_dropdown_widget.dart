@@ -23,12 +23,16 @@ class ComponentDropdownWidget extends StatefulWidget {
 }
 
 class _ComponentDropdownWidgetState extends State<ComponentDropdownWidget> {
-  late final ComponentDropdownController controller;
-  late final String tag;
+  late ComponentDropdownController controller;
+  late String tag;
 
   @override
   void initState() {
     super.initState();
+    _initController();
+  }
+
+  void _initController() {
     tag = '${widget.component.id}_${identityHashCode(this)}';
 
     // Initialize or Update existing controller
@@ -49,7 +53,11 @@ class _ComponentDropdownWidgetState extends State<ComponentDropdownWidget> {
   @override
   void didUpdateWidget(ComponentDropdownWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.data != oldWidget.data) {
+    if (widget.component.id != oldWidget.component.id ||
+        widget.component != oldWidget.component) {
+      Get.delete<ComponentDropdownController>(tag: tag);
+      _initController();
+    } else if (widget.data != oldWidget.data) {
       controller.updateData(widget.data);
     }
   }

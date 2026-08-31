@@ -6,6 +6,7 @@ import 'component_dropdown_widget.dart';
 extension ComponentDropdownWidgets on ComponentDropdown {
   Widget toWidget(JsonMap data, {bool isSmall = false}) {
     return ComponentDropdownWidget(
+      key: ValueKey(id),
       component: this,
       data: data,
       isSmall: isSmall,

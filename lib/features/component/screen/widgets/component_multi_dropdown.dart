@@ -6,6 +6,7 @@ import 'component_multi_dropdown_widget.dart';
 extension ComponentMultiDropdownWidgets on ComponentMultiDropdown {
   Widget toWidget(JsonMap data, {bool isSmall = false}) {
     return ComponentMultiDropdownWidget(
+      key: ValueKey(id),
       component: this,
       data: data,
       isSmall: isSmall,
