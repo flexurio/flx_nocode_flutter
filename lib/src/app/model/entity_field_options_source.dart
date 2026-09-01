@@ -140,10 +140,26 @@ class OptionsSource {
       final entity = await EntityCustom.getEntity(backend.entity);
       final options = <dynamic, dynamic>{};
 
-      if (entity == null) {
+      String method = 'GET';
+      String path = backend.entity.startsWith('/')
+          ? backend.entity
+          : '/${backend.entity}';
+      Map<String, String>? headers;
+      int? cachedDurationSeconds;
+      bool mockEnabled = false;
+      Object? mockData;
+
+      if (entity != null && entity.backend.readAll != null) {
+        method = entity.backend.readAll!.method;
+        path = entity.backend.readAll!.urlWithValues;
+        headers = entity.backend.readAll!.headers;
+        cachedDurationSeconds = entity.backend.readAll!.cacheDurationSeconds;
+        mockEnabled = entity.backend.readAll!.mockEnabled;
+        mockData = entity.backend.readAll!.mockData;
+      } else if (entity == null) {
         // ignore: avoid_print
-        print('[OptionsSource] Entity ${backend.entity} not found!');
-        throw ArgumentError('Entity ${backend.entity} not found!');
+        print(
+            '[OptionsSource] Entity ${backend.entity} config not found; falling back to direct GET $path');
       }
 
       // Resolve placeholders in query params using parentData
@@ -153,20 +169,22 @@ class OptionsSource {
       final data = await EntityCustomRepository.instance.fetch(
         accessToken: UserRepositoryAppNocode.instance.token ?? '',
         pageOptions: PageOptions.emptyNoLimit(),
-        method: entity.backend.readAll!.method,
-        path: entity.backend.readAll!.urlWithValues,
+        method: method,
+        path: path,
         filterMap: resolvedQueryParams,
-        headers: entity.backend.readAll!.headers,
-        cachedDurationSeconds: entity.backend.readAll!.cacheDurationSeconds,
-        mockEnabled: entity.backend.readAll!.mockEnabled,
-        mockData: entity.backend.readAll!.mockData,
+        headers: headers,
+        cachedDurationSeconds: cachedDurationSeconds,
+        mockEnabled: mockEnabled,
+        mockData: mockData,
       );
 
       final result = data.data;
       for (final item in result) {
         final key = item[backend.key];
         final value = item[backend.value];
-        options[key] = value;
+        if (key != null && key.toString().trim().isNotEmpty) {
+          options[key.toString()] = value?.toString() ?? key.toString();
+        }
       }
 
       return options;
@@ -284,8 +302,9 @@ class OptionsSource {
     String input,
     List<Map<String, dynamic>> parentData,
   ) {
-    final reg = RegExp(r'\{page\[(\d+)\]\.([^\}]+)\}');
-    return input.replaceAllMapped(reg, (m) {
+    // 1) First resolve explicit {page[i].field}
+    final pageReg = RegExp(r'\{page\[(\d+)\]\.([^\}]+)\}');
+    var result = input.replaceAllMapped(pageReg, (m) {
       final idx = int.tryParse(m.group(1) ?? '');
       final field = m.group(2);
       if (idx == null || field == null) return '';
@@ -296,6 +315,25 @@ class OptionsSource {
       final value = _readField(pageMap, field);
       return value?.toString() ?? '';
     });
+
+    // 2) Resolve {{field}}, {parent.field}, or {field}
+    final placeholderReg = RegExp(r'\{\{?([a-zA-Z0-9_\.]+)\}?\}');
+    result = result.replaceAllMapped(placeholderReg, (m) {
+      var field = m.group(1);
+      if (field == null || field.isEmpty) return '';
+      if (field.startsWith('parent.')) {
+        field = field.substring('parent.'.length);
+      }
+      for (final pageMap in parentData) {
+        final value = _readField(pageMap, field);
+        if (value != null && value.toString().isNotEmpty) {
+          return value.toString();
+        }
+      }
+      return '';
+    });
+
+    return result;
   }
 
   /// Traverse nested map properties using a dot-separated path.

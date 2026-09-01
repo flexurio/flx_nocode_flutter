@@ -232,7 +232,40 @@ Two common patterns for row actions:
 
 ---
 
-## 6. Example Configuration
+## 6. Inline Filters
+
+Entities can define inline filters rendered directly on the table action bar:
+
+```json
+"filters": [
+  {
+    "reference": "subordinate_name",
+    "type": "select",
+    "width": 260.0,
+    "options_source": "backend.vw_search({subordinate_name}:{subordinate_name})?header_id.eq={{header_id}}",
+    "always_include": true,
+    "default": ""
+  },
+  {
+    "reference": "created_at",
+    "mode": "date_range"
+  }
+]
+```
+
+- `type`: Set to `"select"` or `"dropdown"` to render a searchable dropdown filter.
+- `options_source`: URL/backend options provider. Supports dynamic placeholders `{{field}}`, `{field}`, `{parent.field}`, and `{page[i].field}`. Opsi dropdown otomatis di-deduplikasi secara unique dan mengabaikan nilai kosong/null.
+- `always_include`: If `true`, always sends the parameter in query requests (e.g. `subordinate_name.eq=`) even when empty or reset.
+- `default`: Default value of the filter (`""` for empty default).
+- `width`: Custom width in pixels (defaults to `240.0`).
+
+### Layout & Row Separation
+- **Inline Filters (`filters`)**: Ditempatkan pada sisi kiri baris action table (`actionLeft`), sejajar dengan tombol aksi di sisi kanan (`Refresh`, `Export`, dll.).
+- **Views / Parent Context Filters (`views.filter`)**: Chip filter yang berasal dari navigasi parent (misal `header_id` dan `period`) otomatis ditempatkan pada **baris khusus terpisah di bagian atas tabel** (di atas baris action table). Hal ini mencegah penumpukan elemen (*bentrok*) dan menghindari error horizontal overflow pada layar.
+
+---
+
+## 7. Example Configuration
 
 Here is a full structure representing a typical dynamic entity `banks.json`:
 

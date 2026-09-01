@@ -51,7 +51,7 @@ class _InlineFilterState extends State<InlineFilter> {
   }
 
   void _parseInitialValue() {
-    if (widget.initialValue == null) {
+    if (widget.initialValue == null || widget.initialValue!.isEmpty) {
       _selectedDateRange = null;
       _selectedDate = null;
       _controller.clear();
@@ -202,17 +202,39 @@ class _InlineFilterState extends State<InlineFilter> {
     }
 
     // Handle Dropdown Type
-    if (widget.field.type == 'select') {
+    final filterType = widget.config['type']?.toString();
+    final isSelect = widget.field.type == 'select' ||
+        filterType == 'select' ||
+        filterType == 'dropdown' ||
+        widget.config['options_source'] != null ||
+        widget.config['endpoint'] != null;
+
+    if (isSelect) {
+      final optionsSource = widget.config['options_source']?.toString() ??
+          (widget.config['endpoint'] != null
+              ? 'backend.${widget.config['endpoint']}'
+              : widget.field.optionsSource);
+
+      final selectField = widget.field.copyWith(
+        type: 'select',
+        optionsSource: optionsSource,
+      );
+
+      final width = (widget.config['width'] as num?)?.toDouble() ?? 240.0;
+
       return SizedBox(
-        width: 200,
+        width: width,
         child: FDropDownSearchEntity(
           parentData: widget.parentData,
-          entityField: widget.field,
+          entityField: selectField,
           label: widget.field.label,
           isRequired: false,
           isSmall: true,
           itemAsString: (id, label) => '$label',
-          initialValue: widget.initialValue != null ? MapEntry(widget.initialValue, '') : null,
+          initialValue: (widget.initialValue != null &&
+                  widget.initialValue!.isNotEmpty)
+              ? MapEntry(widget.initialValue, '')
+              : null,
           onChanged: (entry) {
             widget.onChanged(entry?.key?.toString());
           },

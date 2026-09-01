@@ -139,14 +139,22 @@ Defines the options for a dropdown or lookup field.
 
 ### Filter Object
 
-Defines an inline filter configuration.
+Defines an inline filter configuration rendered on the data table action bar.
 
 | Key | Type | Required | Description |
 | --- | --- | --- | --- |
 | `reference` | String | Yes | The field reference that this filter applies to. |
+| `type` | String | No | Input type override for the filter (e.g. `"select"`, `"dropdown"`). When set to `"select"` or when `options_source` is provided, renders a searchable dropdown filter. |
+| `options_source` | String | No | Dynamic options source for dropdown filter. E.g. `backend.vw_search({key}:{value})?header_id.eq={{header_id}}`. Supports `{{field}}`, `{parent.field}`, `{field}`, and `{page[i].field}` placeholders. Options are automatically deduplicated and empty/null values are omitted. |
+| `always_include` | Boolean | No | When `true`, the parameter is always included in backend requests (e.g. `field.eq=`) even when empty or reset. |
 | `mode` | String | No | Filter mode for date type. Options: `"date_range"`, `"year_month"`, `"year"`, `"date"`. |
-| `default` | String | No | Default value of filter. Can be `"now"` for date type. |
+| `default` | String | No | Default value of filter. Can be `""` for empty default, or `"now"` for date type. |
 | `backend_key` | String | No | Overrides the query parameter key sent to backend. E.g. `visit_customers.period.eq`. |
+| `width` | Number | No | Custom width of the filter input in pixels (defaults to `240.0`). |
+
+> **Layout Separation**:
+> - **Inline Filters (`filters`)**: Rendered directly on the left side of the table toolbar (`actionLeft`), adjacent to action buttons on the right.
+> - **Views / Parent Context Filters (`views.filter`)**: Rendered as dismissible chips on a **dedicated top row** above the toolbar, preventing horizontal layout crowding and overflow.
 
 ### View Object
 

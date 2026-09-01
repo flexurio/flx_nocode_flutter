@@ -68,25 +68,25 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       if (_filters.any((filter) => filter.reference == f.reference)) {
         continue;
       }
+      final isAlwaysInclude = f.config['always_include'] == true ||
+          f.config['always_include'] == 'true';
       final defaultValue = f.config['default']?.toString();
-      if (defaultValue != null) {
+      if (defaultValue != null || isAlwaysInclude) {
         String? resolvedValue;
         if (defaultValue == 'now') {
           final field = widget.entity.getField(f.reference);
           final format = field?.dateTimeFormat ?? 'yyyy-MM';
           resolvedValue = DateFormat(format).format(DateTime.now());
         } else {
-          resolvedValue = defaultValue;
+          resolvedValue = defaultValue ?? '';
         }
-        if (resolvedValue != null) {
-          _filters.add(
-            Filter(
-              reference: f.reference,
-              value: resolvedValue,
-              backendKey: f.config['backend_key']?.toString(),
-            ),
-          );
-        }
+        _filters.add(
+          Filter(
+            reference: f.reference,
+            value: resolvedValue,
+            backendKey: f.config['backend_key']?.toString(),
+          ),
+        );
       }
     }
     _initialPageOptions = PageOptions<Map<String, dynamic>>.empty(
@@ -140,9 +140,11 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
 
         final activeEntity = widget.entity.copyWith(layoutTable: activeLayoutTable);
 
+        final filterInfoWidget = _buildFilterInformation(Theme.of(context).colorScheme.primary);
+
         return ScreenIdentifierBuilder(
           builder: (context, screenIdentifier) {
-            return screenIdentifier.conditions(
+            final tableContent = screenIdentifier.conditions(
               md: MenuDataTableCustomTableView(
                 entity: activeEntity,
                 status: status,
@@ -162,6 +164,22 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 pageOptions: pageOptions,
                 activeEntity: activeEntity,
               ),
+            );
+
+            if (!_hasFilterInformation) {
+              return tableContent;
+            }
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: filterInfoWidget,
+                ),
+                tableContent,
+              ],
             );
           },
         );
@@ -310,6 +328,9 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           currentFilter = _filters.firstWhere((f) => f.reference == fieldRef);
         } catch (_) {}
 
+        final isAlwaysInclude = f.config['always_include'] == true ||
+            f.config['always_include'] == 'true';
+
         filterWidgets.add(
           InlineFilter(
             key: ValueKey('filter_$fieldRef'),
@@ -321,10 +342,11 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
               fieldRef,
               val,
               backendKey: f.config['backend_key']?.toString(),
+              alwaysInclude: isAlwaysInclude,
             ),
           ),
         );
-        filterWidgets.add(const Gap(12));
+        filterWidgets.add(const SizedBox(width: 12));
       }
     }
 
@@ -339,7 +361,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 mainAxisSize: MainAxisSize.min,
                 children: filterWidgets,
               ),
-            if (filterWidgets.isNotEmpty) const Gap(12),
+            if (filterWidgets.isNotEmpty) const SizedBox(height: 12),
             _buildLayoutSelector(),
           ],
         ),
@@ -348,19 +370,30 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
       widgets.addAll(filterWidgets);
     }
 
-    if (_filters.isNotEmpty) {
-      widgets
-          .add(_buildFilterInformation(Theme.of(context).colorScheme.primary));
-    }
-
     return widgets;
   }
 
-  void _onInlineFilterChanged(String ref, String? val, {String? backendKey}) {
+  bool get _hasFilterInformation {
+    return _filters.any((filter) {
+      if (widget.entity.filters.any((e) => e.reference == filter.reference)) {
+        return false;
+      }
+      return filter.value.isNotEmpty;
+    });
+  }
+
+  void _onInlineFilterChanged(
+    String ref,
+    String? val, {
+    String? backendKey,
+    bool alwaysInclude = false,
+  }) {
     setState(() {
       _filters.removeWhere((f) => f.reference == ref);
       if (val != null && val.isNotEmpty) {
         _filters.add(Filter(reference: ref, value: val, backendKey: backendKey));
+      } else if (alwaysInclude) {
+        _filters.add(Filter(reference: ref, value: '', backendKey: backendKey));
       }
     });
     _fetch();
@@ -385,16 +418,19 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   }
 
   Widget _buildFilterInformation(Color primaryColor) {
-    if (_filters.isEmpty) return const SizedBox.shrink();
+    final activeFilters = _filters.where((filter) {
+      if (widget.entity.filters.any((e) => e.reference == filter.reference)) {
+        return false;
+      }
+      return filter.value.isNotEmpty;
+    }).toList();
+
+    if (activeFilters.isEmpty) return const SizedBox.shrink();
 
     return Wrap(
-      spacing: 12,
-      children: _filters.map((filter) {
-        // Skip showing chips for inline filters to avoid duplication
-        if (widget.entity.filters.any((e) => e.reference == filter.reference)) {
-          return const SizedBox.shrink();
-        }
-
+      spacing: 8,
+      runSpacing: 8,
+      children: activeFilters.map((filter) {
         final label = filter.getLabel(widget.entity);
         return Chip(
           side: BorderSide.none,

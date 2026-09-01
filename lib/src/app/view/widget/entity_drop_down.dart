@@ -153,6 +153,7 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
             ? Status.progress
             : (_errorMessage != null ? Status.error : Status.loaded),
         iconField: Icons.filter_alt_outlined,
+        showClearButton: !widget.isRequired,
       );
     }
 
