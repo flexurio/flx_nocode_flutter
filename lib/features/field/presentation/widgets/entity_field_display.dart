@@ -36,9 +36,17 @@ class EntityFieldDisplay {
       try {
         final date = DateTime.tryParse(value.toString()) ??
             DateFormat(fmt).parse(value.toString());
-        widget = Text(DateFormat(fmt).format(date));
+        widget = Text(
+          DateFormat(fmt).format(date),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        );
       } catch (_) {
-        widget = Text(value.toString());
+        widget = Text(
+          value.toString(),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        );
       }
     } else if (field.isBool) {
       widget = BoolIcon(value == 1);
@@ -65,10 +73,18 @@ class EntityFieldDisplay {
       );
     } else if (field.isNumber) {
       if (value is num) {
-        widget = Text(value.format(field.decimal));
+        widget = Text(
+          value.format(field.decimal),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        );
       } else {
         final parsed = num.tryParse(value.toString());
-        widget = Text(parsed?.format(field.decimal) ?? 'type is not number');
+        widget = Text(
+          parsed?.format(field.decimal) ?? 'type is not number',
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        );
       }
     } else if (field.isUserName) {
       // Tampilkan nama user berdasarkan ID (nip/user_id)
@@ -79,7 +95,11 @@ class EntityFieldDisplay {
           userId: value,
         ),
         builder: (context, snapshot) {
-          return Text(snapshot.data ?? '-');
+          return Text(
+            snapshot.data ?? '-',
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          );
         },
       );
     } else if (field.isUserNameWithId) {
@@ -91,14 +111,26 @@ class EntityFieldDisplay {
           userId: value,
         ),
         builder: (context, snapshot) {
-          return Text(snapshot.data ?? value.toString());
+          return Text(
+            snapshot.data ?? value.toString(),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+          );
         },
       );
     } else if (field.isUserId) {
       // Tampilkan NIP/ID saja, contoh: "1801005"
-      widget = Text(value.toString());
+      widget = Text(
+        value.toString(),
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+      );
     } else {
-      widget = Text(LayoutListTile.getValue(value));
+      widget = Text(
+        LayoutListTile.getValue(value),
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+      );
     }
 
     final String displayStr;
@@ -128,6 +160,8 @@ class EntityFieldDisplay {
             color: bgColor,
             child: Text(
               displayStr,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
               style: TextStyle(
                 color: textColor,
                 fontSize: 13,
@@ -166,6 +200,8 @@ class EntityFieldDisplay {
             ),
             child: Text(
               displayStr,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
               style: TextStyle(
                 color: textColor,
                 fontSize: 12,
@@ -190,9 +226,9 @@ class EntityFieldDisplay {
       if (widget is Text) {
         final text = widget;
 
-        // Prioritas: kalau field copyable → pakai canCopy
+        // Prioritas: kalau field copyable → pakai canCopy dengan wrap: true agar tidak overflow
         if (field.isCopyable == true) {
-          widget = text.canCopy(onTap: onTap);
+          widget = text.canCopy(onTap: onTap, wrap: true);
           return _maybeWrapWithTooltip(widget, field, displayStr);
         }
 
