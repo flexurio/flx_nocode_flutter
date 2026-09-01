@@ -74,6 +74,9 @@ class EntityField extends HiveObject {
   /// Custom text colors based on values.
   final Map<String, String>? textColors;
 
+  /// Whether this column is pinned on the table.
+  final bool? isPinned;
+
   /// Creates a new [EntityField] configuration.
   EntityField({
     required this.label,
@@ -96,6 +99,7 @@ class EntityField extends HiveObject {
     this.options,
     this.backgroundColors,
     this.textColors,
+    this.isPinned,
   });
 
   /// Creates an [EntityField] instance from JSON.
@@ -141,6 +145,7 @@ class EntityField extends HiveObject {
           : (json['text_colors'] is String
               ? {'*': json['text_colors'] as String}
               : null),
+      isPinned: json['is_pinned'] == true || json['pinned'] == true,
     );
   }
 
@@ -173,6 +178,7 @@ class EntityField extends HiveObject {
     FieldOptions? options,
     Map<String, String>? backgroundColors,
     Map<String, String>? textColors,
+    bool? isPinned,
   }) {
     return EntityField(
       label: label ?? this.label,
@@ -195,6 +201,7 @@ class EntityField extends HiveObject {
       options: options ?? this.options,
       backgroundColors: backgroundColors ?? this.backgroundColors,
       textColors: textColors ?? this.textColors,
+      isPinned: isPinned ?? this.isPinned,
     );
   }
 

@@ -105,10 +105,14 @@ class MenuDataTableCustomTableView extends StatelessWidget {
       // wrapper adds no extra horizontal padding and the color fills edge-to-edge.
       final hasColumnBgColors = field.backgroundColors != null &&
           field.backgroundColors!.isNotEmpty;
+      final isPinned = entity.pinnedColumns.contains(fields[index]) ||
+          (field.isPinned == true);
 
       return DTColumn(
         widthFlex: (width ?? 1).toDouble(),
         zeroPadding: hasColumnBgColors,
+        pinned: isPinned,
+        pinPosition: isPinned ? TablePinPosition.left : TablePinPosition.none,
         head: DTHead(
           backendKeySort: field.reference,
           label: field.label,

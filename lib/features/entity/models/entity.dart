@@ -77,6 +77,9 @@ class EntityCustom extends HiveObject {
   /// Whether to freeze the last column (row actions) in the data table. Defaults to true.
   final bool freezeLastColumn;
 
+  /// A list of field references to pin on the table.
+  final List<String> pinnedColumns;
+
   /// A list of custom layout configurations for switching table columns dynamically.
   final List<CustomeLayout> customeLayout;
 
@@ -110,6 +113,7 @@ class EntityCustom extends HiveObject {
     this.hideRowActions = false,
     this.freezeFirstColumn = true,
     this.freezeLastColumn = true,
+    this.pinnedColumns = const [],
     this.customeLayout = const [],
   });
 
@@ -176,6 +180,7 @@ class EntityCustom extends HiveObject {
         hideRowActions: parser.parseHideRowActions(),
         freezeFirstColumn: parser.parseFreezeFirstColumn(),
         freezeLastColumn: parser.parseFreezeLastColumn(),
+        pinnedColumns: parser.parsePinnedColumns(),
         customeLayout: parser.parseCustomeLayout(),
       );
     } catch (e) {
@@ -209,6 +214,7 @@ class EntityCustom extends HiveObject {
         hideRowActions = false,
         freezeFirstColumn = true,
         freezeLastColumn = true,
+        pinnedColumns = const [],
         customeLayout = const [];
 
   /// Creates a copy of this [EntityCustom] instance with the given fields replaced.
@@ -237,6 +243,7 @@ class EntityCustom extends HiveObject {
     bool? hideRowActions,
     bool? freezeFirstColumn,
     bool? freezeLastColumn,
+    List<String>? pinnedColumns,
     List<CustomeLayout>? customeLayout,
     bool clearActionPrimary = false,
     bool clearLayoutListTile = false,
@@ -265,6 +272,7 @@ class EntityCustom extends HiveObject {
       hideRowActions: hideRowActions ?? this.hideRowActions,
       freezeFirstColumn: freezeFirstColumn ?? this.freezeFirstColumn,
       freezeLastColumn: freezeLastColumn ?? this.freezeLastColumn,
+      pinnedColumns: pinnedColumns ?? this.pinnedColumns,
       customeLayout: customeLayout ?? this.customeLayout,
     );
   }
@@ -817,6 +825,17 @@ class _EntityCustomJsonParser {
       }
     }
     return true;
+  }
+
+  List<String> parsePinnedColumns() {
+    final raw = json['pinned_columns'] ??
+        json['pin_columns'] ??
+        json['freeze_columns'];
+    if (raw == null) return const [];
+    if (raw is List) {
+      return raw.map((e) => e.toString()).toList();
+    }
+    return const [];
   }
 
   /// Parses a single [ActionD] from the JSON if present.

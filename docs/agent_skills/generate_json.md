@@ -24,6 +24,7 @@ An entity configuration is represented by the `EntityCustom` class. Below is the
 | `action_primary` | Object | No | The primary FAB action (e.g., creating a new item). |
 | `filters` | Array | No | List of field references or filter configs to display as filters. |
 | `custome_layout` | Array | No | Custom table column layouts. Defaults to root `layout_table` when all checkboxes are unchecked; checked options append their columns dynamically to the root layout. |
+| `pinned_columns` | Array | No | List of field references to pin on the data table (e.g. `["subordinate_name", "description", "area_value"]`). Pinned columns stay fixed on the left during horizontal scrolling. |
 | `freezed_column` | Boolean / String | No | Controls frozen columns on table. `false` unfreezes first/last columns; `true` (default) freezes both. `"first"` or `"last"` freezes only that column. |
 | `freeze_first_column` | Boolean | No | Fine-grained override to freeze or unfreeze only the first column (`true`/`false`). |
 | `freeze_last_column` | Boolean | No | Fine-grained override to freeze or unfreeze only the last column/actions (`true`/`false`). |

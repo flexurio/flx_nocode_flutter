@@ -21,9 +21,36 @@ The root of the JSON file is a single object that contains all the properties fo
 | `exports` | Array<Object> | No | A list of configurations for exporting entity data. See [Export Object](#export-object). |
 | `actions` | Array<Object> | No | A list of custom actions that can be performed on the entity. See [Action Object](#action-object). |
 | `hide_row_actions`| Boolean | No | Whether to hide row action buttons (default `false`) on the data table. |
+| `pinned_columns` | Array<String> | No | List of field references to pin on the data table (e.g., `["subordinate_name", "description", "area_value"]`). Pinned columns stay fixed on the left during horizontal scrolling. |
 | `freezed_column` | Boolean / String | No | Controls whether the first and last (actions) columns are frozen in the table. If `false`, no columns are frozen. If `true` (default), both first and last columns are frozen. String values `"first"` or `"last"` freeze only that specific column. |
 | `freeze_first_column` | Boolean | No | Fine-grained override to freeze or unfreeze only the first column (`true`/`false`). |
 | `freeze_last_column` | Boolean | No | Fine-grained override to freeze or unfreeze only the last column/actions (`true`/`false`). |
+
+### Pinned Columns (`pinned_columns`)
+
+The `pinned_columns` property allows pinning one or multiple columns on the data table so that they remain fixed on the left side while the user scrolls horizontally:
+
+```json
+{
+  "id": "lbb_expense_transaction_details",
+  "label": "Expense Transaction Detail",
+  "description": "LBB marketing submission",
+  "pinned_columns": [
+    "subordinate_name",
+    "description",
+    "area_value"
+  ],
+  "layout_table": {
+    "subordinate_name": 10,
+    "description": 10,
+    "area_value": 8,
+    "nip": 4
+  }
+}
+```
+
+- Each field specified in `pinned_columns` (or with `"is_pinned": true` in field definition) is pinned to the left.
+- When `layout_table` places pinned columns at the beginning, they align with the composite selection checkbox and stay permanently visible.
 
 ### Row Actions Visibility (`hide_row_actions`)
 

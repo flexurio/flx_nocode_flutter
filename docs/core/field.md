@@ -27,6 +27,7 @@ The `EntityField` class represents a single field definition. It describes how a
 | `allow_update` | bool? | No | A flag that determines if this field can be modified after its initial creation. |
 | `is_copyable` | bool? | No | A flag that indicates whether the field's value can be copied from the UI, often used for displaying a copy icon next to the field. |
 | `is_tooltip` | bool? | No | A flag that indicates whether hovering over the field cell in a table shows a tooltip with the value. |
+| `is_pinned` | bool? | No | Whether this column is pinned on the table. When true, the column remains fixed on the left during horizontal scrolling. |
 | `is_chip` | bool? | No | Whether to render the field value as a colored status chip. |
 | `chip_colors` | Map<String, String>? | No | Custom color overrides for status chips. Key is status name (case-insensitive substring match), value is hex color (e.g., `"#FF9800"`). |
 | `background_colors` | Map<String, String>? or String? | No | Custom background colors. Can be a map mapped to values (e.g. `{"BFW": "#E8F5E9"}`) or a single string (e.g. `"#E8F5E9"`) to apply the color to all values. |
