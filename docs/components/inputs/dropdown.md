@@ -60,3 +60,10 @@ In this example, selecting `Versi Terakhir (Latest)` sets the dropdown value to 
   "icon": "Edit"
 }
 ```
+
+## Widget Lifecycle & Controller Re-initialization
+
+When rendering dropdown components with `toWidget()`, the returned `ComponentDropdownWidget` is automatically keyed with `ValueKey(id)`.
+
+If the underlying component ID or component configuration changes dynamically (such as during component switching in dynamic layout forms), `ComponentDropdownWidget` automatically detects the change in `didUpdateWidget`, deletes the previous `ComponentDropdownController` instance, and cleanly initializes a fresh controller with updated properties.
+

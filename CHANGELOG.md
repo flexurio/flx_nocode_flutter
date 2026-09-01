@@ -1,5 +1,10 @@
 # Changelog flx_nocode_flutter
 
+## [1.1.0-dev.2] - 2026-08-31
+### Fixed
+- Re-initialized selection controllers (`ComponentDropdownController` and `ComponentMultiDropdownController`) upon component switch in `ComponentDropdownWidget` and `ComponentMultiDropdownWidget`.
+- Added explicit `ValueKey(id)` keying to `ComponentDropdown.toWidget()` and `ComponentMultiDropdown.toWidget()` extension methods.
+
 ## [1.1.0-dev.1] - 2025-05-21
 ### Added
 - Support for `body` in backend requests

@@ -87,5 +87,60 @@ void main() {
 
       expect(find.text('Select Items is required'), findsOneWidget);
     });
+
+    testWidgets('re-initializes controller when component changes', (tester) async {
+      final comp1 = ComponentMultiDropdown(
+        id: 'multi_dropdown_1',
+        label: 'First Multi Dropdown',
+        options: ['Opt 1A', 'Opt 1B'],
+        initialValues: ['Opt 1A'],
+      );
+      final comp2 = ComponentMultiDropdown(
+        id: 'multi_dropdown_2',
+        label: 'Second Multi Dropdown',
+        options: ['Opt 2A', 'Opt 2B'],
+        initialValues: ['Opt 2A'],
+      );
+
+      final localControllers = <String, TextEditingController>{
+        'multi_dropdown_1': TextEditingController(),
+        'multi_dropdown_2': TextEditingController(),
+      };
+      final localData = {
+        'data': {},
+        'allControllers': localControllers,
+      };
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ComponentMultiDropdownWidget(
+              component: comp1,
+              data: localData,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('First Multi Dropdown'), findsOneWidget);
+      expect(find.text('Opt 1A'), findsOneWidget);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ComponentMultiDropdownWidget(
+              component: comp2,
+              data: localData,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Second Multi Dropdown'), findsOneWidget);
+      expect(find.text('Opt 2A'), findsOneWidget);
+    });
   });
 }
+

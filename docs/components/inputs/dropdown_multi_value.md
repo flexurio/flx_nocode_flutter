@@ -33,3 +33,10 @@ Example:
   "initialValues": ["urgent", "internal"]
 }
 ```
+
+## Widget Lifecycle & Controller Re-initialization
+
+When rendering multi-value dropdown components with `toWidget()`, the returned `ComponentMultiDropdownWidget` is automatically keyed with `ValueKey(id)`.
+
+If the underlying component ID or component configuration changes dynamically (such as during component switching in dynamic layout forms), `ComponentMultiDropdownWidget` automatically detects the change in `didUpdateWidget`, deletes the previous `ComponentMultiDropdownController` instance, and cleanly initializes a fresh controller with updated properties.
+

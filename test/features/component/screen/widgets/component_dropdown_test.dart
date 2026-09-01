@@ -172,5 +172,54 @@ void main() {
 
       expect(find.text('Required Field is required'), findsOneWidget);
     });
+
+    testWidgets('should re-initialize controller when component changes',
+        (tester) async {
+      final component1 = ComponentDropdown(
+        id: 'dropdown_1',
+        label: 'First Dropdown',
+        options: ['Option 1A', 'Option 1B'],
+        initialValue: 'Option 1A',
+      );
+      final component2 = ComponentDropdown(
+        id: 'dropdown_2',
+        label: 'Second Dropdown',
+        options: ['Option 2A', 'Option 2B'],
+        initialValue: 'Option 2A',
+      );
+      final data = <String, dynamic>{};
+
+      await tester.pumpWidget(
+        GetMaterialApp(
+          home: Scaffold(
+            body: ComponentDropdownWidget(
+              component: component1,
+              data: data,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('First Dropdown'), findsOneWidget);
+      expect(find.text('Option 1A'), findsOneWidget);
+
+      // Re-pump with component2 (triggers didUpdateWidget with different component)
+      await tester.pumpWidget(
+        GetMaterialApp(
+          home: Scaffold(
+            body: ComponentDropdownWidget(
+              component: component2,
+              data: data,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Second Dropdown'), findsOneWidget);
+      expect(find.text('Option 2A'), findsOneWidget);
+    });
   });
 }
+
