@@ -263,6 +263,7 @@ class NoCodePageLoader extends StatefulWidget {
   final bool bypassPermission;
   final String? basePath;
   final List<Map<String, dynamic>> parentData;
+  final void Function()? onUnauthorized;
 
   const NoCodePageLoader({
     super.key,
@@ -276,6 +277,7 @@ class NoCodePageLoader extends StatefulWidget {
     this.basePath,
     required this.bypassPermission,
     this.parentData = const [],
+    this.onUnauthorized,
   });
 
   @override
@@ -288,6 +290,9 @@ class _NoCodePageLoaderState extends State<NoCodePageLoader> {
   @override
   void initState() {
     super.initState();
+    if (widget.onUnauthorized != null) {
+      EntityCustomRepository.onUnauthorizedGlobal = widget.onUnauthorized;
+    }
     if (widget.getAccess != null) {
       UserRepositoryAppNocode.instance.token = widget.getAccess!();
     }

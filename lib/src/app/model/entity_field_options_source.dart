@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
@@ -189,6 +190,10 @@ class OptionsSource {
 
       return options;
     } catch (e) {
+      if ((e is DioException && e.response?.statusCode == 401) ||
+          (e is ApiException && e.message == ExceptionType.tokenExpired.value)) {
+        EntityCustomRepository.onUnauthorizedGlobal?.call();
+      }
       // ignore: avoid_print
       print('[OptionsSource] Error: $e');
       return {};

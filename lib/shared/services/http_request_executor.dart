@@ -9,6 +9,7 @@ import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/src/app/util/file_picker_upload_registry.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flx_nocode_flutter/shared/services/network_logger.dart';
+import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
 typedef Json = Map<String, dynamic>;
 
 class HttpRequestConfig {
@@ -263,6 +264,9 @@ class HttpRequestExecutor {
           data: response.data,
         );
       } else {
+        if (response.statusCode == 401) {
+          EntityCustomRepository.onUnauthorizedGlobal?.call();
+        }
         final String message = _extractErrorMessage(
           response.data,
           path: config.errorMessagePath,
@@ -276,6 +280,9 @@ class HttpRequestExecutor {
         );
       }
     } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        EntityCustomRepository.onUnauthorizedGlobal?.call();
+      }
       _logHttpError(
         type: e.type.toString(),
         message: e.message ?? '-',

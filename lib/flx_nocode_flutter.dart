@@ -33,5 +33,6 @@ export 'features/component/models/component_bar_chart.dart';
 export 'features/component/models/component_donut_chart.dart';
 export 'features/component/models/component_action.dart';
 export 'src/app/resource/user_repository.dart';
+export 'src/app/resource/entity_custom.dart';
 export 'src/app/util/flavor_config_ext.dart';
 export 'src/app/util/no_code_page.dart';

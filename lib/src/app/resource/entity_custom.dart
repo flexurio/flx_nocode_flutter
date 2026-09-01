@@ -9,16 +9,44 @@ class EntityCustomRepository extends Repository {
   EntityCustomRepository({
     required super.dio,
     required super.onUnauthorized,
-  });
+  }) {
+    _setupDioInterceptor();
+  }
+
+  /// Global callback invoked whenever any nocode request encounters a 401 Unauthorized response.
+  static void Function()? onUnauthorizedGlobal;
 
   /// Singleton instance
   static EntityCustomRepository _instance = EntityCustomRepository(
     dio: Api.dio,
-    onUnauthorized: () {},
+    onUnauthorized: () => onUnauthorizedGlobal?.call(),
   );
 
   static EntityCustomRepository get instance => _instance;
   static set instance(EntityCustomRepository value) => _instance = value;
+
+  void _setupDioInterceptor() {
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onError: (DioException error, handler) {
+          if (error.response?.statusCode == 401) {
+            onUnauthorized();
+            onUnauthorizedGlobal?.call();
+          }
+          return handler.next(error);
+        },
+      ),
+    );
+  }
+
+  @override
+  Exception checkErrorApi(Object error) {
+    if (error is DioException && error.response?.statusCode == 401) {
+      onUnauthorized();
+      onUnauthorizedGlobal?.call();
+    }
+    return super.checkErrorApi(error);
+  }
 
   /// Internal request handler
   Future<Response<T>> _request<T>({
@@ -52,7 +80,11 @@ class EntityCustomRepository extends Repository {
     }
 
     var url = path.interpolateJavascript();
-    url = url.replaceAll('{backend_host}', Configuration.instance.backendHost);
+    if (url.contains('{backend_host}')) {
+      try {
+        url = url.replaceAll('{backend_host}', Configuration.instance.backendHost);
+      } catch (_) {}
+    }
 
     print('[EntityCustomRepository] $method $url');
 
@@ -114,6 +146,10 @@ class EntityCustomRepository extends Repository {
           print(
               '[EntityCustomRepository] Response Status: ${e.response?.statusCode}');
           print('[EntityCustomRepository] Response Data: ${e.response?.data}');
+        }
+        if (e.response?.statusCode == 401) {
+          onUnauthorized();
+          onUnauthorizedGlobal?.call();
         }
       }
       rethrow;

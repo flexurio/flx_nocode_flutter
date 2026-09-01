@@ -7,6 +7,7 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_action.dart';
+import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
 
 abstract class ComponentSelectionController<T extends ComponentSelectionBase>
     extends GetxController {
@@ -397,6 +398,9 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase>
         safeUpdateController(targetCtrl, valueToSet?.toString() ?? '');
       }
     } catch (e) {
+      if (e is DioException && e.response?.statusCode == 401) {
+        EntityCustomRepository.onUnauthorizedGlobal?.call();
+      }
       debugPrint('[Nocode Selection] http action error: $e');
     }
   }

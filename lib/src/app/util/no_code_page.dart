@@ -8,12 +8,14 @@ import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
 Widget noCodePage(
   String entityId, {
   bool bypassPermissions = false,
+  void Function()? onUnauthorized,
 }) {
   return NoCodePageLoader(
     basePath: 'asset/nocode/frontend',
     entityId: entityId,
     getAccess: () => UserRepositoryApp.instance.token ?? '',
     bypassPermission: bypassPermissions,
+    onUnauthorized: onUnauthorized ?? AuthenticationRepository.logout,
     getConfiguration: () {
       return flavorConfig.toNoCodeConfig();
     },
