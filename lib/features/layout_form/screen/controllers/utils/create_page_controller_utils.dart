@@ -73,6 +73,10 @@ class CreatePageControllerUtils {
             field,
             controller.text,
           ),
+        ComponentTextField c when c.isCurrency =>
+          controller.text.replaceAll(RegExp(r'[^0-9]'), ''),
+        ComponentNumberField c when c.isCurrency =>
+          controller.text.replaceAll(RegExp(r'[^0-9]'), ''),
         _ => controller.text,
       };
     }

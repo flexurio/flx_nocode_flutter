@@ -1,3 +1,4 @@
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
@@ -55,15 +56,40 @@ extension ComponentTextFieldWidgets on ComponentTextField {
       );
     }
 
+    if (isCurrency && controller != null && controller.text.isNotEmpty) {
+      final formatter = CurrencyTextInputFormatter.currency(
+        symbol: '',
+        decimalDigits: 0,
+        locale: 'en',
+      );
+      final formatted = formatter.formatString(controller.text);
+      if (formatted != controller.text) {
+        controller.value = controller.value.copyWith(
+          text: formatted,
+          selection: TextSelection.collapsed(offset: formatted.length),
+        );
+      }
+    }
+
     // Simple text field rendering with label and constraints
     return FTextFormField(
       controller: controller,
-      maxLength: maxLength,
+      maxLength: isCurrency ? null : maxLength,
       maxLines: maxLines,
       labelText: label,
       helperText: helperText,
       enabled: enabled,
       obscureText: obscure,
+      isNumeric: isCurrency,
+      inputFormatters: isCurrency
+          ? [
+              CurrencyTextInputFormatter.currency(
+                symbol: '',
+                decimalDigits: 0,
+                locale: 'en',
+              ),
+            ]
+          : null,
       suffixIcon: isSymbol
           ? Builder(
               builder: (context) {

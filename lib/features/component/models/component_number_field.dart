@@ -4,11 +4,13 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 
 class ComponentNumberField extends ComponentInputBase {
   final String initialValue;
+  final bool isCurrency;
 
   ComponentNumberField({
     required super.id,
     required super.label,
     required this.initialValue,
+    this.isCurrency = false,
     super.enabled = true,
     super.required,
     super.widthMode,
@@ -25,6 +27,7 @@ class ComponentNumberField extends ComponentInputBase {
       id: id,
       label: 'Number Field',
       initialValue: '',
+      isCurrency: false,
       enabled: true,
       widthMode: ComponentSizeMode.fill,
     );
@@ -37,6 +40,10 @@ class ComponentNumberField extends ComponentInputBase {
     }
     final label = map['label']?.toString().trim() ?? 'Number Field';
     final initialValue = map['initialValue']?.toString() ?? '';
+    final isCurrency = map['isCurrency'] == true ||
+        map['is_currency'] == true ||
+        map['currency'] == true ||
+        map['separator'] == true;
     final enabledRaw = map['enabled'];
     final enabled = () {
       if (enabledRaw == null) return true;
@@ -50,6 +57,7 @@ class ComponentNumberField extends ComponentInputBase {
       id: id,
       label: label,
       initialValue: initialValue,
+      isCurrency: isCurrency,
       enabled: enabled,
       required: map['required'] == true,
       widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
@@ -64,5 +72,6 @@ class ComponentNumberField extends ComponentInputBase {
   JsonMap toMap() => {
         ...super.toMap(),
         'initialValue': initialValue,
+        if (isCurrency) 'isCurrency': isCurrency,
       };
 }

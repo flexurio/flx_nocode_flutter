@@ -16,6 +16,7 @@ A standard text input field with optional special character & symbol picker supp
 | `helperText` | String | - | Helper text below the field. |
 | `obscure` | Boolean | `false` | Hides entered text, useful for password fields. |
 | `isSymbol` / `is_symbol` | Boolean | `false` | Enables special character & symbol picker modal (`Ω` icon button). |
+| `is_currency` / `isCurrency` / `separator` | Boolean | `false` | Enables money / thousand separator formatting on input. Automatically right-aligned and unformatted upon form data extraction. |
 
 Example with Symbol Picker enabled (`is_symbol: true`):
 
@@ -30,5 +31,17 @@ Example with Symbol Picker enabled (`is_symbol: true`):
   "regexErrorMessage": "Email is not valid",
   "is_symbol": true,
   "widthMode": "fill"
+}
+```
+
+Example with Money Separator enabled (`is_currency: true`):
+
+```json
+{
+  "id": "submission_total",
+  "type": "text_field",
+  "label": "Submission Total",
+  "is_currency": true,
+  "required": true
 }
 ```

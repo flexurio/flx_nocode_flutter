@@ -12,6 +12,7 @@ class ComponentTextField extends ComponentInputBase {
   final String? helperText;
   final bool obscure;
   final bool isSymbol;
+  final bool isCurrency;
 
   ComponentTextField({
     required super.id,
@@ -30,6 +31,7 @@ class ComponentTextField extends ComponentInputBase {
     super.flex,
     this.obscure = false,
     this.isSymbol = false,
+    this.isCurrency = false,
     super.visibilityCondition,
     super.events,
     super.dependsOn,
@@ -53,6 +55,7 @@ class ComponentTextField extends ComponentInputBase {
       widthMode: ComponentSizeMode.fill,
       obscure: false,
       isSymbol: false,
+      isCurrency: false,
     );
   }
 
@@ -83,6 +86,10 @@ class ComponentTextField extends ComponentInputBase {
     final events = map['events'] as Map<String, dynamic>? ?? {};
     final obscure = map['obscure'] == true;
     final isSymbol = map['isSymbol'] == true || map['is_symbol'] == true;
+    final isCurrency = map['isCurrency'] == true ||
+        map['is_currency'] == true ||
+        map['currency'] == true ||
+        map['separator'] == true;
     final rawDependsOn = map['dependsOn'];
     final dependsOn = <String>[];
     if (rawDependsOn is List) {
@@ -108,6 +115,7 @@ class ComponentTextField extends ComponentInputBase {
       flex: int.tryParse(map['flex']?.toString() ?? ''),
       obscure: obscure,
       isSymbol: isSymbol,
+      isCurrency: isCurrency,
       visibilityCondition: visibilityCondition,
       events: events,
       dependsOn: dependsOn,
@@ -126,5 +134,6 @@ class ComponentTextField extends ComponentInputBase {
         if (helperText != null) 'helperText': helperText,
         'obscure': obscure,
         if (isSymbol) 'isSymbol': isSymbol,
+        if (isCurrency) 'isCurrency': isCurrency,
       };
 }

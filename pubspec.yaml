@@ -35,6 +35,7 @@ dependencies:
   hive_ce_flutter: ^2.3.2
   get: ^4.7.2
   flutter_js: ^0.8.5
+  currency_text_input_formatter: ^2.1.10
 
   flx_authentication_flutter:
     git:

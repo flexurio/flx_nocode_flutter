@@ -1,3 +1,4 @@
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
@@ -9,15 +10,39 @@ extension ComponentNumberFieldWidgets on ComponentNumberField {
         (data['allControllers'] != null
             ? (data['allControllers'] as Map<String, TextEditingController>)[id]
             : null);
+
+    if (isCurrency && controller != null && controller.text.isNotEmpty) {
+      final formatter = CurrencyTextInputFormatter.currency(
+        symbol: '',
+        decimalDigits: 0,
+        locale: 'en',
+      );
+      final formatted = formatter.formatString(controller.text);
+      if (formatted != controller.text) {
+        controller.value = controller.value.copyWith(
+          text: formatted,
+          selection: TextSelection.collapsed(offset: formatted.length),
+        );
+      }
+    }
+
     return FTextFormField(
       controller: controller,
       labelText: label,
       enabled: enabled,
       hintText: initialValue.isEmpty ? null : initialValue,
       isNumeric: true,
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-      ],
+      inputFormatters: isCurrency
+          ? [
+              CurrencyTextInputFormatter.currency(
+                symbol: '',
+                decimalDigits: 0,
+                locale: 'en',
+              ),
+            ]
+          : [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+            ],
     );
   }
 

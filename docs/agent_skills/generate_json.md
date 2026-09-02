@@ -156,8 +156,8 @@ Form pages are defined in `layout_form`. Each form contains dynamic components.
 Components are dynamically instantiated from their `type` field.
 - `column` / `row`: Layout containers with `children` (array of components).
 - `container`: Wraps a single component with `child` and styling options.
-- `text_field`: Single or multi-line text input.
-- `number_field`: Numeric input.
+- `text_field`: Single or multi-line text input (supports `is_currency` / `separator` for money formatting, `is_symbol` for special symbols).
+- `number_field`: Numeric input (supports `is_currency` / `separator` for money formatting).
 - `date_picker` / `time_field`: Date and time inputs.
 - `checkbox` / `switch` / `radio`: Multi-choice boolean or selection inputs.
 - `dropdown` / `dropdown_multi_value`: Lookup select widgets.
