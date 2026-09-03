@@ -55,6 +55,8 @@ class ComponentTable extends Component {
     this.referenceId,
     this.dependsOn = const [],
     this.initial_value,
+    this.reloadWithRefresh = false,
+    this.showRefresh = true,
     super.visibilityCondition,
     super.events = const {},
   }) : super(type: 'table');
@@ -100,6 +102,25 @@ class ComponentTable extends Component {
   final List<String> dependsOn;
   final dynamic initial_value;
 
+  /// When `true`, [tableReloadListeners] (triggered by [dependsOn] changes)
+  /// will call `loadData(isRefresh: true)`, discarding local state and
+  /// re-fetching purely from the HTTP endpoint.
+  ///
+  /// When `false` (default), [tableReloadListeners] calls `loadData()` which
+  /// reads from local [referenceId] first (standard [dependsOn] behavior).
+  ///
+  /// **JSON key**: `"reload_with_refresh"`
+  ///
+  /// Set to `true` for tables where locally-added rows must be cleared on reload
+  /// (e.g. `realization_table` in `lbb_realization`).
+  final bool reloadWithRefresh;
+
+  /// Whether to display the table's header refresh button.
+  ///
+  /// Defaults to `true`. When set to `false` (via `"show_refresh": false` in JSON),
+  /// the table's refresh button is hidden.
+  final bool showRefresh;
+
   /// Creates a [ComponentTable] instance from a JSON-compatible map.
   ///
   /// ### Expected Structure
@@ -124,6 +145,12 @@ class ComponentTable extends Component {
         .map((e) => ActionD.fromJson(Map<String, dynamic>.from(e as Map)))
         .toList();
 
+    final showRefresh = map['show_refresh'] ??
+        map['showRefresh'] ??
+        map['show_refresh_button'] ??
+        map['showRefreshButton'] ??
+        true;
+
     return ComponentTable(
       id: id,
       columns: columns,
@@ -141,6 +168,8 @@ class ComponentTable extends Component {
           ? (map['dependsOn'] as List).map((e) => e.toString()).toList()
           : const [],
       initial_value: map['initial_value'] ?? map['initialValue'] ?? map['data'],
+      reloadWithRefresh: map['reload_with_refresh'] == true,
+      showRefresh: showRefresh == true,
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
     );
@@ -177,6 +206,8 @@ class ComponentTable extends Component {
         'actions': actions.map((e) => e.toJson()).toList(),
         'dependsOn': dependsOn,
         'initial_value': initial_value,
+        'reload_with_refresh': reloadWithRefresh,
+        'show_refresh': showRefresh,
       };
 
   /// Returns a dummy [EntityCustom] that represents this table.

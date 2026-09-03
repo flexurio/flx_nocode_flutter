@@ -327,37 +327,42 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
         columns: tableColumns,
       );
 
-      final refreshButton = Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          TextButton.icon(
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(6),
-                side: BorderSide(color: Colors.grey.shade300),
-              ),
-            ),
-            icon: const Icon(Icons.refresh, size: 16),
-            label: const Text(
-              'Refresh',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            onPressed: () => controller.loadData(isRefresh: true),
-          ),
-        ],
-      );
+      final Widget? refreshButton = widget.component.showRefresh
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton.icon(
+                  style: TextButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                      side: BorderSide(color: Colors.grey.shade300),
+                    ),
+                  ),
+                  icon: const Icon(Icons.refresh, size: 16),
+                  label: const Text(
+                    'Refresh',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  onPressed: () => controller.loadData(isRefresh: true),
+                ),
+              ],
+            )
+          : null;
 
       if (controller.error.value != null) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            refreshButton,
-            const SizedBox(height: 8),
+            if (refreshButton != null) ...[
+              refreshButton,
+              const SizedBox(height: 8),
+            ],
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Tooltip(
@@ -388,8 +393,10 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          refreshButton,
-          const SizedBox(height: 8),
+          if (refreshButton != null) ...[
+            refreshButton,
+            const SizedBox(height: 8),
+          ],
           table,
         ],
       );

@@ -56,7 +56,8 @@ class ComponentTableController extends GetxController {
           ? Get.find<CreatePageController>(tag: 'create_page_$layoutFormId')
           : null;
       if (pageCtrl != null) {
-        pageCtrl.tableReloadListeners[component.id] = () => loadData(isRefresh: true);
+        pageCtrl.tableReloadListeners[component.id] = () =>
+            loadData(isRefresh: component.reloadWithRefresh);
       }
     }
     loadData();
@@ -91,23 +92,49 @@ class ComponentTableController extends GetxController {
     return current;
   }
 
+  /// Builds a context map merged with live text values from all managed controllers.
+  JsonMap _buildEffectiveContext() {
+    final effectiveContext = Map<String, dynamic>.from(contextData);
+    final allControllers = (contextData['allControllers'] as Map?)
+        ?.cast<String, TextEditingController>();
+    if (allControllers != null) {
+      final controllerValues = <String, dynamic>{};
+      for (final entry in allControllers.entries) {
+        controllerValues[entry.key] = entry.value.text;
+      }
+      effectiveContext.addAll(controllerValues);
+      final formMap = effectiveContext['form'];
+      if (formMap is Map) {
+        effectiveContext['form'] = {
+          ...Map<String, dynamic>.from(formMap),
+          ...controllerValues,
+        };
+      } else {
+        effectiveContext['form'] = controllerValues;
+      }
+    }
+    return effectiveContext;
+  }
+
   Future<void> loadData({bool isRefresh = false}) async {
     try {
       isLoading.value = true;
       error.value = null;
 
+      final effectiveContext = _buildEffectiveContext();
+
       // 1. Resolve local data from referenceId or initialValue when not refreshing
       dynamic localData;
       if (!isRefresh) {
         if (component.referenceId != null && component.referenceId!.isNotEmpty) {
-          localData = contextData[component.referenceId];
+          localData = effectiveContext[component.referenceId];
         }
 
         // If no referenceId or it yielded null, try initial_value
         if (localData == null && component.initial_value != null) {
           final rawInitial = component.initial_value;
           if (rawInitial is String) {
-            final resolved = rawInitial.interpolateJavascript(contextData);
+            final resolved = rawInitial.interpolateJavascript(effectiveContext);
             try {
               localData = jsonDecode(resolved);
             } catch (_) {
@@ -146,7 +173,7 @@ class ComponentTableController extends GetxController {
       if (httpData.url.isEmpty) {
         rows.value = [];
         isLoading.value = false;
-        if (isRefresh) {
+        if (isRefresh && component.reloadWithRefresh) {
           _resetPageInputsOnRefresh();
         }
         notifyChanged();
@@ -157,7 +184,7 @@ class ComponentTableController extends GetxController {
           ? Get.find<HttpRequestExecutor>()
           : null;
 
-      final result = await httpData.execute(contextData, executor: executor);
+      final result = await httpData.execute(effectiveContext, executor: executor);
 
       if (!result.isSuccess) {
         error.value = result.message ?? 'Request failed';
@@ -175,8 +202,8 @@ class ComponentTableController extends GetxController {
         rows.value = const <JsonMap>[];
       }
 
-      // When pure refresh is clicked, reset editable inputs so input fields are cleared
-      if (isRefresh) {
+      // When pure refresh is clicked, reset editable inputs only if requested by reloadWithRefresh
+      if (isRefresh && component.reloadWithRefresh) {
         _resetPageInputsOnRefresh();
       }
 
@@ -214,6 +241,8 @@ class ComponentTableController extends GetxController {
         }
         // Skip the table itself and its target variable
         if (comp.id == component.id || comp.id == targetRefId) continue;
+        // Skip components that this table depends on
+        if (component.dependsOn.contains(comp.id)) continue;
         // Skip components whose values originated from the page record (initialDataInput)
         if (pageCtrl.initialDataInput?.containsKey(comp.id) == true) continue;
 

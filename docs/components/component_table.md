@@ -14,6 +14,8 @@ The `ComponentTable` is a powerful component designed to display dynamic data fe
 | `width` | Double | No | The total width of the table in pixels. |
 | `reference_id` | String | No | Optional identifier used for referencing this table in other parts of the system. |
 | `initial_value` | dynamic | No | Local data to load into the table. Supports JSON lists, JSON strings, or templates like `{{form.table_var}}`. Alias: `data`. |
+| `reload_with_refresh` | Boolean | No | Default `false`. If `true`, table refresh resets temporary editable inputs on the page (used for sub-form add panels like LBB realization) and discards local data. Default `false` preserves all page inputs and filter fields (used for standard tables like Change Controls). |
+| `show_refresh` | Boolean | No | Default `true`. Determines whether the "Refresh" button is displayed in the table header. Set to `false` to hide the refresh button (e.g. for review or summary tables). Also accepts `showRefresh` or `show_refresh_button`. |
 | `visibilityCondition` | String | No | A logic expression to determine if the table should be visible. |
 | `events` | Object | No | A map of event listeners (e.g., `onLoad`). |
 
