@@ -13,6 +13,7 @@ extension DViewWidget on DView {
     VoidCallback? onRefresh,
     EntityCustom? entityOverride,
     bool forceLoading = false,
+    Map<String, dynamic>? filters,
   }) {
     if (forceLoading) {
       return _buildLoading(context, expanded);
@@ -27,6 +28,7 @@ extension DViewWidget on DView {
         bypassPermission,
         expanded,
         onRefresh,
+        filters: filters,
       );
     }
 
@@ -51,6 +53,7 @@ extension DViewWidget on DView {
           bypassPermission,
           expanded,
           onRefresh,
+          filters: filters,
         );
       },
     );
@@ -63,8 +66,9 @@ extension DViewWidget on DView {
     List<Map<String, dynamic>> parentData,
     bool bypassPermission,
     bool expanded,
-    VoidCallback? onRefresh,
-  ) {
+    VoidCallback? onRefresh, {
+    Map<String, dynamic>? filters,
+  }) {
     return LightButton(
       action: DataAction.view,
       title: label,
@@ -77,7 +81,7 @@ extension DViewWidget on DView {
               parentData: List.from(parentData)..add(data),
               breadcrumbList: [e.label],
               entityId: entity,
-              initialFilters: filters(e, data),
+              initialFilters: this.filters(e, data, parentData, filters),
               bypassPermission: bypassPermission,
             ),
           ),
@@ -103,7 +107,9 @@ extension DViewWidget on DView {
 extension ListDViewWidget on List<DView> {
   List<Widget> buildButtons(BuildContext context, Map<String, dynamic> data,
       List<Map<String, dynamic>> parentData, bool bypassPermission,
-      {bool expanded = false, VoidCallback? onRefresh}) {
+      {bool expanded = false,
+      VoidCallback? onRefresh,
+      Map<String, dynamic>? filters}) {
     final filtered = this.where((e) {
       if (e.rule == null) {
         return true;
@@ -123,6 +129,7 @@ extension ListDViewWidget on List<DView> {
             bypassPermission,
             expanded: expanded,
             onRefresh: onRefresh,
+            filters: filters,
           ),
         )
         .toList();

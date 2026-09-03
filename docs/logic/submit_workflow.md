@@ -40,10 +40,12 @@ Workflows support dynamic data through the `{{ }}` interpolation syntax.
 
 ### Available Scopes:
 - `{{ form }}`: The current form input values.
-- `{{ data }}`: The initial data/record values.
-- `{{ vars }}`: Temporary variables created during the workflow (via `set_var`).
+- `{{ data }}`: The initial data/record values (also spread to the root scope).
+- `{{ vars }}`: Temporary variables created during the workflow (via `set_var` or `loop` item var).
 - `{{ http.STEP_NAME }}`: Results of previous HTTP steps (contains `status`, `data`, and `headers`).
 - `{{ auth }}`: Current user authentication state (permissions, token).
+- `{{ parent }}` / `{{ parentData }}`: Ancestor navigation data when navigating across multi-level entities (e.g. `{{ parent.id }}`).
+- `{{ filter }}` / `{{ filters }}`: Active page filters applied to the current context.
 
 ### Expression Examples:
 - `{{ form.first_name + " " + form.last_name }}`

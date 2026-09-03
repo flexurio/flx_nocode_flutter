@@ -67,10 +67,34 @@ class DView extends HiveObject {
     };
   }
 
-  List<Filter> filters(EntityCustom entity, Map<String, dynamic> data) {
+  List<Filter> filters(
+    EntityCustom entity,
+    Map<String, dynamic> data, [
+    List<Map<String, dynamic>>? parentData,
+    Map<String, dynamic>? activeFilters,
+  ]) {
     final filters = <Filter>[];
     for (final key in filter.keys) {
-      final value = data[filter[key]];
+      final sourceKey = filter[key];
+      if (sourceKey == null || sourceKey.isEmpty) continue;
+
+      dynamic value = data[sourceKey];
+
+      if (value == null &&
+          activeFilters != null &&
+          activeFilters.containsKey(sourceKey)) {
+        value = activeFilters[sourceKey];
+      }
+
+      if (value == null && parentData != null && parentData.isNotEmpty) {
+        for (final p in parentData.reversed) {
+          if (p.containsKey(sourceKey)) {
+            value = p[sourceKey];
+            break;
+          }
+        }
+      }
+
       if (value != null) {
         filters.add(
           Filter(
@@ -91,6 +115,7 @@ class DView extends HiveObject {
     EntityCustom entity,
     bool embedded, {
     VoidCallback? onSuccess,
+    Map<String, dynamic>? filters,
   }) {
     return ActionButtonItem(
       color: DataAction.view.color,
@@ -107,7 +132,7 @@ class DView extends HiveObject {
                   parentData: parentData,
                   embedded: true,
                   entityId: this.entity,
-                  initialFilters: filters(entity, data),
+                  initialFilters: this.filters(entity, data, parentData, filters),
                 ),
               ),
             );
@@ -119,7 +144,7 @@ class DView extends HiveObject {
               home: MenuCustom.fromId(
                 parentData: parentData,
                 entityId: entity.id,
-                initialFilters: filters(entity, data),
+                initialFilters: this.filters(entity, data, parentData, filters),
               ),
               label: entity.label,
             ),

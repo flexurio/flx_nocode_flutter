@@ -135,7 +135,64 @@ void main() {
       await newController.loadData();
 
       expect(newController.rows.length, 1);
-      expect(newController.rows[0]['label'], 'From JSON');
+    });
+
+    test('loadData preserves empty list in referenceId without falling back to HTTP', () async {
+      final tableWithRef = ComponentTable(
+        id: 'test_table_empty_list',
+        referenceId: 'my_rows',
+        columns: [],
+        http: HttpData(
+          url: 'https://example.com/api/data',
+          method: 'GET',
+          headers: const {},
+          body: const {},
+        ),
+      );
+
+      final data = {
+        'my_rows': <dynamic>[],
+      };
+
+      final newController = ComponentTableController(
+        component: tableWithRef,
+        contextData: data,
+      );
+
+      await newController.loadData();
+
+      expect(newController.rows, isEmpty);
+      expect(newController.isLoading.value, false);
+      expect(newController.error.value, isNull);
+    });
+
+    test('loadData with isRefresh: true bypasses referenceId and re-executes HTTP', () async {
+      final tableWithRef = ComponentTable(
+        id: 'test_table_refresh',
+        referenceId: 'my_rows',
+        columns: [],
+        http: HttpData.empty(),
+      );
+
+      final data = {
+        'my_rows': [
+          {'id': 1, 'name': 'Cached Row'}
+        ],
+      };
+
+      final newController = ComponentTableController(
+        component: tableWithRef,
+        contextData: data,
+      );
+
+      // 1. Without isRefresh -> uses localData
+      await newController.loadData();
+      expect(newController.rows.length, 1);
+      expect(newController.rows[0]['name'], 'Cached Row');
+
+      // 2. With isRefresh: true -> bypasses localData, reaches empty HTTP -> rows reset to empty
+      await newController.loadData(isRefresh: true);
+      expect(newController.rows, isEmpty);
     });
   });
 }

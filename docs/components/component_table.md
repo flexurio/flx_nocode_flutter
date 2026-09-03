@@ -185,6 +185,21 @@ When rendering cells or executing actions, you can pass special flags in the `da
 | `parentData` | A list of objects from the parent context, accessible by actions for complex workflows. |
 | `onRowChanged` | (Internal) Callback used by nested components to notify the table of row changes. |
 
+### Local State & Deletion Preservation (`reference_id`)
+
+When `reference_id` is configured on a `ComponentTable`:
+1. The table binds to that variable in the form context (e.g. `form.my_table_list`).
+2. When the table initially loads without an existing local state, it fetches data from its configured `http` endpoint and populates the reactive `rows` and `reference_id` variable.
+3. Mutations performed via `append_variable` or `remove_variable` update this local state directly.
+4. **Empty State & Deletion Retention**: If the user deletes all rows (including when the table has only 1 row left), the table variable becomes an empty list `[]`. The `ComponentTableController` preserves this empty state and **will not** fall back to or re-fetch data from `http`. This ensures delete operations (e.g. submitting a form with an empty table to trigger backend DELETE workflows) execute reliably without having previously deleted records re-appear.
+
+### Table Refresh Behavior (`Refresh Button`)
+
+Tables rendered with an `http` endpoint feature a built-in **Refresh** button at the top-right toolbar:
+1. **Endpoint Re-fetch (`isRefresh: true`)**: Clicking **Refresh** explicitly bypasses the local `reference_id` cache and re-queries the backend `http` endpoint.
+2. **Input Reset**: Any unsaved local changes or pending input entries are discarded, returning the table to the exact data currently stored on the server.
+3. **Form Controller Reset**: On refresh, editable input components linked to adding table entries (e.g., fields inside active sub-form panels) are automatically reset to their configured `initialValue` (or empty default), collapsing any open entry forms.
+
 ## Reactive Row Updates
 
 Tables support inline updates when using nested components (like `dropdown` or `text_field`) inside a column. This allows the table to act as a dynamic data entry tool.

@@ -222,6 +222,8 @@ This example demonstrates how to remove an item from a local list variable when 
 }
 ```
 
+> **State Synchronization**: When mutating state using `append_variable` or `remove_variable`, the underlying text controller (`controller.controllers[target_variable]`) is automatically updated with the serialized JSON string (`jsonEncode(list)`). This ensures any hidden inputs, form serializers, or dependent components bound to `target_variable` reflect the mutation immediately. If all items are removed (resulting in an empty list `[]`), bound `table` components preserve this empty state and will not trigger unwanted HTTP reloads from the backend.
+
 ### Reactive Table Row Update using `update_row`
 This example shows how to use a dropdown inside a table to update a specific field in the row.
 

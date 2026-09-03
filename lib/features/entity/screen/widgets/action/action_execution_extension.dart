@@ -336,6 +336,9 @@ extension ActionExecutionExtension on ActionD {
 
             list.add(itemValue);
             controller.initialData[varName] = list;
+            if (controller.controllers.containsKey(varName)) {
+              controller.controllers[varName]?.text = jsonEncode(list);
+            }
             controller.initialData.refresh();
 
             await handleOnSuccessSingle(
@@ -404,6 +407,9 @@ extension ActionExecutionExtension on ActionD {
             }
 
             controller.initialData[varName] = list;
+            if (controller.controllers.containsKey(varName)) {
+              controller.controllers[varName]?.text = jsonEncode(list);
+            }
             controller.initialData.refresh();
 
             await handleOnSuccessSingle(

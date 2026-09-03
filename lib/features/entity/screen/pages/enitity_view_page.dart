@@ -173,6 +173,7 @@ class EntityViewPage extends StatelessWidget {
         bypassPermission,
         expanded: true,
         onRefresh: () => onRefresh(context),
+        filters: filters,
       ),
       ...modifyActions,
     ];

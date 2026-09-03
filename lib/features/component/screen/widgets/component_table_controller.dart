@@ -56,7 +56,7 @@ class ComponentTableController extends GetxController {
           ? Get.find<CreatePageController>(tag: 'create_page_$layoutFormId')
           : null;
       if (pageCtrl != null) {
-        pageCtrl.tableReloadListeners[component.id] = () => loadData();
+        pageCtrl.tableReloadListeners[component.id] = () => loadData(isRefresh: true);
       }
     }
     loadData();
@@ -91,33 +91,35 @@ class ComponentTableController extends GetxController {
     return current;
   }
 
-  Future<void> loadData() async {
+  Future<void> loadData({bool isRefresh = false}) async {
     try {
       isLoading.value = true;
       error.value = null;
 
-      // 1. Resolve local data from referenceId or initialValue
+      // 1. Resolve local data from referenceId or initialValue when not refreshing
       dynamic localData;
-      if (component.referenceId != null && component.referenceId!.isNotEmpty) {
-        localData = contextData[component.referenceId];
-      }
+      if (!isRefresh) {
+        if (component.referenceId != null && component.referenceId!.isNotEmpty) {
+          localData = contextData[component.referenceId];
+        }
 
-      // If no referenceId or it yielded null, try initial_value
-      if (localData == null && component.initial_value != null) {
-        final rawInitial = component.initial_value;
-        if (rawInitial is String) {
-          final resolved = rawInitial.interpolateJavascript(contextData);
-          try {
-            localData = jsonDecode(resolved);
-          } catch (_) {
-            localData = resolved;
+        // If no referenceId or it yielded null, try initial_value
+        if (localData == null && component.initial_value != null) {
+          final rawInitial = component.initial_value;
+          if (rawInitial is String) {
+            final resolved = rawInitial.interpolateJavascript(contextData);
+            try {
+              localData = jsonDecode(resolved);
+            } catch (_) {
+              localData = resolved;
+            }
+          } else {
+            localData = rawInitial;
           }
-        } else {
-          localData = rawInitial;
         }
       }
 
-      if (localData != null) {
+      if (!isRefresh && localData != null) {
         if (localData is String && localData.isNotEmpty) {
           try {
             final decoded = jsonDecode(localData);
@@ -132,7 +134,7 @@ class ComponentTableController extends GetxController {
           }
         }
 
-        if (localData is List && localData.isNotEmpty) {
+        if (localData is List) {
           rows.value = _parseRows(localData);
           isLoading.value = false;
           notifyChanged();
@@ -169,12 +171,53 @@ class ComponentTableController extends GetxController {
       } else {
         rows.value = const <JsonMap>[];
       }
+
+      // When pure refresh is clicked, reset editable inputs so input fields are cleared
+      if (isRefresh) {
+        _resetPageInputsOnRefresh();
+      }
+
       notifyChanged();
     } catch (e) {
       debugPrint('[ComponentTableController] Error: $e');
       error.value = e.toString();
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  /// Resets user-editable form inputs to their initial states on table refresh.
+  void _resetPageInputsOnRefresh() {
+    try {
+      final layoutFormId = (contextData['rootLayoutFormId'] ?? contextData['layoutFormId']) as String?;
+      if (layoutFormId == null) return;
+      final tag = 'create_page_$layoutFormId';
+      if (!Get.isRegistered<CreatePageController>(tag: tag)) return;
+
+      final pageCtrl = Get.find<CreatePageController>(tag: tag);
+      final targetRefId = component.referenceId ?? component.id;
+
+      for (final comp in pageCtrl.layoutForm.allComponents) {
+        // Skip disabled/read-only components
+        if (comp is ComponentInputBase && !comp.enabled) continue;
+        // Skip the table itself and its target variable
+        if (comp.id == component.id || comp.id == targetRefId) continue;
+
+        final ctrl = pageCtrl.controllers[comp.id];
+        if (ctrl != null) {
+          String initial = '';
+          if (comp is ComponentTextField) {
+            initial = comp.initialValue ?? '';
+          } else if (comp is ComponentNumberField) {
+            initial = comp.initialValue ?? '';
+          }
+          ctrl.text = initial;
+          pageCtrl.initialData[comp.id] = initial;
+        }
+      }
+      pageCtrl.initialData.refresh();
+    } catch (e) {
+      debugPrint('[ComponentTableController] _resetPageInputsOnRefresh error: $e');
     }
   }
 

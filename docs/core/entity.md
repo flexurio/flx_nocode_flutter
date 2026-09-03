@@ -165,8 +165,49 @@ Defines a custom view navigation action on a data table row to link to another e
 | `id` | String | No | Unique identifier of the view configuration (optional, defaults to label). |
 | `label` | String | Yes | Display label on the UI (e.g., in row action popup menus). |
 | `entity` | String | Yes | The ID of the target entity JSON configuration to navigate to. |
-| `filter` | Object | Yes | A mapping of target field references (keys) to current row field references (values) used as initial filters on target entity page. |
+| `filter` | Object | Yes | A mapping of target filter references (keys) to source field names (values) used as initial filters on target entity page. |
 | `rule` | Object | No | Optional conditional rule layout defining when the view action is visible. |
+
+#### Dynamic Cascading Filter Resolution
+
+When navigating to a target entity, each entry `{"target_filter_reference": "source_field_name"}` in `filter` is resolved dynamically without hardcoding, using the following cascading lookup order:
+
+1. **Current Row Data (`data`)**: Checks if `source_field_name` exists on the clicked row (`data[source_field_name]`).
+2. **Active Page Filters (`activeFilters`)**: If not found on the row, checks if `source_field_name` is present in the active filters applied to the current page (e.g. filters carried over from earlier parent navigations).
+3. **Ancestor Parent Data (`parentData.reversed`)**: If still not found, traverses upward through the ancestor navigation stack from nearest parent to root, extracting the first match (`parent[source_field_name]`).
+
+This allows passing parameters seamlessly across multi-tiered navigation chains (e.g., `Header` ➔ `Detail` ➔ `Detail Sub` ➔ `Realization`) without requiring redundant HTTP GET queries on each level:
+
+```json
+// In parent entity (e.g. expense_transaction_details.json):
+"views": [
+  {
+    "id": "view_subs",
+    "label": "Expense Transaction Detail Sub",
+    "entity": "expense_transaction_detail_subs",
+    "filter": {
+      "subordinate_nip": "subordinate_nip",
+      "expense_transaction_header_id": "expense_transaction_header_id",
+      "expense_transaction_detail_id": "id"
+    }
+  }
+]
+
+// In child entity (e.g. expense_transaction_detail_subs.json):
+"views": [
+  {
+    "id": "view_realizations",
+    "label": "Realization Details",
+    "entity": "realization_details",
+    "filter": {
+      "transaction_detail_sub_id": "id",
+      "expense_transaction_header_id": "expense_transaction_header_id",
+      "expense_transaction_detail_id": "expense_transaction_detail_id"
+    }
+  }
+]
+```
+In the example above, `expense_transaction_detail_id` will be resolved automatically from the parent context when opening `Realization Details`, even if the intermediate `Detail Sub` table API response does not include that column.
 
 ### Custom Layout Object
 

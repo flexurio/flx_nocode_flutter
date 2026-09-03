@@ -346,7 +346,7 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            onPressed: () => controller.loadData(),
+            onPressed: () => controller.loadData(isRefresh: true),
           ),
         ],
       );

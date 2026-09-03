@@ -11,6 +11,7 @@ void main() {
   late MockHttpExecutor mockHttpExecutor;
 
   setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
     registerFallbackValue(HttpData.empty());
   });
 
@@ -177,6 +178,131 @@ void main() {
 
       final form = <String, dynamic>{};
       final data = {"empty_str": ""};
+
+      final definition = WorkflowDefinition.fromJson(workflowJson);
+      final ctx = WorkflowContext(
+        form: form,
+        data: data,
+        auth: const AuthContext(permissions: []),
+        httpExecutor: mockHttpExecutor,
+      );
+
+      await WorkflowExecutor(definition).run(ctx);
+
+      verifyNever(() => mockHttpExecutor.execute(any()));
+    });
+
+    test('Realization loop should resolve form.realization_list correctly', () async {
+      final itemsExpr = r"""{{ (function(){
+  var list = [];
+  try { list = JSON.parse(form.realization_list || '[]'); } catch(e) { list = []; }
+  if (!Array.isArray(list)) list = [];
+  return list;
+})() }}""";
+
+      final workflowJson = {
+        "type": "workflow",
+        "actions": [
+          {
+            "type": "loop",
+            "items": itemsExpr,
+            "item_var": "item",
+            "actions": [
+              {
+                "type": "http",
+                "name": "post_realization",
+                "http": {
+                  "method": "POST",
+                  "url": "https://api.example.com/lbb_realization_details",
+                  "body": {
+                    "real_destination_id": "{{ vars.item.real_destination_id || '' }}",
+                    "real_home_base_id": "{{ vars.item.real_home_base_id || '' }}",
+                    "real_transportation_types_id": "{{ vars.item.real_transportation_types_id || '' }}",
+                    "realization_customer_id": "{{ vars.item.realization_customer_id || '' }}",
+                    "realization_value": "{{ vars.item.realization_value || '0' }}"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      };
+
+      final form = <String, dynamic>{
+        "realization_list": '[{"realization_customer_id": "23060014", "real_home_base_id": "53", "real_destination_id": "78", "real_transportation_types_id": "MBLDNS", "realization_value": "2000000"}]',
+      };
+      final data = <String, dynamic>{
+        "id": "29",
+      };
+
+      final definition = WorkflowDefinition.fromJson(workflowJson);
+      final ctx = WorkflowContext(
+        form: form,
+        data: data,
+        auth: const AuthContext(permissions: []),
+        httpExecutor: mockHttpExecutor,
+      );
+
+      when(() => mockHttpExecutor.execute(any()))
+          .thenAnswer((_) async => const HttpResult(
+                status: 200,
+                data: {"status": "ok"},
+              ));
+
+      await WorkflowExecutor(definition).run(ctx);
+
+      final capturedRequests =
+          verify(() => mockHttpExecutor.execute(captureAny())).captured;
+      expect(capturedRequests.length, 1);
+      final HttpData req = capturedRequests[0] as HttpData;
+      print('Captured body: ${req.body}');
+      expect(req.body["realization_customer_id"], "23060014");
+      expect(req.body["real_home_base_id"], "53");
+      expect(req.body["real_destination_id"], "78");
+      expect(req.body["real_transportation_types_id"], "MBLDNS");
+      expect(req.body["realization_value"], "2000000");
+    });
+
+    test('Realization loop should make 0 POST requests when realization_list is empty', () async {
+      final itemsExpr = r"""{{ (function(){
+  var list = [];
+  try { list = JSON.parse(form.realization_list || '[]'); } catch(e) { list = []; }
+  if (!Array.isArray(list)) list = [];
+  return list.filter(function(item) {
+    return item && item.realization_customer_id && String(item.realization_customer_id).trim() !== '';
+  });
+})() }}""";
+
+      final workflowJson = {
+        "type": "workflow",
+        "actions": [
+          {
+            "type": "loop",
+            "items": itemsExpr,
+            "item_var": "item",
+            "actions": [
+              {
+                "type": "http",
+                "name": "post_realization",
+                "http": {
+                  "method": "POST",
+                  "url": "https://api.example.com/lbb_realization_details",
+                  "body": {
+                    "realization_customer_id": "{{ vars.item.realization_customer_id }}"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      };
+
+      final form = <String, dynamic>{
+        "realization_list": "[]",
+      };
+      final data = <String, dynamic>{
+        "id": "29",
+      };
 
       final definition = WorkflowDefinition.fromJson(workflowJson);
       final ctx = WorkflowContext(

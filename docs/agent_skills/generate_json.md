@@ -262,6 +262,7 @@ Entities can define inline filters rendered directly on the table action bar:
 ### Layout & Row Separation
 - **Inline Filters (`filters`)**: Ditempatkan pada sisi kiri baris action table (`actionLeft`), sejajar dengan tombol aksi di sisi kanan (`Refresh`, `Export`, dll.).
 - **Views / Parent Context Filters (`views.filter`)**: Chip filter yang berasal dari navigasi parent (misal `header_id` dan `period`) otomatis ditempatkan pada **baris khusus terpisah di bagian atas tabel** (di atas baris action table). Hal ini mencegah penumpukan elemen (*bentrok*) dan menghindari error horizontal overflow pada layar.
+- **Dynamic Cascading Resolution (`views.filter`)**: Setiap pemetaan `"target_field": "source_field"` pada view filter diselesaikan secara bertingkat: **row data ➔ active page filters ➔ parentData stack (ancestor terdekat ke terjauh)**. Nilai filter dapat diteruskan ke hierarki navigasi anak yang lebih dalam tanpa perlu HTTP query manual ke entitas perantara.
 
 ---
 

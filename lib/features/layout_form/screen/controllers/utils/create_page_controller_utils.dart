@@ -36,6 +36,7 @@ class CreatePageControllerUtils {
           'current': data,
           'form': data,
           if (parentData.isNotEmpty) 'parent': parentData.last,
+          if (parentData.isNotEmpty) 'parentData': parentData,
         });
         if (val.isNotEmpty && val != 'undefined') {
           data[component.id] = val;
