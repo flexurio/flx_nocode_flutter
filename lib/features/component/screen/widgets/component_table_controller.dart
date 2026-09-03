@@ -146,6 +146,9 @@ class ComponentTableController extends GetxController {
       if (httpData.url.isEmpty) {
         rows.value = [];
         isLoading.value = false;
+        if (isRefresh) {
+          _resetPageInputsOnRefresh();
+        }
         notifyChanged();
         return;
       }
@@ -200,8 +203,19 @@ class ComponentTableController extends GetxController {
       for (final comp in pageCtrl.layoutForm.allComponents) {
         // Skip disabled/read-only components
         if (comp is ComponentInputBase && !comp.enabled) continue;
+        // Skip hidden context components (e.g. visibilityCondition: "false")
+        if (comp.visibilityCondition == 'false' || comp.visibilityCondition == false) {
+          // If it's the 'is_adding' flag, reset it to 'false' to close any open add form
+          if (comp.id == 'is_adding') {
+            pageCtrl.controllers['is_adding']?.text = 'false';
+            pageCtrl.initialData['is_adding'] = 'false';
+          }
+          continue;
+        }
         // Skip the table itself and its target variable
         if (comp.id == component.id || comp.id == targetRefId) continue;
+        // Skip components whose values originated from the page record (initialDataInput)
+        if (pageCtrl.initialDataInput?.containsKey(comp.id) == true) continue;
 
         final ctrl = pageCtrl.controllers[comp.id];
         if (ctrl != null) {
@@ -210,6 +224,11 @@ class ComponentTableController extends GetxController {
             initial = comp.initialValue ?? '';
           } else if (comp is ComponentNumberField) {
             initial = comp.initialValue ?? '';
+          }
+          if (initial.contains('{{')) {
+            try {
+              initial = initial.interpolateJavascript(contextData);
+            } catch (_) {}
           }
           ctrl.text = initial;
           pageCtrl.initialData[comp.id] = initial;

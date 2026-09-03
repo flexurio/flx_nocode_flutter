@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table_controller.dart';
+import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:get/get.dart';
 
@@ -193,6 +194,92 @@ void main() {
       // 2. With isRefresh: true -> bypasses localData, reaches empty HTTP -> rows reset to empty
       await newController.loadData(isRefresh: true);
       expect(newController.rows, isEmpty);
+    });
+
+    test('loadData with isRefresh: true safely resets inputs while preserving disabled, hidden context, and initialDataInput fields', () async {
+      final tag = 'create_page_test_refresh_form';
+      final pageCtrl = Get.put(
+        CreatePageController(
+          entity: EntityCustom.empty(),
+          layoutFormId: 'test_refresh_form',
+          initialDataInput: {
+            'record_header_id': 'HDR-ORIGINAL',
+          },
+          parentData: const [],
+        ),
+        tag: tag,
+      );
+
+      pageCtrl.layoutForm = LayoutForm(
+        id: 'test_refresh_form',
+        label: 'Test Refresh Form',
+        components: [
+          ComponentTextField(
+            id: 'expense_detail_id',
+            label: 'Expense Transaction Detail ID',
+            enabled: false,
+            initialValue: '161',
+          ),
+          ComponentTextField(
+            id: 'hidden_context',
+            label: 'Hidden Context',
+            visibilityCondition: 'false',
+            initialValue: '{{ data.id }}',
+          ),
+          ComponentTextField(
+            id: 'is_adding',
+            label: 'Is Adding',
+            visibilityCondition: 'false',
+            initialValue: 'false',
+          ),
+          ComponentTextField(
+            id: 'record_header_id',
+            label: 'Header ID',
+            initialValue: 'HDR-ORIGINAL',
+          ),
+          ComponentTextField(
+            id: 'user_input_note',
+            label: 'Note',
+            initialValue: 'Default Note',
+          ),
+        ],
+      );
+
+      pageCtrl.controllers['expense_detail_id'] = TextEditingController(text: '161');
+      pageCtrl.controllers['hidden_context'] = TextEditingController(text: '161');
+      pageCtrl.controllers['is_adding'] = TextEditingController(text: 'true');
+      pageCtrl.controllers['record_header_id'] = TextEditingController(text: 'HDR-MODIFIED');
+      pageCtrl.controllers['user_input_note'] = TextEditingController(text: 'Unsaved User Input');
+
+      final tableWithRef = ComponentTable(
+        id: 'test_table_refresh',
+        referenceId: 'my_rows',
+        columns: [],
+        http: HttpData.empty(),
+      );
+
+      final tableCtrl = ComponentTableController(
+        component: tableWithRef,
+        contextData: {
+          'layoutFormId': 'test_refresh_form',
+          'my_rows': [],
+        },
+      );
+
+      await tableCtrl.loadData(isRefresh: true);
+
+      // 1. Unsaved user inputs are reset to initial values
+      expect(pageCtrl.controllers['user_input_note']?.text, 'Default Note');
+      // 2. is_adding is reset to 'false' (collapses addition panel)
+      expect(pageCtrl.controllers['is_adding']?.text, 'false');
+      // 3. Disabled fields are preserved (not overwritten with template)
+      expect(pageCtrl.controllers['expense_detail_id']?.text, '161');
+      // 4. Hidden context fields are preserved (not overwritten with raw template)
+      expect(pageCtrl.controllers['hidden_context']?.text, '161');
+      // 5. Initial record data fields are preserved
+      expect(pageCtrl.controllers['record_header_id']?.text, 'HDR-MODIFIED');
+
+      Get.delete<CreatePageController>(tag: tag);
     });
   });
 }

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
@@ -315,6 +316,76 @@ void main() {
       await WorkflowExecutor(definition).run(ctx);
 
       verifyNever(() => mockHttpExecutor.execute(any()));
+    });
+
+    test('Realization submit from lbb_expense_transaction_details sets transaction_detail_sub_id and lbb_expense_transaction_detail_id to detail id', () async {
+      final itemsExpr = r"""{{ (function(){
+  var list = [];
+  try { list = JSON.parse(form.realization_list || '[]'); } catch(e) { list = []; }
+  if (!Array.isArray(list)) list = [];
+  return list.filter(function(item) {
+    return item && item.realization_customer_id && String(item.realization_customer_id).trim() !== '';
+  });
+})() }}""";
+
+      final workflowJson = {
+        "type": "workflow",
+        "actions": [
+          {
+            "type": "loop",
+            "items": itemsExpr,
+            "item_var": "item",
+            "actions": [
+              {
+                "type": "http",
+                "name": "post_realization",
+                "http": {
+                  "method": "POST",
+                  "url": "https://erp-metiska-farma-api-dev.flexurio.com/lbb_realization_details",
+                  "body": {
+                    "realization_customer_id": "{{ vars.item.realization_customer_id }}",
+                    "transaction_detail_sub_id": "{{ data.id }}",
+                    "lbb_expense_transaction_detail_id": "{{ data.id }}"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      };
+
+      final form = <String, dynamic>{
+        "realization_list": jsonEncode([
+          {"realization_customer_id": "23060014"}
+        ]),
+      };
+      final data = <String, dynamic>{
+        "id": "160",
+      };
+
+      final definition = WorkflowDefinition.fromJson(workflowJson);
+      final ctx = WorkflowContext(
+        form: form,
+        data: data,
+        auth: const AuthContext(permissions: []),
+        httpExecutor: mockHttpExecutor,
+      );
+
+      when(() => mockHttpExecutor.execute(any()))
+          .thenAnswer((_) async => const HttpResult(
+                status: 200,
+                data: {"status": "ok"},
+              ));
+
+      await WorkflowExecutor(definition).run(ctx);
+
+      final capturedRequests =
+          verify(() => mockHttpExecutor.execute(captureAny())).captured;
+      expect(capturedRequests.length, 1);
+      final HttpData req = capturedRequests[0] as HttpData;
+      expect(req.body["realization_customer_id"], "23060014");
+      expect(req.body["transaction_detail_sub_id"], "160");
+      expect(req.body["lbb_expense_transaction_detail_id"], "160");
     });
   });
 }

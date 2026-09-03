@@ -196,9 +196,12 @@ When `reference_id` is configured on a `ComponentTable`:
 ### Table Refresh Behavior (`Refresh Button`)
 
 Tables rendered with an `http` endpoint feature a built-in **Refresh** button at the top-right toolbar:
-1. **Endpoint Re-fetch (`isRefresh: true`)**: Clicking **Refresh** explicitly bypasses the local `reference_id` cache and re-queries the backend `http` endpoint.
-2. **Input Reset**: Any unsaved local changes or pending input entries are discarded, returning the table to the exact data currently stored on the server.
-3. **Form Controller Reset**: On refresh, editable input components linked to adding table entries (e.g., fields inside active sub-form panels) are automatically reset to their configured `initialValue` (or empty default), collapsing any open entry forms.
+1. **Endpoint Re-fetch (`isRefresh: true`)**: Clicking **Refresh** explicitly bypasses the local `reference_id` cache and re-queries the backend `http` endpoint, restoring pure server-side records.
+2. **Safe Form Input Reset**: On refresh, any unsubmitted new row entries or active addition forms are cleanly reset:
+   - **Entry Collapse**: The `is_adding` flag is automatically reset to `'false'`, closing any active addition panels.
+   - **Protection of Record Data**: Components whose values originated from the page's initial record (`initialDataInput`, such as record IDs, header IDs, and user NIPs) are strictly preserved and never overwritten.
+   - **Protection of Disabled & Context Fields**: Disabled inputs (`enabled: false`) and hidden context variables (`visibilityCondition: "false"`) are ignored during reset.
+   - **Template Interpolation**: If any user input defines dynamic template expressions in its `initialValue` (e.g. `{{ ... }}`), the value is interpolated against `contextData` before assignment, ensuring raw template strings never leak into text editing controllers.
 
 ## Reactive Row Updates
 

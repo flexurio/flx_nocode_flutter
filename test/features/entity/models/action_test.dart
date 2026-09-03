@@ -228,5 +228,38 @@ void main() {
       expect(serialized['visibility_http']['http']['method'], 'GET');
       expect(serialized['visibility_http']['rule']['all'][0]['field'], 'allowed');
     });
+
+    test('ActionD rule with is_detail = false condition evaluates visibility correctly', () {
+      final json = <String, dynamic>{
+        'id': 'lbb_realization',
+        'type': 'open_page',
+        'name': 'LBB Realization',
+        'layout_form_id': 'lbb_realization',
+        'rule': {
+          'all': [
+            {
+              'field': "{{ is_detail == 1 || is_detail == '1' || is_detail == true || is_detail == 'true' }}",
+              'op': '=',
+              'value': false
+            }
+          ]
+        }
+      };
+
+      final action = ActionD.fromJson(json);
+
+      expect(action.rule, isNotNull);
+      // When is_detail is 0 or false -> visible
+      expect(action.rule!.evaluate({'is_detail': 0}), isTrue);
+      expect(action.rule!.evaluate({'is_detail': false}), isTrue);
+      expect(action.rule!.evaluate({'is_detail': '0'}), isTrue);
+      expect(action.rule!.evaluate({'is_detail': 'false'}), isTrue);
+
+      // When is_detail is 1 or true -> hidden
+      expect(action.rule!.evaluate({'is_detail': 1}), isFalse);
+      expect(action.rule!.evaluate({'is_detail': true}), isFalse);
+      expect(action.rule!.evaluate({'is_detail': '1'}), isFalse);
+      expect(action.rule!.evaluate({'is_detail': 'true'}), isFalse);
+    });
   });
 }
