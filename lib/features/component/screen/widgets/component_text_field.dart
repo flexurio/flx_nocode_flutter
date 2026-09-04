@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_text_field.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/filter.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'symbol_picker_dialog.dart';
 
 final _cellControllers = <String, TextEditingController>{};
@@ -17,7 +18,18 @@ extension ComponentTextFieldWidgets on ComponentTextField {
       final cacheKey = '${tableId}_${rowIndex}_${targetField}';
 
       final row = data['row'] is Map ? data['row'] as Map : null;
-      final currentText = row != null ? (row[targetField]?.toString() ?? '') : '';
+      var currentText = row != null ? (row[targetField]?.toString() ?? '') : '';
+      if (currentText.isEmpty && initialValue.isNotEmpty) {
+        currentText = initialValue.interpolateJavascript({
+          ...data,
+          if (row != null) ...row,
+          'row': row,
+          'data': row,
+        });
+        if (row != null && currentText.isNotEmpty) {
+          row[targetField] = currentText;
+        }
+      }
 
       controller = _cellControllers[cacheKey];
       if (controller == null) {

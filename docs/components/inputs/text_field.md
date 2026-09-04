@@ -45,3 +45,30 @@ Example with Money Separator enabled (`is_currency: true`):
   "required": true
 }
 ```
+
+---
+
+## Usage Inside Table Cells (`TColumn.component`)
+
+When placed inside a `ComponentTable` column:
+- Automatically renders in compact mode (`FTextFieldSmall`).
+- Evaluates `initialValue` against the row data context (`row`, `data`) when the cell value is empty (e.g. `{{ row.realization_value }}`).
+- Automatically updates the row data map (`row[columnBody]`) when initialized, ensuring the default is included during form submissions and PUT operations.
+- Edits immediately trigger `onRowChanged`, updating the reactive table state.
+
+Example in table column:
+
+```json
+{
+  "header": "Confirmation Remark",
+  "body": "confirmation_remark",
+  "width": 250,
+  "component": {
+    "id": "confirmation_remark",
+    "type": "text_field",
+    "label": "Enter remark",
+    "initialValue": "{{ row.confirmation_remark || '' }}"
+  }
+}
+```
+

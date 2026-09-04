@@ -16,6 +16,8 @@ The `ComponentTable` is a powerful component designed to display dynamic data fe
 | `initial_value` | dynamic | No | Local data to load into the table. Supports JSON lists, JSON strings, or templates like `{{form.table_var}}`. Alias: `data`. |
 | `reload_with_refresh` | Boolean | No | Default `false`. If `true`, table refresh resets temporary editable inputs on the page (used for sub-form add panels like LBB realization) and discards local data. Default `false` preserves all page inputs and filter fields (used for standard tables like Change Controls). |
 | `show_refresh` | Boolean | No | Default `true`. Determines whether the "Refresh" button is displayed in the table header. Set to `false` to hide the refresh button (e.g. for review or summary tables). Also accepts `showRefresh` or `show_refresh_button`. |
+| `refresh_gap_top` | Double | No | Default `12.0`. Top margin/spacing above the "Refresh" button in pixels. Alias: `refreshGapTop`. |
+| `refresh_gap_bottom` | Double | No | Default `12.0`. Bottom margin/spacing below the "Refresh" button in pixels. Alias: `refreshGapBottom`. |
 | `visibilityCondition` | String | No | A logic expression to determine if the table should be visible. |
 | `events` | Object | No | A map of event listeners (e.g., `onLoad`). |
 
@@ -204,6 +206,10 @@ Tables rendered with an `http` endpoint feature a built-in **Refresh** button at
    - **Protection of Record Data**: Components whose values originated from the page's initial record (`initialDataInput`, such as record IDs, header IDs, and user NIPs) are strictly preserved and never overwritten.
    - **Protection of Disabled & Context Fields**: Disabled inputs (`enabled: false`) and hidden context variables (`visibilityCondition: "false"`) are ignored during reset.
    - **Template Interpolation**: If any user input defines dynamic template expressions in its `initialValue` (e.g. `{{ ... }}`), the value is interpolated against `contextData` before assignment, ensuring raw template strings never leak into text editing controllers.
+3. **Custom Spacing (`refresh_gap_top` & `refresh_gap_bottom`)**:
+   - The "Refresh" button header toolbar is padded by default with `12.0` pixels top and `12.0` pixels bottom.
+   - You can customize this spacing by setting `refresh_gap_top` (or `refreshGapTop`) and `refresh_gap_bottom` (or `refreshGapBottom`) on the table configuration.
+   - When `show_refresh: false`, the button and padding are completely excluded from the widget tree, leaving no unwanted vertical gap.
 
 ## Reactive Row Updates
 
@@ -212,10 +218,70 @@ Tables support inline updates when using nested components (like `dropdown` or `
 ### How it works
 
 1. The table passes an `onRowChanged` callback to all components rendered within its cells.
-2. When a component (e.g., a Dropdown) triggers an update, it calls this callback.
+2. When a component (e.g., a Dropdown or Text Field) triggers an update, it calls this callback.
 3. The `ComponentTableController` updates its reactive `rows` list.
 4. The table then serializes its entire state (all rows) into a JSON string.
-5. This JSON string is pushed to the parent form's `TextEditingController` matching the table's `id`.
+5. This JSON string is pushed to the parent form's `TextEditingController` matching the table's `id` or `reference_id`.
+
+### Inline Cell Editing with `text_field`
+
+When a `text_field` is specified as a column's `component`, it automatically renders in compact table mode (`FTextFieldSmall`).
+
+#### Key Capabilities
+- **Dynamic Initial Value Evaluation**:
+  If the row cell value is empty or `null`, the text field evaluates its `initialValue` against the row's context (`row`, `data`). It supports JS expressions and interpolations (e.g., `{{ row.confirmation_realization_value || row.realization_value || '' }}`).
+- **Automatic Row Map Population**:
+  When an `initialValue` expression resolves to a non-empty string, it immediately sets `row[columnBody] = evaluatedValue`, guaranteeing that the value is present in form submissions and batch updates even before the user types in the cell.
+- **Value Preservation**:
+  If the row cell already has data (such as from an existing record retrieved from the backend API), the existing value is strictly preserved and not overwritten.
+- **Instant Synchronization**:
+  As the user edits the input, changes immediately trigger `onRowChanged`, updating the reactive table model and syncing changes to the form state.
+
+#### Configuration Example: Inline Realization Confirmation & Remark
+
+```json
+{
+  "id": "actual_realization_table",
+  "type": "table",
+  "reference_id": "actual_realization_table",
+  "refresh_gap_top": 16.0,
+  "refresh_gap_bottom": 16.0,
+  "columns": [
+    {
+      "header": "Item ID",
+      "body": "id",
+      "width": 100
+    },
+    {
+      "header": "Realization Value",
+      "body": "realization_value",
+      "width": 180
+    },
+    {
+      "header": "Confirmation Realization Value",
+      "body": "confirmation_realization_value",
+      "width": 250,
+      "component": {
+        "id": "confirmation_realization_value",
+        "type": "text_field",
+        "label": "Confirmation Realization Value",
+        "initialValue": "{{ row.confirmation_realization_value || row.realization_value || '' }}"
+      }
+    },
+    {
+      "header": "Confirmation Realization Remark",
+      "body": "confirmation_realization_remark",
+      "width": 300,
+      "component": {
+        "id": "confirmation_realization_remark",
+        "type": "text_field",
+        "label": "Confirmation Realization Remark",
+        "initialValue": "{{ row.confirmation_realization_remark || '' }}"
+      }
+    }
+  ]
+}
+```
 
 ### Configuration Example
 

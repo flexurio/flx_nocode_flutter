@@ -57,6 +57,8 @@ class ComponentTable extends Component {
     this.initial_value,
     this.reloadWithRefresh = false,
     this.showRefresh = true,
+    this.refreshGapTop,
+    this.refreshGapBottom,
     super.visibilityCondition,
     super.events = const {},
   }) : super(type: 'table');
@@ -121,6 +123,18 @@ class ComponentTable extends Component {
   /// the table's refresh button is hidden.
   final bool showRefresh;
 
+  /// Top gap (margin) for the refresh button.
+  ///
+  /// Defaults to `12.0` in the UI if not specified.
+  /// **JSON keys**: `"refresh_gap_top"` or `"refreshGapTop"`.
+  final double? refreshGapTop;
+
+  /// Bottom gap (margin) for the refresh button.
+  ///
+  /// Defaults to `12.0` in the UI if not specified.
+  /// **JSON keys**: `"refresh_gap_bottom"` or `"refreshGapBottom"`.
+  final double? refreshGapBottom;
+
   /// Creates a [ComponentTable] instance from a JSON-compatible map.
   ///
   /// ### Expected Structure
@@ -170,6 +184,12 @@ class ComponentTable extends Component {
       initial_value: map['initial_value'] ?? map['initialValue'] ?? map['data'],
       reloadWithRefresh: map['reload_with_refresh'] == true,
       showRefresh: showRefresh == true,
+      refreshGapTop: (map['refresh_gap_top'] ?? map['refreshGapTop']) != null
+          ? double.tryParse((map['refresh_gap_top'] ?? map['refreshGapTop']).toString())
+          : null,
+      refreshGapBottom: (map['refresh_gap_bottom'] ?? map['refreshGapBottom']) != null
+          ? double.tryParse((map['refresh_gap_bottom'] ?? map['refreshGapBottom']).toString())
+          : null,
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
     );
@@ -208,6 +228,8 @@ class ComponentTable extends Component {
         'initial_value': initial_value,
         'reload_with_refresh': reloadWithRefresh,
         'show_refresh': showRefresh,
+        if (refreshGapTop != null) 'refresh_gap_top': refreshGapTop,
+        if (refreshGapBottom != null) 'refresh_gap_bottom': refreshGapBottom,
       };
 
   /// Returns a dummy [EntityCustom] that represents this table.

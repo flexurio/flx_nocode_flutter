@@ -553,4 +553,61 @@ void main() {
       expect(map['show_refresh'], isFalse);
     });
   });
+
+  group('ComponentTable refresh gaps', () {
+    test('parses refresh_gap_top and refresh_gap_bottom from snake_case', () {
+      final t = ComponentTable.fromMap({
+        'id': 'tbl_gaps',
+        'http': {'method': 'GET', 'url': '{{backend_host}}/items'},
+        'columns': [],
+        'refresh_gap_top': 16.0,
+        'refresh_gap_bottom': 20.0,
+      });
+      expect(t.refreshGapTop, 16.0);
+      expect(t.refreshGapBottom, 20.0);
+
+      final map = t.toMap();
+      expect(map['refresh_gap_top'], 16.0);
+      expect(map['refresh_gap_bottom'], 20.0);
+    });
+
+    test('parses refreshGapTop and refreshGapBottom from camelCase', () {
+      final t = ComponentTable.fromMap({
+        'id': 'tbl_camel_gaps',
+        'http': {'method': 'GET', 'url': '{{backend_host}}/items'},
+        'columns': [],
+        'refreshGapTop': 14.5,
+        'refreshGapBottom': 18.5,
+      });
+      expect(t.refreshGapTop, 14.5);
+      expect(t.refreshGapBottom, 18.5);
+    });
+
+    test('parses integer and string numbers for refresh gaps', () {
+      final t = ComponentTable.fromMap({
+        'id': 'tbl_num_gaps',
+        'http': {'method': 'GET', 'url': '{{backend_host}}/items'},
+        'columns': [],
+        'refresh_gap_top': 10,
+        'refresh_gap_bottom': '25.5',
+      });
+      expect(t.refreshGapTop, 10.0);
+      expect(t.refreshGapBottom, 25.5);
+    });
+
+    test('defaults to null when refresh gaps are omitted', () {
+      final t = ComponentTable.fromMap({
+        'id': 'tbl_no_gaps',
+        'http': {'method': 'GET', 'url': '{{backend_host}}/items'},
+        'columns': [],
+      });
+      expect(t.refreshGapTop, isNull);
+      expect(t.refreshGapBottom, isNull);
+
+      final map = t.toMap();
+      expect(map.containsKey('refresh_gap_top'), isFalse);
+      expect(map.containsKey('refresh_gap_bottom'), isFalse);
+    });
+  });
 }
+
