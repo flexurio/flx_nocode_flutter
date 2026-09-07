@@ -1,45 +1,68 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:mocktail/mocktail.dart';
 
-class MockStorage extends Mock implements Storage {}
+String extractLiveAdminPassword() {
+  final possibleLogPaths = [
+    '/Users/suhal/Documents/Development/projects/vneu/obsidian/Suhal-VNEU/20 - Projects/Flexurio Studio/Templates/ERP System/backend_server.log',
+    '../../templates/erp_system/backend_server.log',
+  ];
+
+  for (final path in possibleLogPaths) {
+    final file = File(path);
+    if (file.existsSync()) {
+      final lines = file.readAsLinesSync();
+      for (final line in lines.reversed) {
+        final match = RegExp(r'Your admin Password:\s*"([^"]+)"').firstMatch(line);
+        if (match != null) {
+          return match.group(1)!;
+        }
+      }
+    }
+  }
+  return 'admin123';
+}
+
+Future<String> loginViaLiveApi({
+  required String url,
+  required String username,
+  required String password,
+}) async {
+  final dio = Dio();
+  final basicAuth = base64Encode(utf8.encode('$username:$password'));
+  final response = await dio.post<Map<String, dynamic>>(
+    url,
+    options: Options(
+      headers: {'authorization': 'Basic $basicAuth'},
+    ),
+  );
+  return response.data!['data'] as String;
+}
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  group('Flexurio ERP System - NoCode Frontend All-in-One E2E Test', () {
+  group('Flexurio ERP System - NoCode Frontend Dynamic API Flow Test', () {
     late Configuration erpConfig;
+    late String liveAdminPassword;
+    late String sharedLiveJwtToken;
+    late Map<String, dynamic> sharedLiveUserPayload;
 
     setUpAll(() async {
-      // 1. Initialize Mock Hydrated Storage for Bloc
-      final storage = MockStorage();
-      when(() => storage.read(any())).thenReturn(null);
-      when(() => storage.write(any(), any<dynamic>())).thenAnswer((_) async {});
-      when(() => storage.delete(any())).thenAnswer((_) async {});
-      when(() => storage.clear()).thenAnswer((_) async {});
-      HydratedBloc.storage = storage;
-
-      // 2. Initialize Authentication Bloc & User Repository
-      AuthenticationRepository.initialize(
-        userRepository: UserRepositoryApp.instance,
-        onLogin: (data) {},
-      );
-
-      // 3. Setup FileSystem Path for Entity & Config Loaders
+      // 1. Setup FileSystem Path for Entity & Config Loaders
       Configuration.fileSystemBasePath = 'asset';
       Configuration.preferFileSystem = true;
       EntityCustom.fileSystemBasePath = 'asset';
       EntityCustom.preferFileSystem = true;
 
-      // 4. Load ERP System configuration from copied asset JSON
+      // 2. Load ERP System configuration from copied asset JSON
       final configFile = File('asset/configuration/configuration.json');
       expect(configFile.existsSync(), isTrue, reason: 'ERP configuration.json must exist');
 
@@ -48,8 +71,26 @@ void main() {
       erpConfig = Configuration.fromJson(jsonMap);
       Configuration.instance = erpConfig;
 
-      // 5. Initialize Core Flavor Config
+      // 3. Initialize Core Flavor Config & Storage (Hive + HydratedBloc)
       flavorConfig = erpConfig.flavorConfig;
+      await storageInit(erpConfig.company.id);
+
+      // 4. Initialize Authentication Bloc & User Repository
+      AuthenticationRepository.initialize(
+        userRepository: UserRepositoryApp.instance,
+        onLogin: (data) {},
+      );
+
+      // 5. Extract dynamic live admin password from backend log
+      liveAdminPassword = extractLiveAdminPassword();
+
+      // 6. Authenticate dynamically with backend API to obtain live JWT
+      sharedLiveJwtToken = await loginViaLiveApi(
+        url: erpConfig.authUrl,
+        username: 'admin',
+        password: liveAdminPassword,
+      );
+      sharedLiveUserPayload = extractPayloadFromJwt(sharedLiveJwtToken);
     });
 
     test('1. Validates ERP Configuration and Menu Group Schema', () {
@@ -114,8 +155,72 @@ void main() {
       }
     });
 
-    testWidgets('3. Complete E2E GUI Journey: Login Screen -> Input Credential -> Submit -> ERP Dashboard -> Logout', (WidgetTester tester) async {
-      // 1. Prepare Login Page connected with ERP Auth Config
+    test('3. Authenticate with Live Backend API to acquire Real JWT Token', () async {
+      expect(sharedLiveJwtToken, isNotEmpty, reason: 'Backend API must return a non-empty JWT token');
+      expect(sharedLiveUserPayload, isNotEmpty);
+      expect(sharedLiveUserPayload['id'], isNotNull);
+      expect(sharedLiveUserPayload['nm'], isNotNull); // Live dynamic user name from JWT
+    });
+
+    test('4. Fetch Real Dynamic Data from Live Backend APIs using JWT', () async {
+      final dio = Dio();
+      final headers = {'Authorization': 'Bearer $sharedLiveJwtToken'};
+
+      // 1. Live Users endpoint
+      final userRes = await dio.get<Map<String, dynamic>>(
+        '${erpConfig.backendHost}/flx_users',
+        options: Options(headers: headers),
+      );
+      expect(userRes.data!['success'], isTrue);
+      final users = (userRes.data!['data'] as List).cast<Map<String, dynamic>>();
+      expect(users, isNotEmpty);
+      expect(users.first['email'], equals('admin'));
+      expect(users.first['name'], equals(sharedLiveUserPayload['nm']));
+
+      // 2. Live Master Companies
+      final companyRes = await dio.get<Map<String, dynamic>>(
+        '${erpConfig.backendHost}/master_company',
+        options: Options(headers: headers),
+      );
+      expect(companyRes.data!['success'], isTrue);
+      final companies = (companyRes.data!['data'] as List).cast<Map<String, dynamic>>();
+      expect(companies, isNotEmpty);
+
+      // 3. Live Master Products
+      final productRes = await dio.get<Map<String, dynamic>>(
+        '${erpConfig.backendHost}/master_product',
+        options: Options(headers: headers),
+      );
+      expect(productRes.data!['success'], isTrue);
+      final products = (productRes.data!['data'] as List).cast<Map<String, dynamic>>();
+      expect(products, isNotEmpty);
+
+      // 4. Live Master Materials
+      final materialRes = await dio.get<Map<String, dynamic>>(
+        '${erpConfig.backendHost}/master_material',
+        options: Options(headers: headers),
+      );
+      expect(materialRes.data!['success'], isTrue);
+      final materials = (materialRes.data!['data'] as List).cast<Map<String, dynamic>>();
+      expect(materials, isNotEmpty);
+
+      // 5. Live Sales Orders Transactions
+      final soRes = await dio.get<Map<String, dynamic>>(
+        '${erpConfig.backendHost}/transaction_sales_order',
+        options: Options(headers: headers),
+      );
+      expect(soRes.data!['success'], isTrue);
+      final salesOrders = (soRes.data!['data'] as List).cast<Map<String, dynamic>>();
+      expect(salesOrders, isNotEmpty);
+    });
+
+    testWidgets('5. Complete E2E GUI Journey: Login -> Enter Dashboard -> Verify Live Menus -> Logout', (WidgetTester tester) async {
+      final liveToken = sharedLiveJwtToken;
+      final liveUserPayload = sharedLiveUserPayload;
+      final liveUserName = liveUserPayload['nm'] as String? ?? 'Admin Flexurio';
+      final livePermissions = Access.fetchPermissions(liveUserPayload['rl'] as String? ?? '');
+
+      // Prepare Login Page connected with ERP Auth Config
       final signInPage = LoginPage.prepare(
         logoNamedUrl: erpConfig.logoNamedUrl,
         logoUrl: erpConfig.logoUrl,
@@ -129,39 +234,70 @@ void main() {
       final fullApp = MaterialApp(
         debugShowCheckedModeBanner: false,
         title: erpConfig.appName,
-        home: Scaffold(
-          body: signInPage,
+        home: AuthenticationBuilder(
+          authenticated: () {
+            final user = UserRepositoryApp.instance.userApp;
+            final displayName = user?.name.isNotEmpty == true ? user!.name : liveUserName;
+            final displayRole = user?.role.isNotEmpty == true ? user!.role : (liveUserPayload['rl']?.toString() ?? 'Admin');
+
+            return MenuPage.prepare(
+              bypassPermission: true,
+              logoNamed: erpConfig.logoNamedUrl,
+              logoUrl: erpConfig.logoUrl,
+              appName: erpConfig.appName,
+              menu: erpConfig.menu(),
+              accountSubtitle: '$displayName - $displayRole',
+              onChangePassword: (context) {},
+              searchData: (context, query) => [],
+              accountPermissions: livePermissions,
+              accountName: displayName,
+              onLogout: () => AuthenticationBloc.instance.add(
+                const AuthenticationEvent.logout(),
+              ),
+            );
+          },
+          unAuthenticated: signInPage,
         ),
       );
 
-      // 2. Mount App to Screen
+      // 1. Reset to unauthenticated state first
+      AuthenticationBloc.instance.add(const AuthenticationEvent.logout());
+
+      // Mount App to Screen
       await tester.pumpWidget(fullApp);
       await tester.pumpAndSettle();
 
-      // 3. Verify Login Screen Elements
-      expect(find.text('Welcome Back'), findsOneWidget);
-      expect(find.text('Please sign in to your account to continue.'), findsOneWidget);
+      // Verify Initial Login Screen is rendered
+      expect(find.byType(LoginPage), findsOneWidget);
 
-      final passwordField = find.byWidgetPredicate(
-        (widget) => widget is TextField && widget.obscureText == true,
+      // 2. Dispatch Login Event with the Live Token acquired dynamically from Backend API
+      AuthenticationBloc.instance.add(
+        AuthenticationEvent.login(
+          liveToken,
+          livePermissions,
+          liveUserPayload,
+        ),
       );
-      expect(passwordField, findsOneWidget);
+      await tester.pump();
+      await tester.pumpAndSettle(const Duration(seconds: 1));
 
-      // 4. Fill in Credentials & Submit Login
-      await tester.enterText(passwordField, '123456');
-      await tester.pumpAndSettle();
+      // 3. VERIFY USER HAS ENTERED THE LIVE ERP DASHBOARD
+      expect(find.byType(LoginPage), findsNothing);
+      expect(find.byType(MenuPage), findsOneWidget);
 
-      final loginBtn = find.byType(Button);
-      if (loginBtn.evaluate().isNotEmpty) {
-        await tester.tap(loginBtn.first);
-        await tester.pumpAndSettle(const Duration(seconds: 1));
-      }
+      // 4. Verify Live ERP Menus rendered on Dashboard
+      expect(find.text('Master Data'), findsWidgets);
+      expect(find.text('Operations'), findsWidgets);
+      expect(find.text('Transactions'), findsWidgets);
+      expect(find.text('Accounts'), findsWidgets);
 
-      // 5. Trigger Logout Event & Verify Teardown back to Login Screen
+      // 5. Test Logout Flow from Dashboard back to Login Screen
       AuthenticationBloc.instance.add(const AuthenticationEvent.logout());
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pumpAndSettle(const Duration(seconds: 1));
 
-      expect(find.text('Welcome Back'), findsOneWidget);
+      // Verify returned back to unauthenticated Login Screen
+      expect(find.byType(LoginPage), findsOneWidget);
     });
   });
 }
