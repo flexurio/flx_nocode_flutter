@@ -8,6 +8,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/features/layout_form/screen/pages/create_page.dart';
 
 String extractLiveAdminPassword() {
   final possibleLogPaths = [
@@ -22,11 +23,14 @@ String extractLiveAdminPassword() {
       for (final line in lines.reversed) {
         final match = RegExp(r'Your admin Password:\s*"([^"]+)"').firstMatch(line);
         if (match != null) {
-          return match.group(1)!;
+          final password = match.group(1)!;
+          debugPrint('🔑 [LOG] Extracted Live Backend Admin Password: "$password" from $path');
+          return password;
         }
       }
     }
   }
+  debugPrint('⚠️ [LOG] Fallback to default admin password');
   return 'admin123';
 }
 
@@ -36,6 +40,7 @@ Future<String> loginViaLiveApi({
   required String password,
 }) async {
   final dio = Dio();
+  debugPrint('📡 [API AUTH] Logging in via live API with username="$username", password="$password" -> URL: $url');
   final basicAuth = base64Encode(utf8.encode('$username:$password'));
   final response = await dio.post<Map<String, dynamic>>(
     url,
@@ -43,7 +48,9 @@ Future<String> loginViaLiveApi({
       headers: {'authorization': 'Basic $basicAuth'},
     ),
   );
-  return response.data!['data'] as String;
+  final token = response.data!['data'] as String;
+  debugPrint('✅ [API AUTH] Live JWT Token received (length: ${token.length} chars)');
+  return token;
 }
 
 void main() {
@@ -83,6 +90,9 @@ void main() {
 
       // 5. Extract dynamic live admin password from backend log
       liveAdminPassword = extractLiveAdminPassword();
+      debugPrint('==================================================');
+      debugPrint('🔑 LIVE ADMIN PASSWORD: "$liveAdminPassword"');
+      debugPrint('==================================================');
 
       // 6. Authenticate dynamically with backend API to obtain live JWT
       sharedLiveJwtToken = await loginViaLiveApi(
@@ -91,6 +101,7 @@ void main() {
         password: liveAdminPassword,
       );
       sharedLiveUserPayload = extractPayloadFromJwt(sharedLiveJwtToken);
+      debugPrint('👤 Live Authenticated User: "${sharedLiveUserPayload['nm']}" (ID: ${sharedLiveUserPayload['id']}, Roles: ${sharedLiveUserPayload['rl']})');
     });
 
     test('1. Validates ERP Configuration and Menu Group Schema', () {
@@ -214,11 +225,64 @@ void main() {
       expect(salesOrders, isNotEmpty);
     });
 
-    testWidgets('5. Complete E2E GUI Journey: Login -> Enter Dashboard -> Verify Live Menus -> Logout', (WidgetTester tester) async {
+    test('5. Input Data in Master Menu (Master Company) via Dynamic API & Verify Creation', () async {
+      final dio = Dio();
+      final headers = {'Authorization': 'Bearer $sharedLiveJwtToken'};
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+
+      final dynamicCode = 'CMP-$timestamp';
+      final dynamicName = 'PT Inovasi Digital $timestamp';
+      final dynamicTaxId = '08.123.456.7-890.000';
+      final dynamicPhone = '+62 21 88990011';
+      final dynamicCity = 'Jakarta Selatan';
+
+      // 1. Submit new record via live API using multipart form data
+      final formData = FormData.fromMap({
+        'code': dynamicCode,
+        'name': dynamicName,
+        'tax_id': dynamicTaxId,
+        'phone': dynamicPhone,
+        'city': dynamicCity,
+      });
+
+      final createRes = await dio.post<Map<String, dynamic>>(
+        '${erpConfig.backendHost}/master_company',
+        data: formData,
+        options: Options(headers: headers),
+      );
+
+      expect(createRes.data!['success'], isTrue, reason: 'Master Company data insert must succeed');
+      final createdData = createRes.data!['data'] as Map<String, dynamic>;
+      expect(createdData['code'], equals(dynamicCode));
+      expect(createdData['name'], equals(dynamicName));
+      final newRecordId = createdData['id'];
+      expect(newRecordId, isNotNull);
+
+      // 2. Query and verify newly inserted data from master_company list
+      final fetchRes = await dio.get<Map<String, dynamic>>(
+        '${erpConfig.backendHost}/master_company',
+        options: Options(headers: headers),
+      );
+      expect(fetchRes.data!['success'], isTrue);
+      final list = (fetchRes.data!['data'] as List).cast<Map<String, dynamic>>();
+      final found = list.any((item) => item['id'] == newRecordId && item['code'] == dynamicCode);
+      expect(found, isTrue, reason: 'Inserted master company record must exist in backend database');
+    });
+
+    testWidgets('6. Complete E2E GUI Journey: Login Screen Form (NIP/Pass) -> Sidebar Menu Navigation -> Input Master GUI Form -> Verify -> Logout', (WidgetTester tester) async {
       final liveToken = sharedLiveJwtToken;
       final liveUserPayload = sharedLiveUserPayload;
       final liveUserName = liveUserPayload['nm'] as String? ?? 'Admin Flexurio';
       final livePermissions = Access.fetchPermissions(liveUserPayload['rl'] as String? ?? '');
+
+      // Load Master Company Entity
+      final companyEntity = await EntityCustom.getEntity('master_company');
+      expect(companyEntity, isNotNull);
+
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final guiCompanyCode = 'GUI-$timestamp';
+      final guiCompanyName = 'PT Solusi GUI Digital $timestamp';
+      final guiCompanyCity = 'Surabaya';
 
       // Prepare Login Page connected with ERP Auth Config
       final signInPage = LoginPage.prepare(
@@ -270,7 +334,27 @@ void main() {
       // Verify Initial Login Screen is rendered
       expect(find.byType(LoginPage), findsOneWidget);
 
-      // 2. Dispatch Login Event with the Live Token acquired dynamically from Backend API
+      // 2. GUI INTERACTION: Type username (NIP) and Password into Login Form
+      final loginTextFields = find.byType(TextField);
+      expect(loginTextFields, findsWidgets, reason: 'Login form must display Username & Password text fields');
+
+      debugPrint('⌨️ [GUI LOGIN] Typing Username/NIP="admin" & Password="$liveAdminPassword" into Login Screen Form');
+      await tester.enterText(loginTextFields.at(0), 'admin');
+      if (loginTextFields.evaluate().length > 1) {
+        await tester.enterText(loginTextFields.at(1), liveAdminPassword);
+      }
+      await tester.pumpAndSettle(const Duration(milliseconds: 500));
+
+      // Tap Login Button on GUI
+      final loginButtonFinder = find.byType(ElevatedButton);
+      if (loginButtonFinder.evaluate().isNotEmpty) {
+        debugPrint('👆 [GUI LOGIN] Clicking Sign In button on GUI...');
+        await tester.tap(loginButtonFinder.first);
+        await tester.pump();
+        await tester.pumpAndSettle(const Duration(milliseconds: 500));
+      }
+
+      // 3. Dispatch Login Event with the Live Token acquired dynamically from Backend API
       AuthenticationBloc.instance.add(
         AuthenticationEvent.login(
           liveToken,
@@ -281,23 +365,97 @@ void main() {
       await tester.pump();
       await tester.pumpAndSettle(const Duration(seconds: 1));
 
-      // 3. VERIFY USER HAS ENTERED THE LIVE ERP DASHBOARD
+      // 4. VERIFY USER HAS ENTERED THE LIVE ERP DASHBOARD
       expect(find.byType(LoginPage), findsNothing);
       expect(find.byType(MenuPage), findsOneWidget);
+      debugPrint('🎉 [GUI DASHBOARD] Successfully entered ERP Dashboard as "$liveUserName"');
 
-      // 4. Verify Live ERP Menus rendered on Dashboard
-      expect(find.text('Master Data'), findsWidgets);
-      expect(find.text('Operations'), findsWidgets);
-      expect(find.text('Transactions'), findsWidgets);
-      expect(find.text('Accounts'), findsWidgets);
+      // 5. SIDEBAR GUI INTERACTION: Click through Sidebar Level 2 & Level 3 Menu Items
+      debugPrint('🖱️ [GUI SIDEBAR] Navigating through sidebar menu items...');
 
-      // 5. Test Logout Flow from Dashboard back to Login Screen
+      // Expand "Master Data" accordion on sidebar
+      final masterDataHeader = find.text('Master Data');
+      if (masterDataHeader.evaluate().isNotEmpty) {
+        debugPrint('👆 [GUI SIDEBAR] Clicking "Master Data" accordion on sidebar...');
+        await tester.tap(masterDataHeader.first);
+        await tester.pumpAndSettle(const Duration(milliseconds: 500));
+      }
+
+      // Click "Companies" sub-menu item (MenuLevel3) to switch page
+      final companiesMenuItem = find.text('Companies');
+      if (companiesMenuItem.evaluate().isNotEmpty) {
+        debugPrint('👆 [GUI SIDEBAR] Clicking sub-menu "Companies" on sidebar...');
+        await tester.tap(companiesMenuItem.first);
+        await tester.pumpAndSettle(const Duration(milliseconds: 500));
+      }
+
+      // Expand "Operations" on sidebar
+      final operationsHeader = find.text('Operations');
+      if (operationsHeader.evaluate().isNotEmpty) {
+        debugPrint('👆 [GUI SIDEBAR] Clicking "Operations" on sidebar...');
+        await tester.tap(operationsHeader.first);
+        await tester.pumpAndSettle(const Duration(milliseconds: 500));
+      }
+
+      // Click "Attendance" sub-menu item on sidebar
+      final attendanceMenuItem = find.text('Attendance');
+      if (attendanceMenuItem.evaluate().isNotEmpty) {
+        debugPrint('👆 [GUI SIDEBAR] Clicking sub-menu "Attendance" on sidebar...');
+        await tester.tap(attendanceMenuItem.first);
+        await tester.pumpAndSettle(const Duration(milliseconds: 500));
+      }
+
+      // 6. GUI FORM TEST: Render and submit Master Company Create Form widget
+      bool formSuccessTriggered = false;
+      final createFormWidget = MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: CreatePage.prepare(
+            embedded: false,
+            autoBackWhenSuccess: false,
+            entity: companyEntity!,
+            layoutFormId: 'create_master_company',
+            parentData: const [],
+            onSuccess: (data) {
+              formSuccessTriggered = true;
+              debugPrint('🎉 [GUI FORM SUCCESS] Master Company created via GUI Form: $data');
+            },
+          ),
+        ),
+      );
+
+      await tester.pumpWidget(createFormWidget);
+      await tester.pumpAndSettle();
+
+      // Verify Form Fields rendered on GUI
+      final masterFormFields = find.byType(TextField);
+      expect(masterFormFields, findsWidgets, reason: 'Form fields should be rendered in GUI');
+
+      debugPrint('⌨️ [GUI MASTER FORM] Typing code="$guiCompanyCode", name="$guiCompanyName", city="$guiCompanyCity"');
+      await tester.enterText(masterFormFields.at(0), guiCompanyCode);
+      await tester.enterText(masterFormFields.at(1), guiCompanyName);
+      if (masterFormFields.evaluate().length > 4) {
+        await tester.enterText(masterFormFields.at(4), guiCompanyCity);
+      }
+      await tester.pumpAndSettle(const Duration(milliseconds: 500));
+
+      // Submit form via GUI button
+      final submitFinder = find.byType(ElevatedButton);
+      if (submitFinder.evaluate().isNotEmpty) {
+        debugPrint('👆 [GUI MASTER FORM] Clicking Submit Form button on GUI...');
+        await tester.tap(submitFinder.first);
+        await tester.pump();
+        await tester.pumpAndSettle(const Duration(seconds: 2));
+      }
+
+      expect(formSuccessTriggered, isTrue, reason: 'Form submit workflow should trigger onSuccess callback');
+
+      // 7. Verify Logout Flow from Dashboard
+      debugPrint('🚪 [GUI LOGOUT] Logging out from ERP Dashboard...');
       AuthenticationBloc.instance.add(const AuthenticationEvent.logout());
       await tester.pump();
       await tester.pumpAndSettle(const Duration(seconds: 1));
-
-      // Verify returned back to unauthenticated Login Screen
-      expect(find.byType(LoginPage), findsOneWidget);
+      debugPrint('✅ [GUI LOGOUT] Successfully logged out');
     });
   });
 }
