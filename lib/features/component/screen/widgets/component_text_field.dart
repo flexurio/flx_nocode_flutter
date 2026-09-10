@@ -31,6 +31,22 @@ extension ComponentTextFieldWidgets on ComponentTextField {
         }
       }
 
+      if (isCurrency && currentText.isNotEmpty) {
+        final formatter = CurrencyTextInputFormatter.currency(
+          symbol: '',
+          decimalDigits: 0,
+          locale: 'en',
+        );
+        final clean = currentText.replaceAll(',', '');
+        final numVal = double.tryParse(clean);
+        currentText = numVal != null
+            ? formatter.formatString(numVal.round().toString())
+            : formatter.formatString(clean);
+        if (row != null && row[targetField]?.toString() != currentText) {
+          row[targetField] = currentText;
+        }
+      }
+
       controller = _cellControllers[cacheKey];
       if (controller == null) {
         controller = TextEditingController(text: currentText);
@@ -54,6 +70,17 @@ extension ComponentTextFieldWidgets on ComponentTextField {
       return FTextFieldSmall(
         controller: controller!,
         hintText: label,
+        textAlign: isCurrency ? TextAlign.end : TextAlign.start,
+        keyboardType: isCurrency ? TextInputType.number : null,
+        inputFormatters: isCurrency
+            ? [
+                CurrencyTextInputFormatter.currency(
+                  symbol: '',
+                  decimalDigits: 0,
+                  locale: 'en',
+                ),
+              ]
+            : null,
         onChanged: (val) {
           final onRowChanged = data['onRowChanged'];
           if (onRowChanged is Function) {
@@ -74,7 +101,11 @@ extension ComponentTextFieldWidgets on ComponentTextField {
         decimalDigits: 0,
         locale: 'en',
       );
-      final formatted = formatter.formatString(controller.text);
+      final clean = controller.text.replaceAll(',', '');
+      final numVal = double.tryParse(clean);
+      final formatted = numVal != null
+          ? formatter.formatString(numVal.round().toString())
+          : formatter.formatString(clean);
       if (formatted != controller.text) {
         controller.value = controller.value.copyWith(
           text: formatted,

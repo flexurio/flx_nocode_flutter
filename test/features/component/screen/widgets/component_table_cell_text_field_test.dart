@@ -190,6 +190,141 @@ void main() {
       ));
       expect((tableState as dynamic).controller.rows[0]['remark'], 'Approved by Manager');
     });
+
+    testWidgets('formats initial value from float or integer into thousand-separated currency',
+        (WidgetTester tester) async {
+      const jsonRaw = '''
+      {
+        "id": "test_table_currency",
+        "reference_id": "test_table_currency",
+        "width": 800,
+        "columns": [
+          { "header": "Realization Value", "body": "realization_value", "width": 200 },
+          {
+            "header": "Confirmation Realization Value",
+            "body": "confirmation_realization_value",
+            "width": 250,
+            "component": {
+              "id": "confirmation_realization_value_field",
+              "type": "text_field",
+              "label": "Confirmation Realization Value",
+              "is_currency": true,
+              "initialValue": "{{ row.confirmation_realization_value || row.realization_value || '' }}"
+            }
+          }
+        ]
+      }
+      ''';
+
+      final map = json.decode(jsonRaw) as Map<String, dynamic>;
+      final component = ComponentTable.fromMap(map);
+
+      final rowData = [
+        {
+          'id': 1,
+          'realization_value': '6000000.0',
+          'confirmation_realization_value': '',
+        },
+        {
+          'id': 2,
+          'realization_value': '3000000',
+          'confirmation_realization_value': '',
+        },
+      ];
+
+      final contextData = {
+        'test_table_currency': rowData,
+      };
+
+      await tester.pumpWidget(
+        GetMaterialApp(
+          home: Scaffold(
+            body: component.toWidget(contextData),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final fields = tester.widgetList<FTextFieldSmall>(find.byType(FTextFieldSmall)).toList();
+      expect(fields.length, 2);
+
+      // Verify row 1 formatted 6000000.0 into 6,000,000
+      expect(fields[0].controller.text, '6,000,000');
+      expect(fields[0].textAlign, TextAlign.end);
+      expect(fields[0].keyboardType, TextInputType.number);
+      expect(fields[0].inputFormatters, isNotNull);
+
+      // Verify row 2 formatted 3000000 into 3,000,000
+      expect(fields[1].controller.text, '3,000,000');
+
+      // Verify table controller rows were updated
+      final tableState = tester.state(find.byWidgetPredicate(
+        (w) => w.runtimeType.toString() == '_ComponentTableWidget',
+      ));
+      expect((tableState as dynamic).controller.rows[0]['confirmation_realization_value'], '6,000,000');
+      expect((tableState as dynamic).controller.rows[1]['confirmation_realization_value'], '3,000,000');
+    });
+
+    testWidgets('formats user typing with thousand separators in table cell',
+        (WidgetTester tester) async {
+      const jsonRaw = '''
+      {
+        "id": "test_table_currency_typing",
+        "reference_id": "test_table_currency_typing",
+        "width": 800,
+        "columns": [
+          {
+            "header": "Amount",
+            "body": "amount",
+            "width": 250,
+            "component": {
+              "id": "amount_field",
+              "type": "text_field",
+              "label": "Amount",
+              "is_currency": true,
+              "initialValue": ""
+            }
+          }
+        ]
+      }
+      ''';
+
+      final map = json.decode(jsonRaw) as Map<String, dynamic>;
+      final component = ComponentTable.fromMap(map);
+
+      final rowData = [
+        {'id': 1, 'amount': ''},
+      ];
+
+      final contextData = {
+        'test_table_currency_typing': rowData,
+      };
+
+      await tester.pumpWidget(
+        GetMaterialApp(
+          home: Scaffold(
+            body: component.toWidget(contextData),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      final textFieldFinder = find.byType(TextField);
+      expect(textFieldFinder, findsOneWidget);
+
+      await tester.enterText(textFieldFinder, '5000000');
+      await tester.pumpAndSettle();
+
+      final fTextField = tester.widget<FTextFieldSmall>(find.byType(FTextFieldSmall));
+      expect(fTextField.controller.text, '5,000,000');
+
+      final tableState = tester.state(find.byWidgetPredicate(
+        (w) => w.runtimeType.toString() == '_ComponentTableWidget',
+      ));
+      expect((tableState as dynamic).controller.rows[0]['amount'], '5,000,000');
+    });
   });
 
   group('ComponentTable refresh button padding gaps', () {

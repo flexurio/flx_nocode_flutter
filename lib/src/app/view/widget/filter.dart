@@ -3,6 +3,7 @@ import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/form_filter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:screen_identifier/screen_identifier.dart';
 
 class FilterButton extends StatelessWidget {
@@ -84,11 +85,17 @@ class FTextFieldSmall extends StatelessWidget {
     required this.controller,
     required this.hintText,
     required this.onChanged,
+    this.inputFormatters,
+    this.textAlign = TextAlign.start,
+    this.keyboardType,
   });
 
   final TextEditingController controller;
   final String hintText;
   final void Function(String value) onChanged;
+  final List<TextInputFormatter>? inputFormatters;
+  final TextAlign textAlign;
+  final TextInputType? keyboardType;
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +113,9 @@ class FTextFieldSmall extends StatelessWidget {
     return SizedBox(
       height: isPlatformMobile() ? 36 : 32,
       child: TextField(
+        textAlign: textAlign,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
         decoration: InputDecoration(
           filled: true,
           fillColor: Colors.white,

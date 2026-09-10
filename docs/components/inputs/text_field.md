@@ -55,19 +55,24 @@ When placed inside a `ComponentTable` column:
 - Evaluates `initialValue` against the row data context (`row`, `data`) when the cell value is empty (e.g. `{{ row.realization_value }}`).
 - Automatically updates the row data map (`row[columnBody]`) when initialized, ensuring the default is included during form submissions and PUT operations.
 - Edits immediately trigger `onRowChanged`, updating the reactive table state.
+- Supports `is_currency: true` / `isCurrency: true` for money/currency formatting:
+  - Automatically formats initial values (e.g., float `6000000.0` or integer `3000000` -> `6,000,000`).
+  - Formats live input with thousand separators as the user types.
+  - Aligns text to the right (`TextAlign.end`) and provides numeric keyboard (`TextInputType.number`).
 
 Example in table column:
 
 ```json
 {
-  "header": "Confirmation Remark",
-  "body": "confirmation_remark",
-  "width": 250,
+  "header": "Confirmation Realization Value",
+  "body": "confirmation_realization_value",
+  "width": 160,
   "component": {
-    "id": "confirmation_remark",
+    "id": "confirmation_realization_value_field",
     "type": "text_field",
-    "label": "Enter remark",
-    "initialValue": "{{ row.confirmation_remark || '' }}"
+    "label": "Confirmation Realization Value",
+    "is_currency": true,
+    "initialValue": "{{ row.confirmation_realization_value || row.realization_value || '' }}"
   }
 }
 ```
