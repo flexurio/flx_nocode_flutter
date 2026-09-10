@@ -46,6 +46,7 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase>
   final options = <Map<String, dynamic>>[].obs;
   final isLoading = false.obs;
   final error = RxnString();
+  bool isDependencyTriggered = false;
 
   TextEditingController? get targetController =>
       data['controller'] as TextEditingController? ??
@@ -97,6 +98,7 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase>
   void onDependencyChanged() {
     debugPrint(
         '[Nocode Selection] onDependencyChanged called for ${component.id}. Parent controllers state: ${allControllers.map((key, value) => MapEntry(key, value.text))}');
+    isDependencyTriggered = true;
     resetSelection();
     updateTargetController('');
     if (component.httpData != null && component.httpData!.url.isNotEmpty) {

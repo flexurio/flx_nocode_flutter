@@ -203,6 +203,27 @@ void main() {
         expect('{{ formatDate(new Date(my_date), "yyMM") }}'.interpolateJavascript(variables),
             '2605');
       });
+
+      test('project url with startOfMonth and endOfMonth', () {
+        const template =
+            "https://mf-marketing-api-v2.flexurio.com/projects?page=1&search=&sort=created_at&ascending=false&limit=10&period_start.gte={{ startOfMonth(form.period || current.period, 'yyyyMMdd') }}&period_end.lte={{ endOfMonth(form.period || current.period, 'yyyyMMdd') }}";
+
+        final varsWithPeriod = {
+          'form': {'period': '202504'}
+        };
+        expect(
+          template.interpolateJavascriptStrict(varsWithPeriod),
+          'https://mf-marketing-api-v2.flexurio.com/projects?page=1&search=&sort=created_at&ascending=false&limit=10&period_start.gte=20250401&period_end.lte=20250430',
+        );
+
+        final varsEmpty = {
+          'form': {'period': ''}
+        };
+        expect(
+          template.interpolateJavascriptStrict(varsEmpty),
+          'https://mf-marketing-api-v2.flexurio.com/projects?page=1&search=&sort=created_at&ascending=false&limit=10&period_start.gte=&period_end.lte=',
+        );
+      });
     });
 
     group('Shortcut Evaluator Enhancements', () {

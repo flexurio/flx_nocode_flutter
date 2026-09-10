@@ -24,7 +24,7 @@ class ComponentDropdownController extends ComponentSelectionController<Component
     String iv = component.initialValue;
     final id = component.id;
 
-    if (iv.isNotEmpty) {
+    if (!isDependencyTriggered && iv.isNotEmpty) {
       final before = iv;
       try {
         final dataPayload = data['data'];
@@ -56,6 +56,20 @@ class ComponentDropdownController extends ComponentSelectionController<Component
         displayedValue.value =
             options.firstWhere((o) => o['key'] == selectedValue.value);
       }
+    }
+
+    if (component.selectFirstOption &&
+        selectedValue.value == null &&
+        options.isNotEmpty) {
+      final candidateOption = options.firstWhereOrNull(
+            (o) => (o['key']?.toString() ?? '').isNotEmpty,
+          ) ??
+          options.first;
+      final firstKey = candidateOption['key']?.toString() ?? '';
+      selectedValue.value = firstKey;
+      displayedValue.value = candidateOption;
+      updateTargetController(firstKey);
+      handleActions(candidateOption);
     }
   }
 

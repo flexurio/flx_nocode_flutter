@@ -10,6 +10,7 @@ A selectable list of options.
 | `optionKey` | String | No | Key, dot-notation path, or JS template for the item value. |
 | `optionLabel` | String | No | Key, dot-notation path, or JS template for the display label. |
 | `initialValue` | String | No | Initial selected value. |
+| `select_first_option` / `auto_select_first` | Boolean | No | If `true`, automatically selects the first candidate option when initial value is empty or when parent dependencies change. |
 | `dependsOn` | Array | No | IDs that trigger a reload on change. |
 | `onChangeActions` / `on_change` | Array/Object | No | Component-level actions run when value changes. |
 | `required` | Boolean | No | Validation requirement. |
@@ -17,6 +18,32 @@ A selectable list of options.
 
 > **Note on Option Resolution:**
 > `optionKey` and `optionLabel` are "smart". They first try to find a matching field in the data object (including nested fields like `user.name`). If no matching field is found, they fall back to evaluating the string as a JavaScript template if it contains `{{ ... }}`.
+
+## Auto-Selecting First Option (`select_first_option`)
+
+When `select_first_option` (or alias `auto_select_first`) is set to `true`:
+- If `initialValue` is empty or does not match any option, the first available option is selected automatically.
+- If static placeholder options with empty keys exist (e.g. `{"key": "", "label": "Pilih..."}`), it will select the first non-empty option.
+- In dependent dropdowns (`dependsOn`), whenever the parent component changes and new options are fetched via `httpData`, the dropdown automatically resets and selects the first option from the newly loaded dataset.
+
+```json
+{
+  "id": "account_bank_id",
+  "type": "dropdown",
+  "label": "Account Bank No",
+  "select_first_option": true,
+  "dependsOn": ["account_bank_nip"],
+  "httpData": {
+    "method": "GET",
+    "url": "{{backend_host}}/lbb_account_banks?nip.eq={{ form.account_bank_nip }}&is_active.eq=1",
+    "headers": {
+      "Authorization": "Bearer {{ auth_token }}"
+    }
+  },
+  "optionKey": "{{item.id}}",
+  "optionLabel": "{{item.id}} - {{item.account_name}}"
+}
+```
 
 ## Static Options with Explicit Key and Label
 

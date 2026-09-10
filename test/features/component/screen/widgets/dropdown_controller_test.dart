@@ -298,6 +298,170 @@ void main() {
       expect(updatedRow?['static'], 'value');
       expect(updatedRow?['id'], 100); // Original data preserved
     });
+
+    test('ComponentDropdown.fromMap should parse select_first_option correctly', () {
+      final comp1 = ComponentDropdown.fromMap({
+        'id': 'd1',
+        'select_first_option': true,
+      });
+      expect(comp1.selectFirstOption, isTrue);
+
+      final comp2 = ComponentDropdown.fromMap({
+        'id': 'd2',
+        'selectFirstOption': true,
+      });
+      expect(comp2.selectFirstOption, isTrue);
+
+      final comp3 = ComponentDropdown.fromMap({
+        'id': 'd3',
+        'auto_select_first': true,
+      });
+      expect(comp3.selectFirstOption, isTrue);
+
+      final comp4 = ComponentDropdown.fromMap({
+        'id': 'd4',
+      });
+      expect(comp4.selectFirstOption, isFalse);
+    });
+
+    testWidgets('Should auto select first option when selectFirstOption is true',
+        (tester) async {
+      component = ComponentDropdown(
+        id: 'test_dropdown',
+        label: 'Test Dropdown',
+        options: ['First', 'Second', 'Third'],
+        selectFirstOption: true,
+      );
+
+      final controller =
+          ComponentDropdownController(component: component, data: data);
+      controller.onInit();
+
+      expect(controller.selectedValue.value, 'First');
+      expect(controller.displayedValue.value?['key'], 'First');
+
+      await tester.pump();
+      await tester.pump(Duration.zero);
+      expect(targetCtrl.text, 'First');
+    });
+
+    testWidgets(
+        'Should auto select first non-empty option when placeholder exists',
+        (tester) async {
+      component = ComponentDropdown(
+        id: 'test_dropdown',
+        label: 'Test Dropdown',
+        options: [
+          {'key': '', 'label': 'Select...'},
+          {'key': 'item1', 'label': 'Item 1'},
+          {'key': 'item2', 'label': 'Item 2'},
+        ],
+        selectFirstOption: true,
+      );
+
+      final controller =
+          ComponentDropdownController(component: component, data: data);
+      controller.onInit();
+
+      expect(controller.selectedValue.value, 'item1');
+      expect(controller.displayedValue.value?['label'], 'Item 1');
+
+      await tester.pump();
+      await tester.pump(Duration.zero);
+      expect(targetCtrl.text, 'item1');
+    });
+
+    testWidgets(
+        'Should NOT override explicit initialValue when selectFirstOption is true',
+        (tester) async {
+      component = ComponentDropdown(
+        id: 'test_dropdown',
+        label: 'Test Dropdown',
+        options: ['First', 'Second', 'Third'],
+        initialValue: 'Second',
+        selectFirstOption: true,
+      );
+
+      final controller =
+          ComponentDropdownController(component: component, data: data);
+      controller.onInit();
+
+      expect(controller.selectedValue.value, 'Second');
+      expect(controller.displayedValue.value?['key'], 'Second');
+
+      await tester.pump();
+      await tester.pump(Duration.zero);
+      expect(targetCtrl.text, 'Second');
+    });
+
+    testWidgets(
+        'Should auto select first option when dependency changes with dynamic http',
+        (tester) async {
+      final parentCtrl = TextEditingController(text: '1160806');
+      final mockAccounts = <Map<String, dynamic>>[
+        {'id': '0040102551145', 'account_name': 'AKMAL MAULANA R. L'},
+        {'id': '005701000798301', 'account_name': 'AKMAL MAULANA R. L'},
+      ];
+      final httpData = HttpData(
+        method: 'GET',
+        url: 'https://example.com/lbb_account_banks?nip.eq={{form.account_bank_nip}}',
+        headers: const {},
+        body: const {},
+        mockEnabled: true,
+        mockData: {'data': mockAccounts},
+      );
+      final dynComponent = ComponentDropdown(
+        id: 'account_bank_id',
+        label: 'Account Bank No',
+        options: const ['Option 1', 'Option 2'],
+        selectFirstOption: true,
+        dependsOn: const ['account_bank_nip'],
+        httpData: httpData,
+        optionKey: '{{item.id}}',
+        optionLabel: '{{item.id}} - {{item.account_name}}',
+      );
+
+      final bankCtrl = TextEditingController();
+      final customData = {
+        'controller': bankCtrl,
+        'allControllers': <String, TextEditingController>{
+          'account_bank_id': bankCtrl,
+          'account_bank_nip': parentCtrl,
+        },
+        'form': {'account_bank_nip': '1160806'},
+        'data': {'account_bank_nip': '1160806'},
+      };
+
+      final controller =
+          ComponentDropdownController(component: dynComponent, data: customData);
+      controller.onInit();
+      await controller.fetchOptions();
+
+      expect(controller.options, hasLength(2));
+      expect(controller.selectedValue.value, '0040102551145');
+      expect(controller.displayedValue.value?['label'],
+          '0040102551145 - AKMAL MAULANA R. L');
+
+      await tester.pump();
+      await tester.pump(Duration.zero);
+      expect(bankCtrl.text, '0040102551145');
+
+      // Now change parent and mock second set of accounts
+      mockAccounts.clear();
+      mockAccounts.add({'id': '999888777', 'account_name': 'OTHER PERSON'});
+      parentCtrl.text = '2222222';
+      controller.onDependencyChanged();
+      await controller.fetchOptions();
+
+      expect(controller.options, hasLength(1));
+      expect(controller.selectedValue.value, '999888777');
+      expect(controller.displayedValue.value?['label'],
+          '999888777 - OTHER PERSON');
+
+      await tester.pump();
+      await tester.pump(Duration.zero);
+      expect(bankCtrl.text, '999888777');
+    });
   });
 }
 

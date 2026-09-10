@@ -7,6 +7,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_size_mode
 
 class ComponentDropdown extends ComponentSelectionBase {
   final String initialValue;
+  final bool selectFirstOption;
 
   ComponentDropdown({
     required super.id,
@@ -15,6 +16,7 @@ class ComponentDropdown extends ComponentSelectionBase {
     required super.label,
     required super.options,
     this.initialValue = '',
+    this.selectFirstOption = false,
     super.httpData,
     super.optionKey,
     super.optionLabel,
@@ -35,6 +37,7 @@ class ComponentDropdown extends ComponentSelectionBase {
       label: 'Dropdown',
       options: const ['Option 1', 'Option 2'],
       initialValue: '',
+      selectFirstOption: false,
       httpData: HttpData.empty(),
       required: false,
       dependsOn: const [],
@@ -49,6 +52,10 @@ class ComponentDropdown extends ComponentSelectionBase {
     }
     final label = map['label']?.toString().trim() ?? 'Dropdown';
     final initialValue = map['initialValue']?.toString().trim() ?? '';
+    final selectFirstOption = map['select_first_option'] == true ||
+        map['selectFirstOption'] == true ||
+        map['auto_select_first'] == true ||
+        map['autoSelectFirst'] == true;
     final rawOptions = map['options'];
     final options = <dynamic>[];
     if (rawOptions is List) {
@@ -115,6 +122,7 @@ class ComponentDropdown extends ComponentSelectionBase {
       label: label,
       options: options,
       initialValue: initialValue,
+      selectFirstOption: selectFirstOption,
       httpData: httpData,
       optionKey: map['optionKey']?.toString(),
       optionLabel: map['optionLabel']?.toString(),
@@ -134,5 +142,6 @@ class ComponentDropdown extends ComponentSelectionBase {
   JsonMap toMap() => {
         ...super.toMap(),
         'initialValue': initialValue,
+        'select_first_option': selectFirstOption,
       };
 }
