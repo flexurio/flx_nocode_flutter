@@ -362,64 +362,73 @@ extension ActionExecutionExtension on ActionD {
         final layoutId =
             (data['rootLayoutFormId'] ?? data['layoutFormId']) as String?;
 
-        if (layoutId != null) {
-          final tag = 'create_page_$layoutId';
-          if (Get.isRegistered<CreatePageController>(tag: tag)) {
-            final controller = Get.find<CreatePageController>(tag: tag);
+        CreatePageController? controller;
+        if (layoutId != null &&
+            Get.isRegistered<CreatePageController>(tag: 'create_page_$layoutId')) {
+          controller = Get.find<CreatePageController>(tag: 'create_page_$layoutId');
+        } else if (Get.isRegistered<CreatePageController>()) {
+          controller = Get.find<CreatePageController>();
+        }
 
-            List<dynamic> list = [];
-            final currentData = controller.initialData[varName];
-            if (currentData is List) {
-              list = List.from(currentData);
-            } else if (currentData is String && currentData.isNotEmpty) {
-              try {
-                final decoded = jsonDecode(currentData);
-                if (decoded is List) {
-                  list = List.from(decoded);
-                }
-              } catch (_) {}
-            }
-
-            final rowIndexRaw = data['rowIndex'];
-            if (rowIndexRaw is int &&
-                rowIndexRaw >= 0 &&
-                rowIndexRaw < list.length) {
-              list.removeAt(rowIndexRaw);
-            } else if (rowIndexRaw is String &&
-                int.tryParse(rowIndexRaw) != null) {
-              final idx = int.parse(rowIndexRaw);
-              if (idx >= 0 && idx < list.length) {
-                list.removeAt(idx);
+        if (controller != null) {
+          List<dynamic> list = [];
+          final currentData = controller.initialData[varName];
+          if (currentData is List) {
+            list = List.from(currentData);
+          } else if (currentData is String && currentData.isNotEmpty) {
+            try {
+              final decoded = jsonDecode(currentData);
+              if (decoded is List) {
+                list = List.from(decoded);
               }
-            } else {
-              // We want to remove the item that matches the current 'data' (the row).
-              // Since 'data' might have extra fields, we iterate and check if all
-              // keys in the list item match the values in 'data'.
-              list.removeWhere((item) {
-                if (item is! Map) return false;
-                for (final key in item.keys) {
-                  if (item[key].toString() != data[key]?.toString()) {
-                    return false;
-                  }
-                }
-                return true;
-              });
-            }
-
-            controller.initialData[varName] = list;
-            if (controller.controllers.containsKey(varName)) {
-              controller.controllers[varName]?.text = jsonEncode(list);
-            }
-            controller.initialData.refresh();
-
-            await handleOnSuccessSingle(
-              entity: entity,
-              context: context,
-              responseData: null,
-              data: data,
-              onSuccessCallback: onSuccessCallback,
-            );
+            } catch (_) {}
           }
+
+          final rowIndexRaw = data['rowIndex'];
+          if (rowIndexRaw is int &&
+              rowIndexRaw >= 0 &&
+              rowIndexRaw < list.length) {
+            list.removeAt(rowIndexRaw);
+          } else if (rowIndexRaw is String &&
+              int.tryParse(rowIndexRaw) != null) {
+            final idx = int.parse(rowIndexRaw);
+            if (idx >= 0 && idx < list.length) {
+              list.removeAt(idx);
+            }
+          } else {
+            // We want to remove the item that matches the current 'data' (the row).
+            // Since 'data' might have extra fields, we iterate and check if all
+            // keys in the list item match the values in 'data'.
+            list.removeWhere((item) {
+              if (item is! Map) return false;
+              for (final key in item.keys) {
+                if (item[key].toString() != data[key]?.toString()) {
+                  return false;
+                }
+              }
+              return true;
+            });
+          }
+
+          controller.initialData[varName] = list;
+          if (controller.controllers.containsKey(varName)) {
+            controller.controllers[varName]?.text = jsonEncode(list);
+          }
+          controller.initialData.refresh();
+
+          // Also notify table reload listener if registered for this table
+          final tableId = data['tableId'] as String?;
+          if (tableId != null && controller.tableReloadListeners.containsKey(tableId)) {
+            controller.tableReloadListeners[tableId]?.call();
+          }
+
+          await handleOnSuccessSingle(
+            entity: entity,
+            context: context,
+            responseData: null,
+            data: data,
+            onSuccessCallback: onSuccessCallback,
+          );
         }
         break;
 

@@ -231,8 +231,12 @@ extension ComponentIconButtonWidgets on ComponentIconButton {
             style: style,
             onPressed: () {
               if (onClick != null) {
-                final entity = data['entity'];
-                if (entity is EntityCustom) {
+                final entity = (data['entity'] is EntityCustom)
+                    ? data['entity'] as EntityCustom
+                    : ((data['tableEntity'] is EntityCustom)
+                        ? data['tableEntity'] as EntityCustom
+                        : null);
+                if (entity != null) {
                   final onSuccessCallback = data['_on_success_callback'];
                   onClick!.executeSingle(
                     entity: entity,

@@ -405,6 +405,73 @@ void main() {
 
       Get.delete<CreatePageController>(tag: tag);
     });
+
+    test(
+        'loadData after removing row from CreatePageController.initialData correctly reflects deletion and does not resurrect item',
+        () async {
+      final tag = 'create_page_test_delete_sync';
+      final pageCtrl = Get.put(
+        CreatePageController(
+          entity: EntityCustom.empty(),
+          layoutFormId: 'test_delete_sync',
+          initialDataInput: const {},
+          parentData: const [],
+        ),
+        tag: tag,
+      );
+
+      // 1. Initial list with 2 items
+      pageCtrl.initialData['inventory_list'] = [
+        {'id': 1, 'name': 'Item 1'},
+        {'id': 2, 'name': 'Item 2'},
+      ];
+
+      final stagingTable = ComponentTable(
+        id: 'inventory_table',
+        referenceId: 'inventory_list',
+        columns: [
+          TColumn(header: 'Name', body: 'name'),
+        ],
+        http: HttpData.empty(),
+      );
+
+      final tableCtrl = ComponentTableController(
+        component: stagingTable,
+        contextData: {
+          'layoutFormId': 'test_delete_sync',
+          'inventory_list': pageCtrl.initialData['inventory_list'],
+        },
+      );
+
+      // Load initial data into table
+      await tableCtrl.loadData();
+      expect(tableCtrl.rows.length, 2);
+
+      // 2. User deletes row 0 (Item 1)
+      final updatedList = List.from(pageCtrl.initialData['inventory_list']);
+      updatedList.removeAt(0);
+      pageCtrl.initialData['inventory_list'] = updatedList;
+
+      // 3. Table reload triggers (e.g. from _on_success_callback)
+      await tableCtrl.loadData();
+
+      // Verify row was deleted and not revived
+      expect(tableCtrl.rows.length, 1);
+      expect(tableCtrl.rows[0]['name'], 'Item 2');
+      expect(pageCtrl.initialData['inventory_list'].length, 1);
+      expect(pageCtrl.initialData['inventory_list'][0]['name'], 'Item 2');
+
+      // 4. Delete the remaining row
+      final emptyList = List.from(pageCtrl.initialData['inventory_list']);
+      emptyList.removeAt(0);
+      pageCtrl.initialData['inventory_list'] = emptyList;
+
+      await tableCtrl.loadData();
+      expect(tableCtrl.rows, isEmpty);
+      expect(pageCtrl.initialData['inventory_list'], isEmpty);
+
+      Get.delete<CreatePageController>(tag: tag);
+    });
   });
 
   group('ComponentTable reloadWithRefresh', () {

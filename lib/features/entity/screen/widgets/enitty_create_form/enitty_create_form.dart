@@ -149,7 +149,19 @@ class _EntityCreateFormState extends State<EntityCreateForm> {
             dataAction: widget.dataAction,
           );
         }).toList();
-        return Column(children: children);
+
+        if (children.length <= 1) {
+          return Column(children: children);
+        }
+
+        final List<Widget> childrenWithGap = [];
+        for (int i = 0; i < children.length; i++) {
+          childrenWithGap.add(children[i]);
+          if (i < children.length - 1) {
+            childrenWithGap.add(const SizedBox(height: 16));
+          }
+        }
+        return Column(children: childrenWithGap);
       },
     );
   }

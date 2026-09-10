@@ -254,6 +254,8 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
                     "tableId": widget.component.id,
                     "rowIndex": index,
                     "columnBody": c.body,
+                    "entity": widget.data['entity'] ?? controller.tableEntity,
+                    "tableEntity": controller.tableEntity,
                     "_on_success_callback": () => controller.loadData(),
                     "onRowChanged": (newData) =>
                         controller.onRowChanged(index, newData),
@@ -388,6 +390,7 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
               ),
             ),
             table,
+            const SizedBox(height: 16),
           ],
         );
       }
@@ -398,6 +401,7 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
         children: [
           if (refreshButton != null) refreshButton,
           table,
+          const SizedBox(height: 16),
         ],
       );
     });

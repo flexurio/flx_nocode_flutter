@@ -95,6 +95,21 @@ class ComponentTableController extends GetxController {
   /// Builds a context map merged with live text values from all managed controllers.
   JsonMap _buildEffectiveContext() {
     final effectiveContext = Map<String, dynamic>.from(contextData);
+    final layoutFormId = (contextData['rootLayoutFormId'] ?? contextData['layoutFormId']) as String?;
+    if (layoutFormId != null) {
+      final tag = 'create_page_$layoutFormId';
+      if (Get.isRegistered<CreatePageController>(tag: tag)) {
+        final pageCtrl = Get.find<CreatePageController>(tag: tag);
+        effectiveContext.addAll(pageCtrl.initialData);
+      } else if (Get.isRegistered<CreatePageController>()) {
+        final pageCtrl = Get.find<CreatePageController>();
+        effectiveContext.addAll(pageCtrl.initialData);
+      }
+    } else if (Get.isRegistered<CreatePageController>()) {
+      final pageCtrl = Get.find<CreatePageController>();
+      effectiveContext.addAll(pageCtrl.initialData);
+    }
+
     final allControllers = (contextData['allControllers'] as Map?)
         ?.cast<String, TextEditingController>();
     if (allControllers != null) {
@@ -153,6 +168,9 @@ class ComponentTableController extends GetxController {
             if (decoded is List) {
               rows.value = _parseRows(decoded);
               isLoading.value = false;
+              if (component.referenceId != null && component.referenceId!.isNotEmpty) {
+                contextData[component.referenceId!] = decoded;
+              }
               notifyChanged();
               return;
             }
@@ -164,6 +182,9 @@ class ComponentTableController extends GetxController {
         if (localData is List) {
           rows.value = _parseRows(localData);
           isLoading.value = false;
+          if (component.referenceId != null && component.referenceId!.isNotEmpty) {
+            contextData[component.referenceId!] = localData;
+          }
           notifyChanged();
           return;
         }
@@ -295,16 +316,23 @@ class ComponentTableController extends GetxController {
       }
 
       final layoutFormId = (contextData['rootLayoutFormId'] ?? contextData['layoutFormId']) as String?;
+      CreatePageController? pageController;
       if (layoutFormId != null) {
         final tagPage = 'create_page_$layoutFormId';
         if (Get.isRegistered<CreatePageController>(tag: tagPage)) {
-          final pageController = Get.find<CreatePageController>(tag: tagPage);
-          final currentInitialVal = pageController.initialData[targetId];
-          final currentRowsJson = jsonEncode(rows);
-          final currentInitialValJson = jsonEncode(currentInitialVal);
-          if (currentInitialValJson != currentRowsJson) {
-            pageController.initialData[targetId] = jsonDecode(currentRowsJson);
-          }
+          pageController = Get.find<CreatePageController>(tag: tagPage);
+        }
+      }
+      if (pageController == null && Get.isRegistered<CreatePageController>()) {
+        pageController = Get.find<CreatePageController>();
+      }
+
+      if (pageController != null) {
+        final currentInitialVal = pageController.initialData[targetId];
+        final currentRowsJson = jsonEncode(rows);
+        final currentInitialValJson = jsonEncode(currentInitialVal);
+        if (currentInitialValJson != currentRowsJson) {
+          pageController.initialData[targetId] = jsonDecode(currentRowsJson);
         }
       }
     } catch (e) {
