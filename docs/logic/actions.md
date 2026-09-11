@@ -33,6 +33,11 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `show_submit_button`| Boolean | No | Whether to show the submit button (default `true`) in layout forms opened by this action. |
 | `print` | Boolean | No | For PDF action type `display_pdf`: whether to allow printing (default `true`). |
 | `download` | Boolean | No | For PDF action type `display_pdf`: whether to allow downloading (default `true`). |
+| `success_title` | String | No | Title for success dialog when using `on_success: "show_success_dialog_with_data"`. Supports JS interpolation. Default: `"Success"`. |
+| `success_message` | String | No | Message body for success dialog. Supports JS interpolation (e.g. `With ID: {{data.id}}`). |
+| `copy_label` | String | No | Button label for copy button in success dialog (e.g. `"Copy ID"`). |
+| `copy_value` | String | No | Value to copy to clipboard (supports `{{data.id}}`). |
+| `confirm_action` | Object | No | Action to execute when the user clicks the "Confirm" button on the success dialog. Supports `type: "navigate"` with `entity_id` and `params`. |
 | `workflow` | Object | No* | The workflow configuration to execute (required for `workflow` type). See [Submit Workflow](./submit_workflow.md). |
 
 ---
@@ -238,6 +243,46 @@ This example shows how to use a dropdown inside a table to update a specific fie
 }
 ```
 When a value is selected in this dropdown, it will update the `department_id` field in the current table row and notify the parent form of the change.
+
+---
+
+## 8. Success Dialog with Follow-up Action (`confirm_action`)
+
+When an action performs a submission (e.g. creating a header transaction) and needs to:
+1. Show a success confirmation dialog with a Copy button (e.g. Copy ID).
+2. Prompt the user with a **Confirm** button.
+3. Automatically navigate/direct to a detail page upon clicking **Confirm**, passing interpolated filters (e.g. ID and normalized period).
+
+Configure `on_success: "show_success_dialog_with_data"` along with `confirm_action`:
+
+```json
+{
+  "id": "Create_Transaction",
+  "type": "open_page",
+  "name": "Transaction",
+  "layout_form_id": "create general",
+  "on_success": "show_success_dialog_with_data",
+  "on_failure": ["toast"],
+  "success_title": "Success",
+  "success_message": "The transaction submission has been created!\nWith ID : {{data.id}}",
+  "copy_label": "Copy ID",
+  "copy_value": "{{data.id}}",
+  "confirm_action": {
+    "type": "navigate",
+    "entity_id": "lbb_expense_transaction_details",
+    "params": {
+      "lbb_expense_transaction_header_id": "{{data.id || id}}",
+      "period": "{{ (data.period || period || '').replaceAll('/', '') }}"
+    }
+  }
+}
+```
+
+### Flow
+1. **Form Submission**: The user fills and submits the layout form.
+2. **Success Popup**: `CardSuccessWithData` appears showing the formatted ID with a `[Copy ID]` button and a `[Confirm]` button.
+3. **On Confirm**: When the user clicks `[Confirm]`, the dialog closes and the app navigates to `entity_id` (`lbb_expense_transaction_details`) with `params` passed as `initialFilters` and `parentData`.
+4. **Back Navigation**: The destination page displays an `AppBar` with a Back button that cleanly pops back to the previous screen.
 
 ---
 

@@ -38,6 +38,8 @@ abstract class WorkflowAction {
         return StopWorkflowAction();
       case 'export':
         return ExportAction.fromMap(map);
+      case 'navigate':
+        return NavigateAction.fromMap(map);
       default:
         throw FormatException('Unknown workflow action type: $type');
     }

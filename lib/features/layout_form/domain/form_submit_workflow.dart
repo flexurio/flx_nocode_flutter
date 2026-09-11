@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
@@ -17,6 +18,8 @@ export 'workflow_actions/ui_actions.dart';
 export 'workflow_actions/validate_action.dart';
 export 'workflow_actions/var_actions.dart';
 import '../../../src/app/model/configuration.dart';
+import '../../../src/app/model/filter.dart';
+import '../../../src/app/view/widget/entity_home.dart';
 
 typedef WorkflowValidator = Future<void> Function(
     String scope, Map<String, dynamic> form);
@@ -155,6 +158,11 @@ abstract class UiBridge {
   Future<void> toast(String variant, String message);
   Future<void> closeModal();
   Future<void> refresh(String target);
+  /// Navigate to another entity page.
+  ///
+  /// [entityId] is the ID of the target entity to open (e.g. `lbb_expense_transaction_details`).
+  /// [params] is optional data to pass as `pageData`/`parentData` to the destination.
+  Future<void> navigate(String entityId, Map<String, dynamic> params);
   void log(String message);
 }
 
@@ -169,12 +177,17 @@ class NoopUiBridge implements UiBridge {
   Future<void> refresh(String target) async {}
 
   @override
+  Future<void> navigate(String entityId, Map<String, dynamic> params) async {}
+
+  @override
   void log(String message) {}
 }
 
 class ProductionUiBridge implements UiBridge {
   final String? layoutFormId;
-  ProductionUiBridge({this.layoutFormId});
+  final BuildContext? buildContext;
+
+  ProductionUiBridge({this.layoutFormId, this.buildContext});
 
   @override
   Future<void> toast(String variant, String message) async {}
@@ -201,8 +214,126 @@ class ProductionUiBridge implements UiBridge {
   }
 
   @override
+  Future<void> navigate(String entityId, Map<String, dynamic> params) async {
+    print('[ProductionUiBridge] navigate called for entityId: $entityId, params: $params');
+    final ctx = buildContext ?? Get.context;
+    if (ctx == null) {
+      print('[ProductionUiBridge] navigate: no BuildContext available, skipping');
+      return;
+    }
+    if (!ctx.mounted) {
+      print('[ProductionUiBridge] navigate: context is no longer mounted, skipping');
+      return;
+    }
+    try {
+      final primaryColor = Configuration.instance.flavorConfig.color;
+      // Import is done via flx_nocode_flutter package exports below.
+      // We use the internal MenuCustom widget approach.
+      final app = _buildNavigateApp(entityId, params, primaryColor);
+      await Navigator.push(
+        ctx,
+        MaterialPageRoute(builder: (_) => app),
+      );
+    } catch (e) {
+      print('[ProductionUiBridge] navigate error: $e');
+    }
+  }
+
+  Widget _buildNavigateApp(
+    String entityId,
+    Map<String, dynamic> params,
+    Color primaryColor,
+  ) {
+    // Lazy import to avoid circular dependency — resolve via GetX service locator.
+    // The navigate action pushes a MenuCustom embedded page for the target entity.
+    return _NavigatePageWrapper(
+      entityId: entityId,
+      params: params,
+      primaryColor: primaryColor,
+    );
+  }
+
+  @override
   void log(String message) {
     print('[ProductionUiBridge] $message');
+  }
+}
+
+/// ============================================================================
+/// NAVIGATE PAGE WRAPPER (used by ProductionUiBridge.navigate)
+/// ============================================================================
+class _NavigatePageWrapper extends StatelessWidget {
+  final String entityId;
+  final Map<String, dynamic> params;
+  final Color primaryColor;
+
+  const _NavigatePageWrapper({
+    required this.entityId,
+    required this.params,
+    required this.primaryColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final handler = NavigateActionHandler.instance;
+    if (handler != null) {
+      return handler(
+        entityId: entityId,
+        params: params,
+        primaryColor: primaryColor,
+      );
+    }
+    final initialFilters = params.entries
+        .map((e) => Filter(reference: e.key, value: e.value?.toString() ?? ''))
+        .toList();
+    return MenuCustom.fromId(
+      entityId: entityId,
+      parentData: [params],
+      initialFilters: initialFilters,
+      embedded: true,
+      firstPage: true,
+    );
+  }
+}
+
+/// ============================================================================
+/// NAVIGATE ACTION HANDLER REGISTRY
+/// ============================================================================
+/// Allows the host app to register a custom widget factory for the `navigate`
+/// workflow action. Call [NavigateActionHandler.register] once during app
+/// initialization to plug in the actual navigation widget (e.g. MenuCustom).
+typedef NavigateWidgetFactory = Widget Function({
+  required String entityId,
+  required Map<String, dynamic> params,
+  required Color primaryColor,
+});
+
+class NavigateActionHandler {
+  static NavigateWidgetFactory? _instance;
+
+  /// The currently registered factory, or null if not yet registered.
+  static NavigateWidgetFactory? get instance => _instance;
+
+  /// Register a factory that builds the navigation destination widget.
+  ///
+  /// Example (in main.dart or app initialization):
+  /// ```dart
+  /// NavigateActionHandler.register(({required entityId, required params, required primaryColor}) {
+  ///   return MenuCustom.fromId(
+  ///     entityId: entityId,
+  ///     parentData: [params],
+  ///     firstPage: true,
+  ///     embedded: true,
+  ///   );
+  /// });
+  /// ```
+  static void register(NavigateWidgetFactory factory) {
+    _instance = factory;
+  }
+
+  /// Reset the registered factory (useful for tests).
+  static void reset() {
+    _instance = null;
   }
 }
 

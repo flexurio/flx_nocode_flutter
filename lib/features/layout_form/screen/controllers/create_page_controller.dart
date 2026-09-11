@@ -245,6 +245,10 @@ class CreatePageController extends GetxController {
           if (parentData.isNotEmpty) 'parentData': parentData,
         },
         workflow: layoutForm.submitWorkflow!.toMap(),
+        uiBridge: ProductionUiBridge(
+          layoutFormId: layoutFormId,
+          buildContext: context,
+        ),
       );
     } else {
       final entityCtrl =

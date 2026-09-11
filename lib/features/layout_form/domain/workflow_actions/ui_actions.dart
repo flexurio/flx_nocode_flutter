@@ -44,3 +44,53 @@ class RefreshAction implements WorkflowAction {
     await ui.refresh(t);
   }
 }
+
+/// Navigates to another entity/page after a successful workflow.
+///
+/// JSON schema:
+/// ```json
+/// {
+///   "type": "navigate",
+///   "entity_id": "lbb_expense_transaction_details",
+///   "params": {
+///     "id": "{{ http.request.data.id }}",
+///     "period": "{{ form.period }}"
+///   }
+/// }
+/// ```
+class NavigateAction implements WorkflowAction {
+  /// The entity ID to navigate to (e.g. `lbb_expense_transaction_details`).
+  final String entityId;
+
+  /// Optional parameters to pass to the destination page as `parentData`.
+  /// Supports template expressions (e.g. `{{ http.request.data.id }}`).
+  final Map<String, dynamic> params;
+
+  const NavigateAction({required this.entityId, required this.params});
+
+  factory NavigateAction.fromJson(Map<String, dynamic> json) {
+    final rawParams = json['params'];
+    final params = rawParams is Map<String, dynamic>
+        ? rawParams
+        : rawParams is Map
+            ? Map<String, dynamic>.from(rawParams)
+            : <String, dynamic>{};
+    return NavigateAction(
+      entityId: (json['entity_id'] ?? '').toString(),
+      params: params,
+    );
+  }
+
+  @override
+  Future<void> execute(WorkflowContext ctx, UiBridge ui) async {
+    final resolvedEntityId =
+        Template.resolve(entityId, ctx)?.toString() ?? entityId;
+    final resolvedParams = Template.resolve(params, ctx);
+    final paramsMap = resolvedParams is Map<String, dynamic>
+        ? resolvedParams
+        : resolvedParams is Map
+            ? Map<String, dynamic>.from(resolvedParams)
+            : <String, dynamic>{};
+    await ui.navigate(resolvedEntityId, paramsMap);
+  }
+}

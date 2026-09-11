@@ -128,6 +128,9 @@ class ActionFactory {
         case 'export':
           return ExportAction.fromJson(json);
 
+        case 'navigate':
+          return NavigateAction.fromJson(json);
+
         default:
           throw WorkflowConfigurationException(
             'Unsupported action type "$type".',
@@ -244,6 +247,8 @@ class _DefaultNoopUiBridge implements UiBridge {
   Future<void> closeModal() async {}
   @override
   Future<void> refresh(String target) async {}
+  @override
+  Future<void> navigate(String entityId, Map<String, dynamic> params) async {}
   @override
   void log(String message) {}
 }

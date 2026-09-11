@@ -98,11 +98,43 @@ Manage temporary state within the workflow.
 | `key` | String | Yes | The variable name (accessible via `vars.KEY`). |
 | `value` | Any | Yes | The value to store (supports expressions). |
 
-### 4. UI Interactions (`toast`, `close_modal`, `refresh`)
+### 4. UI Interactions (`toast`, `close_modal`, `refresh`, `navigate`)
 
 - **`toast`**: Shows a message to the user. `variant` can be `success`, `error`, `info`, or `warning`.
 - **`close_modal`**: Closes the current view.
 - **`refresh`**: Reloads a component or data source by ID. Specify the ID of the component to refresh using the `target` parameter (e.g. `{ "type": "refresh", "target": "customer_table" }`).
+- **`navigate`**: Navigates to a different entity page after the workflow completes. Useful for redirecting the user to a detail page after creating a record.
+
+| Key | Type | Required | Description |
+| :--- | :--- | :---: | :--- |
+| `entity_id` | String | Yes | The ID of the destination entity (e.g. `lbb_expense_transaction_details`). Supports template expressions. |
+| `params` | Object | No | Key-value pairs passed to the destination page as `parentData`. Values support `{{ }}` expressions. |
+
+**Example — navigate to detail page after create:**
+```json
+{
+  "type": "navigate",
+  "entity_id": "lbb_expense_transaction_headers",
+  "params": {
+    "id": "{{ http.request.data.id }}"
+  }
+}
+```
+
+> [!NOTE]
+> The `navigate` action requires the host app to register a `NavigateWidgetFactory` via `NavigateActionHandler.register(...)` during initialization. Without a registered factory, the action falls back to a simple placeholder screen.
+>
+> **Host-app setup example:**
+> ```dart
+> NavigateActionHandler.register(({required entityId, required params, required primaryColor}) {
+>   return MenuCustom.fromId(
+>     entityId: entityId,
+>     parentData: [params],
+>     firstPage: false,
+>     embedded: true,
+>   );
+> });
+> ```
 
 ### 5. Control Flow (`condition`, `loop`, `try_catch`)
 

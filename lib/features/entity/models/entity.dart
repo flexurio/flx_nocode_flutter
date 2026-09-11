@@ -342,13 +342,23 @@ class EntityCustom extends HiveObject {
   /// [useFileSystem] if true, attempts to load the entity from the local file system.
   /// [basePath] optionally overrides the default loading path.
   /// Returns `null` if the asset cannot be found or parsed.
+  /// Clears the in-memory entity cache, either for a specific [id] or entirely.
+  static void clearCache([String? id]) {
+    if (id != null) {
+      _entityCache.remove(id);
+    } else {
+      _entityCache.clear();
+    }
+  }
+
   static Future<EntityCustom?> getEntity(
     String id, {
     bool useFileSystem = false,
     String? basePath,
+    bool forceReload = false,
   }) async {
     // Check cache first
-    if (_entityCache.containsKey(id) && !useFileSystem) {
+    if (!forceReload && _entityCache.containsKey(id) && !useFileSystem) {
       return _entityCache[id];
     }
 

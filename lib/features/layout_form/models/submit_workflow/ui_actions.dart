@@ -35,3 +35,32 @@ class RefreshAction extends WorkflowAction {
   @override
   Map<String, dynamic> toMap() => {'type': 'refresh', 'target': target};
 }
+
+/// Navigates to another entity/page.
+class NavigateAction extends WorkflowAction {
+  final String entityId;
+  final Map<String, dynamic> params;
+
+  NavigateAction({required this.entityId, required this.params})
+      : super('navigate');
+
+  factory NavigateAction.fromMap(Map<String, dynamic> map) {
+    final rawParams = map['params'];
+    final params = rawParams is Map<String, dynamic>
+        ? rawParams
+        : rawParams is Map
+            ? Map<String, dynamic>.from(rawParams)
+            : <String, dynamic>{};
+    return NavigateAction(
+      entityId: (map['entity_id'] ?? '').toString(),
+      params: params,
+    );
+  }
+
+  @override
+  Map<String, dynamic> toMap() => {
+        'type': 'navigate',
+        'entity_id': entityId,
+        'params': params,
+      };
+}

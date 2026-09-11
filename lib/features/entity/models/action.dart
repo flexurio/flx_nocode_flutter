@@ -124,6 +124,10 @@ class ActionD extends HiveObject {
   /// The workflow to execute for workflow action type.
   final Map<String, dynamic>? workflow;
 
+  /// Optional action to execute after the success dialog is confirmed.
+  /// E.g. navigating to a detail page with params.
+  final Map<String, dynamic>? confirmAction;
+
   ActionD({
     required this.isMultiple,
     required this.onSuccess,
@@ -159,6 +163,7 @@ class ActionD extends HiveObject {
     this.canDownload = true,
     this.popup = false,
     this.workflow,
+    this.confirmAction,
   }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       assert(layoutFormId != null && layoutFormId!.isNotEmpty,
@@ -202,6 +207,7 @@ class ActionD extends HiveObject {
     bool? canDownload,
     bool? popup,
     Map<String, dynamic>? workflow,
+    Map<String, dynamic>? confirmAction,
   }) {
     return ActionD(
       exportFormat: exportFormat ?? this.exportFormat,
@@ -238,6 +244,7 @@ class ActionD extends HiveObject {
       canDownload: canDownload ?? this.canDownload,
       popup: popup ?? this.popup,
       workflow: workflow ?? this.workflow,
+      confirmAction: confirmAction ?? this.confirmAction,
     );
   }
 
@@ -316,6 +323,9 @@ class ActionD extends HiveObject {
       canDownload: json['download'] ?? true,
       popup: json['popup'] == true || json['is_popup'] == true,
       workflow: json['workflow'] != null ? Map<String, dynamic>.from(json['workflow'] as Map) : null,
+      confirmAction: json['confirm_action'] is Map
+          ? Map<String, dynamic>.from(json['confirm_action'] as Map)
+          : null,
     );
   }
 
@@ -348,6 +358,7 @@ class ActionD extends HiveObject {
       'copy_value': copyValue,
       'target_variable': targetVariable,
       'value': value,
+      if (confirmAction != null) 'confirm_action': confirmAction,
       'validate': validate,
       'show_submit_button': showSubmitButton,
       'export_format': exportFormat,

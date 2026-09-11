@@ -224,6 +224,20 @@ void main() {
           'https://mf-marketing-api-v2.flexurio.com/projects?page=1&search=&sort=created_at&ascending=false&limit=10&period_start.gte=&period_end.lte=',
         );
       });
+
+      test('current running period in URL using formatDate(new Date(), "yyyyMM")', () {
+        const template =
+            "{{ backend_host }}/vw_lbb_marketing_structures?is_dummy.eq=0&period.eq={{ formatDate(new Date(), 'yyyyMM') }}&marketing_position_period.eq={{ formatDate(new Date(), 'yyyyMM') }}";
+
+        final now = DateTime.now();
+        final expectedPeriod = "${now.year}${now.month.toString().padLeft(2, '0')}";
+        final result = template.interpolateJavascript();
+
+        expect(
+          result,
+          '${Configuration.instance.backendHost}/vw_lbb_marketing_structures?is_dummy.eq=0&period.eq=$expectedPeriod&marketing_position_period.eq=$expectedPeriod',
+        );
+      });
     });
 
     group('Shortcut Evaluator Enhancements', () {

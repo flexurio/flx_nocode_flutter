@@ -198,6 +198,7 @@ class EntityController extends GetxController {
     required Map<String, dynamic> form,
     required Map<String, dynamic> data,
     required Map<String, dynamic> workflow,
+    UiBridge? uiBridge,
   }) async {
     _state.value = const EntityState.loading();
     _logSection('WORKFLOW', '🚀 Starting Workflow Submission');
@@ -224,7 +225,10 @@ class EntityController extends GetxController {
         debugPrint('    > Permissions: ${ctx.auth.permissions.length} items');
       }
 
-      final result = await WorkflowExecutor(definition).run(ctx);
+      final result = await WorkflowExecutor(
+        definition,
+        ui: uiBridge ?? NoopUiBridge(),
+      ).run(ctx);
 
       if (result.isSuccess) {
         _logSuccess('WORKFLOW', 'Execution completed successfully');
