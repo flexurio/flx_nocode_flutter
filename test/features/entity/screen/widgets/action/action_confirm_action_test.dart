@@ -4,6 +4,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_confirm_dialog_extension.dart';
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 
 void main() {
@@ -137,6 +138,64 @@ void main() {
 
       expect(resolvedUrl, contains('period_end.gte=20260901'));
       expect(resolvedUrl, contains('period_start.lte=20260930'));
+    });
+
+    testWidgets('showConfirmDialog pushes to root navigator covering entire app', (tester) async {
+      final action = ActionD.fromJson({
+        'id': 'delete_test',
+        'name': 'Delete Item',
+        'type': 'show_confirmation_dialog',
+        'confirm_message': 'Are you sure you want to delete this item?',
+      });
+
+      final rootNavKey = GlobalKey<NavigatorState>();
+      final nestedNavKey = GlobalKey<NavigatorState>();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          navigatorKey: rootNavKey,
+          home: Scaffold(
+            body: Navigator(
+              key: nestedNavKey,
+              onGenerateRoute: (settings) => MaterialPageRoute(
+                builder: (nestedContext) => Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      action.showConfirmDialog(
+                        context: nestedContext,
+                        action: DataAction.delete,
+                        label: 'Delete Item',
+                        confirmationMessageText: 'Are you sure you want to delete this item?',
+                        onConfirm: (ctx) async {},
+                      );
+                    },
+                    child: const Text('Trigger Confirm'),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Trigger Confirm'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Are you sure you want to delete this item?'), findsOneWidget);
+
+      // Verify the dialog was pushed on rootNavKey (full background) rather than nestedNavKey
+      // Root navigator should have more than 1 route (home + dialog)
+      expect(rootNavKey.currentState?.canPop(), isTrue);
+      // Nested navigator only has the 1 initial route
+      expect(nestedNavKey.currentState?.canPop(), isFalse);
+
+      final cancelBtn = find.textContaining('cancel', findRichText: true, skipOffstage: false);
+      if (cancelBtn.evaluate().isNotEmpty) {
+        await tester.tap(cancelBtn.first);
+        await tester.pumpAndSettle();
+        expect(find.text('Are you sure you want to delete this item?'), findsNothing);
+        expect(rootNavKey.currentState?.canPop(), isFalse);
+      }
     });
   });
 }

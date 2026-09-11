@@ -280,9 +280,18 @@ Configure `on_success: "show_success_dialog_with_data"` along with `confirm_acti
 
 ### Flow
 1. **Form Submission**: The user fills and submits the layout form.
-2. **Success Popup**: `CardSuccessWithData` appears showing the formatted ID with a `[Copy ID]` button and a `[Confirm]` button.
+2. **Success Popup**: `CardSuccessWithData` appears showing the formatted ID with a `[Copy ID]` button and a `[Confirm]` button. The dialog is pushed to the root navigator (`useRootNavigator: true`), displaying a full-screen dimmed backdrop that covers the entire application window (including the top navigation bar and sidebar).
 3. **On Confirm**: When the user clicks `[Confirm]`, the dialog closes and the app navigates to `entity_id` (`lbb_expense_transaction_details`) with `params` passed as `initialFilters` and `parentData`.
 4. **Back Navigation**: The destination page displays an `AppBar` with a Back button that cleanly pops back to the previous screen.
+
+### Full-Screen Backdrop Overlay
+All confirmation, alert, and success popups now use `useRootNavigator: true`:
+- **Confirmation Dialogs**: `show_confirmation_dialog` (via `ActionConfirmDialogExtension.showConfirmDialog`) for delete and action approvals.
+- **Delete Buttons**: Table row / detail delete confirmation dialogs (`DeleteButton` and `BackendOther.showConfirmationDialog`).
+- **Success Popups**: Post-submission dialogs (`show_success_dialog_with_data` and standard `show_dialog`).
+- **Error Popups**: `show_error_dialog`.
+
+This ensures that the dimmed backdrop covers the entire viewport (sidebar and top app bar included), creating a fully focused modal experience for the user.
 
 ---
 

@@ -58,7 +58,7 @@ extension ActionExecutionExtension on ActionD {
         if (jsonData == null) {
           await showDialog(
             context: context,
-            useRootNavigator: false,
+            useRootNavigator: true,
             builder: (ctx) => AlertDialog(
               title: const Text('Error'),
               content: const Text('JSON tidak valid atau data kosong.'),

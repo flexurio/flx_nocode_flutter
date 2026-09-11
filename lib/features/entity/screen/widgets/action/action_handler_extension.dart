@@ -58,13 +58,13 @@ extension ActionSuccessHandlerExtension on ActionD {
         case ActionType.showDialog:
           await showDialog(
             context: context,
-            useRootNavigator: false,
-            builder: (_) => AlertDialog(
+            useRootNavigator: true,
+            builder: (dialogCtx) => AlertDialog(
               title: const Text('Success'),
               content: const Text('Operation completed successfully.'),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => Navigator.of(dialogCtx).pop(),
                   child: const Text('OK'),
                 ),
               ],
@@ -142,7 +142,7 @@ extension ActionSuccessHandlerExtension on ActionD {
 
           final confirmed = await showDialog<bool?>(
             context: context,
-            useRootNavigator: false,
+            useRootNavigator: true,
             builder: (_) => CardSuccessWithData(
               title: titleText,
               message: messageText,
@@ -257,13 +257,13 @@ extension ActionSuccessHandlerExtension on ActionD {
         case ActionType.showErrorDialog:
           showDialog(
             context: context,
-            useRootNavigator: false,
-            builder: (_) => AlertDialog(
+            useRootNavigator: true,
+            builder: (dialogCtx) => AlertDialog(
               title: const Text('Failed'),
               content: Text(message),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => Navigator.of(dialogCtx).pop(),
                   child: const Text('OK'),
                 ),
               ],

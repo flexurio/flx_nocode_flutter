@@ -12,7 +12,7 @@ extension ActionConfirmDialogExtension on ActionD {
   }) async {
     await showDialog<void>(
       context: context,
-      useRootNavigator: false,
+      useRootNavigator: true,
       barrierDismissible: false,
       builder: (dialogCtx) {
         bool isProgress = false;
