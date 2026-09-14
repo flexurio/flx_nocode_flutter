@@ -215,6 +215,11 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase>
       requestData['data'] = controllerValues;
     }
 
+    final parentDataList = requestData['parentData'];
+    if (parentDataList is List && parentDataList.isNotEmpty && requestData['parent'] == null) {
+      requestData['parent'] = parentDataList.last;
+    }
+
     debugPrint(
         '[Nocode Selection] prepareRequestData for ${component.id}. form.account_bank_nip = ${requestData['form']?['account_bank_nip']}. Interpolated URL: ${component.httpData?.url.interpolateJavascript(requestData)}');
     return requestData;

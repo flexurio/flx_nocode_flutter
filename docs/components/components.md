@@ -13,7 +13,7 @@ Many components share these layout and behavioral properties:
 | `id` | String | Yes | Unique identifier for the component. This is also the form value key for input components. |
 | `type` | String | Yes | Component type, for example `text`, `text_field`, `button`. |
 | `key` | String | No | Dynamic key string for the component widget. When its evaluated value (e.g. `{{ now() }}`) changes, the widget is completely recreated, forcing state/HTTP requests to reload. |
-| `visibilityCondition` | String | No | Logic expression that controls whether the component is rendered. |
+| `visibilityCondition` | String | No | Logic expression that controls whether the component is rendered. Supports context variables (`form`, `data`, `current`, `parent`, `vars`). E.g., `parent.chart_of_account_id == '6021103'`. |
 | `events` | Map | No | Custom event listeners, for example `onLoad`. |
 | `widthMode` | String | No | `fill`, `hug`, or `fixed`. Supported by most visual/input/layout components. |
 | `heightMode` | String | No | `fill`, `hug`, or `fixed`. Supported by layout, container, image, and list components. |

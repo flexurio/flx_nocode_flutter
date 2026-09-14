@@ -96,7 +96,7 @@ The following patterns are evaluated natively in Dart and **do not** require bro
 6. **Logical AND (`&&`)**: Guard conditions (e.g., `form.nie_code && 'yes'`).
 7. **Ternary Operators**: Conditionals (e.g., `condition ? 'yes' : 'no'`).
 8. **Date Helpers**: `now()`, `now(format)`, `formatDate(new Date(val), format)`.
-9. **Basic Comparisons**: Equality check operators (`==`, `!=`, `===`, `!==`).
+9. **Basic Comparisons**: Equality check operators (`==`, `!=`, `===`, `!==`). Loose equality (`==` and `!=`) seamlessly compares values across number and string representations (e.g., `parent.chart_of_account_id == '6021103'` matches numeric `6021103`), while strict operators (`===` and `!==`) enforce exact type and value equality.
 
 ### Best Practices
 

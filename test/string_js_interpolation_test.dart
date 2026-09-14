@@ -329,6 +329,38 @@ void main() {
         final result = template.interpolateJavascript(variables);
         expect(result, 'true');
       });
+
+      test('should support loose equality comparison between number and string in evaluateVisibility', () {
+        final variables = {
+          'parent': {
+            'chart_of_account_id': 6021103,
+            'status': 'ACTIVE',
+          }
+        };
+
+        // Number (in variables) compared to String literal
+        expect('parent.chart_of_account_id == "6021103"'.evaluateVisibility(variables), true);
+        expect('parent.chart_of_account_id == \'6021103\''.evaluateVisibility(variables), true);
+        // Number compared to Number literal
+        expect('parent.chart_of_account_id == 6021103'.evaluateVisibility(variables), true);
+        // Inequality
+        expect('parent.chart_of_account_id != "6021103"'.evaluateVisibility(variables), false);
+        expect('parent.chart_of_account_id != "9999999"'.evaluateVisibility(variables), true);
+        // Strict equality should check types strictly
+        expect('parent.chart_of_account_id === "6021103"'.evaluateVisibility(variables), false);
+        expect('parent.chart_of_account_id === 6021103'.evaluateVisibility(variables), true);
+
+        // Logical OR visibility condition
+        final condition = "{{ parent.chart_of_account_id == '6021103' || parent.chart_of_account_id == 6021103 }}";
+        expect(condition.evaluateVisibility(variables), true);
+
+        final nonMatchingVars = {
+          'parent': {
+            'chart_of_account_id': 1111111,
+          }
+        };
+        expect(condition.evaluateVisibility(nonMatchingVars), false);
+      });
     });
   });
 }

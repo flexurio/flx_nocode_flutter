@@ -150,9 +150,17 @@ class JsShortcutEvaluator {
     final right = _resolvePath(rightExpr, vars);
 
     if (op == '===' || op == '==') {
-      return left == right;
+      if (left == right) return true;
+      if (op == '==' && left != null && right != null) {
+        return left.toString() == right.toString();
+      }
+      return false;
     } else {
-      return left != right;
+      if (left == right) return false;
+      if (op == '!=' && left != null && right != null) {
+        return left.toString() != right.toString();
+      }
+      return true;
     }
   }
 

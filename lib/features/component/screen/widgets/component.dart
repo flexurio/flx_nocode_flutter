@@ -46,6 +46,8 @@ extension ComponentWidget on Component {
       ...data,
       if (controllers != null) 'allControllers': controllers,
       if (parentData != null) 'parentData': parentData,
+      if (parentData != null && parentData.isNotEmpty && !data.containsKey('parent'))
+        'parent': parentData.last,
       if (dataAction != null) 'dataAction': dataAction,
     };
 

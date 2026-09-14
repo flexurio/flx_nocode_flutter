@@ -22,6 +22,8 @@ These variables are available depending on the specific UI component or action b
 | `record` | Represents the data of the current record (e.g., in a table row). |
 | `data` | Alias for `record`, representing the current context's data. |
 | `current` | Alias for `record` or the current data context. |
+| `parent` | The immediate parent record when rendering nested child forms/sub-details (automatically populated from `parentData.last`). Allows accessing parent fields like `{{ parent.chart_of_account_id }}` in `visibilityCondition`, `initialValue`, and `httpData.url`. |
+| `parentData` | List of all ancestor records in hierarchical navigation or sub-detail views (`parentData.0`, `parentData.1`, etc.). |
 | `vars` | Local variables defined within a specific scope or action. |
 | `http` | Data returned from an HTTP request (used in post-request actions). |
 
