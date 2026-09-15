@@ -106,6 +106,12 @@ A rule consists of `all` (AND), `any` (OR), or `not` (NOT) groups of conditions.
 | --- | --- | --- |
 | `op` | `=`, `!=`, `>`, `>=`, `<`, `<=`, `in`, `not_in`, `is_empty`, `is_not_empty`, `contains` | `"op": "="` |
 
+### Context Variables in Rules
+Action rules automatically have access to:
+- Current row fields (e.g. `is_detail`, `status`, `realization_submission`)
+- `parent`: The parent record when rendering nested child or detail tables (automatically passed via `parentData.last`)
+- `parentData`: List of ancestor records
+
 ### Example: Show "Approve" only for "PENDING" status
 ```json
 "rule": {
@@ -114,6 +120,26 @@ A rule consists of `all` (AND), `any` (OR), or `not` (NOT) groups of conditions.
       "field": "status",
       "op": "=",
       "value": "PENDING"
+    }
+  ]
+}
+```
+
+### Advanced: JavaScript Expression in `field`
+For complex conditions (e.g. compound logical checks, evaluating `parent` record fields, or handling multiple variations of empty/zero values), you can write a JavaScript expression inside `{{ ... }}` in `field` and compare it against `true` or `false`:
+
+```json
+"rule": {
+  "all": [
+    {
+      "field": "{{ (parent.transaction_id == null || parent.transaction_id == '' || parent.transaction_id == '-') && (transaction_id == null || transaction_id == '' || transaction_id == '-') }}",
+      "op": "=",
+      "value": true
+    },
+    {
+      "field": "{{ (typeof realization_submission === 'undefined' || realization_submission == null || realization_submission == '' || realization_submission == 0 || realization_submission == '0') }}",
+      "op": "=",
+      "value": true
     }
   ]
 }

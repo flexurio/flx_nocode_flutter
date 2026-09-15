@@ -361,6 +361,119 @@ void main() {
         };
         expect(condition.evaluateVisibility(nonMatchingVars), false);
       });
+
+      test('should correctly evaluate transaction_id null, empty, or hyphen condition', () {
+        const expr = "{{ (parent.transaction_id == null || parent.transaction_id == '' || parent.transaction_id == '-') && (transaction_id == null || transaction_id == '' || transaction_id == '-') }}";
+
+        // Case 1: both null
+        expect(expr.interpolateJavascript({
+          'parent': {'transaction_id': null},
+          'transaction_id': null,
+        }), 'true');
+
+        // Case 2: parent is '-' and detail is null
+        expect(expr.interpolateJavascript({
+          'parent': {'transaction_id': '-'},
+          'transaction_id': null,
+        }), 'true');
+
+        // Case 3: parent has transaction_id 'LBP/01/26090004' and detail is null
+        expect(expr.interpolateJavascript({
+          'parent': {'transaction_id': 'LBP/01/26090004'},
+          'transaction_id': null,
+        }), 'false');
+
+        // Case 4: parent is null and detail has 'LBP/01/26090004'
+        expect(expr.interpolateJavascript({
+          'parent': {'transaction_id': null},
+          'transaction_id': 'LBP/01/26090004',
+        }), 'false');
+
+        // Case 5: both have 'LBP/01/26090004'
+        expect(expr.interpolateJavascript({
+          'parent': {'transaction_id': 'LBP/01/26090004'},
+          'transaction_id': 'LBP/01/26090004',
+        }), 'false');
+
+        // Case 6: parent not present at all, transaction_id is '-'
+        expect(expr.interpolateJavascript({
+          'transaction_id': '-',
+        }), 'true');
+      });
+
+      test('should correctly evaluate realization_submission null, empty, 0 condition', () {
+        const expr = "{{ (typeof realization_submission === 'undefined' || realization_submission == null || realization_submission == '' || realization_submission == 0 || realization_submission == '0') }}";
+
+        // Case 1: realization_submission is null
+        expect(expr.interpolateJavascript({
+          'realization_submission': null,
+        }), 'true');
+
+        // Case 2: realization_submission is empty string
+        expect(expr.interpolateJavascript({
+          'realization_submission': '',
+        }), 'true');
+
+        // Case 3: realization_submission is 0 (number)
+        expect(expr.interpolateJavascript({
+          'realization_submission': 0,
+        }), 'true');
+
+        // Case 4: realization_submission is '0' (string)
+        expect(expr.interpolateJavascript({
+          'realization_submission': '0',
+        }), 'true');
+
+        // Case 5: realization_submission is undefined / not in map
+        expect(expr.interpolateJavascript({}), 'true');
+
+        // Case 6: realization_submission is 100000 (number)
+        expect(expr.interpolateJavascript({
+          'realization_submission': 100000,
+        }), 'false');
+
+        // Case 7: realization_submission is '100000' (string)
+        expect(expr.interpolateJavascript({
+          'realization_submission': '100000',
+        }), 'false');
+      });
+
+      test('should correctly evaluate parent.realization_submission null, empty, 0 condition', () {
+        const expr = "{{ (typeof parent === 'undefined' || !parent || parent.realization_submission == null || parent.realization_submission == '' || parent.realization_submission == 0 || parent.realization_submission == '0') && (typeof realization_submission === 'undefined' || realization_submission == null || realization_submission == '' || realization_submission == 0 || realization_submission == '0') }}";
+
+        // Case 1: parent.realization_submission is null
+        expect(expr.interpolateJavascript({
+          'parent': {'realization_submission': null},
+        }), 'true');
+
+        // Case 2: parent.realization_submission is empty string
+        expect(expr.interpolateJavascript({
+          'parent': {'realization_submission': ''},
+        }), 'true');
+
+        // Case 3: parent.realization_submission is 0 (number)
+        expect(expr.interpolateJavascript({
+          'parent': {'realization_submission': 0},
+        }), 'true');
+
+        // Case 4: parent.realization_submission is '0' (string)
+        expect(expr.interpolateJavascript({
+          'parent': {'realization_submission': '0'},
+        }), 'true');
+
+        // Case 5: parent is empty map / undefined
+        expect(expr.interpolateJavascript({}), 'true');
+
+        // Case 6: parent.realization_submission is 100000
+        expect(expr.interpolateJavascript({
+          'parent': {'realization_submission': 100000},
+        }), 'false');
+
+        // Case 7: parent is null but local realization_submission is 100000
+        expect(expr.interpolateJavascript({
+          'realization_submission': 100000,
+        }), 'false');
+      });
     });
   });
 }

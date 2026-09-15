@@ -22,7 +22,14 @@ extension ActionListWidgetExtension on List<ActionD> {
     bool expanded = false,
     VoidCallback? onSuccessCallback,
   }) {
-    return where((action) => action.isVisibleFor(data))
+    final evalData = <String, dynamic>{
+      ...data,
+      if (parentData.isNotEmpty && !data.containsKey('parent'))
+        'parent': parentData.last,
+      if (parentData.isNotEmpty && !data.containsKey('parentData'))
+        'parentData': parentData,
+    };
+    return where((action) => action.isVisibleFor(evalData, parentData: parentData))
         .map((e) => e.buttonSingle(
               entity,
               context,
@@ -43,7 +50,7 @@ extension ActionListWidgetExtension on List<ActionD> {
     bool? bypassPermission,
     VoidCallback? onSuccessCallback,
   }) {
-    return where((action) => action.isVisibleForList(data))
+    return where((action) => action.isVisibleForList(data, parentData: parentData))
         .map((e) => e.buttonMultiple(
               entity,
               context,
@@ -60,13 +67,21 @@ extension ActionListWidgetExtension on List<ActionD> {
 //             EXTENSION ON ACTIOND (WIDGETS)
 // ------------------------------------------------------
 extension ActionWidgetExtension on ActionD {
-  bool isVisibleFor(JsonMap data) {
+  bool isVisibleFor(JsonMap data, {JsonList? parentData}) {
     try {
       if (rule == null) {
         return true;
       }
 
-      final result = rule!.evaluate(data);
+      final evalData = <String, dynamic>{
+        ...data,
+        if (parentData != null && parentData.isNotEmpty && !data.containsKey('parent'))
+          'parent': parentData.last,
+        if (parentData != null && parentData.isNotEmpty && !data.containsKey('parentData'))
+          'parentData': parentData,
+      };
+
+      final result = rule!.evaluate(evalData);
       return result;
     } catch (e) {
       debugPrint('Action rule evaluation failed: $e');
@@ -74,9 +89,9 @@ extension ActionWidgetExtension on ActionD {
     }
   }
 
-  bool isVisibleForList(JsonList data) {
-    if (data.isEmpty) return isVisibleFor({});
-    return data.every(isVisibleFor);
+  bool isVisibleForList(JsonList data, {JsonList? parentData}) {
+    if (data.isEmpty) return isVisibleFor({}, parentData: parentData);
+    return data.every((item) => isVisibleFor(item, parentData: parentData));
   }
 
   Widget buildButtonRegular({

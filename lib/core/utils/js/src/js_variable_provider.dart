@@ -32,6 +32,12 @@ class JsVariableProvider {
         if (!variables.containsKey('current'))
           'current': variables['current'] ?? variables['data'] ?? variables,
         if (!variables.containsKey('http')) 'http': variables['http'] ?? {},
+        if (!variables.containsKey('parent'))
+          'parent': (variables['parentData'] is List &&
+                  (variables['parentData'] as List).isNotEmpty &&
+                  (variables['parentData'] as List).last is Map)
+              ? (variables['parentData'] as List).last
+              : <String, dynamic>{},
       },
 
       // 2. Custom global variables
