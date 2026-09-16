@@ -53,7 +53,7 @@ class MenuDataTableActions extends StatelessWidget {
             .where((action) => action.isVisibleFor(<String, dynamic>{
                   ...filters.toMap(),
                   if (parentData.isNotEmpty) ...parentData.first,
-                }))
+                }, parentData: parentData))
             .map((e) => e.buildButtonRegular(
                   context: context,
                   entity: entity,
@@ -78,7 +78,7 @@ class MenuDataTableActions extends StatelessWidget {
         .where((action) => action.isVisibleFor(<String, dynamic>{
               ...filters.toMap(),
               if (parentData.isNotEmpty) ...parentData.first,
-            }))
+            }, parentData: parentData))
         .map((e) => e.buildButtonRegular(
               context: context,
               entity: entity,

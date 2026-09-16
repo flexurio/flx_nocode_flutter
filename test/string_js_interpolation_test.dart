@@ -42,7 +42,8 @@ void main() {
     });
 
     test('should evaluate ternary expression with comparison correctly', () {
-      const template = "{{ form.status == 'APPROVE QA STAFF' ? 'heyy' : 'ouu' }}";
+      const template =
+          "{{ form.status == 'APPROVE QA STAFF' ? 'heyy' : 'ouu' }}";
       final variables = {
         'form': {
           'status': 'APPROVE QA STAFF',
@@ -54,8 +55,10 @@ void main() {
       expect(result, 'heyy');
     });
 
-    test('should evaluate ternary expression with comparison falsy correctly', () {
-      const template = "{{ form.status == 'APPROVE QA STAFF' ? 'heyy' : 'ouu' }}";
+    test('should evaluate ternary expression with comparison falsy correctly',
+        () {
+      const template =
+          "{{ form.status == 'APPROVE QA STAFF' ? 'heyy' : 'ouu' }}";
       final variables = {
         'form': {
           'status': 'REJECT QA STAFF',
@@ -151,10 +154,10 @@ void main() {
       // But in interpolateJavascript, we can test the processor directly if needed.
       // Actually, interpolateJavascript calls JsInterpolationProcessor.process.
       // Let's verify how [[ ]] is handled.
-      
+
       const template = '[[ data ]]';
       final result = template.interpolateJavascript(variables);
-      
+
       expect(result, contains('"id":1'));
       expect(result, contains('"tags":["a","b"]'));
     });
@@ -200,7 +203,9 @@ void main() {
 
       test('formatDate should support yyMM format for 2-digit years', () {
         final variables = {'my_date': '2026-05-15'};
-        expect('{{ formatDate(new Date(my_date), "yyMM") }}'.interpolateJavascript(variables),
+        expect(
+            '{{ formatDate(new Date(my_date), "yyMM") }}'
+                .interpolateJavascript(variables),
             '2605');
       });
 
@@ -225,12 +230,15 @@ void main() {
         );
       });
 
-      test('current running period in URL using formatDate(new Date(), "yyyyMM")', () {
+      test(
+          'current running period in URL using formatDate(new Date(), "yyyyMM")',
+          () {
         const template =
             "{{ backend_host }}/vw_lbb_marketing_structures?is_dummy.eq=0&period.eq={{ formatDate(new Date(), 'yyyyMM') }}&marketing_position_period.eq={{ formatDate(new Date(), 'yyyyMM') }}";
 
         final now = DateTime.now();
-        final expectedPeriod = "${now.year}${now.month.toString().padLeft(2, '0')}";
+        final expectedPeriod =
+            "${now.year}${now.month.toString().padLeft(2, '0')}";
         final result = template.interpolateJavascript();
 
         expect(
@@ -250,7 +258,8 @@ void main() {
             'specification_code': 'SPEC',
           }
         };
-        final result = '{{ (item.specification_code + "-" + form.product_no) }}'.interpolateJavascript(variables);
+        final result = '{{ (item.specification_code + "-" + form.product_no) }}'
+            .interpolateJavascript(variables);
         expect(result, 'SPEC-P01');
       });
 
@@ -261,8 +270,13 @@ void main() {
             'nie': 'NIE123',
           }
         };
-        expect('{{ item.nie_code || "default" }}'.interpolateJavascript(variables), 'default');
-        expect('{{ item.nie_code || item.nie || "default" }}'.interpolateJavascript(variables), 'NIE123');
+        expect(
+            '{{ item.nie_code || "default" }}'.interpolateJavascript(variables),
+            'default');
+        expect(
+            '{{ item.nie_code || item.nie || "default" }}'
+                .interpolateJavascript(variables),
+            'NIE123');
       });
 
       test('should resolve logical AND expressions correctly', () {
@@ -271,17 +285,22 @@ void main() {
             'nie_code': 'POMSD123',
           }
         };
-        expect('{{ form.nie_code && "yes" }}'.interpolateJavascript(variables), 'yes');
-        
+        expect('{{ form.nie_code && "yes" }}'.interpolateJavascript(variables),
+            'yes');
+
         final variablesEmpty = {
           'form': {
             'nie_code': '',
           }
         };
-        expect('{{ form.nie_code && "yes" }}'.interpolateJavascript(variablesEmpty), '');
+        expect(
+            '{{ form.nie_code && "yes" }}'
+                .interpolateJavascript(variablesEmpty),
+            '');
       });
 
-      test('should evaluate complex ternary with concatenation and logical OR', () {
+      test('should evaluate complex ternary with concatenation and logical OR',
+          () {
         final variables = {
           'form': {
             'specification_code': 'SPEC',
@@ -290,7 +309,9 @@ void main() {
             'product_no': 'P01',
           }
         };
-        final result = '{{ form.specification_code ? (form.specification_code + "-" + item.product_no) : "" }}'.interpolateJavascript(variables);
+        final result =
+            '{{ form.specification_code ? (form.specification_code + "-" + item.product_no) : "" }}'
+                .interpolateJavascript(variables);
         expect(result, 'SPEC-P01');
 
         final variablesEmpty = {
@@ -301,11 +322,15 @@ void main() {
             'product_no': 'P01',
           }
         };
-        final resultEmpty = '{{ form.specification_code ? (form.specification_code + "-" + item.product_no) : "" }}'.interpolateJavascript(variablesEmpty);
+        final resultEmpty =
+            '{{ form.specification_code ? (form.specification_code + "-" + item.product_no) : "" }}'
+                .interpolateJavascript(variablesEmpty);
         expect(resultEmpty, '');
       });
 
-      test('should fall back to full JS evaluation and succeed when ternary contains complex functions like encodeURIComponent', () {
+      test(
+          'should fall back to full JS evaluation and succeed when ternary contains complex functions like encodeURIComponent',
+          () {
         final variables = {
           'form': {
             'history_selector': '',
@@ -315,22 +340,29 @@ void main() {
           },
           'backend_host': 'https://erp-metiska-farma.flexurio.com',
         };
-        final template = "{{ (form.history_selector != null && form.history_selector != '') ? backend_host + '/cc_change_control_detail_histories?id_change_control_header_history.eq=' + encodeURIComponent(form.history_selector) : backend_host + '/cc_change_control_details?id_change_control.eq=' + encodeURIComponent(data.id) }}";
+        final template =
+            "{{ (form.history_selector != null && form.history_selector != '') ? backend_host + '/cc_change_control_detail_histories?id_change_control_header_history.eq=' + encodeURIComponent(form.history_selector) : backend_host + '/cc_change_control_details?id_change_control.eq=' + encodeURIComponent(data.id) }}";
         final result = template.interpolateJavascript(variables);
-        expect(result, endsWith('/cc_change_control_details?id_change_control.eq=5'));
+        expect(result,
+            endsWith('/cc_change_control_details?id_change_control.eq=5'));
       });
 
-      test('should fall back to full JS evaluation and succeed when logic or comparison contains parentheses grouping', () {
+      test(
+          'should fall back to full JS evaluation and succeed when logic or comparison contains parentheses grouping',
+          () {
         final variables = {
           'is_qrm': 1,
           'status_qrm_document': 'EMPTY',
         };
-        final template = "{{ (is_qrm == 1 || is_qrm == '1' || is_qrm == true || is_qrm == 'true') && status_qrm_document != 'FILL' }}";
+        final template =
+            "{{ (is_qrm == 1 || is_qrm == '1' || is_qrm == true || is_qrm == 'true') && status_qrm_document != 'FILL' }}";
         final result = template.interpolateJavascript(variables);
         expect(result, 'true');
       });
 
-      test('should support loose equality comparison between number and string in evaluateVisibility', () {
+      test(
+          'should support loose equality comparison between number and string in evaluateVisibility',
+          () {
         final variables = {
           'parent': {
             'chart_of_account_id': 6021103,
@@ -339,19 +371,41 @@ void main() {
         };
 
         // Number (in variables) compared to String literal
-        expect('parent.chart_of_account_id == "6021103"'.evaluateVisibility(variables), true);
-        expect('parent.chart_of_account_id == \'6021103\''.evaluateVisibility(variables), true);
+        expect(
+            'parent.chart_of_account_id == "6021103"'
+                .evaluateVisibility(variables),
+            true);
+        expect(
+            'parent.chart_of_account_id == \'6021103\''
+                .evaluateVisibility(variables),
+            true);
         // Number compared to Number literal
-        expect('parent.chart_of_account_id == 6021103'.evaluateVisibility(variables), true);
+        expect(
+            'parent.chart_of_account_id == 6021103'
+                .evaluateVisibility(variables),
+            true);
         // Inequality
-        expect('parent.chart_of_account_id != "6021103"'.evaluateVisibility(variables), false);
-        expect('parent.chart_of_account_id != "9999999"'.evaluateVisibility(variables), true);
+        expect(
+            'parent.chart_of_account_id != "6021103"'
+                .evaluateVisibility(variables),
+            false);
+        expect(
+            'parent.chart_of_account_id != "9999999"'
+                .evaluateVisibility(variables),
+            true);
         // Strict equality should check types strictly
-        expect('parent.chart_of_account_id === "6021103"'.evaluateVisibility(variables), false);
-        expect('parent.chart_of_account_id === 6021103'.evaluateVisibility(variables), true);
+        expect(
+            'parent.chart_of_account_id === "6021103"'
+                .evaluateVisibility(variables),
+            false);
+        expect(
+            'parent.chart_of_account_id === 6021103'
+                .evaluateVisibility(variables),
+            true);
 
         // Logical OR visibility condition
-        final condition = "{{ parent.chart_of_account_id == '6021103' || parent.chart_of_account_id == 6021103 }}";
+        final condition =
+            "{{ parent.chart_of_account_id == '6021103' || parent.chart_of_account_id == 6021103 }}";
         expect(condition.evaluateVisibility(variables), true);
 
         final nonMatchingVars = {
@@ -362,117 +416,206 @@ void main() {
         expect(condition.evaluateVisibility(nonMatchingVars), false);
       });
 
-      test('should correctly evaluate transaction_id null, empty, or hyphen condition', () {
-        const expr = "{{ (parent.transaction_id == null || parent.transaction_id == '' || parent.transaction_id == '-') && (transaction_id == null || transaction_id == '' || transaction_id == '-') }}";
+      test(
+          'should correctly evaluate transaction_id null, empty, or hyphen condition',
+          () {
+        const expr =
+            "{{ (parent.transaction_id == null || parent.transaction_id == '' || parent.transaction_id == '-') && (transaction_id == null || transaction_id == '' || transaction_id == '-') }}";
 
         // Case 1: both null
-        expect(expr.interpolateJavascript({
-          'parent': {'transaction_id': null},
-          'transaction_id': null,
-        }), 'true');
+        expect(
+            expr.interpolateJavascript({
+              'parent': {'transaction_id': null},
+              'transaction_id': null,
+            }),
+            'true');
 
         // Case 2: parent is '-' and detail is null
-        expect(expr.interpolateJavascript({
-          'parent': {'transaction_id': '-'},
-          'transaction_id': null,
-        }), 'true');
+        expect(
+            expr.interpolateJavascript({
+              'parent': {'transaction_id': '-'},
+              'transaction_id': null,
+            }),
+            'true');
 
         // Case 3: parent has transaction_id 'LBP/01/26090004' and detail is null
-        expect(expr.interpolateJavascript({
-          'parent': {'transaction_id': 'LBP/01/26090004'},
-          'transaction_id': null,
-        }), 'false');
+        expect(
+            expr.interpolateJavascript({
+              'parent': {'transaction_id': 'LBP/01/26090004'},
+              'transaction_id': null,
+            }),
+            'false');
 
         // Case 4: parent is null and detail has 'LBP/01/26090004'
-        expect(expr.interpolateJavascript({
-          'parent': {'transaction_id': null},
-          'transaction_id': 'LBP/01/26090004',
-        }), 'false');
+        expect(
+            expr.interpolateJavascript({
+              'parent': {'transaction_id': null},
+              'transaction_id': 'LBP/01/26090004',
+            }),
+            'false');
 
         // Case 5: both have 'LBP/01/26090004'
-        expect(expr.interpolateJavascript({
-          'parent': {'transaction_id': 'LBP/01/26090004'},
-          'transaction_id': 'LBP/01/26090004',
-        }), 'false');
+        expect(
+            expr.interpolateJavascript({
+              'parent': {'transaction_id': 'LBP/01/26090004'},
+              'transaction_id': 'LBP/01/26090004',
+            }),
+            'false');
 
         // Case 6: parent not present at all, transaction_id is '-'
-        expect(expr.interpolateJavascript({
-          'transaction_id': '-',
-        }), 'true');
+        expect(
+            expr.interpolateJavascript({
+              'transaction_id': '-',
+            }),
+            'true');
       });
 
-      test('should correctly evaluate realization_submission null, empty, 0 condition', () {
-        const expr = "{{ (typeof realization_submission === 'undefined' || realization_submission == null || realization_submission == '' || realization_submission == 0 || realization_submission == '0') }}";
+      test(
+          'should correctly evaluate realization_submission null, empty, 0 condition',
+          () {
+        const expr =
+            "{{ (typeof realization_submission === 'undefined' || realization_submission == null || realization_submission == '' || realization_submission == 0 || realization_submission == '0') }}";
 
         // Case 1: realization_submission is null
-        expect(expr.interpolateJavascript({
-          'realization_submission': null,
-        }), 'true');
+        expect(
+            expr.interpolateJavascript({
+              'realization_submission': null,
+            }),
+            'true');
 
         // Case 2: realization_submission is empty string
-        expect(expr.interpolateJavascript({
-          'realization_submission': '',
-        }), 'true');
+        expect(
+            expr.interpolateJavascript({
+              'realization_submission': '',
+            }),
+            'true');
 
         // Case 3: realization_submission is 0 (number)
-        expect(expr.interpolateJavascript({
-          'realization_submission': 0,
-        }), 'true');
+        expect(
+            expr.interpolateJavascript({
+              'realization_submission': 0,
+            }),
+            'true');
 
         // Case 4: realization_submission is '0' (string)
-        expect(expr.interpolateJavascript({
-          'realization_submission': '0',
-        }), 'true');
+        expect(
+            expr.interpolateJavascript({
+              'realization_submission': '0',
+            }),
+            'true');
 
         // Case 5: realization_submission is undefined / not in map
         expect(expr.interpolateJavascript({}), 'true');
 
         // Case 6: realization_submission is 100000 (number)
-        expect(expr.interpolateJavascript({
-          'realization_submission': 100000,
-        }), 'false');
+        expect(
+            expr.interpolateJavascript({
+              'realization_submission': 100000,
+            }),
+            'false');
 
         // Case 7: realization_submission is '100000' (string)
-        expect(expr.interpolateJavascript({
-          'realization_submission': '100000',
-        }), 'false');
+        expect(
+            expr.interpolateJavascript({
+              'realization_submission': '100000',
+            }),
+            'false');
       });
 
-      test('should correctly evaluate parent.realization_submission null, empty, 0 condition', () {
-        const expr = "{{ (typeof parent === 'undefined' || !parent || parent.realization_submission == null || parent.realization_submission == '' || parent.realization_submission == 0 || parent.realization_submission == '0') && (typeof realization_submission === 'undefined' || realization_submission == null || realization_submission == '' || realization_submission == 0 || realization_submission == '0') }}";
+      test(
+          'should correctly evaluate parent.realization_submission null, empty, 0 condition',
+          () {
+        const expr =
+            "{{ (typeof parent === 'undefined' || !parent || parent.realization_submission == null || parent.realization_submission == '' || parent.realization_submission == 0 || parent.realization_submission == '0') && (typeof realization_submission === 'undefined' || realization_submission == null || realization_submission == '' || realization_submission == 0 || realization_submission == '0') }}";
 
         // Case 1: parent.realization_submission is null
-        expect(expr.interpolateJavascript({
-          'parent': {'realization_submission': null},
-        }), 'true');
+        expect(
+            expr.interpolateJavascript({
+              'parent': {'realization_submission': null},
+            }),
+            'true');
 
         // Case 2: parent.realization_submission is empty string
-        expect(expr.interpolateJavascript({
-          'parent': {'realization_submission': ''},
-        }), 'true');
+        expect(
+            expr.interpolateJavascript({
+              'parent': {'realization_submission': ''},
+            }),
+            'true');
 
         // Case 3: parent.realization_submission is 0 (number)
-        expect(expr.interpolateJavascript({
-          'parent': {'realization_submission': 0},
-        }), 'true');
+        expect(
+            expr.interpolateJavascript({
+              'parent': {'realization_submission': 0},
+            }),
+            'true');
 
         // Case 4: parent.realization_submission is '0' (string)
-        expect(expr.interpolateJavascript({
-          'parent': {'realization_submission': '0'},
-        }), 'true');
+        expect(
+            expr.interpolateJavascript({
+              'parent': {'realization_submission': '0'},
+            }),
+            'true');
 
         // Case 5: parent is empty map / undefined
         expect(expr.interpolateJavascript({}), 'true');
 
         // Case 6: parent.realization_submission is 100000
-        expect(expr.interpolateJavascript({
-          'parent': {'realization_submission': 100000},
-        }), 'false');
+        expect(
+            expr.interpolateJavascript({
+              'parent': {'realization_submission': 100000},
+            }),
+            'false');
 
         // Case 7: parent is null but local realization_submission is 100000
-        expect(expr.interpolateJavascript({
-          'realization_submission': 100000,
-        }), 'false');
+        expect(
+            expr.interpolateJavascript({
+              'realization_submission': 100000,
+            }),
+            'false');
+      });
+
+      test('resolves area_code from parentData, parent, data, or top-level', () {
+        const expr =
+            "{{ encodeURIComponent((typeof parentData !== 'undefined' && Array.isArray(parentData) && parentData.length > 0 && parentData[0] && parentData[0].area_code) || (typeof parent !== 'undefined' && parent && parent.area_code) || (typeof data !== 'undefined' && data && data.area_code) || (typeof area_code !== 'undefined' && area_code) || '') }}";
+
+        // From parentData[0]
+        expect(
+          expr.interpolateJavascript({
+            'parentData': [
+              {'area_code': 'JKT'},
+              {'area_code': 'BDG'}
+            ]
+          }),
+          'JKT',
+        );
+
+        // From parent
+        expect(
+          expr.interpolateJavascript({
+            'parent': {'area_code': 'BDG'}
+          }),
+          'BDG',
+        );
+
+        // From data
+        expect(
+          expr.interpolateJavascript({
+            'data': {'area_code': 'SBY'}
+          }),
+          'SBY',
+        );
+
+        // From top-level
+        expect(
+          expr.interpolateJavascript({'area_code': 'MDN'}),
+          'MDN',
+        );
+
+        // Fallback when none
+        expect(
+          expr.interpolateJavascript({}),
+          '',
+        );
       });
     });
   });
