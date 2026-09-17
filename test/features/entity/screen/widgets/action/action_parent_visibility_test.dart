@@ -9,7 +9,7 @@ void main() {
 
   group('ActionD Parent Visibility Tests', () {
     test(
-        'isVisibleFor evaluates parent and row transaction_id condition correctly',
+        'isVisibleFor evaluates parent header transaction_id has value and is_detail is false correctly',
         () {
       final action = ActionD.fromJson({
         'id': 'lbb_realization',
@@ -27,7 +27,7 @@ void main() {
             },
             {
               'field':
-                  "{{ (parent.transaction_id == null || parent.transaction_id == '' || parent.transaction_id == '-') && (transaction_id == null || transaction_id == '' || transaction_id == '-') }}",
+                  "{{ (function(){ var tid = (typeof parentData !== 'undefined' && Array.isArray(parentData) && parentData.length > 0 && parentData[0] && parentData[0].transaction_id) ? parentData[0].transaction_id : (typeof parent !== 'undefined' && parent && parent.transaction_id ? parent.transaction_id : (typeof transaction_id !== 'undefined' ? transaction_id : null)); if (tid === null || tid === undefined) return false; var s = String(tid).trim(); return s !== '' && s !== '-' && s !== 'null' && s !== 'undefined'; })() }}",
               'op': '=',
               'value': true,
             }
@@ -35,43 +35,45 @@ void main() {
         },
       });
 
-      // Case 1: parent.transaction_id is '-' and row is not detail -> visible
+      // Case 1: parent.transaction_id has value ('LBP/01/26090004') and row is not detail -> visible
       expect(
         action.isVisibleFor(
-          {'is_detail': false, 'transaction_id': '-'},
+          {'is_detail': false},
           parentData: [
-            {'transaction_id': '-'}
+            {'transaction_id': 'LBP/01/26090004'}
           ],
         ),
         true,
       );
 
-      // Case 2: parent.transaction_id is 'LBP/01/26090004' -> hidden
+      // Case 2: parent.transaction_id is '-' (no transaction_id yet) -> hidden
       expect(
         action.isVisibleFor(
-          {'is_detail': false, 'transaction_id': null},
+          {'is_detail': false},
           parentData: [
-            {'transaction_id': 'LBP/01/26090004'}
+            {'transaction_id': '-'}
           ],
         ),
         false,
       );
 
-      // Case 3: parentData is empty and row transaction_id is '-' -> visible
+      // Case 3: parent.transaction_id is null / empty -> hidden
       expect(
         action.isVisibleFor(
-          {'is_detail': false, 'transaction_id': '-'},
-          parentData: [],
+          {'is_detail': false},
+          parentData: [
+            {'transaction_id': null}
+          ],
         ),
-        true,
+        false,
       );
 
-      // Case 4: row is detail (is_detail = true) -> hidden regardless of transaction_id
+      // Case 4: parent.transaction_id has value but row is detail (is_detail = true) -> hidden
       expect(
         action.isVisibleFor(
-          {'is_detail': true, 'transaction_id': '-'},
+          {'is_detail': true},
           parentData: [
-            {'transaction_id': '-'}
+            {'transaction_id': 'LBP/01/26090004'}
           ],
         ),
         false,
@@ -79,7 +81,7 @@ void main() {
     });
 
     test(
-        'isVisibleFor evaluates realization_submission empty or zero condition correctly',
+        'isVisibleFor evaluates realization_submission has non-zero value and is_detail is false correctly',
         () {
       final action = ActionD.fromJson({
         'id': 'actual_realization',
@@ -91,7 +93,13 @@ void main() {
           'all': [
             {
               'field':
-                  "{{ (typeof parent === 'undefined' || !parent || parent.realization_submission == null || parent.realization_submission == '' || parent.realization_submission == 0 || parent.realization_submission == '0') && (typeof realization_submission === 'undefined' || realization_submission == null || realization_submission == '' || realization_submission == 0 || realization_submission == '0') }}",
+                  "{{ is_detail == 1 || is_detail == '1' || is_detail == true || is_detail == 'true' }}",
+              'op': '=',
+              'value': false,
+            },
+            {
+              'field':
+                  "{{ (function(){ if (typeof realization_submission === 'undefined' || realization_submission === null) return false; var s = String(realization_submission).trim(); if (s === '' || s === '0' || s === 'null' || s === 'undefined') return false; var n = parseFloat(s.replace(/,/g, '')); return !isNaN(n) ? n !== 0 : true; })() }}",
               'op': '=',
               'value': true,
             }
@@ -99,51 +107,47 @@ void main() {
         },
       });
 
-      // Case 1: realization_submission is 0 -> visible
+      // Case 1: realization_submission is 0 -> hidden
       expect(
         action.isVisibleFor(
-          {'realization_submission': 0},
-          parentData: [],
-        ),
-        true,
-      );
-
-      // Case 2: realization_submission is null -> visible
-      expect(
-        action.isVisibleFor(
-          {'realization_submission': null},
-          parentData: [],
-        ),
-        true,
-      );
-
-      // Case 3: realization_submission is 100000 -> hidden
-      expect(
-        action.isVisibleFor(
-          {'realization_submission': 100000},
+          {'is_detail': false, 'realization_submission': 0},
           parentData: [],
         ),
         false,
       );
 
-      // Case 4: in sub-detail where parent.realization_submission is 0 -> visible
+      // Case 2: realization_submission is null -> hidden
       expect(
         action.isVisibleFor(
-          {'id': 1},
-          parentData: [
-            {'realization_submission': 0}
-          ],
+          {'is_detail': false, 'realization_submission': null},
+          parentData: [],
+        ),
+        false,
+      );
+
+      // Case 3: realization_submission is '' -> hidden
+      expect(
+        action.isVisibleFor(
+          {'is_detail': false, 'realization_submission': ''},
+          parentData: [],
+        ),
+        false,
+      );
+
+      // Case 4: realization_submission is 100000 and is_detail is false -> visible
+      expect(
+        action.isVisibleFor(
+          {'is_detail': false, 'realization_submission': 100000},
+          parentData: [],
         ),
         true,
       );
 
-      // Case 5: in sub-detail where parent.realization_submission is 100000 -> hidden
+      // Case 5: realization_submission is 100000 but is_detail is true -> hidden
       expect(
         action.isVisibleFor(
-          {'id': 1},
-          parentData: [
-            {'realization_submission': 100000}
-          ],
+          {'is_detail': true, 'realization_submission': 100000},
+          parentData: [],
         ),
         false,
       );
@@ -323,5 +327,140 @@ void main() {
         false,
       );
     });
+
+    test(
+        'isVisibleFor evaluates Expense Transaction Detail Sub lbb_realization condition correctly',
+        () {
+      final action = ActionD.fromJson({
+        'id': 'lbb_realization',
+        'name': 'LBB Realization',
+        'type': 'open_page',
+        'layout_form_id': 'lbb_realization',
+        'is_multiple': false,
+        'rule': {
+          'all': [
+            {
+              'field':
+                  "{{ (function(){ var tid = null; if (typeof parentData !== 'undefined' && Array.isArray(parentData)) { for (var i = 0; i < parentData.length; i++) { var p = parentData[i]; if (p) { var v = (p.transaction_id !== undefined ? p.transaction_id : p.transaksi_id); if (v !== undefined && v !== null) { var sv = String(v).trim(); if (sv !== '' && sv !== '-' && sv !== 'null' && sv !== 'undefined') { tid = v; break; } } } } } if (!tid && typeof parent !== 'undefined' && parent) { var v = (parent.transaction_id !== undefined ? parent.transaction_id : parent.transaksi_id); if (v !== undefined && v !== null) { var sv = String(v).trim(); if (sv !== '' && sv !== '-' && sv !== 'null' && sv !== 'undefined') { tid = v; } } } if (!tid) { var v = (typeof transaction_id !== 'undefined' ? transaction_id : (typeof transaksi_id !== 'undefined' ? transaksi_id : null)); if (v !== undefined && v !== null) { var sv = String(v).trim(); if (sv !== '' && sv !== '-' && sv !== 'null' && sv !== 'undefined') { tid = v; } } } if (tid === null || tid === undefined) return false; var s = String(tid).trim(); return s !== '' && s !== '-' && s !== 'null' && s !== 'undefined'; })() }}",
+              'op': '=',
+              'value': true,
+            }
+          ]
+        },
+      });
+
+      // Case 1: parentData has [header, detail] where header has transaction_id -> visible
+      expect(
+        action.isVisibleFor(
+          {'id': 1},
+          parentData: [
+            {'transaction_id': 'EVENT/2026/09/030'},
+            {'id': 1034, 'transaction_id': null}
+          ],
+        ),
+        true,
+      );
+
+      // Case 2: parentData has [header, detail] where header transaction_id is '-' -> hidden
+      expect(
+        action.isVisibleFor(
+          {'id': 1},
+          parentData: [
+            {'transaction_id': '-'},
+            {'id': 1034}
+          ],
+        ),
+        false,
+      );
+
+      // Case 3: header transaction_id is null / empty -> hidden
+      expect(
+        action.isVisibleFor(
+          {'id': 1},
+          parentData: [
+            {'transaction_id': null},
+            {'id': 1034}
+          ],
+        ),
+        false,
+      );
+    });
+
+    test(
+        'isVisibleFor evaluates Expense Transaction Detail Sub actual_realization condition correctly',
+        () {
+      final action = ActionD.fromJson({
+        'id': 'actual_realization',
+        'name': 'Actual Realization',
+        'type': 'open_page',
+        'layout_form_id': 'actual_realization',
+        'is_multiple': false,
+        'rule': {
+          'all': [
+            {
+              'field':
+                  "{{ (function(){ var val = (typeof value_realization !== 'undefined') ? value_realization : (typeof parent !== 'undefined' && parent && typeof parent.value_realization !== 'undefined' ? parent.value_realization : null); if (val === null || val === undefined) return false; var s = String(val).trim(); if (s === '' || s === '0' || s === 'null' || s === 'undefined' || s === '-') return false; var n = parseFloat(s.replace(/,/g, '')); return !isNaN(n) ? n !== 0 : true; })() }}",
+              'op': '=',
+              'value': true,
+            }
+          ]
+        },
+      });
+
+      // Case 1: value_realization is 0 -> hidden
+      expect(
+        action.isVisibleFor(
+          {'value_realization': 0},
+          parentData: [],
+        ),
+        false,
+      );
+
+      // Case 2: value_realization is null -> hidden
+      expect(
+        action.isVisibleFor(
+          {'value_realization': null},
+          parentData: [],
+        ),
+        false,
+      );
+
+      // Case 3: value_realization is '-' (as shown in user screenshot) -> hidden
+      expect(
+        action.isVisibleFor(
+          {'value_realization': '-'},
+          parentData: [],
+        ),
+        false,
+      );
+
+      // Case 4: value_realization is '' -> hidden
+      expect(
+        action.isVisibleFor(
+          {'value_realization': ''},
+          parentData: [],
+        ),
+        false,
+      );
+
+      // Case 5: value_realization is 50000 -> visible
+      expect(
+        action.isVisibleFor(
+          {'value_realization': 50000},
+          parentData: [],
+        ),
+        true,
+      );
+
+      // Case 6: value_realization is string '1,000,000' -> visible
+      expect(
+        action.isVisibleFor(
+          {'value_realization': '1,000,000'},
+          parentData: [],
+        ),
+        true,
+      );
+    });
   });
 }
+
