@@ -48,12 +48,16 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
             useRootNavigator: true,
             barrierDismissible: false,
             builder: (ctx) {
+              final contextualData = widget.parentData.isNotEmpty
+                  ? widget.parentData.last
+                  : widget.filters;
               return CreatePage.prepare(
                 popup: true,
                 embedded: true,
                 entity: widget.entity,
                 layoutFormId: action.layoutFormId ?? '',
-              parentData: widget.parentData,
+                parentData: widget.parentData,
+                data: contextualData,
                 filters: widget.filters,
                 width: action.width,
                 showSubmitButton: action.showSubmitButton,
@@ -127,6 +131,9 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
           break;
 
         case ActionType.openPage:
+          final contextualData = widget.parentData.isNotEmpty
+              ? widget.parentData.last
+              : widget.filters;
           if (action.popup) {
             await showDialog(
               context: context,
@@ -139,6 +146,7 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
                   entity: widget.entity,
                   layoutFormId: action.layoutFormId ?? '',
                   parentData: widget.parentData,
+                  data: contextualData,
                   filters: widget.filters,
                   width: action.width,
                   showSubmitButton: action.showSubmitButton,
@@ -159,6 +167,7 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
               context,
               CreatePage.route(
                 entity: widget.entity,
+                data: contextualData,
                 onSuccess: (responseData) async {
                   widget.onSuccess();
                   await action.handleOnSuccessSingle(

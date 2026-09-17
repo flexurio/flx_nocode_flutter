@@ -243,5 +243,85 @@ void main() {
         true,
       );
     });
+
+    test('isVisibleFor evaluates Form Value Area row action with header status correctly', () {
+      final action = ActionD.fromJson({
+        'id': 'Update_Value_Area_Without_Detail',
+        'name': 'Form Value Area',
+        'type': 'open_page',
+        'layout_form_id': 'value_area_without_detail',
+        'is_multiple': false,
+        'rule': {
+          'all': [
+            {
+              'field': '{{ actual_value }}',
+              'op': '=',
+              'value': 0,
+            },
+            {
+              'field': '{{ transaction_id }}',
+              'op': 'is_empty',
+            },
+            {
+              'field':
+                  "{{ is_detail == 1 || is_detail == '1' || is_detail == true || is_detail == 'true' }}",
+              'op': '=',
+              'value': false,
+            },
+            {
+              'field':
+                  "{{ String(typeof parentData !== 'undefined' && Array.isArray(parentData) && parentData.length > 0 && parentData[0] && parentData[0].status ? parentData[0].status : (typeof parent !== 'undefined' && parent && parent.status ? parent.status : (typeof status !== 'undefined' ? status : 'INPUT'))).trim().toUpperCase() }}",
+              'op': '=',
+              'value': 'INPUT',
+            }
+          ]
+        },
+      });
+
+      // Case 1: Header status is 'CONFIRM' -> hidden
+      expect(
+        action.isVisibleFor(
+          {
+            'actual_value': 0,
+            'transaction_id': null,
+            'is_detail': false,
+          },
+          parentData: [
+            {'id': 'EVENT/2026/09/029', 'status': 'CONFIRM'},
+          ],
+        ),
+        false,
+      );
+
+      // Case 2: Header status is 'INPUT' and all other conditions match -> visible
+      expect(
+        action.isVisibleFor(
+          {
+            'actual_value': 0,
+            'transaction_id': null,
+            'is_detail': false,
+          },
+          parentData: [
+            {'id': 'EVENT/2026/09/029', 'status': 'INPUT'},
+          ],
+        ),
+        true,
+      );
+
+      // Case 3: Header status is 'INPUT' but is_detail is true -> hidden
+      expect(
+        action.isVisibleFor(
+          {
+            'actual_value': 0,
+            'transaction_id': null,
+            'is_detail': true,
+          },
+          parentData: [
+            {'id': 'EVENT/2026/09/029', 'status': 'INPUT'},
+          ],
+        ),
+        false,
+      );
+    });
   });
 }

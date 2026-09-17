@@ -317,6 +317,16 @@ Actions represent entity and row-level operations.
 - `show_confirmation_dialog`: Triggers verification modal.
 - `show_success_dialog_with_data`: Displays a custom success modal with copyable values (requires `success_title`, `success_message`, `copy_label`, `copy_value`).
 
+#### Rule-based Visibility & Table State in `actions_home`
+- Action items support `rule` objects with `all`, `any`, or `not`.
+- In `actions_home` (global action bar), rules have access to table state:
+  - `is_table_empty`: `true` when table finished loading and contains 0 rows.
+  - `table_data_length`: count of loaded rows in table.
+  - `total_rows`: total count of records across pagination metadata.
+  - `is_table_loaded`: `true` when table data has finished loading.
+  - `parentData` / `parent`: ancestor records hierarchy (`parentData.last` for direct parent).
+- When `open_page` is clicked from `actions_home`, `parentData.last` is automatically supplied as the `data` context of the opened form (falling back to `filters`).
+
 ---
 
 ## 4. Workflows for Creating/Editing Configurations

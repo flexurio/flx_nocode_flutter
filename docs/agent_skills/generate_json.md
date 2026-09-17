@@ -230,6 +230,13 @@ Two common patterns for row actions:
 - `set_variable` / `append_variable` / `remove_variable`: Manages local state.
 - `clear_form`: Clears all form inputs.
 
+### Rule-based Visibility & Table State in `actions_home`
+Actions support `rule` objects with `all`, `any`, or `not` conditions.
+When configuring action buttons in `actions_home` (e.g. fallback actions when no table rows exist):
+- Rules have access to table state variables: `is_table_empty` (boolean), `table_data_length` (int), `total_rows` (int), and `is_table_loaded` (boolean).
+- Rules have access to ancestor hierarchy: `parentData` (list of ancestor records) and `parent` (`parentData.last`).
+- When `open_page` is clicked from `actions_home`, `parentData.last` is automatically supplied as the `data` context of the opened form (falling back to `filters`).
+
 ---
 
 ## 6. Inline Filters

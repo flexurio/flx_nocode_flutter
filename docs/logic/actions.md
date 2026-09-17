@@ -83,7 +83,11 @@ Displayed as buttons on each row of a table. These actions have access to the cu
 ```
 
 ### `actions_home` (Global Actions)
-Displayed at the top of the entity page (e.g., Create, Export All). These actions use global `filters` or state as their context.
+Displayed at the top of the entity page (e.g., Create, Export All, or contextual fallback actions). 
+
+- **Contextual Data Inheritance**: When triggering an `open_page` action from `actions_home` (via `ActionButtonRegular`), if `parentData` is provided (e.g., from an ancestor header or detail table), `parentData.last` (the direct parent entity record) is automatically supplied as the `data` context of the opened `CreatePage` (both modal popup dialog and full-screen route). If `parentData` is empty, it falls back to `filters`. This allows layout forms opened from `actions_home` to access parent fields (such as `data.id`, `data.lbb_expense_transaction_header_id`, `data.chart_of_account_id`, `data.nip`, etc.) directly via `{{data.field_name}}`.
+- **Table-State Aware Visibility**: Actions in `actions_home` can dynamically show or hide based on whether the table currently has data or is empty (see [Table State Variables](#table-state-variables-in-actions_home) below).
+
 ```json
 "actions_home": [
   { "id": "create", "type": "open_page", "layout_form_id": "create", "name": "Create" }
@@ -97,7 +101,7 @@ The default action triggered when a row is clicked/tapped. Usually set to `view`
 
 ## 4. Rule-based Visibility
 
-The `rule` object allows you to hide or show actions based on the data of the selected row.
+The `rule` object allows you to hide or show actions based on the data of the selected row, parent records, or table state.
 
 ### Structure
 A rule consists of `all` (AND), `any` (OR), or `not` (NOT) groups of conditions.
@@ -108,9 +112,20 @@ A rule consists of `all` (AND), `any` (OR), or `not` (NOT) groups of conditions.
 
 ### Context Variables in Rules
 Action rules automatically have access to:
-- Current row fields (e.g. `is_detail`, `status`, `realization_submission`)
-- `parent`: The parent record when rendering nested child or detail tables (automatically passed via `parentData.last`)
-- `parentData`: List of ancestor records
+- **Current row fields** (for row actions in `actions`): e.g. `is_detail`, `status`, `realization_submission`.
+- **`parent`**: The direct parent record when rendering nested child or detail tables (automatically passed via `parentData.last`).
+- **`parentData`**: Complete list of ancestor records (e.g. `parentData[0]` for root header, `parentData[1]` for detail).
+
+#### Table State Variables in `actions_home`
+When evaluating rules for top-level action buttons in `actions_home` (rendered via `MenuDataTableActions`), the evaluation data includes:
+
+| Variable | Type | Description |
+|---|---|---|
+| `is_table_empty` | Boolean | `true` when table data has completed loading (`Status.loaded`) and contains **0 rows**. Useful for showing alternative actions when a child table has no rows. |
+| `table_data_length` | Integer | Number of rows currently loaded in the table. `-1` while still loading. |
+| `total_rows` | Integer | Total count of rows across pagination metadata. `-1` while still loading. |
+| `is_table_loaded` | Boolean | `true` when table query execution has finished (`status == Status.loaded`). |
+| `table_data` | Array | Raw list of loaded rows (`pageOptions.data`). |
 
 ### Example: Show "Approve" only for "PENDING" status
 ```json
@@ -122,6 +137,35 @@ Action rules automatically have access to:
       "value": "PENDING"
     }
   ]
+}
+```
+
+### Example: Empty-Table Fallback Action in `actions_home`
+Show a button in `actions_home` only when:
+1. The table data query has finished loading and has **0 rows** (`is_table_empty == true`).
+2. The root header transaction status is **not** `"INPUT"`.
+
+```json
+{
+  "id": "lbb_realization",
+  "type": "open_page",
+  "name": "LBB Realization",
+  "layout_form_id": "lbb_realization_without_detail_sub",
+  "icon": "Add",
+  "rule": {
+    "all": [
+      {
+        "field": "{{ (function(){ var s = String(typeof parentData !== 'undefined' && Array.isArray(parentData) && parentData.length > 0 && parentData[0] && parentData[0].status ? parentData[0].status : (typeof parent !== 'undefined' && parent && parent.status ? parent.status : (typeof status !== 'undefined' ? status : ''))).trim().toUpperCase(); return s !== '' && s !== 'INPUT'; })() }}",
+        "op": "=",
+        "value": true
+      },
+      {
+        "field": "{{ typeof is_table_empty !== 'undefined' ? is_table_empty : (typeof table_data_length !== 'undefined' ? table_data_length === 0 : (typeof total_rows !== 'undefined' ? total_rows === 0 : false)) }}",
+        "op": "=",
+        "value": true
+      }
+    ]
+  }
 }
 ```
 

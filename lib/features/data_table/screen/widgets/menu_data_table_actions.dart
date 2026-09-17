@@ -16,6 +16,8 @@ class MenuDataTableActions extends StatelessWidget {
     required this.refreshButton,
     required this.onFilterChanged,
     required this.onRefresh,
+    this.pageOptions,
+    this.status,
   });
 
   final EntityCustom entity;
@@ -26,16 +28,36 @@ class MenuDataTableActions extends StatelessWidget {
   final Widget refreshButton;
   final ValueChanged<List<Filter>> onFilterChanged;
   final VoidCallback onRefresh;
+  final PageOptions<Map<String, dynamic>>? pageOptions;
+  final Status? status;
+
+  Map<String, dynamic> _buildEvalData() {
+    return <String, dynamic>{
+      ...filters.toMap(),
+      if (pageOptions != null) ...{
+        'table_total_rows': status == Status.loaded ? pageOptions!.totalRows : -1,
+        'table_data_length': status == Status.loaded ? pageOptions!.data.length : -1,
+        'table_data': pageOptions!.data,
+        'total_rows': status == Status.loaded ? pageOptions!.totalRows : -1,
+        'data_length': status == Status.loaded ? pageOptions!.data.length : -1,
+        'is_table_loaded': status == Status.loaded,
+        'is_table_empty': status == Status.loaded && pageOptions!.data.isEmpty,
+      },
+      if (parentData.isNotEmpty) ...parentData.first,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
+    final evalData = _buildEvalData();
+
     return Wrap(
       spacing: 12,
       crossAxisAlignment: WrapCrossAlignment.end,
       runAlignment: WrapAlignment.end,
       alignment: WrapAlignment.end,
       children: [
-        _buildButtonExports(context),
+        _buildButtonExports(context, evalData),
         FilterButton(
           fields: entity.filters.isNotEmpty
               ? entity.filters
@@ -50,10 +72,7 @@ class MenuDataTableActions extends StatelessWidget {
         refreshButton,
         ...entity.actionsHome
             .where((action) => action.type != ActionType.export)
-            .where((action) => action.isVisibleFor(<String, dynamic>{
-                  ...filters.toMap(),
-                  if (parentData.isNotEmpty) ...parentData.first,
-                }, parentData: parentData))
+            .where((action) => action.isVisibleFor(evalData, parentData: parentData))
             .map((e) => e.buildButtonRegular(
                   context: context,
                   entity: entity,
@@ -66,7 +85,7 @@ class MenuDataTableActions extends StatelessWidget {
     );
   }
 
-  Widget _buildButtonExports(BuildContext context) {
+  Widget _buildButtonExports(BuildContext context, Map<String, dynamic> evalData) {
     final exportButtons = <Widget>[];
 
     exportButtons.addAll(entity.exports
@@ -75,10 +94,7 @@ class MenuDataTableActions extends StatelessWidget {
 
     exportButtons.addAll(entity.actionsHome
         .where((e) => e.type == ActionType.export)
-        .where((action) => action.isVisibleFor(<String, dynamic>{
-              ...filters.toMap(),
-              if (parentData.isNotEmpty) ...parentData.first,
-            }, parentData: parentData))
+        .where((action) => action.isVisibleFor(evalData, parentData: parentData))
         .map((e) => e.buildButtonRegular(
               context: context,
               entity: entity,

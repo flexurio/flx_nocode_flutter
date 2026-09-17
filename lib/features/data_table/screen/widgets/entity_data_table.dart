@@ -154,7 +154,11 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
                 bypassPermission: widget.bypassPermission,
                 filtersMap: _filters.toMap(),
                 actionLeft: _buildActionLeft(),
-                actionRightBuilder: _buildActionRight,
+                actionRightBuilder: (refresh) => _buildActionRight(
+                  refresh,
+                  pageOptions: pageOptions,
+                  status: status,
+                ),
                 onChanged: _fetch,
                 onRefresh: _fetch,
               ),
@@ -195,7 +199,11 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   }) {
     return DataListView(
       actionLeft: _buildActionLeft(),
-      actionRight: _buildActionRight,
+      actionRight: (refresh) => _buildActionRight(
+        refresh,
+        pageOptions: pageOptions,
+        status: status,
+      ),
       onChanged: _fetch,
       onRefresh: _fetch,
       status: status,
@@ -399,7 +407,11 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     _fetch();
   }
 
-  List<Widget> _buildActionRight(Widget refreshButton) {
+  List<Widget> _buildActionRight(
+    Widget refreshButton, {
+    PageOptions<Map<String, dynamic>>? pageOptions,
+    Status? status,
+  }) {
     return [
       MenuDataTableActions(
         entity: widget.entity,
@@ -408,6 +420,8 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
         bypassPermission: widget.bypassPermission,
         filters: _filters,
         refreshButton: refreshButton,
+        pageOptions: pageOptions,
+        status: status,
         onFilterChanged: (filters) {
           _filters = filters;
           _fetch();
