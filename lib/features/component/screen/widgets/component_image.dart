@@ -1,11 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_image.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 extension ComponentImageWidgets on ComponentImage {
   Widget toWidget(JsonMap data) {
+    var resolvedUrl = url.interpolateJavascript(data);
+    if (resolvedUrl.isNotEmpty) {
+      try {
+        resolvedUrl = Uri.encodeFull(resolvedUrl);
+      } catch (_) {}
+    }
+
+    Map<String, String>? resolvedHeaders;
+    if (headers != null && headers!.isNotEmpty) {
+      resolvedHeaders = headers!.map((key, value) => MapEntry(
+            key.toString().interpolateJavascript(data),
+            value.toString().interpolateJavascript(data),
+          ));
+    }
+
     return Image.network(
-      url,
+      resolvedUrl,
+      headers: resolvedHeaders,
       width: width,
       height: height,
       fit: _mapFit(fit),
@@ -34,7 +51,7 @@ extension ComponentImageWidgets on ComponentImage {
           if (width != null || height != null) ...[
             const SizedBox(height: 4),
             Text(
-              '${width?.toInt() ?? 'auto'} x ${height?.toInt() ?? 'auto'}',
+              '${width?.toInt() ?? "auto"} x ${height?.toInt() ?? "auto"}',
               style: TextStyle(color: Colors.grey.shade400, fontSize: 10),
             ),
           ],
@@ -55,7 +72,7 @@ extension ComponentImageWidgets on ComponentImage {
         return BoxFit.fitHeight;
       case 'none':
         return BoxFit.none;
-      case 'scaleDown':
+      case 'scaledown':
         return BoxFit.scaleDown;
       case 'cover':
       default:

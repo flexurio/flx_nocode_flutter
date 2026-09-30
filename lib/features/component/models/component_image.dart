@@ -3,6 +3,7 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 
 class ComponentImage extends Component {
   final String url;
+  final Map<String, dynamic>? headers;
   final double? width;
   final double? height;
   final String fit;
@@ -13,6 +14,7 @@ class ComponentImage extends Component {
   ComponentImage({
     required super.id,
     this.url = 'https://via.placeholder.com/150',
+    this.headers,
     this.width,
     this.height,
     this.fit = 'cover',
@@ -40,6 +42,11 @@ class ComponentImage extends Component {
     return ComponentImage(
       id: id,
       url: map['url']?.toString() ?? 'https://via.placeholder.com/150',
+      headers: map['headers'] is Map<String, dynamic>
+          ? map['headers'] as Map<String, dynamic>
+          : (map['headers'] is Map
+              ? Map<String, dynamic>.from(map['headers'] as Map)
+              : null),
       width: double.tryParse(map['width']?.toString() ?? ''),
       height: double.tryParse(map['height']?.toString() ?? ''),
       fit: map['fit']?.toString() ?? 'cover',
@@ -55,6 +62,7 @@ class ComponentImage extends Component {
   JsonMap toMap() => {
         ...super.toMap(),
         'url': url,
+        if (headers != null) 'headers': headers,
         if (width != null) 'width': width,
         if (height != null) 'height': height,
         'fit': fit,
