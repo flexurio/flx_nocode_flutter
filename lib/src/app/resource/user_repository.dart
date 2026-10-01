@@ -6,6 +6,7 @@ class UserRepositoryAppNocode extends UserRepository {
   static UserRepositoryAppNocode instance = UserRepositoryAppNocode();
 
   UserAppNocode? userApp;
+  String? refreshToken;
 
   @override
   bool checkPermission(String permission) => permissions.contains(permission);
@@ -13,9 +14,11 @@ class UserRepositoryAppNocode extends UserRepository {
   @override
   void setUserFromJwt(
     String accessToken,
-    List<String> permission,
-  ) {
+    List<String> permission, {
+    String? refreshToken,
+  }) {
     token = accessToken;
+    this.refreshToken = refreshToken;
     final userPayload = extractPayloadFromJwt(accessToken);
     userApp = UserAppNocode.fromJson(userPayload);
     if (permission.isNotEmpty) {
@@ -41,6 +44,8 @@ class UserRepositoryAppNocode extends UserRepository {
   @override
   void unset() {
     token = null;
+    refreshToken = null;
     user = null;
+    userApp = null;
   }
 }
