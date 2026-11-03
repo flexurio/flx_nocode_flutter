@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,6 +24,8 @@ class ComponentTableController extends GetxController {
   final rows = <JsonMap>[].obs;
   final isLoading = true.obs;
   final error = RxnString();
+  StreamSubscription<Map<String, dynamic>>? _referenceDataSubscription;
+  String? _lastReferenceDataSignature;
 
   /// Pre-built entity context for row actions.
   ///
@@ -50,29 +53,61 @@ class ComponentTableController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final layoutFormId = contextData['layoutFormId'];
-    if (layoutFormId != null) {
-      final pageCtrl = Get.isRegistered<CreatePageController>(tag: 'create_page_$layoutFormId')
-          ? Get.find<CreatePageController>(tag: 'create_page_$layoutFormId')
-          : null;
-      if (pageCtrl != null) {
-        pageCtrl.tableReloadListeners[component.id] = () =>
-            loadData(isRefresh: component.reloadWithRefresh);
+    final pageCtrl = _findPageController();
+    if (pageCtrl != null) {
+      final referenceId = component.referenceId;
+      _lastReferenceDataSignature = _signature(
+        referenceId == null ? null : pageCtrl.initialData[referenceId],
+      );
+
+      // Multi-step forms keep hidden steps mounted. Their table widgets may not
+      // rebuild when another step changes a variable, so listen to the root
+      // form state directly and reload only when this table's reference changes.
+      if (referenceId != null && referenceId.isNotEmpty) {
+        _referenceDataSubscription = pageCtrl.initialData.listen((_) {
+          final nextSignature = _signature(pageCtrl.initialData[referenceId]);
+          if (nextSignature == _lastReferenceDataSignature) return;
+
+          _lastReferenceDataSignature = nextSignature;
+          loadData();
+        });
       }
+
+      pageCtrl.tableReloadListeners[component.id] =
+          () => loadData(isRefresh: component.reloadWithRefresh);
     }
     loadData();
   }
 
   @override
   void onClose() {
-    final layoutFormId = contextData['layoutFormId'];
-    if (layoutFormId != null) {
-      final pageCtrl = Get.isRegistered<CreatePageController>(tag: 'create_page_$layoutFormId')
-          ? Get.find<CreatePageController>(tag: 'create_page_$layoutFormId')
-          : null;
-      pageCtrl?.tableReloadListeners.remove(component.id);
-    }
+    _referenceDataSubscription?.cancel();
+    _findPageController()?.tableReloadListeners.remove(component.id);
     super.onClose();
+  }
+
+  CreatePageController? _findPageController() {
+    final layoutFormId = (contextData['rootLayoutFormId'] ??
+        contextData['layoutFormId']) as String?;
+    if (layoutFormId != null) {
+      final tag = 'create_page_$layoutFormId';
+      if (Get.isRegistered<CreatePageController>(tag: tag)) {
+        return Get.find<CreatePageController>(tag: tag);
+      }
+    }
+
+    if (Get.isRegistered<CreatePageController>()) {
+      return Get.find<CreatePageController>();
+    }
+    return null;
+  }
+
+  String _signature(dynamic value) {
+    try {
+      return jsonEncode(value);
+    } catch (_) {
+      return value?.toString() ?? '';
+    }
   }
 
   /// Robustly resolves a value from a row using dot notation or direct key.
@@ -95,7 +130,8 @@ class ComponentTableController extends GetxController {
   /// Builds a context map merged with live text values from all managed controllers.
   JsonMap _buildEffectiveContext() {
     final effectiveContext = Map<String, dynamic>.from(contextData);
-    final layoutFormId = (contextData['rootLayoutFormId'] ?? contextData['layoutFormId']) as String?;
+    final layoutFormId = (contextData['rootLayoutFormId'] ??
+        contextData['layoutFormId']) as String?;
     if (layoutFormId != null) {
       final tag = 'create_page_$layoutFormId';
       if (Get.isRegistered<CreatePageController>(tag: tag)) {
@@ -132,16 +168,39 @@ class ComponentTableController extends GetxController {
   }
 
   Future<void> loadData({bool isRefresh = false}) async {
+    // Local reference tables have no endpoint to reload. Refresh must read the
+    // shared variable instead of clearing it and publishing an empty list.
+    if (component.http.url.isEmpty) isRefresh = false;
     try {
       isLoading.value = true;
       error.value = null;
 
       final effectiveContext = _buildEffectiveContext();
+      final referenceId = component.referenceId;
+      assert(() {
+        if (referenceId != null && referenceId.isNotEmpty) {
+          final source = effectiveContext[referenceId];
+          final shared = _findPageController()?.initialData[referenceId];
+          debugPrint('[TableReference] table=${component.id} '
+              'root=${contextData['rootLayoutFormId']} '
+              'step=${contextData['layoutFormId']} '
+              'reference=$referenceId '
+              'sharedType=${shared.runtimeType} '
+              'sharedRows=${shared is List ? shared.length : -1} '
+              'resolvedType=${source.runtimeType} '
+              'resolvedRows=${source is List ? source.length : -1}');
+        }
+        return true;
+      }());
+      if (referenceId != null && referenceId.isNotEmpty) {
+        _lastReferenceDataSignature = _signature(effectiveContext[referenceId]);
+      }
 
       // 1. Resolve local data from referenceId or initialValue when not refreshing
       dynamic localData;
       if (!isRefresh) {
-        if (component.referenceId != null && component.referenceId!.isNotEmpty) {
+        if (component.referenceId != null &&
+            component.referenceId!.isNotEmpty) {
           localData = effectiveContext[component.referenceId];
         }
 
@@ -168,7 +227,8 @@ class ComponentTableController extends GetxController {
             if (decoded is List) {
               rows.value = _parseRows(decoded);
               isLoading.value = false;
-              if (component.referenceId != null && component.referenceId!.isNotEmpty) {
+              if (component.referenceId != null &&
+                  component.referenceId!.isNotEmpty) {
                 contextData[component.referenceId!] = decoded;
               }
               notifyChanged();
@@ -182,7 +242,8 @@ class ComponentTableController extends GetxController {
         if (localData is List) {
           rows.value = _parseRows(localData);
           isLoading.value = false;
-          if (component.referenceId != null && component.referenceId!.isNotEmpty) {
+          if (component.referenceId != null &&
+              component.referenceId!.isNotEmpty) {
             contextData[component.referenceId!] = localData;
           }
           notifyChanged();
@@ -205,7 +266,8 @@ class ComponentTableController extends GetxController {
           ? Get.find<HttpRequestExecutor>()
           : null;
 
-      final result = await httpData.execute(effectiveContext, executor: executor);
+      final result =
+          await httpData.execute(effectiveContext, executor: executor);
 
       if (!result.isSuccess) {
         error.value = result.message ?? 'Request failed';
@@ -240,7 +302,8 @@ class ComponentTableController extends GetxController {
   /// Resets user-editable form inputs to their initial states on table refresh.
   void _resetPageInputsOnRefresh() {
     try {
-      final layoutFormId = (contextData['rootLayoutFormId'] ?? contextData['layoutFormId']) as String?;
+      final layoutFormId = (contextData['rootLayoutFormId'] ??
+          contextData['layoutFormId']) as String?;
       if (layoutFormId == null) return;
       final tag = 'create_page_$layoutFormId';
       if (!Get.isRegistered<CreatePageController>(tag: tag)) return;
@@ -252,7 +315,8 @@ class ComponentTableController extends GetxController {
         // Skip disabled/read-only components
         if (comp is ComponentInputBase && !comp.enabled) continue;
         // Skip hidden context components (e.g. visibilityCondition: "false")
-        if (comp.visibilityCondition == 'false' || comp.visibilityCondition == false) {
+        if (comp.visibilityCondition == 'false' ||
+            comp.visibilityCondition == false) {
           // If it's the 'is_adding' flag, reset it to 'false' to close any open add form
           if (comp.id == 'is_adding') {
             pageCtrl.controllers['is_adding']?.text = 'false';
@@ -286,7 +350,8 @@ class ComponentTableController extends GetxController {
       }
       pageCtrl.initialData.refresh();
     } catch (e) {
-      debugPrint('[ComponentTableController] _resetPageInputsOnRefresh error: $e');
+      debugPrint(
+          '[ComponentTableController] _resetPageInputsOnRefresh error: $e');
     }
   }
 
@@ -315,7 +380,8 @@ class ComponentTableController extends GetxController {
         }
       }
 
-      final layoutFormId = (contextData['rootLayoutFormId'] ?? contextData['layoutFormId']) as String?;
+      final layoutFormId = (contextData['rootLayoutFormId'] ??
+          contextData['layoutFormId']) as String?;
       CreatePageController? pageController;
       if (layoutFormId != null) {
         final tagPage = 'create_page_$layoutFormId';
