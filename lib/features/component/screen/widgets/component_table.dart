@@ -10,7 +10,11 @@ import 'component_table_controller.dart';
 
 extension ComponentTableWidgets on ComponentTable {
   Widget toWidget(JsonMap data) {
-    return _ComponentTableWidget(component: this, data: data);
+    return _ComponentTableWidget(
+      key: ValueKey(id),
+      component: this,
+      data: data,
+    );
   }
 
   Widget toMockWidget() {
@@ -129,6 +133,7 @@ extension ComponentTableWidgets on ComponentTable {
 
 class _ComponentTableWidget extends StatefulWidget {
   const _ComponentTableWidget({
+    super.key,
     required this.component,
     required this.data,
   });
@@ -225,7 +230,10 @@ class _ComponentTableWidgetState extends State<_ComponentTableWidget> {
         return const Center(child: CircularProgressIndicator());
       }
 
-      final rows = controller.rows;
+      // Read the RxList inside Obx and pass an immutable snapshot downstream.
+      // Passing the RxList itself defers its reads to YuhuTable's build, outside
+      // this observer, so row updates can leave the table displaying stale data.
+      final rows = controller.rows.toList(growable: false);
 
       // Optimize: prepare the current data once per build
       final currentData = widget.data.map((key, value) {
