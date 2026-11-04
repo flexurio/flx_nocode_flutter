@@ -184,8 +184,31 @@ class CreatePageController extends GetxController {
 
   /// Navigates to the next form step after validating the current one.
   void nextStep() {
-    if (stepFormKeys[currentPage.value].currentState!.validate()) {
-      currentPage.value++;
+    final page = currentPage.value;
+    final form = stepFormKeys[page].currentState;
+    if (form == null) {
+      debugPrint('[MultiForm] Next blocked: form state missing for step $page');
+      return;
+    }
+    final invalidFields = form.validateGranularly();
+    if (invalidFields.isNotEmpty) {
+      final firstInvalid = invalidFields.first;
+      debugPrint('[MultiForm] Next blocked at step $page: '
+          '${invalidFields.map((field) => field.errorText).join('; ')}');
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (firstInvalid.mounted) {
+          Scrollable.ensureVisible(
+            firstInvalid.context,
+            alignment: 0.2,
+            duration: const Duration(milliseconds: 250),
+          );
+        }
+      });
+      return;
+    }
+    if (page + 1 < stepFormKeys.length) {
+      currentPage.value = page + 1;
+      debugPrint('[MultiForm] Step changed: $page -> ${currentPage.value}');
     }
   }
 
