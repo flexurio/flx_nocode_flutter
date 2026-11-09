@@ -38,7 +38,7 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `copy_label` | String | No | Button label for copy button in success dialog (e.g. `"Copy ID"`). |
 | `copy_value` | String | No | Value to copy to clipboard (supports `{{data.id}}`). |
 | `confirm_action` | Object | No | Action to execute when the user clicks the "Confirm" button on the success dialog. Supports `type: "navigate"` with `entity_id` and `params`. |
-| `view_type` | String | No | Target view type for `show_dialog` actions (e.g., `"table"` to render a data table popup). Alias: `type_view`. |
+| `view_type` | String | No | Target view type for `show_dialog` actions (e.g., `"table"` to render a data table popup, or `"cards"` / `"grid"` to render a KPI Summary Cards popup). Alias: `type_view`. |
 | `target_entity` | String | No | Target entity ID to load and render when `view_type` is `"table"`. Aliases: `entity_id`, `target_entity_id`. |
 | `filters` | Array\<Object\> | No | List of filters to pass to the target view `[{ "reference": "tahun", "value": "{{row.tahun}}" }]`. Supports JS interpolation. |
 | `params` | Object | No | Parameter map to pass to the target view (e.g. `{ "tahun.eq": "{{row.tahun}}" }`). Supports JS interpolation. |
@@ -126,6 +126,36 @@ Dynamic filter values from the clicked row can be mapped via `filters` or `param
     {
       "reference": "bulan",
       "value": "9"
+    }
+  ]
+}
+```
+
+#### Popup Cards / Grid Dialog (`view_type: "cards"` / `"grid"`)
+When `type: "show_dialog"` is configured with `view_type: "cards"` or `view_type: "grid"` (or alias `type_view: "cards"` / `"grid"`), the framework renders the entity's data as an interactive KPI summary card grid instead of a table.
+
+This is ideal for summary reports where an endpoint returns a single aggregated record:
+- Text/dimension fields (e.g. `tahun`, `bulan`) are rendered as period badges at the top.
+- Numeric and action fields are rendered as responsive metric cards with formatted numbers.
+- Any field on the target entity with an `action` is rendered with interactive card elevation, ripple, and a *"Lihat Detail ↗"* link that executes its nested drilldown action.
+- The dialog height fits the content compactly without empty rows, search inputs, or pagination.
+
+```json
+{
+  "id": "view_detail_01",
+  "name": "Detail Sales Target Bulan 01",
+  "type": "show_dialog",
+  "view_type": "cards",
+  "target_entity": "sales_target_monthly_trend_detail_summaries",
+  "title": "Sales Target Monthly Trend Detail Summaries - Bulan 01",
+  "filters": [
+    {
+      "reference": "tahun",
+      "value": "{{row.tahun}}"
+    },
+    {
+      "reference": "bulan",
+      "value": "01"
     }
   ]
 }

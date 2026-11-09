@@ -175,6 +175,128 @@ extension ActionExecutionExtension on ActionD {
         final hasTargetEntity =
             targetEntityId != null && targetEntityId!.isNotEmpty;
 
+        if (effectiveViewType == 'cards' || effectiveViewType == 'grid') {
+          final target = targetEntityId ?? entity.id;
+          final resolvedFilters = <Filter>[];
+
+          final interpVars = <String, dynamic>{
+            'row': data,
+            'field': reference ?? '',
+            ...data,
+          };
+
+          if (filters != null) {
+            for (final f in filters!) {
+              if (f is Map) {
+                final ref = (f['reference'] ?? f['field'] ?? '').toString();
+                var rawVal = (f['value'] ?? '').toString();
+                if (rawVal.contains('{{')) {
+                  rawVal = rawVal.interpolateJavascript(interpVars);
+                }
+                final backendKey = f['backend_key']?.toString();
+                resolvedFilters.add(Filter(
+                  reference: ref,
+                  value: rawVal,
+                  backendKey: backendKey,
+                ));
+              }
+            }
+          }
+
+          if (params != null) {
+            for (final entry in params!.entries) {
+              var val = entry.value.toString();
+              if (val.contains('{{')) {
+                val = val.interpolateJavascript(interpVars);
+              }
+              final key = entry.key;
+              final ref =
+                  key.endsWith('.eq') ? key.substring(0, key.length - 3) : key;
+              resolvedFilters.add(Filter(
+                reference: ref,
+                value: val,
+                backendKey: key,
+              ));
+            }
+          }
+
+          await showDialog(
+            context: context,
+            useRootNavigator: true,
+            barrierDismissible: true,
+            builder: (ctx) {
+              final size = MediaQuery.of(ctx).size;
+              final dialogWidth =
+                  width ?? (size.width * 0.7).clamp(520.0, 850.0);
+              final dialogTitle = title ?? name;
+
+              return Dialog(
+                backgroundColor: Colors.white,
+                surfaceTintColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                clipBehavior: Clip.antiAlias,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: dialogWidth,
+                    maxHeight: (size.height * 0.85).clamp(320.0, 750.0),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color:
+                              Theme.of(ctx).colorScheme.surfaceContainerHighest,
+                          border: Border(
+                              bottom: BorderSide(color: Colors.grey.shade300)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.table_chart_outlined, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                dialogTitle,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            IconButton(
+                              visualDensity: VisualDensity.compact,
+                              icon: const Icon(Icons.close, size: 20),
+                              onPressed: () => Navigator.of(ctx).pop(),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Flexible(
+                        child: Container(
+                          color: Colors.white,
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.all(20),
+                            child: EntityCardGridView.fromId(
+                              entityId: target,
+                              initialFilters: resolvedFilters,
+                              parentData: [...parentData, data],
+                              onRefresh: () => onSuccessCallback?.call(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+          break;
+        }
+
         if (effectiveViewType == 'table' ||
             (effectiveViewType.isEmpty && hasTargetEntity)) {
           final target = targetEntityId ?? entity.id;
@@ -233,6 +355,8 @@ extension ActionExecutionExtension on ActionD {
               final dialogTitle = title ?? name;
 
               return Dialog(
+                backgroundColor: Colors.white,
+                surfaceTintColor: Colors.transparent,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
                 clipBehavior: Clip.antiAlias,
