@@ -10,6 +10,7 @@ import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/print/presentation/widgets/pdf_preview_dialog.dart';
 import 'package:flx_nocode_flutter/features/print/presentation/widgets/print_filter_dialog.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
+import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/src/app/util/string.dart';
 import 'package:get/get.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -170,6 +171,123 @@ extension ActionExecutionExtension on ActionD {
         break;
 
       case ActionType.showDialog:
+        final effectiveViewType = (viewType ?? '').toLowerCase();
+        final hasTargetEntity =
+            targetEntityId != null && targetEntityId!.isNotEmpty;
+
+        if (effectiveViewType == 'table' ||
+            (effectiveViewType.isEmpty && hasTargetEntity)) {
+          final target = targetEntityId ?? entity.id;
+          final resolvedFilters = <Filter>[];
+
+          final interpVars = <String, dynamic>{
+            'row': data,
+            'field': reference ?? '',
+            ...data,
+          };
+
+          if (filters != null) {
+            for (final f in filters!) {
+              if (f is Map) {
+                final ref = (f['reference'] ?? f['field'] ?? '').toString();
+                var rawVal = (f['value'] ?? '').toString();
+                if (rawVal.contains('{{')) {
+                  rawVal = rawVal.interpolateJavascript(interpVars);
+                }
+                final backendKey = f['backend_key']?.toString();
+                resolvedFilters.add(Filter(
+                  reference: ref,
+                  value: rawVal,
+                  backendKey: backendKey,
+                ));
+              }
+            }
+          }
+
+          if (params != null) {
+            for (final entry in params!.entries) {
+              var val = entry.value.toString();
+              if (val.contains('{{')) {
+                val = val.interpolateJavascript(interpVars);
+              }
+              final key = entry.key;
+              final ref =
+                  key.endsWith('.eq') ? key.substring(0, key.length - 3) : key;
+              resolvedFilters.add(Filter(
+                reference: ref,
+                value: val,
+                backendKey: key,
+              ));
+            }
+          }
+
+          await showDialog(
+            context: context,
+            useRootNavigator: true,
+            barrierDismissible: true,
+            builder: (ctx) {
+              final size = MediaQuery.of(ctx).size;
+              final dialogWidth =
+                  width ?? (size.width * 0.85).clamp(600.0, 1200.0);
+              final dialogHeight = (size.height * 0.8).clamp(400.0, 800.0);
+              final dialogTitle = title ?? name;
+
+              return Dialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                clipBehavior: Clip.antiAlias,
+                child: SizedBox(
+                  width: dialogWidth,
+                  height: dialogHeight,
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color:
+                              Theme.of(ctx).colorScheme.surfaceContainerHighest,
+                          border: Border(
+                              bottom: BorderSide(color: Colors.grey.shade300)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.table_chart_outlined, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                dialogTitle,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            IconButton(
+                              visualDensity: VisualDensity.compact,
+                              icon: const Icon(Icons.close, size: 20),
+                              onPressed: () => Navigator.of(ctx).pop(),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: MenuCustom.fromId(
+                          entityId: target,
+                          embedded: true,
+                          bypassPermission: true,
+                          initialFilters: resolvedFilters,
+                          parentData: [...parentData, data],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+          break;
+        }
+
         if (layoutFormId == null) {
           Toast(context).fail('No page found');
           return;

@@ -71,6 +71,9 @@ class EntityCustom extends HiveObject {
   /// Whether to hide the row actions column in the data table.
   final bool hideRowActions;
 
+  /// Whether to hide filters in the data table.
+  final bool hideFilters;
+
   /// Whether to freeze the first column in the data table. Defaults to true.
   final bool freezeFirstColumn;
 
@@ -111,6 +114,7 @@ class EntityCustom extends HiveObject {
     this.filters = const [],
     this.bypassAllPermissions = false,
     this.hideRowActions = false,
+    this.hideFilters = false,
     this.freezeFirstColumn = true,
     this.freezeLastColumn = true,
     this.pinnedColumns = const [],
@@ -178,6 +182,7 @@ class EntityCustom extends HiveObject {
         filters: parser.parseFilters(),
         bypassAllPermissions: parser.parseBypassAllPermissions(),
         hideRowActions: parser.parseHideRowActions(),
+        hideFilters: parser.parseHideFilters(),
         freezeFirstColumn: parser.parseFreezeFirstColumn(),
         freezeLastColumn: parser.parseFreezeLastColumn(),
         pinnedColumns: parser.parsePinnedColumns(),
@@ -212,6 +217,7 @@ class EntityCustom extends HiveObject {
         filters = [],
         bypassAllPermissions = false,
         hideRowActions = false,
+        hideFilters = false,
         freezeFirstColumn = true,
         freezeLastColumn = true,
         pinnedColumns = const [],
@@ -241,6 +247,7 @@ class EntityCustom extends HiveObject {
     List<FilterOption>? filters,
     bool? bypassAllPermissions,
     bool? hideRowActions,
+    bool? hideFilters,
     bool? freezeFirstColumn,
     bool? freezeLastColumn,
     List<String>? pinnedColumns,
@@ -270,6 +277,7 @@ class EntityCustom extends HiveObject {
       filters: filters ?? this.filters,
       bypassAllPermissions: bypassAllPermissions ?? this.bypassAllPermissions,
       hideRowActions: hideRowActions ?? this.hideRowActions,
+      hideFilters: hideFilters ?? this.hideFilters,
       freezeFirstColumn: freezeFirstColumn ?? this.freezeFirstColumn,
       freezeLastColumn: freezeLastColumn ?? this.freezeLastColumn,
       pinnedColumns: pinnedColumns ?? this.pinnedColumns,
@@ -431,6 +439,7 @@ class EntityCustom extends HiveObject {
       'filters': filters.map((e) => e.toJson()).toList(),
       'bypass_all_permissions': bypassAllPermissions,
       'hide_row_actions': hideRowActions,
+      'hide_filters': hideFilters,
       'freezed_column': freezeFirstColumn && freezeLastColumn,
       'freeze_first_column': freezeFirstColumn,
       'freeze_last_column': freezeLastColumn,
@@ -794,6 +803,10 @@ class _EntityCustomJsonParser {
   /// Note: [EntityCustom.fromJson] uses this to initialize the model.
   bool parseHideRowActions() {
     return json['hide_row_actions'] == true;
+  }
+
+  bool parseHideFilters() {
+    return json['hide_filters'] == true;
   }
 
   bool parseBypassAllPermissions() {

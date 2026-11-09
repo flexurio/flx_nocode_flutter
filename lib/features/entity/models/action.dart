@@ -128,6 +128,21 @@ class ActionD extends HiveObject {
   /// E.g. navigating to a detail page with params.
   final Map<String, dynamic>? confirmAction;
 
+  /// View type for dialogs or views (e.g. 'table', 'form', etc.)
+  final String? viewType;
+
+  /// Target entity identifier to render in dialog/page
+  final String? targetEntityId;
+
+  /// Optional title for the dialog/window
+  final String? title;
+
+  /// Optional filters list to apply to target entity view
+  final List<dynamic>? filters;
+
+  /// Optional params map to apply to target entity view
+  final Map<String, dynamic>? params;
+
   ActionD({
     required this.isMultiple,
     required this.onSuccess,
@@ -164,10 +179,18 @@ class ActionD extends HiveObject {
     this.popup = false,
     this.workflow,
     this.confirmAction,
+    this.viewType,
+    this.targetEntityId,
+    this.title,
+    this.filters,
+    this.params,
   }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
-      assert(layoutFormId != null && layoutFormId!.isNotEmpty,
-          'Action "$id" of type "${type.id}" requires a non-empty layoutFormId.');
+      final isTableView = viewType == 'table' || (targetEntityId != null && targetEntityId!.isNotEmpty);
+      if (!isTableView) {
+        assert(layoutFormId != null && layoutFormId!.isNotEmpty,
+            'Action "$id" of type "${type.id}" requires a non-empty layoutFormId.');
+      }
     }
   }
 
@@ -208,6 +231,11 @@ class ActionD extends HiveObject {
     bool? popup,
     Map<String, dynamic>? workflow,
     Map<String, dynamic>? confirmAction,
+    String? viewType,
+    String? targetEntityId,
+    String? title,
+    List<dynamic>? filters,
+    Map<String, dynamic>? params,
   }) {
     return ActionD(
       exportFormat: exportFormat ?? this.exportFormat,
@@ -245,6 +273,11 @@ class ActionD extends HiveObject {
       popup: popup ?? this.popup,
       workflow: workflow ?? this.workflow,
       confirmAction: confirmAction ?? this.confirmAction,
+      viewType: viewType ?? this.viewType,
+      targetEntityId: targetEntityId ?? this.targetEntityId,
+      title: title ?? this.title,
+      filters: filters ?? this.filters,
+      params: params ?? this.params,
     );
   }
 
@@ -253,9 +286,16 @@ class ActionD extends HiveObject {
     final type = ActionType.fromId(json['type']);
     final layoutFormId = json['layout_form_id'];
     final layoutPrintId = json['layout_print_id'];
+    final viewType = json['view_type'] ?? json['type_view'];
+    final targetEntityId = json['target_entity'] ??
+        json['entity_id'] ??
+        json['target_entity_id'];
+    final isTableView = viewType == 'table' ||
+        (targetEntityId != null && targetEntityId.toString().isNotEmpty);
 
     if (type == ActionType.openPage || type == ActionType.showDialog) {
-      if (layoutFormId == null || layoutFormId.toString().isEmpty) {
+      if (!isTableView &&
+          (layoutFormId == null || layoutFormId.toString().isEmpty)) {
         throw FormatException(
             'Action "${json['id'] ?? 'unknown'}" (type: "${type.id}") requires "layout_form_id"');
       }
@@ -326,6 +366,13 @@ class ActionD extends HiveObject {
       confirmAction: json['confirm_action'] is Map
           ? Map<String, dynamic>.from(json['confirm_action'] as Map)
           : null,
+      viewType: viewType?.toString(),
+      targetEntityId: targetEntityId?.toString(),
+      title: json['title']?.toString(),
+      filters: json['filters'] is List ? (json['filters'] as List) : null,
+      params: json['params'] is Map
+          ? Map<String, dynamic>.from(json['params'] as Map)
+          : null,
     );
   }
 
@@ -342,6 +389,11 @@ class ActionD extends HiveObject {
       'reference': reference,
       'layout_form_id': layoutFormId,
       'layout_print_id': layoutPrintId,
+      if (viewType != null) 'view_type': viewType,
+      if (targetEntityId != null) 'target_entity': targetEntityId,
+      if (title != null) 'title': title,
+      if (filters != null) 'filters': filters,
+      if (params != null) 'params': params,
       'icon': icon,
       'icon_code': iconCode,
       if (rule != null) 'rule': rule!.toMap(),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:hive_ce/hive.dart';
 
 /// Represents a single field definition in a dynamic entity configuration.
@@ -77,6 +78,9 @@ class EntityField extends HiveObject {
   /// Whether this column is pinned on the table.
   final bool? isPinned;
 
+  /// Optional action triggered when clicking this field/cell.
+  final ActionD? action;
+
   /// Creates a new [EntityField] configuration.
   EntityField({
     required this.label,
@@ -100,6 +104,7 @@ class EntityField extends HiveObject {
     this.backgroundColors,
     this.textColors,
     this.isPinned,
+    this.action,
   });
 
   /// Creates an [EntityField] instance from JSON.
@@ -146,6 +151,12 @@ class EntityField extends HiveObject {
               ? {'*': json['text_colors'] as String}
               : null),
       isPinned: json['is_pinned'] == true || json['pinned'] == true,
+      action: json['action'] is Map
+          ? ActionD.fromJson(Map<String, dynamic>.from(json['action'] as Map))
+          : (json['click_action'] is Map
+              ? ActionD.fromJson(
+                  Map<String, dynamic>.from(json['click_action'] as Map))
+              : null),
     );
   }
 
@@ -179,6 +190,7 @@ class EntityField extends HiveObject {
     Map<String, String>? backgroundColors,
     Map<String, String>? textColors,
     bool? isPinned,
+    ActionD? action,
   }) {
     return EntityField(
       label: label ?? this.label,
@@ -202,12 +214,14 @@ class EntityField extends HiveObject {
       backgroundColors: backgroundColors ?? this.backgroundColors,
       textColors: textColors ?? this.textColors,
       isPinned: isPinned ?? this.isPinned,
+      action: action ?? this.action,
     );
   }
 
   /// Converts this field definition into JSON map.
   Map<String, dynamic> toJson() {
     return {
+      if (action != null) 'action': action!.toJson(),
       'options_source': optionsSource,
       'column_width': columnWidth,
       'label': label,

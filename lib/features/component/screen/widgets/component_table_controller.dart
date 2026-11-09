@@ -168,9 +168,6 @@ class ComponentTableController extends GetxController {
   }
 
   Future<void> loadData({bool isRefresh = false}) async {
-    // Local reference tables have no endpoint to reload. Refresh must read the
-    // shared variable instead of clearing it and publishing an empty list.
-    if (component.http.url.isEmpty) isRefresh = false;
     try {
       isLoading.value = true;
       error.value = null;
@@ -335,9 +332,9 @@ class ComponentTableController extends GetxController {
         if (ctrl != null) {
           String initial = '';
           if (comp is ComponentTextField) {
-            initial = comp.initialValue ?? '';
+            initial = comp.initialValue;
           } else if (comp is ComponentNumberField) {
-            initial = comp.initialValue ?? '';
+            initial = comp.initialValue;
           }
           if (initial.contains('{{')) {
             try {

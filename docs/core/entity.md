@@ -21,6 +21,7 @@ The root of the JSON file is a single object that contains all the properties fo
 | `exports` | Array<Object> | No | A list of configurations for exporting entity data. See [Export Object](#export-object). |
 | `actions` | Array<Object> | No | A list of custom actions that can be performed on the entity. See [Action Object](#action-object). |
 | `hide_row_actions`| Boolean | No | Whether to hide row action buttons (default `false`) on the data table. |
+| `hide_filters` | Boolean | No | Whether to hide all filter UI controls (inline filter boxes, chips, and filter button) on the data table (default `false`). |
 | `pinned_columns` | Array<String> | No | List of field references to pin on the data table (e.g., `["subordinate_name", "description", "area_value"]`). Pinned columns stay fixed on the left during horizontal scrolling. |
 | `freezed_column` | Boolean / String | No | Controls whether the first and last (actions) columns are frozen in the table. If `false`, no columns are frozen. If `true` (default), both first and last columns are frozen. String values `"first"` or `"last"` freeze only that specific column. |
 | `freeze_first_column` | Boolean | No | Fine-grained override to freeze or unfreeze only the first column (`true`/`false`). |
@@ -58,6 +59,13 @@ The `hide_row_actions` property controls whether the dynamic data table displays
 
 - **`true`**: The actions column is hidden entirely, even if row-level actions are defined.
 - **`false` (or omitted)**: The actions column is displayed on the right-hand side of the table if there is at least one active row-level action.
+
+### Filters Visibility (`hide_filters`)
+
+The `hide_filters` property controls whether filter UI controls are displayed above the data table:
+
+- **`true`**: Hides inline filter input boxes (`_buildActionLeft`), active filter chips (`_buildFilterInformation`), and the header `Filter` button. This is especially useful for embedded sub-tables or popup dialogs where filters are fixed by contextual parameters passed through `initialFilters`.
+- **`false` (or omitted)**: Filter controls are displayed normally based on `filters` configuration.
 
 ---
 

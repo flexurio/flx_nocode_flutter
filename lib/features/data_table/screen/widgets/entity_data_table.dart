@@ -313,6 +313,13 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   }
 
   List<Widget> _buildActionLeft() {
+    if (widget.entity.hideFilters == true) {
+      if (widget.entity.customeLayout.isNotEmpty) {
+        return [_buildLayoutSelector()];
+      }
+      return [];
+    }
+
     final widgets = <Widget>[];
     final filterWidgets = <Widget>[];
 
@@ -382,6 +389,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   }
 
   bool get _hasFilterInformation {
+    if (widget.entity.hideFilters == true) return false;
     return _filters.any((filter) {
       if (widget.entity.filters.any((e) => e.reference == filter.reference)) {
         return false;
@@ -432,6 +440,7 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
   }
 
   Widget _buildFilterInformation(Color primaryColor) {
+    if (widget.entity.hideFilters == true) return const SizedBox.shrink();
     final activeFilters = _filters.where((filter) {
       if (widget.entity.filters.any((e) => e.reference == filter.reference)) {
         return false;

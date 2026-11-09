@@ -58,16 +58,17 @@ class MenuDataTableActions extends StatelessWidget {
       alignment: WrapAlignment.end,
       children: [
         _buildButtonExports(context, evalData),
-        FilterButton(
-          fields: entity.filters.isNotEmpty
-              ? entity.filters
-                  .map((e) => entity.getField(e.reference))
-                  .whereType<EntityField>()
-                  .toList()
-              : entity.fields,
-          currentFilters: filters,
-          onFilterChanged: onFilterChanged,
-        ),
+        if (entity.hideFilters != true)
+          FilterButton(
+            fields: entity.filters.isNotEmpty
+                ? entity.filters
+                    .map((e) => entity.getField(e.reference))
+                    .whereType<EntityField>()
+                    .toList()
+                : entity.fields,
+            currentFilters: filters,
+            onFilterChanged: onFilterChanged,
+          ),
         ..._buildHomeActions(context),
         refreshButton,
         ...entity.actionsHome

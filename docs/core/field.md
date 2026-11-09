@@ -32,6 +32,7 @@ The `EntityField` class represents a single field definition. It describes how a
 | `chip_colors` | Map<String, String>? | No | Custom color overrides for status chips. Key is status name (case-insensitive substring match), value is hex color (e.g., `"#FF9800"`). |
 | `background_colors` | Map<String, String>? or String? | No | Custom background colors. Can be a map mapped to values (e.g. `{"BFW": "#E8F5E9"}`) or a single string (e.g. `"#E8F5E9"`) to apply the color to all values. |
 | `text_colors` | Map<String, String>? or String? | No | Custom text colors. Can be a map mapped to values (e.g. `{"BFW": "#2E7D32"}`) or a single string (e.g. `"#2E7D32"`) to apply to all values. Automatically selects contrast color if omitted. |
+| `action` | Object? | No | Optional action triggered when clicking this cell in the data table (e.g., opening a popup table or form). See [Field Actions / Clickable Table Cells](#field-actions--clickable-table-cells). |
 | `options` | FieldOptions? | No | A nested configuration object for fields that require a list of options, such as dropdowns. See [FieldOptions Class](#fieldoptions-class) for more details. |
 
 ### JSON Representation
@@ -143,6 +144,40 @@ If `text_colors` are not specified or omitted, the framework automatically uses 
   "type": "text",
   "background_colors": "#E8F5E9",
   "text_colors": "#2E7D32"
+}
+```
+
+### Field Actions / Clickable Table Cells
+
+Fields displayed in data tables can define an `action` (or alias `click_action`). When defined, the cell values are rendered as clickable elements (styled with blue underline link styling) and trigger the configured action on tap.
+
+The action can execute any supported behavior, including opening a popup dialog with another entity's table (`"view_type": "table"`), opening a form, or running an HTTP request. Dynamic variables from the clicked row (such as `{{row.tahun}}` or `{{field.reference}}`) are interpolated into `filters` or `params`.
+
+#### Example: Clickable Column Opening a Detail Table Dialog
+```json
+{
+  "label": "01",
+  "reference": "1",
+  "type": "number",
+  "column_width": 8,
+  "action": {
+    "id": "view_detail_01",
+    "name": "Detail Sales Target Bulan 01",
+    "type": "show_dialog",
+    "view_type": "table",
+    "target_entity": "sales_target_monthly_trend_details",
+    "title": "Sales Target Monthly Trend Detail - Bulan 01",
+    "filters": [
+      {
+        "reference": "tahun",
+        "value": "{{row.tahun}}"
+      },
+      {
+        "reference": "bulan",
+        "value": "1"
+      }
+    ]
+  }
 }
 ```
 

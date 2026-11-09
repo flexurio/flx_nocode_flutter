@@ -121,38 +121,56 @@ class MenuDataTableCustomTableView extends StatelessWidget {
         body: (row) {
           final value = row[field.reference];
 
+          final VoidCallback? cellOnTap;
+          if (field.action != null) {
+            cellOnTap = () async {
+              await field.action!.executeSingle(
+                entity: entity,
+                context: context,
+                data: row,
+                parentData: parentData,
+                onSuccessCallback: () => onRefresh(),
+              );
+            };
+          } else if (index == 0 && entity.actionPrimary != null) {
+            cellOnTap = () async {
+              await entity.actionPrimary!.executeSingle(
+                entity: entity,
+                context: context,
+                data: row,
+                parentData: parentData,
+                onSuccessCallback: () => onRefresh(),
+              );
+            };
+          } else if (index == 0 && !embedded) {
+            cellOnTap = () async {
+              await Navigator.push(
+                context,
+                EntityViewPage.route(
+                  parentData: parentData,
+                  embedded: embedded,
+                  entity: entity,
+                  data: row,
+                  filters: filtersMap,
+                ),
+              );
+              onRefresh();
+            };
+          } else {
+            cellOnTap = null;
+          }
+
           final cellChild = EntityFieldDisplay.build(
             entity,
             field.reference,
             value,
-            onTap: index != 0 || entity.actionPrimary == null
-                ? null
-                : () async {
-                    if (entity.actionPrimary != null) {
-                      await entity.actionPrimary!.executeSingle(
-                        entity: entity,
-                        context: context,
-                        data: row,
-                        parentData: parentData,
-                        onSuccessCallback: () => onRefresh(),
-                      );
-                    } else {
-                      await Navigator.push(
-                        context,
-                        EntityViewPage.route(
-                          parentData: parentData,
-                          embedded: embedded,
-                          entity: entity,
-                          data: row,
-                          filters: filtersMap,
-                        ),
-                      );
-                      onRefresh();
-                    }
-                  },
+            onTap: cellOnTap,
           );
 
-          return DataCell(cellChild);
+          return DataCell(
+            cellChild,
+            onTap: cellOnTap,
+          );
         },
       );
     });

@@ -5,7 +5,10 @@ import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/features/data_table/screen/widgets/menu_data_table_actions.dart';
 
-class MockEntityCustom extends Mock implements EntityCustom {}
+class MockEntityCustom extends Mock implements EntityCustom {
+  @override
+  bool get hideFilters => false;
+}
 
 void main() {
   setUpAll(() {

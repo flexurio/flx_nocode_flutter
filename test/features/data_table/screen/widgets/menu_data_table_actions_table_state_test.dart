@@ -8,7 +8,10 @@ import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockEntityCustom extends Mock implements EntityCustom {}
+class MockEntityCustom extends Mock implements EntityCustom {
+  @override
+  bool get hideFilters => false;
+}
 
 void main() {
   setUpAll(() {

@@ -38,6 +38,11 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `copy_label` | String | No | Button label for copy button in success dialog (e.g. `"Copy ID"`). |
 | `copy_value` | String | No | Value to copy to clipboard (supports `{{data.id}}`). |
 | `confirm_action` | Object | No | Action to execute when the user clicks the "Confirm" button on the success dialog. Supports `type: "navigate"` with `entity_id` and `params`. |
+| `view_type` | String | No | Target view type for `show_dialog` actions (e.g., `"table"` to render a data table popup). Alias: `type_view`. |
+| `target_entity` | String | No | Target entity ID to load and render when `view_type` is `"table"`. Aliases: `entity_id`, `target_entity_id`. |
+| `filters` | Array\<Object\> | No | List of filters to pass to the target view `[{ "reference": "tahun", "value": "{{row.tahun}}" }]`. Supports JS interpolation. |
+| `params` | Object | No | Parameter map to pass to the target view (e.g. `{ "tahun.eq": "{{row.tahun}}" }`). Supports JS interpolation. |
+| `title` | String | No | Custom window/dialog title. If omitted, uses action `name`. |
 | `workflow` | Object | No* | The workflow configuration to execute (required for `workflow` type). See [Submit Workflow](./submit_workflow.md). |
 
 ---
@@ -96,6 +101,35 @@ Displayed at the top of the entity page (e.g., Create, Export All, or contextual
 
 ### `action_primary`
 The default action triggered when a row is clicked/tapped. Usually set to `view` or `edit`.
+
+### `action` on Field (Clickable Column Cell)
+Actions can also be placed directly on individual table fields (`EntityField.action`). When a user taps a value in that column, the action is executed with the clicked row's data and field context.
+
+#### Popup Table Dialog (`view_type: "table"`)
+When `type: "show_dialog"` is configured with `view_type: "table"` (or `type_view: "table"`), the framework opens a modal dialog containing the data table of `target_entity` (or alias `entity_id`).
+
+Dynamic filter values from the clicked row can be mapped via `filters` or `params` using JS interpolation:
+
+```json
+{
+  "id": "view_detail_09",
+  "name": "Detail Sales Target Bulan 09",
+  "type": "show_dialog",
+  "view_type": "table",
+  "target_entity": "sales_target_monthly_trend_details",
+  "title": "Sales Target Monthly Trend Detail - Bulan 09",
+  "filters": [
+    {
+      "reference": "tahun",
+      "value": "{{row.tahun}}"
+    },
+    {
+      "reference": "bulan",
+      "value": "9"
+    }
+  ]
+}
+```
 
 ---
 
