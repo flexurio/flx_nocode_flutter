@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/src/app/util/file_picker_upload_registry.dart';
 import 'package:uuid/uuid.dart';
@@ -90,7 +91,8 @@ class HttpRequestResult {
 }
 
 class HttpRequestExecutor {
-  HttpRequestExecutor({Dio? dio}) : _dio = dio ?? Dio();
+  HttpRequestExecutor({Dio? dio})
+      : _dio = dio ?? Api.attachActivityInterceptor(Dio());
 
   static const bool enableLog = true;
 

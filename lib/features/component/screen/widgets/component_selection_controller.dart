@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:get/get.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_selection_base.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
@@ -379,7 +380,7 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase>
     try {
       final resolvedContext = JsVariableProvider().prepare(context);
       final token = resolvedContext['auth_token'] ?? '';
-      final dio = Dio();
+      final dio = Api.attachActivityInterceptor(Dio());
       final options = Options(
         method: 'GET',
         headers: token.toString().isNotEmpty ? {'Authorization': 'Bearer $token'} : null,

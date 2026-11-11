@@ -1066,7 +1066,7 @@ extension ActionExecutionExtension on ActionD {
         }
       }
 
-      final response = await Dio().request<List<int>>(
+      final response = await Api.attachActivityInterceptor(Dio()).request<List<int>>(
         url,
         options: Options(
           method: 'GET',
@@ -1151,7 +1151,7 @@ extension ActionExecutionExtension on ActionD {
         }
       }
 
-      final response = await Dio().request<List<int>>(
+      final response = await Api.attachActivityInterceptor(Dio()).request<List<int>>(
         url,
         options: Options(
           method: 'GET',

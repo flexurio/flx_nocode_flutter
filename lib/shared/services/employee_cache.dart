@@ -83,7 +83,8 @@ class EmployeeCache {
   }
 
   Future<void> _fetchAndBuild(String accessToken) async {
-    final response = await Dio().get<Map<String, dynamic>>(
+    final response = await Api.attachActivityInterceptor(Dio())
+        .get<Map<String, dynamic>>(
       '${Api.urlAuth}/users',
       options: Options(
         headers: {
