@@ -101,8 +101,8 @@ class ActionD extends HiveObject {
   /// The variable name to store the result of the action (e.g. HTTP response body).
   final String? targetVariable;
 
-  /// The value to be set for setVariable action type.
-  final String? value;
+  /// A string template or JSON value for variable actions.
+  final Object? value;
 
   /// Whether to validate the form before executing the action.
   final bool validate;
@@ -220,7 +220,7 @@ class ActionD extends HiveObject {
     String? copyLabel,
     String? copyValue,
     String? targetVariable,
-    String? value,
+    Object? value,
     bool? validate,
     bool? showSubmitButton,
     String? exportFormat,

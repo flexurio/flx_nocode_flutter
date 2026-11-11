@@ -24,6 +24,22 @@ import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workf
 import 'action_confirm_dialog_extension.dart';
 import 'action_handler_extension.dart';
 
+// Resolve leaf templates without stringifying containers or changing scalar types.
+Object? _resolveVariableValue(Object? template, JsonMap data) {
+  if (template is String) return template.interpolateJavascript(data);
+  if (template is Map) {
+    return template.map((key, value) =>
+        MapEntry(key.toString(), _resolveVariableValue(value, data)));
+  }
+  if (template is List) {
+    return template.map((value) => _resolveVariableValue(value, data)).toList();
+  }
+  return template;
+}
+
+bool _hasVariableValue(Object? value) =>
+    value is String ? value.isNotEmpty : value != null;
+
 extension ActionExecutionExtension on ActionD {
   Future<void> executeSingle({
     required EntityCustom entity,
@@ -499,8 +515,8 @@ extension ActionExecutionExtension on ActionD {
             final controller = Get.find<CreatePageController>(tag: tag);
 
             dynamic finalValue;
-            if (value != null && value!.isNotEmpty) {
-              finalValue = value!.interpolateJavascript(data);
+            if (_hasVariableValue(value)) {
+              finalValue = _resolveVariableValue(value, data);
             } else {
               final formState = <String, dynamic>{};
               controller.controllers.forEach((key, ctrl) {
@@ -546,8 +562,8 @@ extension ActionExecutionExtension on ActionD {
             final controller = Get.find<CreatePageController>(tag: tag);
 
             dynamic itemValue;
-            if (value != null && value!.isNotEmpty) {
-              itemValue = value!.interpolateJavascript(data);
+            if (_hasVariableValue(value)) {
+              itemValue = _resolveVariableValue(value, data);
             } else {
               final formState = <String, dynamic>{};
               controller.controllers.forEach((key, ctrl) {
@@ -1023,7 +1039,7 @@ extension ActionExecutionExtension on ActionD {
     required JsonMap data,
   }) async {
     final request = http?.toRequestConfig(data);
-    final rawUrl = request?.url ?? value;
+    final rawUrl = request?.url ?? (value is String ? value as String : null);
     var url = rawUrl?.renderWithData(data).interpolateJavascript(data);
 
     if (url == null || url.isEmpty) {
@@ -1032,7 +1048,7 @@ extension ActionExecutionExtension on ActionD {
     }
 
     try {
-      final hasDirectValue = value != null && value!.isNotEmpty;
+      final hasDirectValue = value is String && (value as String).isNotEmpty;
       final shouldLoadMetadata =
           http != null && !hasDirectValue && !_looksLikePdfUrl(url);
 
@@ -1110,7 +1126,7 @@ extension ActionExecutionExtension on ActionD {
     required JsonMap data,
   }) async {
     final request = http?.toRequestConfig(data);
-    final rawUrl = request?.url ?? value;
+    final rawUrl = request?.url ?? (value is String ? value as String : null);
     var url = rawUrl?.renderWithData(data).interpolateJavascript(data);
 
     if (url == null || url.isEmpty) {
@@ -1119,7 +1135,7 @@ extension ActionExecutionExtension on ActionD {
     }
 
     try {
-      final hasDirectValue = value != null && value!.isNotEmpty;
+      final hasDirectValue = value is String && (value as String).isNotEmpty;
       final shouldLoadMetadata =
           http != null && !hasDirectValue && !_looksLikePdfUrl(url);
       if (shouldLoadMetadata) {
