@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
@@ -360,7 +361,25 @@ class ComponentTableController extends GetxController {
   }
 
   /// Serializes the current rows to JSON and updates the parent form controller.
+  bool _notifyScheduled = false;
+
   void notifyChanged() {
+    // A table can finish loading synchronously while its parent form builds.
+    // Publishing to shared Rx state here dirties an ancestor after it built,
+    // leaving the step content out of sync with the navigation in release.
+    if (SchedulerBinding.instance.schedulerPhase ==
+        SchedulerPhase.persistentCallbacks) {
+      if (!_notifyScheduled) {
+        _notifyScheduled = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _notifyScheduled = false;
+          if (!isClosed) notifyChanged();
+        });
+      }
+      return;
+    }
+    if (isClosed) return;
+
     try {
       final targetId = component.referenceId ?? component.id;
       final allControllers =
