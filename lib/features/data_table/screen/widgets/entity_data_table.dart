@@ -361,7 +361,6 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
             ),
           ),
         );
-        filterWidgets.add(const SizedBox(width: 12));
       }
     }
 
@@ -372,8 +371,9 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (filterWidgets.isNotEmpty)
-              Row(
-                mainAxisSize: MainAxisSize.min,
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
                 children: filterWidgets,
               ),
             if (filterWidgets.isNotEmpty) const SizedBox(height: 12),
