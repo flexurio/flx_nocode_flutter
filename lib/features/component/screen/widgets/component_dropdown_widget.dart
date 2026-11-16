@@ -89,7 +89,7 @@ class _ComponentDropdownWidgetState extends State<ComponentDropdownWidget> {
                 items: controller.options,
                 initialValue: controller.displayedValue.value,
                 labelText: widget.component.label,
-                enabled: !controller.isLoading.value,
+                enabled: widget.component.enabled && !controller.isLoading.value,
                 validator: widget.component.required
                     ? (value) {
                         if (value == null || value.isEmpty) {
@@ -110,7 +110,7 @@ class _ComponentDropdownWidgetState extends State<ComponentDropdownWidget> {
                 items: controller.options,
                 initialValue: controller.displayedValue.value,
                 labelText: widget.component.label,
-                enabled: !controller.isLoading.value,
+                enabled: widget.component.enabled && !controller.isLoading.value,
                 validator: widget.component.required
                     ? (value) {
                         if (value == null || value.isEmpty) {

@@ -220,6 +220,37 @@ void main() {
       expect(find.text('Second Dropdown'), findsOneWidget);
       expect(find.text('Option 2A'), findsOneWidget);
     });
+
+    testWidgets('should respect enabled false', (tester) async {
+      final component = ComponentDropdown(
+        id: 'disabled_dropdown',
+        label: 'Position',
+        options: [
+          {'key': 'ASM', 'label': 'Lvl 4 : ASM'}
+        ],
+        initialValue: 'ASM',
+        enabled: false,
+      );
+      final data = <String, dynamic>{};
+
+      await tester.pumpWidget(
+        GetMaterialApp(
+          home: Scaffold(
+            body: ComponentDropdownWidget(
+              component: component,
+              data: data,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final dropdownFinder = find.byType(FDropDownSearch<Map<String, dynamic>>);
+      expect(dropdownFinder, findsOneWidget);
+      final dropdownWidget =
+          tester.widget<FDropDownSearch<Map<String, dynamic>>>(dropdownFinder);
+      expect(dropdownWidget.enabled, isFalse);
+    });
   });
 }
 

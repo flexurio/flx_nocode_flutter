@@ -555,6 +555,121 @@ void main() {
         disposeJsRuntime();
       });
     });
+
+    testWidgets('Should parse and initialize NIP dropdown for account banks with HTTP data',
+        (tester) async {
+      await tester.runAsync(() async {
+        final nipComponent = ComponentDropdown.fromMap({
+          'id': 'nip',
+          'type': 'dropdown',
+          'events': {},
+          'label': 'Nip',
+          'options': ['Option 1', 'Option 2'],
+          'initialValue': '{{data.nip}}',
+          'httpData': {
+            'method': 'GET',
+            'url':
+                '{{ backend_host }}/users?page=1&search=&sort=name&ascending=true&limit=9999&dept.eq=&resign_date.is=NULL',
+            'headers': {'Authorization': 'Bearer {{ auth_token }}'},
+            'body': {},
+            'use_form_data': false,
+            'mock_enabled': true,
+            'mock_data': {
+              'data': [
+                {'nip': '1160806', 'name': 'AKMAL MAULANA R. L'},
+                {'nip': '2201001', 'name': 'ABDURRAHMAN ARIFIN'}
+              ]
+            }
+          },
+          'optionKey': '{{item.nip}}',
+          'optionLabel': '{{item.nip}} - {{item.name}}',
+          'onChangeActions': [],
+          'required': false,
+          'dependsOn': [],
+        });
+
+        final ctrl = TextEditingController();
+        final customData = {
+          'backend_host': 'https://erp-metiska-farma-api.flexurio.com',
+          'auth_token': 'test_token',
+          'controller': ctrl,
+          'allControllers': <String, TextEditingController>{
+            'nip': ctrl,
+          },
+          'form': {},
+          'data': {
+            'nip': '1160806',
+          },
+        };
+
+        final controller = ComponentDropdownController(
+            component: nipComponent, data: customData);
+        controller.onInit();
+        await controller.fetchOptions();
+
+        expect(controller.options, hasLength(2));
+        expect(controller.options[0]['key'], '1160806');
+        expect(controller.options[0]['label'], '1160806 - AKMAL MAULANA R. L');
+        expect(controller.selectedValue.value, '1160806');
+        expect(controller.displayedValue.value?['label'],
+            '1160806 - AKMAL MAULANA R. L');
+
+        await tester.pump();
+        await tester.pump(Duration.zero);
+        expect(ctrl.text, '1160806');
+
+        disposeJsRuntime();
+      });
+    });
+
+    testWidgets('Should support disabled dropdown with initial value and static options',
+        (tester) async {
+      await tester.runAsync(() async {
+        final positionComponent = ComponentDropdown.fromMap({
+          'id': 'position_area',
+          'type': 'dropdown',
+          'label': 'Position',
+          'enabled': false,
+          'options': [
+            {'key': 'MD', 'label': 'Lvl 1 : MD'},
+            {'key': 'GM', 'label': 'Lvl 2 : GM'},
+            {'key': 'FSM', 'label': 'Lvl 3 : FSM'},
+            {'key': 'ASM', 'label': 'Lvl 4 : ASM'},
+            {'key': 'SPV', 'label': 'Lvl 5 : SPV'},
+            {'key': 'MR', 'label': 'Lvl 6 : MR'},
+          ],
+          'initialValue': 'ASM',
+          'required': true,
+          'dependsOn': [],
+        });
+
+        expect(positionComponent.enabled, false);
+
+        final ctrl = TextEditingController();
+        final customData = {
+          'controller': ctrl,
+          'allControllers': <String, TextEditingController>{
+            'position_area': ctrl,
+          },
+          'form': {'lbb_type': 'LBB AREA'},
+          'data': {},
+        };
+
+        final controller = ComponentDropdownController(
+            component: positionComponent, data: customData);
+        controller.onInit();
+
+        expect(controller.options, hasLength(6));
+        expect(controller.selectedValue.value, 'ASM');
+        expect(controller.displayedValue.value?['label'], 'Lvl 4 : ASM');
+
+        await tester.pump();
+        await tester.pump(Duration.zero);
+        expect(ctrl.text, 'ASM');
+
+        disposeJsRuntime();
+      });
+    });
   });
 }
 
