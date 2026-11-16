@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/data_table/screen/widgets/inline_filter.dart';
+import 'package:flx_nocode_flutter/features/entity/models/entity_badge_config.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:gap/gap.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
@@ -140,6 +141,11 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
 
         final activeEntity = widget.entity.copyWith(layoutTable: activeLayoutTable);
 
+        final contextBadges = _buildContextBadges(
+          Theme.of(context),
+          activeEntity,
+          pageOptions,
+        );
         final filterInfoWidget = _buildFilterInformation(Theme.of(context).colorScheme.primary);
 
         return ScreenIdentifierBuilder(
@@ -170,7 +176,10 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
               ),
             );
 
-            if (!_hasFilterInformation) {
+            final hasFilterInfo = _hasFilterInformation;
+            final hasBadges = contextBadges.isNotEmpty;
+
+            if (!hasFilterInfo && !hasBadges) {
               return tableContent;
             }
 
@@ -178,10 +187,21 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: filterInfoWidget,
-                ),
+                if (hasBadges)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: contextBadges,
+                    ),
+                  ),
+                if (hasFilterInfo)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: filterInfoWidget,
+                  ),
                 tableContent,
               ],
             );
@@ -469,6 +489,109 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           },
         );
       }).toList(),
+    );
+  }
+
+  List<Widget> _buildContextBadges(
+    ThemeData theme,
+    EntityCustom activeEntity,
+    PageOptions<Map<String, dynamic>> pageOptions,
+  ) {
+    final badges = <Widget>[];
+    final badgeConfigs = activeEntity.getEffectiveBadges(
+      filters: _filters,
+      parentData: widget.parentData,
+      rowData: pageOptions.data,
+    );
+
+    for (final config in badgeConfigs) {
+      final ref = config.reference;
+      final field = activeEntity.getField(ref);
+
+      String? val = config.value;
+      if (val == null || val.isEmpty) {
+        final matchingFilter =
+            _filters.where((f) => f.reference == ref && f.value.isNotEmpty);
+        if (matchingFilter.isNotEmpty) {
+          val = matchingFilter.first.value;
+        } else if (widget.parentData.isNotEmpty &&
+            widget.parentData.last[ref] != null) {
+          val = widget.parentData.last[ref]?.toString();
+        } else if (pageOptions.data != null && pageOptions.data!.isNotEmpty) {
+          final firstVal = pageOptions.data!.first[ref]?.toString();
+          if (firstVal != null &&
+              pageOptions.data!.every((r) => r[ref]?.toString() == firstVal)) {
+            val = firstVal;
+          }
+        }
+      }
+
+      if (val != null && val.isNotEmpty) {
+        final label = config.label ?? field?.label ?? ref;
+        final icon = resolveBadgeIcon(
+          config.icon ?? field?.iconName,
+          ref,
+          field?.type,
+        );
+
+        badges.add(
+          _buildContextBadgeItem(
+            theme: theme,
+            icon: icon,
+            label: label,
+            value: val,
+          ),
+        );
+      }
+    }
+
+    return badges;
+  }
+
+  Widget _buildContextBadgeItem({
+    required ThemeData theme,
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: const Color(0xFFE2E8F0),
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x06020617),
+            blurRadius: 4,
+            offset: Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 13,
+            color: theme.colorScheme.primary,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            '$label: $value',
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF334155),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

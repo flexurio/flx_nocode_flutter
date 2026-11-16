@@ -22,6 +22,7 @@ The root of the JSON file is a single object that contains all the properties fo
 | `actions` | Array<Object> | No | A list of custom actions that can be performed on the entity. See [Action Object](#action-object). |
 | `hide_row_actions`| Boolean | No | Whether to hide row action buttons (default `false`) on the data table. |
 | `hide_filters` | Boolean | No | Whether to hide all filter UI controls (inline filter boxes, chips, and filter button) on the data table (default `false`). |
+| `badges` | Array<String \| Object> | No | List of field references or badge objects to display as top contextual badges (e.g. `["tahun", "bulan"]` or `["area", "customer"]`). Can also be configured on fields via `"is_badge": true`. |
 | `pinned_columns` | Array<String> | No | List of field references to pin on the data table (e.g., `["subordinate_name", "description", "area_value"]`). Pinned columns stay fixed on the left during horizontal scrolling. |
 | `freezed_column` | Boolean / String | No | Controls whether the first and last (actions) columns are frozen in the table. If `false`, no columns are frozen. If `true` (default), both first and last columns are frozen. String values `"first"` or `"last"` freeze only that specific column. |
 | `freeze_first_column` | Boolean | No | Fine-grained override to freeze or unfreeze only the first column (`true`/`false`). |
@@ -66,6 +67,52 @@ The `hide_filters` property controls whether filter UI controls are displayed ab
 
 - **`true`**: Hides inline filter input boxes (`_buildActionLeft`), active filter chips (`_buildFilterInformation`), and the header `Filter` button. This is especially useful for embedded sub-tables or popup dialogs where filters are fixed by contextual parameters passed through `initialFilters`.
 - **`false` (or omitted)**: Filter controls are displayed normally based on `filters` configuration.
+
+### Context Badges (`badges`)
+
+The `badges` property displays contextual information badges at the top of the entity view (above the table or card grid) instead of repeating identical values as redundant columns across every table row.
+
+Any parameter or field can be configured as a badge:
+
+```json
+{
+  "id": "sales_target_monthly_trend_details",
+  "label": "Sales Target Monthly Trend Details",
+  "badges": [
+    "tahun",
+    "bulan"
+  ]
+}
+```
+
+Or with custom labels and icons per badge:
+
+```json
+{
+  "badges": [
+    "tahun",
+    {
+      "reference": "area",
+      "label": "Wilayah",
+      "icon": "location"
+    }
+  ]
+}
+```
+
+Alternatively, fields can be marked individually in `fields`:
+
+```json
+{
+  "label": "Year",
+  "reference": "tahun",
+  "type": "text",
+  "is_badge": true,
+  "icon": "calendar"
+}
+```
+
+Supported icon names include: `calendar`, `user` / `person`, `business`, `location` / `area`, `product` / `box`, `category` / `type`, `money`, `flag` / `status`, `phone`, `email`, `document`, `info`. If omitted, the icon is automatically resolved from the field reference and type.
 
 ---
 

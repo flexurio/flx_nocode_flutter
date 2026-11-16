@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
+import 'package:flx_nocode_flutter/features/entity/models/entity_badge_config.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
@@ -34,6 +35,7 @@ class EntityCardGridView extends StatefulWidget {
     required String entityId,
     required List<Filter> initialFilters,
     required List<Map<String, dynamic>> parentData,
+    List<dynamic>? badges,
     VoidCallback? onRefresh,
   }) {
     return FutureBuilder<EntityCustom?>(
@@ -44,12 +46,18 @@ class EntityCardGridView extends StatefulWidget {
         }
         if (snapshot.connectionState == ConnectionState.done ||
             snapshot.hasData) {
-          final entity = snapshot.data;
-          if (entity == null) {
+          final rawEntity = snapshot.data;
+          if (rawEntity == null) {
             return Center(
               child: NoCodeError('Entity not found! Id: $entityId'),
             );
           }
+          final entity = badges != null && badges.isNotEmpty
+              ? rawEntity.copyWith(
+                  badges:
+                      badges.map((b) => EntityBadgeConfig.fromRaw(b)).toList(),
+                )
+              : rawEntity;
           return EntityCardGridView.prepare(
             entity: entity,
             initialFilters: initialFilters,
@@ -180,18 +188,56 @@ class _EntityCardGridViewState extends State<EntityCardGridView> {
     final metricFields = <EntityField>[];
     final contextFields = <EntityField>[];
 
+    final explicitBadges = widget.entity.resolvedBadges;
+    final badgeRefs = explicitBadges.map((b) => b.reference).toSet();
+
     for (final field in widget.entity.fields) {
-      if (field.isNumber || field.action != null) {
-        metricFields.add(field);
+      if (explicitBadges.isNotEmpty) {
+        if (!badgeRefs.contains(field.reference)) {
+          metricFields.add(field);
+        }
       } else {
-        contextFields.add(field);
+        if (field.isNumber || field.action != null) {
+          metricFields.add(field);
+        } else {
+          contextFields.add(field);
+        }
       }
     }
 
     final cardsToRender =
         metricFields.isNotEmpty ? metricFields : widget.entity.fields;
-    final badgesToRender =
-        metricFields.isNotEmpty ? contextFields : <EntityField>[];
+
+    final badgeWidgets = <Widget>[];
+    if (explicitBadges.isNotEmpty) {
+      for (final b in explicitBadges) {
+        final field = widget.entity.getField(b.reference);
+        final label = b.label ?? field?.label ?? b.reference;
+        final icon = resolveBadgeIcon(
+          b.icon ?? field?.iconName,
+          b.reference,
+          field?.type,
+        );
+        final val = b.value ?? row[b.reference]?.toString() ?? '-';
+        badgeWidgets.add(_buildBadgeItem(
+          theme: theme,
+          icon: icon,
+          label: label,
+          value: val,
+        ));
+      }
+    } else {
+      for (final f in contextFields) {
+        final icon = resolveBadgeIcon(f.iconName, f.reference, f.type);
+        final val = row[f.reference]?.toString() ?? '-';
+        badgeWidgets.add(_buildBadgeItem(
+          theme: theme,
+          icon: icon,
+          label: f.label,
+          value: val,
+        ));
+      }
+    }
 
     final isNarrow = MediaQuery.of(context).size.width < 600;
 
@@ -199,53 +245,12 @@ class _EntityCardGridViewState extends State<EntityCardGridView> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (badgesToRender.isNotEmpty) ...[
+        if (badgeWidgets.isNotEmpty) ...[
           Wrap(
             spacing: 8,
             runSpacing: 8,
             crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              for (final f in badgesToRender)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: const Color(0xFFE2E8F0),
-                    ),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x06020617),
-                        blurRadius: 4,
-                        offset: Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.calendar_today_outlined,
-                        size: 13,
-                        color: theme.colorScheme.primary,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        '${f.label}: ${row[f.reference] ?? '-'}',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: const Color(0xFF334155),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
+            children: badgeWidgets,
           ),
           const SizedBox(height: 16),
         ],
@@ -432,5 +437,52 @@ class _EntityCardGridViewState extends State<EntityCardGridView> {
       }
     }
     return str.isEmpty ? '-' : str;
+  }
+
+  Widget _buildBadgeItem({
+    required ThemeData theme,
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: const Color(0xFFE2E8F0),
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x06020617),
+            blurRadius: 4,
+            offset: Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 13,
+            color: theme.colorScheme.primary,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            '$label: $value',
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF334155),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

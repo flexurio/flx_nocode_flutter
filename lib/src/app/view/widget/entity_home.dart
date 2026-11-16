@@ -1,4 +1,5 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/features/entity/models/entity_badge_config.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flutter/material.dart';
@@ -37,6 +38,7 @@ class MenuCustom extends StatelessWidget {
     bool embedded = false,
     List<String> breadcrumbList = const [],
     List<Filter> initialFilters = const [],
+    List<dynamic>? badges,
     bool bypassPermission = false,
     required List<Map<String, dynamic>> parentData,
   }) {
@@ -47,8 +49,8 @@ class MenuCustom extends StatelessWidget {
           return Center(child: NoCodeError('${snapshot.error}'));
         } else if (snapshot.connectionState == ConnectionState.done ||
             snapshot.hasData) {
-          final entity = snapshot.data;
-          if (entity == null) {
+          final rawEntity = snapshot.data;
+          if (rawEntity == null) {
             return Center(
               child: NoCodeError(
                 'Entity not found! Id: $entityId',
@@ -60,6 +62,12 @@ class MenuCustom extends StatelessWidget {
               ),
             );
           }
+          final entity = badges != null && badges.isNotEmpty
+              ? rawEntity.copyWith(
+                  badges:
+                      badges.map((b) => EntityBadgeConfig.fromRaw(b)).toList(),
+                )
+              : rawEntity;
           return MenuCustom(
             parentData: parentData,
             entity: entity,

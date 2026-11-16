@@ -28,6 +28,8 @@ The `EntityField` class represents a single field definition. It describes how a
 | `is_copyable` | bool? | No | A flag that indicates whether the field's value can be copied from the UI, often used for displaying a copy icon next to the field. |
 | `is_tooltip` | bool? | No | A flag that indicates whether hovering over the field cell in a table shows a tooltip with the value. |
 | `is_pinned` | bool? | No | Whether this column is pinned on the table. When true, the column remains fixed on the left during horizontal scrolling. |
+| `is_badge` | bool? | No | Whether to render the field value as a context badge at the top of entity views (above the table or card grid) instead of repeating identical values as redundant columns across rows. |
+| `icon` | String? | No | Custom icon name for context badges or field headers (e.g. `calendar`, `user`, `location`, `category`, `money`, `info`). If omitted, auto-resolved from reference and type. |
 | `is_chip` | bool? | No | Whether to render the field value as a colored status chip. |
 | `chip_colors` | Map<String, String>? | No | Custom color overrides for status chips. Key is status name (case-insensitive substring match), value is hex color (e.g., `"#FF9800"`). |
 | `background_colors` | Map<String, String>? or String? | No | Custom background colors. Can be a map mapped to values (e.g. `{"BFW": "#E8F5E9"}`) or a single string (e.g. `"#E8F5E9"`) to apply the color to all values. |
@@ -144,6 +146,24 @@ If `text_colors` are not specified or omitted, the framework automatically uses 
   "type": "text",
   "background_colors": "#E8F5E9",
   "text_colors": "#2E7D32"
+}
+```
+
+### Context Badges (`is_badge`, `icon`)
+
+When a field represents high-level contextual information that is uniform across all rows (such as fiscal year, period, branch, or area), marking `"is_badge": true` displays the field as a clean visual badge at the top of the table/card grid instead of repeating it as a redundant column across all rows.
+
+- **`is_badge`** (`bool`): When `true`, this field will be resolved as a top context badge.
+- **`icon`** (`String`): Optional custom icon key (`calendar`, `user`/`person`, `business`, `location`/`area`, `product`/`box`, `category`/`type`, `money`, `flag`/`status`, `phone`, `email`, `document`, `info`). If not specified, the system automatically resolves an icon from the field reference and type.
+
+#### Example
+```json
+{
+  "label": "Year",
+  "reference": "tahun",
+  "type": "text",
+  "is_badge": true,
+  "icon": "calendar"
 }
 ```
 

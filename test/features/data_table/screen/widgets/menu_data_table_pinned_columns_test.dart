@@ -120,4 +120,89 @@ void main() {
       expect(columns[3].pinPosition, equals(TablePinPosition.none));
     },
   );
+
+  testWidgets(
+    'MenuDataTableCustomTableView preserves field order when layout_table has numeric keys',
+    (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1400, 1000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      final entity = EntityCustom.fromJson({
+        'id': 'test_sales_estimation',
+        'label': 'Sales Estimation',
+        'description': 'Test Description',
+        'freezed_column': false,
+        'freeze_first_column': false,
+        'freeze_last_column': false,
+        'pinned_columns': ['tahun', 'type'],
+        'fields': [
+          {'label': 'Tahun', 'reference': 'tahun', 'type': 'text'},
+          {'label': 'Type', 'reference': 'type', 'type': 'text'},
+          {'label': '01', 'reference': '1', 'type': 'number'},
+          {'label': '02', 'reference': '2', 'type': 'number'},
+        ],
+        'backend': {
+          'read_all': {'method': 'GET', 'url': 'http://localhost/test'},
+        },
+        'layout_table': {
+          '1': 8,
+          '2': 8,
+          'tahun': 6,
+          'type': 6,
+        },
+      });
+
+      final pageOptions = PageOptions<Map<String, dynamic>>.empty();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: MenuDataTableCustomTableView(
+              entity: entity,
+              status: Status.loaded,
+              pageOptions: pageOptions,
+              embedded: false,
+              parentData: const [],
+              bypassPermission: true,
+              filtersMap: const {},
+              actionLeft: const [],
+              actionRightBuilder: (refresh) => [refresh],
+              onChanged: (_) {},
+              onRefresh: ([_]) async {},
+            ),
+          ),
+        ),
+      );
+
+      final dataTableFinder =
+          find.byType(DataTableBackend<Map<String, dynamic>>);
+      expect(dataTableFinder, findsOneWidget);
+
+      final dataTableBackend =
+          tester.widget<DataTableBackend<Map<String, dynamic>>>(dataTableFinder);
+      final columns = dataTableBackend.columns;
+
+      expect(columns.length, greaterThanOrEqualTo(4));
+
+      // Column 0 must be tahun (pinned)
+      expect(columns[0].head.label, equals('Tahun'));
+      expect(columns[0].pinned, isTrue);
+
+      // Column 1 must be type (pinned)
+      expect(columns[1].head.label, equals('Type'));
+      expect(columns[1].pinned, isTrue);
+
+      // Column 2 must be 1 (unpinned!)
+      expect(columns[2].head.label, equals('01'));
+      expect(columns[2].pinned, isFalse);
+
+      // Column 3 must be 2 (unpinned!)
+      expect(columns[3].head.label, equals('02'));
+      expect(columns[3].pinned, isFalse);
+    },
+  );
 }

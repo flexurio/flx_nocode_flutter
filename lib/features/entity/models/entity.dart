@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:flx_nocode_flutter/features/entity/models/entity_badge_config.dart';
 import 'package:flx_nocode_flutter/features/entity/models/pagination_option.dart';
+import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_list_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/utils/entity_field_dummy_value.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
@@ -83,6 +85,9 @@ class EntityCustom extends HiveObject {
   /// A list of field references to pin on the table.
   final List<String> pinnedColumns;
 
+  /// A list of badge configurations to display at the top of the entity view.
+  final List<EntityBadgeConfig> badges;
+
   /// A list of custom layout configurations for switching table columns dynamically.
   final List<CustomeLayout> customeLayout;
 
@@ -118,6 +123,7 @@ class EntityCustom extends HiveObject {
     this.freezeFirstColumn = true,
     this.freezeLastColumn = true,
     this.pinnedColumns = const [],
+    this.badges = const [],
     this.customeLayout = const [],
   });
 
@@ -186,6 +192,7 @@ class EntityCustom extends HiveObject {
         freezeFirstColumn: parser.parseFreezeFirstColumn(),
         freezeLastColumn: parser.parseFreezeLastColumn(),
         pinnedColumns: parser.parsePinnedColumns(),
+        badges: parser.parseBadges(),
         customeLayout: parser.parseCustomeLayout(),
       );
     } catch (e) {
@@ -221,7 +228,61 @@ class EntityCustom extends HiveObject {
         freezeFirstColumn = true,
         freezeLastColumn = true,
         pinnedColumns = const [],
+        badges = const [],
         customeLayout = const [];
+
+  /// Returns all explicit badge configurations, including any fields flagged with `is_badge: true`.
+  List<EntityBadgeConfig> get resolvedBadges {
+    final list = <EntityBadgeConfig>[...badges];
+    final existingRefs = list.map((b) => b.reference).toSet();
+    for (final field in fields) {
+      if ((field.isBadge == true) && !existingRefs.contains(field.reference)) {
+        list.add(EntityBadgeConfig(
+          reference: field.reference,
+          label: field.label,
+          icon: field.iconName,
+        ));
+        existingRefs.add(field.reference);
+      }
+    }
+    return list;
+  }
+
+  /// Resolves the effective badges to render, falling back gracefully to context non-table fields if none configured.
+  List<EntityBadgeConfig> getEffectiveBadges({
+    List<Filter> filters = const [],
+    List<Map<String, dynamic>> parentData = const [],
+    List<Map<String, dynamic>>? rowData,
+  }) {
+    final explicit = resolvedBadges;
+    if (explicit.isNotEmpty) return explicit;
+
+    // Fallback: detect context filters/parentData for fields not in layoutTable
+    final fallbackList = <EntityBadgeConfig>[];
+    for (final field in fields) {
+      final ref = field.reference;
+      if (layoutTable.containsKey(ref)) continue;
+
+      final hasFilter =
+          filters.any((f) => f.reference == ref && f.value.isNotEmpty);
+      final hasParent = parentData.isNotEmpty &&
+          parentData.last[ref] != null &&
+          parentData.last[ref].toString().isNotEmpty;
+      final hasUniformRow = rowData != null &&
+          rowData.isNotEmpty &&
+          rowData.first[ref] != null &&
+          rowData.every((r) => r[ref]?.toString() == rowData.first[ref]?.toString());
+
+      if (hasFilter || hasParent || hasUniformRow) {
+        fallbackList.add(EntityBadgeConfig(
+          reference: ref,
+          label: field.label,
+          icon: field.iconName,
+        ));
+      }
+    }
+    return fallbackList;
+  }
 
   /// Creates a copy of this [EntityCustom] instance with the given fields replaced.
   ///
@@ -251,6 +312,7 @@ class EntityCustom extends HiveObject {
     bool? freezeFirstColumn,
     bool? freezeLastColumn,
     List<String>? pinnedColumns,
+    List<EntityBadgeConfig>? badges,
     List<CustomeLayout>? customeLayout,
     bool clearActionPrimary = false,
     bool clearLayoutListTile = false,
@@ -281,6 +343,7 @@ class EntityCustom extends HiveObject {
       freezeFirstColumn: freezeFirstColumn ?? this.freezeFirstColumn,
       freezeLastColumn: freezeLastColumn ?? this.freezeLastColumn,
       pinnedColumns: pinnedColumns ?? this.pinnedColumns,
+      badges: badges ?? this.badges,
       customeLayout: customeLayout ?? this.customeLayout,
     );
   }
@@ -857,6 +920,17 @@ class _EntityCustomJsonParser {
     if (raw == null) return const [];
     if (raw is List) {
       return raw.map((e) => e.toString()).toList();
+    }
+    return const [];
+  }
+
+  List<EntityBadgeConfig> parseBadges() {
+    final raw = json['badges'] ??
+        json['context_badges'] ??
+        json['header_badges'];
+    if (raw == null) return const [];
+    if (raw is List) {
+      return raw.map((e) => EntityBadgeConfig.fromRaw(e)).toList();
     }
     return const [];
   }

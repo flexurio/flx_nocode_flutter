@@ -43,8 +43,14 @@ class MenuDataTableCustomTableView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fields = entity.layoutTable.keys.toList();
-    final fieldsValue = entity.layoutTable.values.toList();
+    final fieldOrder = entity.fields.map((f) => f.reference).toSet();
+    final fields = [
+      ...entity.fields
+          .map((f) => f.reference)
+          .where((ref) => entity.layoutTable.containsKey(ref)),
+      ...entity.layoutTable.keys.where((k) => !fieldOrder.contains(k)),
+    ];
+    final fieldsValue = fields.map((f) => entity.layoutTable[f]).toList();
 
     if (fields.isEmpty) {
       return NoCodeError('layout_table is empty');

@@ -24,6 +24,7 @@ An entity configuration is represented by the `EntityCustom` class. Below is the
 | `action_primary` | Object | No | The primary FAB action (e.g., creating a new item). |
 | `filters` | Array | No | List of field references or filter configs to display as filters. |
 | `custome_layout` | Array | No | Custom table column layouts. Defaults to root `layout_table` when all checkboxes are unchecked; checked options append their columns dynamically to the root layout. |
+| `badges` | Array | No | List of field references or badge configs (`["tahun", "bulan"]` or `[{"reference": "area", "icon": "location"}]`) to display as top contextual badges above tables/cards. |
 | `pinned_columns` | Array | No | List of field references to pin on the data table (e.g. `["subordinate_name", "description", "area_value"]`). Pinned columns stay fixed on the left during horizontal scrolling. |
 | `freezed_column` | Boolean / String | No | Controls frozen columns on table. `false` unfreezes first/last columns; `true` (default) freezes both. `"first"` or `"last"` freezes only that column. |
 | `freeze_first_column` | Boolean | No | Fine-grained override to freeze or unfreeze only the first column (`true`/`false`). |
@@ -50,9 +51,14 @@ Each field defines data validation, rendering type, and UI behavior.
   "max_length": 255,
   "allow_create": true,
   "allow_update": true,
-  "is_copyable": true
+  "is_copyable": true,
+  "is_badge": false,
+  "icon": "calendar"
 }
 ```
+
+### Context Badges
+When contextual fields like year, period, or branch should appear as top badges instead of repeating columns across every row, mark `"is_badge": true` on the field, or specify the field references in the entity root `"badges": ["tahun", "bulan"]`. An optional `"icon"` (e.g. `calendar`, `user`, `location`, `category`, `money`) can also be defined.
 
 ### Supported Types
 - `text` - Standard alphanumeric string.

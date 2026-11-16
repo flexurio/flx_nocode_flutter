@@ -78,6 +78,12 @@ class EntityField extends HiveObject {
   /// Whether this column is pinned on the table.
   final bool? isPinned;
 
+  /// Whether this field should be rendered as a context badge at the top of entity views.
+  final bool? isBadge;
+
+  /// Optional icon name for the badge or field (e.g. 'calendar', 'location', 'person', 'category').
+  final String? iconName;
+
   /// Optional action triggered when clicking this field/cell.
   final ActionD? action;
 
@@ -104,6 +110,8 @@ class EntityField extends HiveObject {
     this.backgroundColors,
     this.textColors,
     this.isPinned,
+    this.isBadge,
+    this.iconName,
     this.action,
   });
 
@@ -151,6 +159,8 @@ class EntityField extends HiveObject {
               ? {'*': json['text_colors'] as String}
               : null),
       isPinned: json['is_pinned'] == true || json['pinned'] == true,
+      isBadge: json['is_badge'] == true || json['badge'] == true,
+      iconName: (json['icon'] ?? json['badge_icon'] ?? json['icon_name']) as String?,
       action: json['action'] is Map
           ? ActionD.fromJson(Map<String, dynamic>.from(json['action'] as Map))
           : (json['click_action'] is Map
@@ -190,6 +200,8 @@ class EntityField extends HiveObject {
     Map<String, String>? backgroundColors,
     Map<String, String>? textColors,
     bool? isPinned,
+    bool? isBadge,
+    String? iconName,
     ActionD? action,
   }) {
     return EntityField(
@@ -214,6 +226,8 @@ class EntityField extends HiveObject {
       backgroundColors: backgroundColors ?? this.backgroundColors,
       textColors: textColors ?? this.textColors,
       isPinned: isPinned ?? this.isPinned,
+      isBadge: isBadge ?? this.isBadge,
+      iconName: iconName ?? this.iconName,
       action: action ?? this.action,
     );
   }
@@ -239,6 +253,9 @@ class EntityField extends HiveObject {
       'is_tooltip': isTooltip,
       'is_chip': isChip,
       'chip_colors': chipColors,
+      if (isPinned != null) 'is_pinned': isPinned,
+      if (isBadge != null) 'is_badge': isBadge,
+      if (iconName != null) 'icon': iconName,
       'background_colors': (backgroundColors?.length == 1 && backgroundColors!.containsKey('*'))
           ? backgroundColors!['*']
           : backgroundColors,

@@ -244,7 +244,15 @@ extension ActionExecutionExtension on ActionD {
               final size = MediaQuery.of(ctx).size;
               final dialogWidth =
                   width ?? (size.width * 0.7).clamp(520.0, 850.0);
-              final dialogTitle = title ?? name;
+              final interpVars = <String, dynamic>{
+                'row': data,
+                'field': reference ?? '',
+                ...data,
+              };
+              var dialogTitle = title ?? name;
+              if (dialogTitle.contains('{{')) {
+                dialogTitle = dialogTitle.interpolateJavascript(interpVars);
+              }
 
               return Dialog(
                 backgroundColor: Colors.white,
@@ -299,6 +307,7 @@ extension ActionExecutionExtension on ActionD {
                               entityId: target,
                               initialFilters: resolvedFilters,
                               parentData: [...parentData, data],
+                              badges: badges,
                               onRefresh: () => onSuccessCallback?.call(),
                             ),
                           ),
@@ -368,7 +377,15 @@ extension ActionExecutionExtension on ActionD {
               final dialogWidth =
                   width ?? (size.width * 0.85).clamp(600.0, 1200.0);
               final dialogHeight = (size.height * 0.8).clamp(400.0, 800.0);
-              final dialogTitle = title ?? name;
+              final interpVars = <String, dynamic>{
+                'row': data,
+                'field': reference ?? '',
+                ...data,
+              };
+              var dialogTitle = title ?? name;
+              if (dialogTitle.contains('{{')) {
+                dialogTitle = dialogTitle.interpolateJavascript(interpVars);
+              }
 
               return Dialog(
                 backgroundColor: Colors.white,
@@ -416,6 +433,7 @@ extension ActionExecutionExtension on ActionD {
                           embedded: true,
                           bypassPermission: true,
                           initialFilters: resolvedFilters,
+                          badges: badges,
                           parentData: [...parentData, data],
                         ),
                       ),

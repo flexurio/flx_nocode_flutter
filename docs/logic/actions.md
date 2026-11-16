@@ -40,6 +40,7 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `confirm_action` | Object | No | Action to execute when the user clicks the "Confirm" button on the success dialog. Supports `type: "navigate"` with `entity_id` and `params`. |
 | `view_type` | String | No | Target view type for `show_dialog` actions (e.g., `"table"` to render a data table popup, or `"cards"` / `"grid"` to render a KPI Summary Cards popup). Alias: `type_view`. |
 | `target_entity` | String | No | Target entity ID to load and render when `view_type` is `"table"`. Aliases: `entity_id`, `target_entity_id`. |
+| `badges` | Array\<String \| Object\> | No | List of field references or badge configs to render as top contextual badges in target dialog views (e.g. `["tahun", "bulan"]`). Overrides or supplements the target entity's default badges. |
 | `filters` | Array\<Object\> | No | List of filters to pass to the target view `[{ "reference": "tahun", "value": "{{row.tahun}}" }]`. Supports JS interpolation. |
 | `params` | Object | No | Parameter map to pass to the target view (e.g. `{ "tahun.eq": "{{row.tahun}}" }`). Supports JS interpolation. |
 | `title` | String | No | Custom window/dialog title. If omitted, uses action `name`. |
@@ -118,6 +119,10 @@ Dynamic filter values from the clicked row can be mapped via `filters` or `param
   "view_type": "table",
   "target_entity": "sales_target_monthly_trend_details",
   "title": "Sales Target Monthly Trend Detail - Bulan 09",
+  "badges": [
+    "tahun",
+    "bulan"
+  ],
   "filters": [
     {
       "reference": "tahun",
@@ -148,6 +153,10 @@ This is ideal for summary reports where an endpoint returns a single aggregated 
   "view_type": "cards",
   "target_entity": "sales_target_monthly_trend_detail_summaries",
   "title": "Sales Target Monthly Trend Detail Summaries - Bulan 01",
+  "badges": [
+    "tahun",
+    "bulan"
+  ],
   "filters": [
     {
       "reference": "tahun",

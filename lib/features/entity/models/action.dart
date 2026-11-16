@@ -143,6 +143,9 @@ class ActionD extends HiveObject {
   /// Optional params map to apply to target entity view
   final Map<String, dynamic>? params;
 
+  /// Optional badges list to apply or override on target entity view
+  final List<dynamic>? badges;
+
   ActionD({
     required this.isMultiple,
     required this.onSuccess,
@@ -184,6 +187,7 @@ class ActionD extends HiveObject {
     this.title,
     this.filters,
     this.params,
+    this.badges,
   }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       final isTableView = viewType == 'table' || (targetEntityId != null && targetEntityId!.isNotEmpty);
@@ -236,6 +240,7 @@ class ActionD extends HiveObject {
     String? title,
     List<dynamic>? filters,
     Map<String, dynamic>? params,
+    List<dynamic>? badges,
   }) {
     return ActionD(
       exportFormat: exportFormat ?? this.exportFormat,
@@ -278,6 +283,7 @@ class ActionD extends HiveObject {
       title: title ?? this.title,
       filters: filters ?? this.filters,
       params: params ?? this.params,
+      badges: badges ?? this.badges,
     );
   }
 
@@ -373,6 +379,7 @@ class ActionD extends HiveObject {
       params: json['params'] is Map
           ? Map<String, dynamic>.from(json['params'] as Map)
           : null,
+      badges: json['badges'] is List ? (json['badges'] as List) : null,
     );
   }
 
@@ -394,6 +401,7 @@ class ActionD extends HiveObject {
       if (title != null) 'title': title,
       if (filters != null) 'filters': filters,
       if (params != null) 'params': params,
+      if (badges != null) 'badges': badges,
       'icon': icon,
       'icon_code': iconCode,
       if (rule != null) 'rule': rule!.toMap(),
