@@ -462,6 +462,99 @@ void main() {
       await tester.pump(Duration.zero);
       expect(bankCtrl.text, '999888777');
     });
+
+    testWidgets(
+        'Should resolve initial value from lbb_category_costs_id for Category Cost dropdown',
+        (tester) async {
+      await tester.runAsync(() async {
+        final categoryCostComponent = ComponentDropdown(
+          id: 'entertainer_type',
+          label: 'Category Cost',
+          options: [
+            {'key': 'DNI', 'label': 'DNI - DONASI'},
+            {'key': 'ENT', 'label': 'ENT - ENTERTAINMENT'},
+          ],
+          initialValue:
+              "{{ (function(){ if (typeof data !== 'undefined' && data) { if (data.lbb_category_costs_id) return data.lbb_category_costs_id; if (data.entertainer_type) return data.entertainer_type; } if (typeof lbb_category_costs_id !== 'undefined' && lbb_category_costs_id) return lbb_category_costs_id; if (typeof entertainer_type !== 'undefined' && entertainer_type) return entertainer_type; return ''; })() }}",
+        );
+
+        final ctrl = TextEditingController();
+        final customData = {
+          'controller': ctrl,
+          'allControllers': <String, TextEditingController>{
+            'entertainer_type': ctrl,
+          },
+          'form': {},
+          'data': {
+            'id': 17,
+            'lbb_category_costs_id': 'DNI',
+            'lbb_category_costs_name': 'DONASI',
+            'entertainer_type': null,
+          },
+        };
+
+        final controller = ComponentDropdownController(
+            component: categoryCostComponent, data: customData);
+        controller.onInit();
+
+        expect(controller.options, hasLength(2));
+        expect(controller.selectedValue.value, 'DNI');
+        expect(controller.displayedValue.value?['label'], 'DNI - DONASI');
+
+        await tester.pump();
+        await tester.pump(Duration.zero);
+        expect(ctrl.text, 'DNI');
+
+        disposeJsRuntime();
+      });
+    });
+
+    testWidgets(
+        'Should resolve initial value for outlet_id with trimmed match',
+        (tester) async {
+      await tester.runAsync(() async {
+        final outletComponent = ComponentDropdown(
+          id: 'outlet_id',
+          label: 'Outlet ID',
+          options: [
+            {'key': 'BDO160001', 'label': 'BDO160001 - BDO-123, APT'},
+            {'key': 'BDO160019', 'label': 'BDO160019 - BDO-7 MENIT/SUKAMENAK, APT'},
+            {'key': 'BDO160033', 'label': 'BDO160033 - BDO-99, TO'},
+          ],
+          initialValue:
+              "{{ (function(){ if (typeof data !== 'undefined' && data) { if (data.outlet_id) return String(data.outlet_id).trim(); } if (typeof outlet_id !== 'undefined' && outlet_id) return String(outlet_id).trim(); return ''; })() }}",
+        );
+
+        final ctrl = TextEditingController();
+        final customData = {
+          'controller': ctrl,
+          'allControllers': <String, TextEditingController>{
+            'outlet_id': ctrl,
+          },
+          'form': {},
+          'data': {
+            'id': 17,
+            'outlet_id': 'BDO160019',
+            'outlet_name': 'BDO-7 MENIT/SUKAMENAK, APT',
+          },
+        };
+
+        final controller = ComponentDropdownController(
+            component: outletComponent, data: customData);
+        controller.onInit();
+
+        expect(controller.options, hasLength(3));
+        expect(controller.selectedValue.value, 'BDO160019');
+        expect(controller.displayedValue.value?['label'],
+            'BDO160019 - BDO-7 MENIT/SUKAMENAK, APT');
+
+        await tester.pump();
+        await tester.pump(Duration.zero);
+        expect(ctrl.text, 'BDO160019');
+
+        disposeJsRuntime();
+      });
+    });
   });
 }
 

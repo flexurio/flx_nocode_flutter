@@ -461,6 +461,82 @@ void main() {
         true,
       );
     });
+
+    test(
+        'isVisibleFor evaluates Expense Transaction Detail Sub edit_submission condition correctly',
+        () {
+      final action = ActionD.fromJson({
+        'id': 'edit_submission',
+        'name': 'Edit Submission',
+        'type': 'open_page',
+        'layout_form_id': 'edit_submission',
+        'is_multiple': false,
+        'rule': {
+          'all': [
+            {
+              'field':
+                  "{{ String(typeof parentData !== 'undefined' && Array.isArray(parentData) && parentData.length > 0 && parentData[0] && parentData[0].status ? parentData[0].status : (typeof parent !== 'undefined' && parent && parent.status ? parent.status : (typeof status !== 'undefined' ? status : 'INPUT'))).trim().toUpperCase() }}",
+              'op': '=',
+              'value': 'INPUT',
+            }
+          ]
+        },
+      });
+
+      // Case 1: Header status is 'INPUT' in parentData -> visible
+      expect(
+        action.isVisibleFor(
+          {'id': 1},
+          parentData: [
+            {'id': 'PBO/2026/11/008', 'status': 'INPUT'},
+            {'id': 395}
+          ],
+        ),
+        true,
+      );
+
+      // Case 2: Header status is 'CONFIRM' -> hidden
+      expect(
+        action.isVisibleFor(
+          {'id': 1},
+          parentData: [
+            {'id': 'PBO/2026/11/008', 'status': 'CONFIRM'},
+            {'id': 395}
+          ],
+        ),
+        false,
+      );
+
+      // Case 3: Header status is 'SUBMITTED' -> hidden
+      expect(
+        action.isVisibleFor(
+          {'id': 1},
+          parentData: [
+            {'id': 'PBO/2026/11/008', 'status': 'SUBMITTED'},
+            {'id': 395}
+          ],
+        ),
+        false,
+      );
+
+      // Case 4: No parentData, row status is 'INPUT' -> visible
+      expect(
+        action.isVisibleFor(
+          {'id': 1, 'status': 'INPUT'},
+          parentData: [],
+        ),
+        true,
+      );
+
+      // Case 5: No parentData, row status is 'APPROVED' -> hidden
+      expect(
+        action.isVisibleFor(
+          {'id': 1, 'status': 'APPROVED'},
+          parentData: [],
+        ),
+        false,
+      );
+    });
   });
 }
 
