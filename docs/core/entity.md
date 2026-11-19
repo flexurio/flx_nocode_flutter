@@ -27,6 +27,8 @@ The root of the JSON file is a single object that contains all the properties fo
 | `freezed_column` | Boolean / String | No | Controls whether the first and last (actions) columns are frozen in the table. If `false`, no columns are frozen. If `true` (default), both first and last columns are frozen. String values `"first"` or `"last"` freeze only that specific column. |
 | `freeze_first_column` | Boolean | No | Fine-grained override to freeze or unfreeze only the first column (`true`/`false`). |
 | `freeze_last_column` | Boolean | No | Fine-grained override to freeze or unfreeze only the last column/actions (`true`/`false`). |
+| `highlight_top_rows` | Object \| Integer | No | Configuration to highlight the top N rows in the data table with a distinct background color (e.g. `5` or `{"count": 5, "color": "#EFF6FF"}`). |
+| `embedded_table` | Object \| String | No | Embeds a secondary entity table below summary cards in dialog/detail views (e.g. `{"entity": "target_entity_id", "title": "Section Title"}` or `"target_entity_id"`). Alias: `embedded_entity`. |
 
 ### Pinned Columns (`pinned_columns`)
 
@@ -113,6 +115,52 @@ Alternatively, fields can be marked individually in `fields`:
 ```
 
 Supported icon names include: `calendar`, `user` / `person`, `business`, `location` / `area`, `product` / `box`, `category` / `type`, `money`, `flag` / `status`, `phone`, `email`, `document`, `info`. If omitted, the icon is automatically resolved from the field reference and type.
+
+### Highlight Top Rows (`highlight_top_rows`)
+
+The `highlight_top_rows` property visually distinguishes the top N rows in a data table with a highlight background color (useful for leaderboards, top rankings, or top performers):
+
+```json
+{
+  "highlight_top_rows": {
+    "count": 5,
+    "color": "#EFF6FF"
+  }
+}
+```
+
+Or simply:
+```json
+{
+  "highlight_top_rows": 5
+}
+```
+
+- **`count`**: Number of top rows to highlight (e.g. 5).
+- **`color`**: Hex color code for the highlight background (default: soft blue `#EFF6FF`).
+- **`striped_color`**: Optional alternating striped color for odd-numbered highlighted rows.
+
+### Embedded Table (`embedded_table`)
+
+The `embedded_table` property embeds a secondary entity data table below the KPI cards or view:
+
+```json
+{
+  "embedded_table": {
+    "entity": "sales_target_monthly_trend_detail_asm_summaries",
+    "title": "Performa Per Area Sales Manager (ASM)"
+  }
+}
+```
+
+Or simply:
+```json
+{
+  "embedded_entity": "sales_target_monthly_trend_detail_asm_summaries"
+}
+```
+
+The embedded table automatically inherits the parent view's `initialFilters` and contextual `parentData`.
 
 ---
 

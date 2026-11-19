@@ -243,7 +243,7 @@ extension ActionExecutionExtension on ActionD {
             builder: (ctx) {
               final size = MediaQuery.of(ctx).size;
               final dialogWidth =
-                  width ?? (size.width * 0.7).clamp(520.0, 850.0);
+                  width ?? (size.width * 0.85).clamp(520.0, 1150.0);
               final interpVars = <String, dynamic>{
                 'row': data,
                 'field': reference ?? '',
@@ -263,7 +263,7 @@ extension ActionExecutionExtension on ActionD {
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
                     maxWidth: dialogWidth,
-                    maxHeight: (size.height * 0.85).clamp(320.0, 750.0),
+                    maxHeight: (size.height * 0.9).clamp(320.0, 850.0),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -640,8 +640,10 @@ extension ActionExecutionExtension on ActionD {
 
         CreatePageController? controller;
         if (layoutId != null &&
-            Get.isRegistered<CreatePageController>(tag: 'create_page_$layoutId')) {
-          controller = Get.find<CreatePageController>(tag: 'create_page_$layoutId');
+            Get.isRegistered<CreatePageController>(
+                tag: 'create_page_$layoutId')) {
+          controller =
+              Get.find<CreatePageController>(tag: 'create_page_$layoutId');
         } else if (Get.isRegistered<CreatePageController>()) {
           controller = Get.find<CreatePageController>();
         }
@@ -694,7 +696,8 @@ extension ActionExecutionExtension on ActionD {
 
           // Also notify table reload listener if registered for this table
           final tableId = data['tableId'] as String?;
-          if (tableId != null && controller.tableReloadListeners.containsKey(tableId)) {
+          if (tableId != null &&
+              controller.tableReloadListeners.containsKey(tableId)) {
             controller.tableReloadListeners[tableId]?.call();
           }
 
@@ -1084,7 +1087,8 @@ extension ActionExecutionExtension on ActionD {
         }
       }
 
-      final response = await Api.attachActivityInterceptor(Dio()).request<List<int>>(
+      final response =
+          await Api.attachActivityInterceptor(Dio()).request<List<int>>(
         url,
         options: Options(
           method: 'GET',
@@ -1169,7 +1173,8 @@ extension ActionExecutionExtension on ActionD {
         }
       }
 
-      final response = await Api.attachActivityInterceptor(Dio()).request<List<int>>(
+      final response =
+          await Api.attachActivityInterceptor(Dio()).request<List<int>>(
         url,
         options: Options(
           method: 'GET',

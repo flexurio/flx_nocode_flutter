@@ -46,6 +46,45 @@ class MenuDataTableCustom extends StatefulWidget {
     );
   }
 
+  static Widget fromId({
+    required String entityId,
+    required List<Map<String, dynamic>> parentData,
+    List<Filter> initialFilters = const [],
+    bool embedded = false,
+    bool bypassPermission = false,
+  }) {
+    return FutureBuilder<EntityCustom?>(
+      future: EntityCustom.getEntity(entityId),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: NoCodeError('${snapshot.error}'));
+        }
+        if (snapshot.connectionState == ConnectionState.done ||
+            snapshot.hasData) {
+          final entity = snapshot.data;
+          if (entity == null) {
+            return Center(
+              child: NoCodeError('Entity not found! Id: $entityId'),
+            );
+          }
+          return MenuDataTableCustom.prepare(
+            entity: entity,
+            parentData: parentData,
+            initialFilters: initialFilters,
+            embedded: embedded,
+            bypassPermission: bypassPermission,
+          );
+        }
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: CircularProgressIndicator(),
+          ),
+        );
+      },
+    );
+  }
+
   final EntityCustom entity;
   final bool embedded;
   final List<Filter> initialFilters;
@@ -132,21 +171,24 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           orElse: PageOptions<Map<String, dynamic>>.empty,
         );
 
-        final activeLayoutTable = Map<String, int>.from(widget.entity.layoutTable);
+        final activeLayoutTable =
+            Map<String, int>.from(widget.entity.layoutTable);
         for (final layout in widget.entity.customeLayout) {
           if (_activeLayoutKeys.contains(layout.key)) {
             activeLayoutTable.addAll(layout.layoutTable);
           }
         }
 
-        final activeEntity = widget.entity.copyWith(layoutTable: activeLayoutTable);
+        final activeEntity =
+            widget.entity.copyWith(layoutTable: activeLayoutTable);
 
         final contextBadges = _buildContextBadges(
           Theme.of(context),
           activeEntity,
           pageOptions,
         );
-        final filterInfoWidget = _buildFilterInformation(Theme.of(context).colorScheme.primary);
+        final filterInfoWidget =
+            _buildFilterInformation(Theme.of(context).colorScheme.primary);
 
         return ScreenIdentifierBuilder(
           builder: (context, screenIdentifier) {
@@ -427,7 +469,8 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     setState(() {
       _filters.removeWhere((f) => f.reference == ref);
       if (val != null && val.isNotEmpty) {
-        _filters.add(Filter(reference: ref, value: val, backendKey: backendKey));
+        _filters
+            .add(Filter(reference: ref, value: val, backendKey: backendKey));
       } else if (alwaysInclude) {
         _filters.add(Filter(reference: ref, value: '', backendKey: backendKey));
       }
@@ -517,10 +560,10 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
         } else if (widget.parentData.isNotEmpty &&
             widget.parentData.last[ref] != null) {
           val = widget.parentData.last[ref]?.toString();
-        } else if (pageOptions.data != null && pageOptions.data!.isNotEmpty) {
-          final firstVal = pageOptions.data!.first[ref]?.toString();
+        } else if (pageOptions.data.isNotEmpty) {
+          final firstVal = pageOptions.data.first[ref]?.toString();
           if (firstVal != null &&
-              pageOptions.data!.every((r) => r[ref]?.toString() == firstVal)) {
+              pageOptions.data.every((r) => r[ref]?.toString() == firstVal)) {
             val = firstVal;
           }
         }

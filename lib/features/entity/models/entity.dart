@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flx_nocode_flutter/features/entity/models/entity_badge_config.dart';
+import 'package:flx_nocode_flutter/features/entity/models/entity_embedded_table.dart';
+import 'package:flx_nocode_flutter/features/entity/models/highlight_top_rows.dart';
 import 'package:flx_nocode_flutter/features/entity/models/pagination_option.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_list_extensions.dart';
@@ -91,6 +93,15 @@ class EntityCustom extends HiveObject {
   /// A list of custom layout configurations for switching table columns dynamically.
   final List<CustomeLayout> customeLayout;
 
+  /// Configuration for highlighting the top N rows in table view with a distinct color.
+  final HighlightTopRows? highlightTopRows;
+
+  /// Configuration for embedding a secondary table inside this entity's view/dialog.
+  final EntityEmbeddedTable? embeddedTable;
+
+  /// The ID of an entity to embed as a table inside this entity's view/dialog.
+  final String? embeddedEntity;
+
   /// A map defining the layout of columns in a data table view.
   /// The key is the field reference, and the value is typically a flex factor or column width.
   Map<String, int> layoutTable = {};
@@ -125,6 +136,9 @@ class EntityCustom extends HiveObject {
     this.pinnedColumns = const [],
     this.badges = const [],
     this.customeLayout = const [],
+    this.highlightTopRows,
+    this.embeddedTable,
+    this.embeddedEntity,
   });
 
   /// The base path for entity assets (e.g., 'asset').
@@ -194,6 +208,9 @@ class EntityCustom extends HiveObject {
         pinnedColumns: parser.parsePinnedColumns(),
         badges: parser.parseBadges(),
         customeLayout: parser.parseCustomeLayout(),
+        highlightTopRows: parser.parseHighlightTopRows(),
+        embeddedTable: parser.parseEmbeddedTable(),
+        embeddedEntity: parser.parseEmbeddedEntity(),
       );
     } catch (e) {
       debugPrint("[EntityCustom] Entity: $id fromJson error: $e");
@@ -229,7 +246,10 @@ class EntityCustom extends HiveObject {
         freezeLastColumn = true,
         pinnedColumns = const [],
         badges = const [],
-        customeLayout = const [];
+        customeLayout = const [],
+        highlightTopRows = null,
+        embeddedTable = null,
+        embeddedEntity = null;
 
   /// Returns all explicit badge configurations, including any fields flagged with `is_badge: true`.
   List<EntityBadgeConfig> get resolvedBadges {
@@ -271,7 +291,8 @@ class EntityCustom extends HiveObject {
       final hasUniformRow = rowData != null &&
           rowData.isNotEmpty &&
           rowData.first[ref] != null &&
-          rowData.every((r) => r[ref]?.toString() == rowData.first[ref]?.toString());
+          rowData.every(
+              (r) => r[ref]?.toString() == rowData.first[ref]?.toString());
 
       if (hasFilter || hasParent || hasUniformRow) {
         fallbackList.add(EntityBadgeConfig(
@@ -314,6 +335,9 @@ class EntityCustom extends HiveObject {
     List<String>? pinnedColumns,
     List<EntityBadgeConfig>? badges,
     List<CustomeLayout>? customeLayout,
+    HighlightTopRows? highlightTopRows,
+    EntityEmbeddedTable? embeddedTable,
+    String? embeddedEntity,
     bool clearActionPrimary = false,
     bool clearLayoutListTile = false,
   }) {
@@ -345,6 +369,9 @@ class EntityCustom extends HiveObject {
       pinnedColumns: pinnedColumns ?? this.pinnedColumns,
       badges: badges ?? this.badges,
       customeLayout: customeLayout ?? this.customeLayout,
+      highlightTopRows: highlightTopRows ?? this.highlightTopRows,
+      embeddedTable: embeddedTable ?? this.embeddedTable,
+      embeddedEntity: embeddedEntity ?? this.embeddedEntity,
     );
   }
 
@@ -914,9 +941,8 @@ class _EntityCustomJsonParser {
   }
 
   List<String> parsePinnedColumns() {
-    final raw = json['pinned_columns'] ??
-        json['pin_columns'] ??
-        json['freeze_columns'];
+    final raw =
+        json['pinned_columns'] ?? json['pin_columns'] ?? json['freeze_columns'];
     if (raw == null) return const [];
     if (raw is List) {
       return raw.map((e) => e.toString()).toList();
@@ -925,9 +951,8 @@ class _EntityCustomJsonParser {
   }
 
   List<EntityBadgeConfig> parseBadges() {
-    final raw = json['badges'] ??
-        json['context_badges'] ??
-        json['header_badges'];
+    final raw =
+        json['badges'] ?? json['context_badges'] ?? json['header_badges'];
     if (raw == null) return const [];
     if (raw is List) {
       return raw.map((e) => EntityBadgeConfig.fromRaw(e)).toList();
@@ -979,5 +1004,27 @@ class _EntityCustomJsonParser {
         throw FormatException("Error on 'custome_layout'[$i]: $e");
       }
     });
+  }
+
+  HighlightTopRows? parseHighlightTopRows() {
+    final raw = json['highlight_top_rows'] ??
+        json['top_rows_highlight'] ??
+        json['top_rows_color'];
+    if (raw == null) return null;
+    return HighlightTopRows.fromRaw(raw);
+  }
+
+  EntityEmbeddedTable? parseEmbeddedTable() {
+    final raw = json['embedded_table'] ?? json['embedded_sub_table'];
+    if (raw == null) return null;
+    return EntityEmbeddedTable.fromRaw(raw);
+  }
+
+  String? parseEmbeddedEntity() {
+    final raw =
+        json['embedded_entity'] ?? json['child_entity'] ?? json['table_entity'];
+    if (raw is String && raw.isNotEmpty) return raw;
+    if (raw is Map) return raw['entity']?.toString();
+    return null;
   }
 }

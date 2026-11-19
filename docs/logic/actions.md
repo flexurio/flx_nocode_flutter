@@ -143,7 +143,9 @@ This is ideal for summary reports where an endpoint returns a single aggregated 
 - Text/dimension fields (e.g. `tahun`, `bulan`) are rendered as period badges at the top.
 - Numeric and action fields are rendered as responsive metric cards with formatted numbers.
 - Any field on the target entity with an `action` is rendered with interactive card elevation, ripple, and a *"Lihat Detail ↗"* link that executes its nested drilldown action.
-- The dialog height fits the content compactly without empty rows, search inputs, or pagination.
+- Metric cards are laid out responsively in rows of up to 3 cards per row.
+- When the target entity specifies an `embedded_table` (or `embedded_entity`), a sub-table is rendered below the KPI cards within the same dialog, inheriting the parent contextual filters.
+- The dialog height fits the content compactly.
 
 ```json
 {

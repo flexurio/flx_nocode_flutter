@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flx_nocode_flutter/features/data_table/screen/widgets/entity_data_table.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity_badge_config.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
@@ -172,6 +173,15 @@ class _EntityCardGridViewState extends State<EntityCardGridView> {
                     theme: theme,
                   ),
                 ],
+                if (widget.entity.embeddedTable != null ||
+                    widget.entity.embeddedEntity != null) ...[
+                  const SizedBox(height: 24),
+                  _buildEmbeddedTable(
+                    context: context,
+                    theme: theme,
+                    parentRow: dataList.isNotEmpty ? dataList.first : null,
+                  ),
+                ],
               ],
             );
           },
@@ -269,22 +279,88 @@ class _EntityCardGridViewState extends State<EntityCardGridView> {
             ],
           )
         else
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              for (int i = 0; i < cardsToRender.length; i++) ...[
-                if (i > 0) const SizedBox(width: 12),
-                Expanded(
-                  child: _buildMetricCard(
-                    context: context,
-                    field: cardsToRender[i],
-                    row: row,
-                    theme: theme,
-                  ),
+              for (int r = 0; r < cardsToRender.length; r += 3) ...[
+                if (r > 0) const SizedBox(height: 12),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (int c = 0; c < 3; c++) ...[
+                      if (c > 0) const SizedBox(width: 12),
+                      if (r + c < cardsToRender.length)
+                        Expanded(
+                          child: _buildMetricCard(
+                            context: context,
+                            field: cardsToRender[r + c],
+                            row: row,
+                            theme: theme,
+                          ),
+                        )
+                      else
+                        const Expanded(child: SizedBox.shrink()),
+                    ],
+                  ],
                 ),
               ],
             ],
           ),
+      ],
+    );
+  }
+
+  Widget _buildEmbeddedTable({
+    required BuildContext context,
+    required ThemeData theme,
+    required Map<String, dynamic>? parentRow,
+  }) {
+    final embeddedTable = widget.entity.embeddedTable;
+    final entityId = embeddedTable?.entityId.isNotEmpty == true
+        ? embeddedTable!.entityId
+        : (widget.entity.embeddedEntity ?? '');
+
+    if (entityId.isEmpty) return const SizedBox.shrink();
+
+    final title = embeddedTable?.title;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (title != null && title.isNotEmpty) ...[
+          Row(
+            children: [
+              Icon(
+                Icons.table_chart_outlined,
+                size: 16,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF1E293B),
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+        ],
+        MenuDataTableCustom.fromId(
+          entityId: entityId,
+          parentData: [
+            ...widget.parentData,
+            if (parentRow != null) parentRow,
+          ],
+          initialFilters: widget.initialFilters,
+          embedded: true,
+          bypassPermission: true,
+        ),
       ],
     );
   }

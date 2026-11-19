@@ -38,9 +38,6 @@ class MenuDataTableCustomTableView extends StatelessWidget {
   final void Function(PageOptions<Map<String, dynamic>>?) onChanged;
   final FutureOr<void> Function([PageOptions<Map<String, dynamic>>?]) onRefresh;
 
-
-
-
   @override
   Widget build(BuildContext context) {
     final fieldOrder = entity.fields.map((f) => f.reference).toSet();
@@ -69,6 +66,9 @@ class MenuDataTableCustomTableView extends StatelessWidget {
         freezeLastColumn: entity.freezeLastColumn,
         actionLeft: actionLeft,
         actionRight: actionRightBuilder,
+        rowColorBuilder: entity.highlightTopRows != null
+            ? (row, rowIndex) => entity.highlightTopRows!.getColor(rowIndex)
+            : null,
         actionMultiple: multipleRowActions.isEmpty
             ? null
             : (selectedRows) {
@@ -109,8 +109,8 @@ class MenuDataTableCustomTableView extends StatelessWidget {
       // Columns with backgroundColors manage their own padding inside the
       // colored Container. Pass zeroPadding: true so YuhuTable's TableData
       // wrapper adds no extra horizontal padding and the color fills edge-to-edge.
-      final hasColumnBgColors = field.backgroundColors != null &&
-          field.backgroundColors!.isNotEmpty;
+      final hasColumnBgColors =
+          field.backgroundColors != null && field.backgroundColors!.isNotEmpty;
       final isPinned = entity.pinnedColumns.contains(fields[index]) ||
           (field.isPinned == true);
 
@@ -208,5 +208,3 @@ class MenuDataTableCustomTableView extends StatelessWidget {
     ];
   }
 }
-
-
