@@ -102,6 +102,9 @@ class EntityCustom extends HiveObject {
   /// The ID of an entity to embed as a table inside this entity's view/dialog.
   final String? embeddedEntity;
 
+  /// Whether to hide context badges at the top of the entity view.
+  final bool hideBadges;
+
   /// A map defining the layout of columns in a data table view.
   /// The key is the field reference, and the value is typically a flex factor or column width.
   Map<String, int> layoutTable = {};
@@ -139,6 +142,7 @@ class EntityCustom extends HiveObject {
     this.highlightTopRows,
     this.embeddedTable,
     this.embeddedEntity,
+    this.hideBadges = false,
   });
 
   /// The base path for entity assets (e.g., 'asset').
@@ -211,6 +215,7 @@ class EntityCustom extends HiveObject {
         highlightTopRows: parser.parseHighlightTopRows(),
         embeddedTable: parser.parseEmbeddedTable(),
         embeddedEntity: parser.parseEmbeddedEntity(),
+        hideBadges: parser.parseHideBadges(),
       );
     } catch (e) {
       debugPrint("[EntityCustom] Entity: $id fromJson error: $e");
@@ -249,7 +254,8 @@ class EntityCustom extends HiveObject {
         customeLayout = const [],
         highlightTopRows = null,
         embeddedTable = null,
-        embeddedEntity = null;
+        embeddedEntity = null,
+        hideBadges = false;
 
   /// Returns all explicit badge configurations, including any fields flagged with `is_badge: true`.
   List<EntityBadgeConfig> get resolvedBadges {
@@ -338,6 +344,7 @@ class EntityCustom extends HiveObject {
     HighlightTopRows? highlightTopRows,
     EntityEmbeddedTable? embeddedTable,
     String? embeddedEntity,
+    bool? hideBadges,
     bool clearActionPrimary = false,
     bool clearLayoutListTile = false,
   }) {
@@ -372,6 +379,7 @@ class EntityCustom extends HiveObject {
       highlightTopRows: highlightTopRows ?? this.highlightTopRows,
       embeddedTable: embeddedTable ?? this.embeddedTable,
       embeddedEntity: embeddedEntity ?? this.embeddedEntity,
+      hideBadges: hideBadges ?? this.hideBadges,
     );
   }
 
@@ -1026,5 +1034,9 @@ class _EntityCustomJsonParser {
     if (raw is String && raw.isNotEmpty) return raw;
     if (raw is Map) return raw['entity']?.toString();
     return null;
+  }
+
+  bool parseHideBadges() {
+    return (json['hide_badges'] as bool?) ?? false;
   }
 }

@@ -540,6 +540,10 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     EntityCustom activeEntity,
     PageOptions<Map<String, dynamic>> pageOptions,
   ) {
+    if (activeEntity.hideBadges ||
+        (widget.embedded && activeEntity.badges.isEmpty)) {
+      return const [];
+    }
     final badges = <Widget>[];
     final badgeConfigs = activeEntity.getEffectiveBadges(
       filters: _filters,

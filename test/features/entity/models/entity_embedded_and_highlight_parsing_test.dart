@@ -168,5 +168,20 @@ void main() {
       expect(preserved.embeddedEntity, 'updated_entity');
       expect(preserved.highlightTopRows?.count, 10);
     });
+
+    test('EntityCustom parses hide_badges from JSON and respects copyWith', () {
+      final jsonWithHide = createBaseEntityJson({
+        'hide_badges': true,
+      });
+      final entityWithHide = EntityCustom.fromJson(jsonWithHide);
+      expect(entityWithHide.hideBadges, isTrue);
+
+      final jsonDefault = createBaseEntityJson({});
+      final entityDefault = EntityCustom.fromJson(jsonDefault);
+      expect(entityDefault.hideBadges, isFalse);
+
+      final updated = entityDefault.copyWith(hideBadges: true);
+      expect(updated.hideBadges, isTrue);
+    });
   });
 }

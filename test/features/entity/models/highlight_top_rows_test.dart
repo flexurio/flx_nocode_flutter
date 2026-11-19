@@ -15,13 +15,19 @@ void main() {
     });
 
     test(
-        'HighlightTopRows.fromRaw with num parses count with default soft blue colors',
+        'HighlightTopRows.fromRaw with num parses count with theme-adaptable null color',
         () {
       final highlight = HighlightTopRows.fromRaw(5);
 
       expect(highlight.count, 5);
-      expect(highlight.color, const Color(0xFFEFF6FF));
-      expect(highlight.stripedColor, const Color(0xFFDBEAFE));
+      expect(highlight.color, isNull);
+      // Resolves dynamically based on theme primary color
+      final customTheme = ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      );
+      final resolvedColor = highlight.getColor(0, customTheme);
+      expect(resolvedColor, isNotNull);
+      expect(highlight.getColor(5, customTheme), isNull);
     });
 
     test(
@@ -29,20 +35,20 @@ void main() {
         () {
       final json = {
         'count': 3,
-        'color': '#EFF6FF',
+        'color': '#DBEAFE',
       };
 
       final highlight = HighlightTopRows.fromRaw(json);
 
       expect(highlight.count, 3);
-      expect(highlight.color, const Color(0xFFEFF6FF));
-      expect(highlight.stripedColor, isNotNull);
+      expect(highlight.color, const Color(0xFFDBEAFE));
+      expect(highlight.stripedColor, isNull);
       // Index 0 (even) gets base color
-      expect(highlight.getColor(0), const Color(0xFFEFF6FF));
+      expect(highlight.getColor(0), const Color(0xFFDBEAFE));
       // Index 1 (odd) gets derived striped color
-      expect(highlight.getColor(1), highlight.stripedColor);
+      expect(highlight.getColor(1), isNotNull);
       // Index 2 (even) gets base color
-      expect(highlight.getColor(2), const Color(0xFFEFF6FF));
+      expect(highlight.getColor(2), const Color(0xFFDBEAFE));
       // Index 3 (out of range, >= count) returns null
       expect(highlight.getColor(3), isNull);
       expect(highlight.getColor(4), isNull);
@@ -69,18 +75,18 @@ void main() {
     test('HighlightTopRows parses explicit striped_color when specified', () {
       final json = {
         'count': 5,
-        'color': '#FFFFFF',
-        'striped_color': '#F1F5F9',
+        'color': '#DBEAFE',
+        'striped_color': '#BFDBFE',
       };
 
       final highlight = HighlightTopRows.fromRaw(json);
 
-      expect(highlight.color, const Color(0xFFFFFFFF));
-      expect(highlight.stripedColor, const Color(0xFFF1F5F9));
-      expect(highlight.getColor(0), const Color(0xFFFFFFFF));
-      expect(highlight.getColor(1), const Color(0xFFF1F5F9));
-      expect(highlight.getColor(2), const Color(0xFFFFFFFF));
-      expect(highlight.getColor(3), const Color(0xFFF1F5F9));
+      expect(highlight.color, const Color(0xFFDBEAFE));
+      expect(highlight.stripedColor, const Color(0xFFBFDBFE));
+      expect(highlight.getColor(0), const Color(0xFFDBEAFE));
+      expect(highlight.getColor(1), const Color(0xFFBFDBFE));
+      expect(highlight.getColor(2), const Color(0xFFDBEAFE));
+      expect(highlight.getColor(3), const Color(0xFFBFDBFE));
     });
 
     test(
@@ -96,6 +102,25 @@ void main() {
       expect(highlight.color, const Color(0xFFFEF3C7));
     });
 
+    test(
+        'HighlightTopRows handles "theme" or "primary" keyword by using theme dynamically',
+        () {
+      final json = {
+        'count': 5,
+        'color': 'theme',
+      };
+
+      final highlight = HighlightTopRows.fromRaw(json);
+      expect(highlight.count, 5);
+      expect(highlight.color, isNull);
+
+      final theme = ThemeData(
+        colorScheme: const ColorScheme.light(primary: Color(0xFF1E40AF)),
+      );
+      final color = highlight.getColor(0, theme);
+      expect(color, isNotNull);
+    });
+
     test('HighlightTopRows handles invalid hex format gracefully', () {
       final json = {
         'count': 5,
@@ -105,7 +130,8 @@ void main() {
       final highlight = HighlightTopRows.fromRaw(json);
 
       expect(highlight.count, 5);
-      expect(highlight.color, const Color(0xFFEFF6FF));
+      expect(highlight.color, isNull);
+      expect(highlight.getColor(0), isNotNull);
     });
 
     test(

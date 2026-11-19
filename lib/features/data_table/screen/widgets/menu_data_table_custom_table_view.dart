@@ -67,7 +67,8 @@ class MenuDataTableCustomTableView extends StatelessWidget {
         actionLeft: actionLeft,
         actionRight: actionRightBuilder,
         rowColorBuilder: entity.highlightTopRows != null
-            ? (row, rowIndex) => entity.highlightTopRows!.getColor(rowIndex)
+            ? (row, rowIndex) =>
+                entity.highlightTopRows!.getColor(rowIndex, Theme.of(context))
             : null,
         actionMultiple: multipleRowActions.isEmpty
             ? null
@@ -125,7 +126,12 @@ class MenuDataTableCustomTableView extends StatelessWidget {
           numeric: (field.isNumber) && index != 0,
         ),
         body: (row) {
-          final value = row[field.reference];
+          var value = row[field.reference];
+          if (value == null && field.reference == 'structure_id') {
+            value = row['area'];
+          } else if (value == null && field.reference == 'area') {
+            value = row['structure_id'];
+          }
 
           final VoidCallback? cellOnTap;
           if (field.action != null) {

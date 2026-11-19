@@ -16,28 +16,28 @@ class HighlightTopRows {
   factory HighlightTopRows.fromRaw(dynamic raw) {
     if (raw == null) return const HighlightTopRows(count: 0);
     if (raw is num) {
-      const defaultBase = Color(0xFFEFF6FF); // Soft blue 50
-      const defaultStriped = Color(0xFFDBEAFE); // Soft blue 100
       return HighlightTopRows(
         count: raw.toInt(),
-        color: defaultBase,
-        stripedColor: defaultStriped,
       );
     }
     if (raw is Map) {
       final count = (raw['count'] as num?)?.toInt() ?? 5;
-      final hex = raw['color']?.toString() ??
-          raw['background_color']?.toString() ??
-          '#EFF6FF';
+      final rawHex =
+          raw['color']?.toString() ?? raw['background_color']?.toString();
+      final baseColor = (rawHex != null &&
+              rawHex.isNotEmpty &&
+              rawHex.toLowerCase() != 'theme' &&
+              rawHex.toLowerCase() != 'primary')
+          ? _parseColor(rawHex)
+          : null;
       final stripedHex = raw['striped_color']?.toString();
-      final baseColor = _parseColor(hex) ?? const Color(0xFFEFF6FF);
-      final derivedStriped = stripedHex != null
+      final stripedColor = (stripedHex != null && stripedHex.isNotEmpty)
           ? _parseColor(stripedHex)
-          : _deriveStriped(baseColor);
+          : null;
       return HighlightTopRows(
         count: count,
         color: baseColor,
-        stripedColor: derivedStriped,
+        stripedColor: stripedColor,
       );
     }
     return const HighlightTopRows(count: 0);
@@ -54,13 +54,25 @@ class HighlightTopRows {
   }
 
   static Color _deriveStriped(Color base) {
-    return Color.lerp(base, Colors.black, 0.03)!;
+    return Color.lerp(base, Colors.black, 0.05)!;
   }
 
-  Color? getColor(int rowIndex) {
-    if (rowIndex < count) {
-      return (rowIndex % 2 != 0 && stripedColor != null) ? stripedColor : color;
-    }
-    return null;
+  Color? getColor(int rowIndex, [ThemeData? theme]) {
+    if (rowIndex >= count || count <= 0) return null;
+
+    final primary = theme?.colorScheme.primary ?? const Color(0xFF2563EB);
+    final isDark = theme?.brightness == Brightness.dark;
+    final defaultBase = isDark
+        ? Color.lerp(theme?.cardColor ?? Colors.black, primary, 0.35)!
+        : Color.lerp(Colors.white, primary, 0.18)!;
+    final defaultStriped = isDark
+        ? Color.lerp(theme?.cardColor ?? Colors.black, primary, 0.45)!
+        : Color.lerp(Colors.white, primary, 0.28)!;
+
+    final effectiveBase = color ?? defaultBase;
+    final effectiveStriped = stripedColor ??
+        (color != null ? _deriveStriped(color!) : defaultStriped);
+
+    return (rowIndex % 2 != 0) ? effectiveStriped : effectiveBase;
   }
 }
