@@ -11,6 +11,9 @@ A selectable list of options.
 | `optionLabel` | String | No | Key, dot-notation path, or JS template for the display label. |
 | `initialValue` | String | No | Initial selected value. |
 | `select_first_option` / `auto_select_first` | Boolean | No | If `true`, automatically selects the first candidate option when initial value is empty or when parent dependencies change. |
+| `search_live` / `searchLive` | Boolean | No | If `true`, fetches options dynamically from API based on user search input with a debounce. Prevents loading excessive data. |
+| `search_live_limit` / `searchLiveLimit` | Integer | No | Maximum number of records fetched per live search request (default: 20). |
+| `search_live_parameter` / `searchLiveParameter` | String | No | Endpoint query parameter used for search text (e.g. `"outlet_name.like"` or `"name.like"`). |
 | `dependsOn` | Array | No | IDs that trigger a reload on change. |
 | `onChangeActions` / `on_change` | Array/Object | No | Component-level actions run when value changes. |
 | `required` | Boolean | No | Validation requirement. |
@@ -85,6 +88,38 @@ In this example, selecting `Versi Terakhir (Latest)` sets the dropdown value to 
   "type": "icon_button",
   "visibilityCondition": "form.history_selector == null || form.history_selector == ''",
   "icon": "Edit"
+}
+```
+
+## Live Search from API (`search_live`)
+
+When working with large datasets (such as thousands of customers or outlets), loading all records at once causes significant network overhead and memory usage.
+
+Setting `"search_live": true` converts the dropdown to fetch data on-demand as the user types into the search box:
+- **`search_live`**: Set to `true` to enable live search mode.
+- **`search_live_limit`**: Limits the number of results returned per query (e.g. `20`). Defaults to 20 if omitted.
+- **`search_live_parameter`**: Specifies the query parameter name sent to the API endpoint (e.g. `"outlet_name.like"` or `"name.like"`).
+- **Debounce**: Automatically debounces keystrokes (350ms) before issuing the HTTP request to prevent rapid duplicate requests.
+- **Query Parameter Preservation**: Existing query parameters in the `httpData.url` (such as `period.eq` or `marketing_structure_id.eq`) are preserved. When the user types a search term, `${search_live_parameter}=<query>` and `limit=<limit>` are dynamically appended.
+
+```json
+{
+  "id": "outlet_id",
+  "type": "dropdown",
+  "label": "Outlet ID",
+  "search_live": true,
+  "search_live_limit": 20,
+  "search_live_parameter": "outlet_name.like",
+  "httpData": {
+    "method": "GET",
+    "url": "https://api.example.com/outlets?marketing_structure_id.eq={{ parent.area_code }}&period.eq={{ form.period }}",
+    "headers": {
+      "Authorization": "Bearer {{ auth_token }}"
+    }
+  },
+  "optionKey": "{{item.outlet_id}}",
+  "optionLabel": "{{item.outlet_id}} - {{item.outlet_name}}",
+  "dependsOn": ["period"]
 }
 ```
 

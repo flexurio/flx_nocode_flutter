@@ -48,14 +48,20 @@ class ComponentDropdownController extends ComponentSelectionController<Component
         selectedValue.value = initialOption['key']?.toString() ?? iv;
         displayedValue.value = initialOption;
         updateTargetController(selectedValue.value!);
+      } else if (component.searchLive && iv.isNotEmpty) {
+        selectedValue.value = iv;
+        displayedValue.value = {'key': iv, 'label': iv, 'item': {'id': iv}};
+        updateTargetController(iv);
       }
     } else if (selectedValue.value != null) {
       final stillExists = options.any((o) =>
           o['key'] == selectedValue.value ||
           o['key']?.toString().trim() == selectedValue.value?.trim());
       if (!stillExists) {
-        resetSelection();
-        updateTargetController('');
+        if (!component.searchLive) {
+          resetSelection();
+          updateTargetController('');
+        }
       } else {
         displayedValue.value = options.firstWhere((o) =>
             o['key'] == selectedValue.value ||

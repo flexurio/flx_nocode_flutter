@@ -87,6 +87,10 @@ class _ComponentDropdownWidgetState extends State<ComponentDropdownWidget> {
               FDropDownSearchSmall<Map<String, dynamic>>(
                 status: status,
                 items: controller.options,
+                asyncItems: widget.component.searchLive
+                    ? (filter, loadProps) =>
+                        controller.searchLiveOptions(filter)
+                    : null,
                 initialValue: controller.displayedValue.value,
                 labelText: widget.component.label,
                 enabled: widget.component.enabled && !controller.isLoading.value,
@@ -108,6 +112,10 @@ class _ComponentDropdownWidgetState extends State<ComponentDropdownWidget> {
               FDropDownSearch<Map<String, dynamic>>(
                 status: status,
                 items: controller.options,
+                asyncItems: widget.component.searchLive
+                    ? (filter, loadProps) =>
+                        controller.searchLiveOptions(filter)
+                    : null,
                 initialValue: controller.displayedValue.value,
                 labelText: widget.component.label,
                 enabled: widget.component.enabled && !controller.isLoading.value,

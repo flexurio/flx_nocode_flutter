@@ -10,6 +10,9 @@ abstract class ComponentSelectionBase extends ComponentInputBase {
   final String? optionLabel;
   final List<ComponentAction> onChangeActions;
   final List<String> dependsOn;
+  final bool searchLive;
+  final int? searchLiveLimit;
+  final String? searchLiveParameter;
 
   ComponentSelectionBase({
     required super.id,
@@ -25,6 +28,9 @@ abstract class ComponentSelectionBase extends ComponentInputBase {
     super.required,
     super.enabled = true,
     this.dependsOn = const [],
+    this.searchLive = false,
+    this.searchLiveLimit,
+    this.searchLiveParameter,
     super.widthMode,
     super.width,
     super.flex,
@@ -39,5 +45,9 @@ abstract class ComponentSelectionBase extends ComponentInputBase {
         'optionLabel': optionLabel,
         'onChangeActions': onChangeActions.map((e) => e.toMap()).toList(),
         'dependsOn': dependsOn,
+        'search_live': searchLive,
+        if (searchLiveLimit != null) 'search_live_limit': searchLiveLimit,
+        if (searchLiveParameter != null)
+          'search_live_parameter': searchLiveParameter,
       };
 }

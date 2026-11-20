@@ -9,6 +9,7 @@ import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_action.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
+import 'package:flx_nocode_flutter/src/app/util/string.dart';
 
 abstract class ComponentSelectionController<T extends ComponentSelectionBase>
     extends GetxController {
@@ -121,6 +122,20 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase>
   Future<void> fetchOptions() async {
     if (component.httpData == null) return;
 
+    if (component.searchLive) {
+      try {
+        isLoading.value = true;
+        error.value = null;
+        await searchLiveOptions('');
+        setInitialValue();
+      } catch (e) {
+        error.value = e.toString();
+      } finally {
+        isLoading.value = false;
+      }
+      return;
+    }
+
     try {
       isLoading.value = true;
       error.value = null;
@@ -146,6 +161,109 @@ abstract class ComponentSelectionController<T extends ComponentSelectionBase>
       error.value = e.toString();
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> searchLiveOptions(String query) async {
+    if (component.httpData == null || component.httpData!.url.isEmpty) {
+      return options;
+    }
+
+    try {
+      final requestData = prepareRequestData();
+      final effectiveHttpData = _buildLiveSearchHttpData(query, requestData);
+
+      final result = await effectiveHttpData.execute(requestData);
+
+      if (result.isSuccess && result.data is Map) {
+        final rawData = (result.data as Map)['data'];
+        var list = <dynamic>[];
+        if (rawData is List) {
+          list = rawData;
+        }
+
+        // Support mock/dummy data filtering when mockEnabled is true
+        if (effectiveHttpData.mockEnabled && query.trim().isNotEmpty) {
+          final queryLower = query.trim().toLowerCase();
+          final paramKey = component.searchLiveParameter?.split('.').first;
+          list = list.where((item) {
+            if (item is Map) {
+              if (paramKey != null && item[paramKey] != null) {
+                return item[paramKey]
+                    .toString()
+                    .toLowerCase()
+                    .contains(queryLower);
+              }
+              return item.values
+                  .any((v) => v.toString().toLowerCase().contains(queryLower));
+            }
+            return item.toString().toLowerCase().contains(queryLower);
+          }).toList();
+        }
+
+        final limit = component.searchLiveLimit ?? 20;
+        if (effectiveHttpData.mockEnabled && limit > 0 && list.length > limit) {
+          list = list.sublist(0, limit);
+        }
+
+        final staticOptions = component.options
+            .where((option) =>
+                option is Map || (option is String && option.contains('|')))
+            .map(_mapStaticOption);
+
+        final mapped = [
+          ...staticOptions,
+          ...list.map((item) => mapItemToOption(item, requestData)),
+        ];
+
+        options.value = mapped;
+        return mapped;
+      } else {
+        return options;
+      }
+    } catch (e) {
+      debugPrint('[Nocode Selection] searchLiveOptions error for ${component.id}: $e');
+      return options;
+    }
+  }
+
+  HttpData _buildLiveSearchHttpData(String query, JsonMap requestData) {
+    final baseHttp = component.httpData!;
+    final trimmedQuery = query.trim();
+    final searchParam = component.searchLiveParameter?.trim();
+    final limit = component.searchLiveLimit ?? 20;
+
+    // Interpolate placeholders in base URL using requestData
+    final processedUrl =
+        baseHttp.url.renderWithData(requestData).interpolateJavascript(requestData);
+
+    try {
+      final uri = Uri.parse(processedUrl);
+      final queryParams = Map<String, String>.from(uri.queryParameters);
+
+      if (trimmedQuery.isNotEmpty && searchParam != null && searchParam.isNotEmpty) {
+        queryParams[searchParam] = trimmedQuery;
+      } else if (searchParam != null && searchParam.isNotEmpty) {
+        queryParams.remove(searchParam);
+      }
+
+      if (limit > 0) {
+        queryParams['limit'] = limit.toString();
+      }
+
+      final newUri = uri.replace(queryParameters: queryParams);
+      return baseHttp.copyWith(url: newUri.toString());
+    } catch (e) {
+      var newUrl = processedUrl;
+      final sep = newUrl.contains('?') ? '&' : '?';
+      if (trimmedQuery.isNotEmpty && searchParam != null && searchParam.isNotEmpty) {
+        newUrl = '$newUrl$sep$searchParam=${Uri.encodeComponent(trimmedQuery)}';
+      }
+      if (limit > 0) {
+        final limitSep = newUrl.contains('?') ? '&' : '?';
+        newUrl = '$newUrl${limitSep}limit=$limit';
+      }
+      return baseHttp.copyWith(url: newUrl);
     }
   }
 

@@ -24,6 +24,9 @@ class ComponentDropdown extends ComponentSelectionBase {
     super.required,
     super.enabled = true,
     super.dependsOn,
+    super.searchLive = false,
+    super.searchLiveLimit,
+    super.searchLiveParameter,
     super.widthMode,
     super.width,
     super.flex,
@@ -41,6 +44,9 @@ class ComponentDropdown extends ComponentSelectionBase {
       httpData: HttpData.empty(),
       required: false,
       dependsOn: const [],
+      searchLive: false,
+      searchLiveLimit: null,
+      searchLiveParameter: null,
       widthMode: ComponentSizeMode.fill,
     );
   }
@@ -113,6 +119,17 @@ class ComponentDropdown extends ComponentSelectionBase {
       return true;
     }();
 
+    final searchLive = map['search_live'] == true ||
+        map['searchLive'] == true;
+    final searchLiveLimit = map['search_live_limit'] != null
+        ? int.tryParse(map['search_live_limit'].toString())
+        : (map['searchLiveLimit'] != null
+            ? int.tryParse(map['searchLiveLimit'].toString())
+            : null);
+    final searchLiveParameter =
+        map['search_live_parameter']?.toString().trim() ??
+            map['searchLiveParameter']?.toString().trim();
+
     return ComponentDropdown(
       id: id,
       visibilityCondition: map['visibilityCondition']?.toString(),
@@ -130,6 +147,9 @@ class ComponentDropdown extends ComponentSelectionBase {
       required: required,
       enabled: enabled,
       dependsOn: dependsOn,
+      searchLive: searchLive,
+      searchLiveLimit: searchLiveLimit,
+      searchLiveParameter: searchLiveParameter,
       widthMode: ComponentSizeMode.fromString(map['widthMode']?.toString()),
       width: map['width'] != null
           ? double.tryParse(map['width'].toString())
