@@ -41,6 +41,7 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `view_type` | String | No | Target view type for `show_dialog` actions (e.g., `"table"` to render a data table popup, or `"cards"` / `"grid"` to render a KPI Summary Cards popup). Alias: `type_view`. |
 | `target_entity` | String | No | Target entity ID to load and render when `view_type` is `"table"`. Aliases: `entity_id`, `target_entity_id`. |
 | `badges` | Array\<String \| Object\> | No | List of field references or badge configs to render as top contextual badges in target dialog views (e.g. `["tahun", "bulan"]`). Overrides or supplements the target entity's default badges. |
+| `signature` | Object / Boolean | No | Electronic signature requirements (CPOB/GMP compliance). Prompts user for re-authentication password and signature meaning before executing the action or workflow. See [E-Signature](#e-signature-tanda-tangan-elektronik). |
 | `filters` | Array\<Object\> | No | List of filters to pass to the target view `[{ "reference": "tahun", "value": "{{row.tahun}}" }]`. Supports JS interpolation. |
 | `params` | Object | No | Parameter map to pass to the target view (e.g. `{ "tahun.eq": "{{row.tahun}}" }`). Supports JS interpolation. |
 | `title` | String | No | Custom window/dialog title. If omitted, uses action `name`. |
@@ -174,7 +175,79 @@ This is ideal for summary reports where an endpoint returns a single aggregated 
 
 ---
 
-## 4. Rule-based Visibility
+## 4. E-Signature (Tanda Tangan Elektronik)
+
+Untuk kebutuhan persetujuan regulatori/farmasi (seperti **CPOB / 21 CFR Part 11 / GMP**), sebuah aksi dapat dikonfigurasi dengan opsi `signature`.
+
+Ketika `signature` aktif:
+1. Setelah validasi form sukses, muncul dialog modal **Tanda Tangan Elektronik** yang menampilkan nama pengguna & NIP.
+2. Pengguna memilih makna tanda tangan (**Meaning**, misal: *"Disetujui"*, *"Ditinjau"*, *"Ditolak"*).
+3. Pengguna wajib memasukkan kembali kata sandi akun untuk re-otentikasi.
+4. Frontend memverifikasi kredensial ke endpoint verifikasi (`POST {{backend_host}}/auth/verify-password` atau `verify_url` kustom — mendukung interpolasi `{{backend_host}}`, tanpa fallback).
+5. Token tanda tangan (`signature_token`) dan makna (`signature_meaning`) secara otomatis:
+   - Diinjeksi ke context: `{{ signature.token }}`, `{{ signature.meaning }}`, `{{ signature.signer_name }}`.
+   - Diinjeksi otomatis ke HTTP header: `X-Signature-Token` pada seluruh HTTP request aksi maupun workflow terkait.
+6. Jika verifikasi kata sandi gagal atau dibatalkan, alur eksekusi aksi dihentikan dengan aman.
+
+### Konfigurasi `signature`
+
+| Key | Type | Default | Description |
+|---|---|---|---|
+| `meanings` | Array\<String\> | `["Disetujui"]` | Daftar opsi makna persetujuan (contoh: `["Disetujui", "Ditinjau", "Ditolak"]`). |
+| `default_meaning` | String | null | Makna default yang terpilih pertama kali saat dialog dibuka. |
+| `verify_url` | String | `null` | Endpoint kustom untuk verifikasi kata sandi (mendukung `{{backend_host}}`, default: `POST {{backend_host}}/auth/verify-password`). |
+| `title` | String | `"Tanda Tangan Elektronik"` | Judul dialog. |
+| `require_meaning` | Boolean | `true` | Apakah pengguna wajib memilih makna tanda tangan. |
+| `require_password` | Boolean | `true` | Apakah pengguna wajib memasukkan kata sandi konfirmasi. |
+
+### Contoh Pemakaian pada Aksi (Best Practice: Aksi Langsung `http` / `workflow`)
+
+```json
+{
+  "id": "action_approve_evaluation",
+  "name": "Evaluasi & Setujui",
+  "type": "http",
+  "signature": {
+    "meanings": ["Disetujui", "Ditinjau", "Ditolak"],
+    "default_meaning": "Disetujui",
+    "verify_url": "{{backend_host}}/auth/verify-password",
+    "title": "Konfirmasi Tanda Tangan Persetujuan CPOB"
+  },
+  "http": {
+    "method": "POST",
+    "url": "{{backend_host}}/api/evaluations/{{row.id}}/approve",
+    "body": {
+      "meaning": "{{signature.meaning}}",
+      "signature_token": "{{signature.token}}"
+    }
+  },
+  "on_success": ["refresh", "toast"]
+}
+```
+
+Contoh pada Aksi HTTP / Konfirmasi Langsung:
+```json
+{
+  "id": "quick_approve",
+  "name": "Setujui Dokumen",
+  "type": "show_confirmation_dialog",
+  "signature": {
+    "meanings": ["Disetujui"]
+  },
+  "http": {
+    "method": "POST",
+    "url": "/api/change-controls/{{row.id}}/approve",
+    "body": {
+      "meaning": "{{signature.meaning}}",
+      "signature_token": "{{signature.token}}"
+    }
+  }
+}
+```
+
+---
+
+## 5. Rule-based Visibility
 
 The `rule` object allows you to hide or show actions based on the data of the selected row, parent records, or table state.
 

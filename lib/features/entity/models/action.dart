@@ -2,6 +2,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart' hide TColumn;
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/entity/models/action_signature.dart';
 import 'package:hive/hive.dart';
 
 enum ActionType {
@@ -146,6 +147,9 @@ class ActionD extends HiveObject {
   /// Optional badges list to apply or override on target entity view
   final List<dynamic>? badges;
 
+  /// Optional electronic signature requirements before executing the action.
+  final ActionSignature? signature;
+
   ActionD({
     required this.isMultiple,
     required this.onSuccess,
@@ -188,6 +192,7 @@ class ActionD extends HiveObject {
     this.filters,
     this.params,
     this.badges,
+    this.signature,
   }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       final isTableView = viewType == 'table' || (targetEntityId != null && targetEntityId!.isNotEmpty);
@@ -241,8 +246,10 @@ class ActionD extends HiveObject {
     List<dynamic>? filters,
     Map<String, dynamic>? params,
     List<dynamic>? badges,
+    ActionSignature? signature,
   }) {
     return ActionD(
+      signature: signature ?? this.signature,
       exportFormat: exportFormat ?? this.exportFormat,
       exportColumns: exportColumns ?? this.exportColumns,
       value: value ?? this.value,
@@ -380,6 +387,9 @@ class ActionD extends HiveObject {
           ? Map<String, dynamic>.from(json['params'] as Map)
           : null,
       badges: json['badges'] is List ? (json['badges'] as List) : null,
+      signature: json.containsKey('signature')
+          ? ActionSignature.fromJson(json['signature'])
+          : null,
     );
   }
 
@@ -402,6 +412,7 @@ class ActionD extends HiveObject {
       if (filters != null) 'filters': filters,
       if (params != null) 'params': params,
       if (badges != null) 'badges': badges,
+      if (signature != null) 'signature': signature!.toJson(),
       'icon': icon,
       'icon_code': iconCode,
       if (rule != null) 'rule': rule!.toMap(),

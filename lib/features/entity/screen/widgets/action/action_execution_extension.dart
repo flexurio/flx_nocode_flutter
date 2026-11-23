@@ -20,6 +20,8 @@ import 'package:flx_nocode_flutter/src/app/util/picker_file.dart';
 import 'package:flx_nocode_flutter/features/print/domain/json_pdf_generator.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
+import 'package:flx_nocode_flutter/features/entity/models/action_signature.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/electronic_signature_dialog.dart';
 
 import 'action_confirm_dialog_extension.dart';
 import 'action_handler_extension.dart';
@@ -54,6 +56,29 @@ extension ActionExecutionExtension on ActionD {
         return;
       }
     }
+
+    SignatureResult? signatureResult;
+    if (signature != null) {
+      signatureResult = await ElectronicSignatureDialog.prompt(
+        context: context,
+        signature: signature!,
+        actionName: name,
+      );
+      if (signatureResult == null) {
+        // User aborted e-signature verification
+        return;
+      }
+    }
+
+    // Merge signature payload into context data if verified
+    final effectiveData = signatureResult != null
+        ? <String, dynamic>{
+            ...data,
+            'signature': signatureResult.toMap(),
+            'signature_token': signatureResult.token,
+            'signature_meaning': signatureResult.meaning,
+          }
+        : data;
 
     switch (type) {
       case ActionType.listJsonViewAsTable:
@@ -96,7 +121,7 @@ extension ActionExecutionExtension on ActionD {
         await _handlePrint(
           entity: entity,
           context: context,
-          data: data,
+          data: effectiveData,
           onSuccessCallback: onSuccessCallback,
         );
         break;
@@ -110,7 +135,7 @@ extension ActionExecutionExtension on ActionD {
           onConfirm: (ctx) => executeHttpSingle(
             entity,
             ctx,
-            data,
+            effectiveData,
             onSuccessCallback: onSuccessCallback,
           ),
         );
@@ -120,7 +145,7 @@ extension ActionExecutionExtension on ActionD {
         await executeWorkflowSingle(
           entity,
           context,
-          data,
+          effectiveData,
           onSuccessCallback: onSuccessCallback,
         );
         break;
@@ -143,7 +168,7 @@ extension ActionExecutionExtension on ActionD {
                 layoutFormId: layoutFormId!,
                 showSubmitButton: showSubmitButton,
                 parentData: parentData,
-                data: data,
+                data: effectiveData,
                 filters: const {},
                 width: width,
                 onSuccess: (responseData) async {
@@ -152,7 +177,7 @@ extension ActionExecutionExtension on ActionD {
                     entity: entity,
                     context: context,
                     responseData: responseData,
-                    data: data,
+                    data: effectiveData,
                     onSuccessCallback: onSuccessCallback,
                   );
                 },
@@ -163,7 +188,7 @@ extension ActionExecutionExtension on ActionD {
           await Navigator.push(
             context,
             CreatePage.route(
-              data: data,
+              data: effectiveData,
               entity: entity,
               embedded: false,
               layoutFormId: layoutFormId!,
@@ -175,7 +200,7 @@ extension ActionExecutionExtension on ActionD {
                   entity: entity,
                   context: context,
                   responseData: responseData,
-                  data: data,
+                  data: effectiveData,
                   onSuccessCallback: onSuccessCallback,
                 );
               },
@@ -501,7 +526,7 @@ extension ActionExecutionExtension on ActionD {
               await executeHttpSingle(
                 entity,
                 ctx,
-                data,
+                effectiveData,
                 onSuccessCallback: onSuccessCallback,
               );
             } else {
@@ -509,7 +534,7 @@ extension ActionExecutionExtension on ActionD {
                 entity: entity,
                 context: context,
                 responseData: null,
-                data: data,
+                data: effectiveData,
                 onSuccessCallback: onSuccessCallback,
               );
             }
@@ -809,9 +834,14 @@ extension ActionExecutionExtension on ActionD {
           final definition = WorkflowDefinition.fromJson(workflow!);
           final executor = GetxHttpExecutor();
 
+          final signatureMap = data['signature'] is Map
+              ? Map<String, dynamic>.from(data['signature'] as Map)
+              : <String, dynamic>{};
+
           final workflowCtx = WorkflowContext(
             form: formMap,
             data: recordMap,
+            signature: signatureMap,
             auth: AuthContext(
               permissions: UserRepositoryAppNocode.instance.permissions,
             ),

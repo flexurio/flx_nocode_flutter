@@ -9,6 +9,8 @@ import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:flx_nocode_flutter/features/entity/models/action_signature.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/electronic_signature_dialog.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
@@ -242,7 +244,7 @@ class CreatePageController extends GetxController {
   /// Validates the form and triggers the submit workflow defined in the layout form.
   ///
   /// Supports both standard and multi-step validation.
-  void submit(BuildContext context) {
+  void submit(BuildContext context) async {
     if (layoutForm.multiForms.isNotEmpty) {
       bool allValid = true;
       for (final key in stepFormKeys) {
@@ -256,6 +258,21 @@ class CreatePageController extends GetxController {
       return;
     }
 
+    // Check for e-signature requirement
+    SignatureResult? signatureResult;
+    final sigConfig = layoutForm.submitWorkflow?.signature;
+    if (sigConfig != null) {
+      signatureResult = await ElectronicSignatureDialog.prompt(
+        context: context,
+        signature: sigConfig,
+        actionName: layoutForm.submitWorkflow?.submitLabel,
+      );
+      if (signatureResult == null) {
+        // User cancelled or signature verification failed
+        return;
+      }
+    }
+
     if (layoutForm.submitWorkflow != null) {
       Get.find<EntityController>(tag: 'entity_ctrl_$layoutFormId')
           .submitWorkflow(
@@ -267,6 +284,7 @@ class CreatePageController extends GetxController {
           if (parentData.isNotEmpty) 'parent': parentData.last,
           if (parentData.isNotEmpty) 'parentData': parentData,
         },
+        signature: signatureResult?.toMap(),
         workflow: layoutForm.submitWorkflow!.toMap(),
         uiBridge: ProductionUiBridge(
           layoutFormId: layoutFormId,

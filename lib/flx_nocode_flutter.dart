@@ -15,6 +15,8 @@ export 'src/app/model/backend.dart';
 export 'src/app/model/configuration.dart';
 export 'features/entity/models/entity.dart';
 export 'features/entity/models/action.dart';
+export 'features/entity/models/action_signature.dart';
+export 'features/entity/screen/widgets/action/electronic_signature_dialog.dart';
 export 'features/entity/models/rule.dart';
 export 'features/print/models/layout_print.dart';
 export 'src/app/model/layout_list_tile.dart';

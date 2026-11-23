@@ -22,6 +22,8 @@ import 'package:flx_nocode_flutter/features/data_table/screen/widgets/entity_dat
     as _flx_nocode_flutter_features_data_table_screen_widgets_entity_data_table_widgetbook;
 import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_page.widgetbook.dart'
     as _flx_nocode_flutter_features_entity_screen_pages_enitity_view_page_widgetbook;
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/electronic_signature_dialog.widgetbook.dart'
+    as _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook;
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/layout_form.widgetbook.dart'
     as _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook;
 import 'package:flx_nocode_flutter/features/print/presentation/usecases/concert_ticket_print.widgetbook.dart'
@@ -326,7 +328,40 @@ final directories = <_widgetbook.WidgetbookNode>[
                     ],
                   )
                 ],
-              )
+              ),
+              _widgetbook.WidgetbookFolder(
+                name: 'widgets',
+                children: [
+                  _widgetbook.WidgetbookFolder(
+                    name: 'action',
+                    children: [
+                      _widgetbook.WidgetbookComponent(
+                        name: 'ElectronicSignatureDialog',
+                        useCases: [
+                          _widgetbook.WidgetbookUseCase(
+                            name: 'Default Approval',
+                            builder:
+                                _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook
+                                    .buildElectronicSignatureDialogUseCase,
+                          ),
+                          _widgetbook.WidgetbookUseCase(
+                            name: 'From JSON Config',
+                            builder:
+                                _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook
+                                    .buildElectronicSignatureFromJsonUseCase,
+                          ),
+                          _widgetbook.WidgetbookUseCase(
+                            name: 'Inline Dialog Preview',
+                            builder:
+                                _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook
+                                    .buildElectronicSignatureDialogInlineUseCase,
+                          ),
+                        ],
+                      )
+                    ],
+                  )
+                ],
+              ),
             ],
           )
         ],

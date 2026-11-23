@@ -130,6 +130,7 @@ class WorkflowContext {
   final Map<String, dynamic> data;
   final Map<String, dynamic> vars;
   final Map<String, HttpResult> http;
+  final Map<String, dynamic> signature;
 
   final AuthContext auth;
   final HttpExecutor httpExecutor;
@@ -144,11 +145,13 @@ class WorkflowContext {
     this.data = const {},
     Map<String, dynamic>? vars,
     Map<String, HttpResult>? http,
+    Map<String, dynamic>? signature,
     required this.auth,
     required this.httpExecutor,
     this.validator,
   })  : vars = vars ?? <String, dynamic>{},
-        http = http ?? <String, HttpResult>{};
+        http = http ?? <String, HttpResult>{},
+        signature = signature ?? <String, dynamic>{};
 }
 
 /// ============================================================================
@@ -403,6 +406,7 @@ class _WorkflowScopeBuilder {
       'record': _sanitize(ctx.record),
       'data': _sanitize(ctx.data),
       'vars': _sanitize(ctx.vars),
+      'signature': _sanitize(ctx.signature),
       'auth': <String, dynamic>{
         'token': _safeGetToken(),
         'permissions': ctx.auth.permissions,
