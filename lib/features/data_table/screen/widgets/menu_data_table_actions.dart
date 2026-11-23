@@ -91,7 +91,7 @@ class MenuDataTableActions extends StatelessWidget {
 
     exportButtons.addAll(entity.exports
         .where((e) => e.visibility)
-        .map((e) => e.buildButton(filters: filters)));
+        .map((e) => e.buildButton(filters: filters, entityFields: entity.fields)));
 
     exportButtons.addAll(entity.actionsHome
         .where((e) => e.type == ActionType.export)

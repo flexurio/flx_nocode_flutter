@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
+import 'package:flx_nocode_flutter/features/field/domain/field_value_label_resolver.dart';
 import 'package:hive_ce/hive.dart';
 
 /// Represents a single field definition in a dynamic entity configuration.
@@ -63,8 +64,17 @@ class EntityField extends HiveObject {
   /// Whether to render this field as a chip.
   final bool? isChip;
 
-  /// Custom color overrides for chips based on values.
+  /// Custom color overrides for chips based on raw values.
   final Map<String, String>? chipColors;
+
+  /// Maps raw system/database codes (e.g. `EVALUATION_APPROVAL`) to human-readable
+  /// display labels (e.g. `Evaluasi & Persetujuan`).
+  ///
+  /// Accepted JSON keys: `value_labels` (recommended), `valueLabels`, or
+  /// `chip_labels` / `chipLabels` (backward-compatible alias).
+  /// Applies to both chip and non-chip fields across table, detail, filter,
+  /// export, and print.
+  final Map<String, String>? valueLabels;
 
   /// Additional options for dropdown/lookup type fields.
   final FieldOptions? options;
@@ -106,6 +116,7 @@ class EntityField extends HiveObject {
     this.isTooltip,
     this.isChip,
     this.chipColors,
+    this.valueLabels,
     this.options,
     this.backgroundColors,
     this.textColors,
@@ -147,7 +158,15 @@ class EntityField extends HiveObject {
       isCopyable: json['is_copyable'] as bool?,
       isTooltip: json['is_tooltip'] as bool?,
       isChip: json['is_chip'] as bool?,
-      chipColors: (json['chip_colors'] as Map?)?.cast<String, String>(),
+      chipColors: FieldValueLabelResolver.parseStringMap(
+        json['chip_colors'] ?? json['chipColors'],
+      ),
+      valueLabels: FieldValueLabelResolver.parseStringMap(
+        json['value_labels'] ??
+            json['valueLabels'] ??
+            json['chip_labels'] ??
+            json['chipLabels'],
+      ),
       backgroundColors: json['background_colors'] is Map
           ? (json['background_colors'] as Map).cast<String, String>()
           : (json['background_colors'] is String
@@ -196,6 +215,7 @@ class EntityField extends HiveObject {
     bool? isTooltip,
     bool? isChip,
     Map<String, String>? chipColors,
+    Map<String, String>? valueLabels,
     FieldOptions? options,
     Map<String, String>? backgroundColors,
     Map<String, String>? textColors,
@@ -222,6 +242,7 @@ class EntityField extends HiveObject {
       isTooltip: isTooltip ?? this.isTooltip,
       isChip: isChip ?? this.isChip,
       chipColors: chipColors ?? this.chipColors,
+      valueLabels: valueLabels ?? this.valueLabels,
       options: options ?? this.options,
       backgroundColors: backgroundColors ?? this.backgroundColors,
       textColors: textColors ?? this.textColors,
@@ -231,6 +252,26 @@ class EntityField extends HiveObject {
       action: action ?? this.action,
     );
   }
+
+  /// Effective mapping of raw code -> human-readable display label,
+  /// combining static `options_source` (`values(...)`) with explicit `valueLabels`.
+  Map<String, String> get effectiveValueLabels =>
+      FieldValueLabelResolver.effectiveLabels(
+        valueLabels: valueLabels,
+        optionsSource: optionsSource,
+      );
+
+  /// Whether this field defines any static code -> label mappings
+  /// (either via `value_labels`/`chip_labels` or static `options_source`).
+  bool get hasValueLabels => effectiveValueLabels.isNotEmpty;
+
+  /// Resolves [rawValue] to its display label using this field's configuration.
+  String resolveDisplayLabel(dynamic rawValue) =>
+      FieldValueLabelResolver.resolveLabel(
+        rawValue,
+        valueLabels: valueLabels,
+        optionsSource: optionsSource,
+      );
 
   /// Converts this field definition into JSON map.
   Map<String, dynamic> toJson() {
@@ -253,6 +294,7 @@ class EntityField extends HiveObject {
       'is_tooltip': isTooltip,
       'is_chip': isChip,
       'chip_colors': chipColors,
+      if (valueLabels != null) 'value_labels': valueLabels,
       if (isPinned != null) 'is_pinned': isPinned,
       if (isBadge != null) 'is_badge': isBadge,
       if (iconName != null) 'icon': iconName,

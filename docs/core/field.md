@@ -31,7 +31,8 @@ The `EntityField` class represents a single field definition. It describes how a
 | `is_badge` | bool? | No | Whether to render the field value as a context badge at the top of entity views (above the table or card grid) instead of repeating identical values as redundant columns across rows. |
 | `icon` | String? | No | Custom icon name for context badges or field headers (e.g. `calendar`, `user`, `location`, `category`, `money`, `info`). If omitted, auto-resolved from reference and type. |
 | `is_chip` | bool? | No | Whether to render the field value as a colored status chip. |
-| `chip_colors` | Map<String, String>? | No | Custom color overrides for status chips. Key is status name (case-insensitive substring match), value is hex color (e.g., `"#FF9800"`). |
+| `value_labels` | Map<String, String>? | No | Maps raw system/database codes (e.g. `"EVALUATION_APPROVAL"`) to human-readable display labels (e.g. `"Evaluasi & Persetujuan"`). Works for both chip and non-chip fields across table, detail (`field_display`), inline filter dropdown, export (XLSX/PDF), and `layout_print` (`{{<ref>_label}}`). Backward-compatible alias: `chip_labels`. |
+| `chip_colors` | Map<String, String>? | No | Custom color overrides for status chips. Always matched against the **raw value code** (exact case-insensitive match first, then substring fallback), value is hex color (e.g., `"#FF9800"`). |
 | `background_colors` | Map<String, String>? or String? | No | Custom background colors. Can be a map mapped to values (e.g. `{"BFW": "#E8F5E9"}`) or a single string (e.g. `"#E8F5E9"`) to apply the color to all values. |
 | `text_colors` | Map<String, String>? or String? | No | Custom text colors. Can be a map mapped to values (e.g. `{"BFW": "#2E7D32"}`) or a single string (e.g. `"#2E7D32"`) to apply to all values. Automatically selects contrast color if omitted. |
 | `action` | Object? | No | Optional action triggered when clicking this cell in the data table (e.g., opening a popup table or form). See [Field Actions / Clickable Table Cells](#field-actions--clickable-table-cells). |
@@ -199,6 +200,127 @@ The action can execute any supported behavior, including opening a popup dialog 
     ]
   }
 }
+```
+
+---
+
+## Value Labels (`value_labels` & Static `options_source`)
+
+Use `value_labels` on an `EntityField` to map raw system/database codes (e.g. `EVALUATION_APPROVAL`) to human-readable labels (e.g. `"Evaluasi & Persetujuan"`) once as a **Single Source of Truth** across the entire entity lifecycle.
+
+### Design Principle: `type` vs `is_chip` vs `value_labels`
+
+Keep data type, visual presentation, and value mapping orthogonal:
+- **`type`** defines the data & form input behavior (`text`, `select`, `date`, `number`, `bool`, etc.).
+- **`is_chip`** (`true`/`false`) is purely a read-only visual modifier (renders as a colored pill/badge). Do **not** invent a separate `"type": "chip"` — keep `is_chip: true` composable with any `type`.
+  - Use `"type": "text"` + `"is_chip": true` + `"value_labels"` for **read-only / workflow-managed** fields (e.g. `status`).
+  - Use `"type": "select"` + `"is_chip": true` + `"options_source"` for **user-editable** fields in forms.
+- **`value_labels`** maps raw codes to human-readable text for **both chip and non-chip** fields (e.g. `severity: { "MAJOR": "Mayor", "MINOR": "Minor" }`).
+
+### Resolution Priority
+
+When resolving a raw value to its display label (`FieldValueLabelResolver`), the engine checks in order:
+1. **`value_labels`** (or backward-compatible aliases `valueLabels`, `chip_labels`, `chipLabels`) — exact key match first, then case-insensitive key match.
+2. **Static `options_source`** (`values('KEY':'Label', ...)`) — exact key match first, then case-insensitive key match. Dynamic `backend.*` sources are not resolved synchronously here.
+3. **Raw fallback** — returns `rawValue.toString()` unchanged so newly added backend codes never break the UI.
+
+If both `value_labels` and static `options_source` are defined on the same field, `value_labels` overrides matching keys from `options_source`.
+
+### Raw Code vs Display Label Contract
+
+The framework strictly separates **raw system codes** from **translated display labels**:
+- **Always uses `rawValue` (code)**:
+  - `chip_colors`, `background_colors`, and `text_colors` matching
+  - API query parameters emitted by `InlineFilter` (e.g. `status.eq=EVALUATION_APPROVAL`)
+  - Visibility rules / conditional logic and `layout_print` raw placeholders (`{{status}}`)
+- **Always uses `displayValue` (label)**:
+  - Table cells (`EntityFieldDisplay`) and tooltips
+  - Detail views (`field_display` / `ComponentFieldDisplay`)
+  - Dropdown item labels in `InlineFilter`
+  - Exported spreadsheet/PDF cells (`xlsx` / `pdf`)
+  - Formatted print placeholders (`{{status_label}}`)
+
+### Chip Color Resolution (`chip_colors`)
+
+Colors are always resolved from the **raw code** before translating to the display label:
+1. **Exact case-insensitive key match** in `chip_colors` (prevents substring collisions such as `APPROVAL` vs `EVALUATION_APPROVAL`).
+2. **Substring match** in `chip_colors` (preserves backward compatibility with legacy partial keys).
+3. **Built-in semantic fallback**: `REJECT`/`FAIL` (red), `APPROVE`/`SUCCESS`/`DONE`/`OK` (green), `INPUT`/`DRAFT`/`PENDING` (blue), `CANCEL`/`CLOSE` (grey), `PROGRESS`/`PROCESS`/`ACTIVE` (orange), default (grey-blue).
+
+### Integration Across All 5 Consumers
+
+| Consumer | How It Works | Extra Config Required? |
+| --- | --- | --- |
+| **Table** (`EntityFieldDisplay`) | Renders display label (chip or plain text); resolves colors against raw code. | None — reads `EntityField` directly. |
+| **Detail** (`field_display`) | Inherits `value_labels`, static `options_source`, and `chip_colors` via `field_ref` (or auto-inferred from `{{current.status}}`). Local properties override entity defaults. | Optional `field_ref: "status"`. |
+| **Filter** (`InlineFilter`) | Any field with `value_labels` or static `options_source` automatically renders as a searchable dropdown showing labels and emitting raw codes (unless filter `type` is explicitly `"text"`). | None — just `{"reference": "status"}`. |
+| **Export** (`xlsx` / `pdf`) | `generalXlsxNoCode` and `pdfGeneral` automatically format cells using entity field definitions without mutating source rows. | None — `fields: ["code", "status"]` works automatically. |
+| **Print** (`layout_print`) | Non-destructively injects `{{<reference>_label}}` into root data and nested table rows while keeping raw `{{<reference>}}` intact. | Use `{{status_label}}` in print template. |
+
+### Complete Best-Practice JSON Examples
+
+#### Pattern A — Workflow Status Chip (`value_labels` + `chip_colors`)
+```json
+{
+  "reference": "status",
+  "label": "Status",
+  "type": "text",
+  "is_chip": true,
+  "value_labels": {
+    "DRAFT": "Draf",
+    "EVALUATION_APPROVAL": "Evaluasi & Persetujuan",
+    "CLOSED": "Ditutup"
+  },
+  "chip_colors": {
+    "DRAFT": "#9E9E9E",
+    "EVALUATION_APPROVAL": "#F57C00",
+    "CLOSED": "#2E7D32"
+  }
+}
+```
+
+#### Pattern B — Editable Select Field (Reusing Static `options_source`)
+```json
+{
+  "reference": "department",
+  "label": "Departemen",
+  "type": "select",
+  "options_source": "values('PROD':'Produksi','QA':'Penjaminan Mutu','QC':'Pengawasan Mutu')"
+}
+```
+> Static `options_source` is automatically honored in table, detail, filter, export, and print without repeating `value_labels`.
+
+#### Pattern C — Non-Chip Coded Field
+```json
+{
+  "reference": "severity",
+  "label": "Tingkat Keparahan",
+  "type": "text",
+  "value_labels": {
+    "CRITICAL": "Kritis",
+    "MAJOR": "Mayor",
+    "MINOR": "Minor"
+  }
+}
+```
+
+#### Consumer Snippets (Zero Duplication)
+```json
+// Inline filter — displays Indonesian labels, sends raw code (e.g. status.eq=EVALUATION_APPROVAL)
+{ "reference": "status" }
+
+// Detail view (field_display) — inherits value_labels & chip_colors from EntityField "status"
+{
+  "id": "v_status",
+  "type": "field_display",
+  "label": "Status",
+  "value": "{{current.status}}",
+  "field_ref": "status",
+  "is_chip": true
+}
+
+// Print template (layout_print) — raw {{status}} preserved, {{status_label}} formatted
+{ "type": "text", "value": "Status: {{status_label}}" }
 ```
 
 ---

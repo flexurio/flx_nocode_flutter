@@ -1,4 +1,5 @@
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/field/domain/field_value_label_resolver.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 
 /// A non-editable field component used to display a read-only value.
@@ -44,8 +45,17 @@ class ComponentFieldDisplay extends Component {
   /// Whether to render this display component as a chip.
   final bool? isChip;
 
-  /// Custom color overrides for chips based on values.
+  /// Custom color overrides for chips based on raw values.
   final Map<String, String>? chipColors;
+
+  /// Optional reference to an `EntityField.reference` to inherit its
+  /// `value_labels`, `options_source`, and `chip_colors` without duplicating config.
+  final String? fieldRef;
+
+  /// Local override mapping raw codes to display labels.
+  /// Accepted JSON keys: `value_labels` (recommended), `valueLabels`,
+  /// or `chip_labels` / `chipLabels` (alias).
+  final Map<String, String>? valueLabels;
 
   ComponentFieldDisplay({
     required super.id,
@@ -57,6 +67,8 @@ class ComponentFieldDisplay extends Component {
     this.flex,
     this.isChip,
     this.chipColors,
+    this.fieldRef,
+    this.valueLabels,
     super.visibilityCondition,
     super.events = const {},
   }) : super(type: 'field_display');
@@ -89,7 +101,17 @@ class ComponentFieldDisplay extends Component {
       width: double.tryParse(map['width']?.toString() ?? ''),
       flex: int.tryParse(map['flex']?.toString() ?? ''),
       isChip: map['is_chip'] as bool? ?? map['isChip'] as bool?,
-      chipColors: (map['chip_colors'] as Map? ?? map['chipColors'] as Map?)?.cast<String, String>(),
+      chipColors: FieldValueLabelResolver.parseStringMap(
+        map['chip_colors'] ?? map['chipColors'],
+      ),
+      fieldRef: map['field_ref']?.toString().trim() ??
+          map['fieldRef']?.toString().trim(),
+      valueLabels: FieldValueLabelResolver.parseStringMap(
+        map['value_labels'] ??
+            map['valueLabels'] ??
+            map['chip_labels'] ??
+            map['chipLabels'],
+      ),
       visibilityCondition: map['visibilityCondition']?.toString(),
       events: map['events'] as Map<String, dynamic>? ?? const {},
     );
@@ -116,5 +138,7 @@ class ComponentFieldDisplay extends Component {
         'flex': flex,
         if (isChip != null) 'is_chip': isChip,
         if (chipColors != null) 'chip_colors': chipColors,
+        if (fieldRef != null) 'field_ref': fieldRef,
+        if (valueLabels != null) 'value_labels': valueLabels,
       };
 }

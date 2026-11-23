@@ -766,10 +766,16 @@ extension ActionExecutionExtension on ActionD {
                   list.first.keys.toList();
 
               if (exportFormat == 'pdf') {
+                final formattedList =
+                    FieldValueLabelResolver.formatRowsForExport(
+                  list,
+                  fields,
+                  entity.fields,
+                );
                 final pdf = pw.Document()
                   ..addPage(
                     await pdfGeneral(
-                      data: list,
+                      data: formattedList,
                       title: name,
                       fields: fields,
                       printedBy:
@@ -781,7 +787,12 @@ extension ActionExecutionExtension on ActionD {
                   filename: '$name.pdf',
                 );
               } else {
-                final bytes = generalXlsxNoCode(context, list, fields);
+                final bytes = generalXlsxNoCode(
+                  context,
+                  list,
+                  fields,
+                  entityFields: entity.fields,
+                );
                 saveFileNocode(bytes, '$name.xlsx');
               }
               Toast(context).success('Export success');
@@ -1053,6 +1064,7 @@ extension ActionExecutionExtension on ActionD {
         final pdfBytes = await JsonPdfGenerator.generate(
           layoutJson,
           data: contextData,
+          entityFields: entity.fields,
         );
 
         if (context.mounted) {

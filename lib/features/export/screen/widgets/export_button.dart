@@ -10,18 +10,28 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 class ButtonExport extends StatelessWidget {
-  const ButtonExport._({required this.export, required this.filters});
+  const ButtonExport._({
+    required this.export,
+    required this.filters,
+    this.entityFields,
+  });
 
   final Export export;
   final List<Filter>? filters;
+  final List<EntityField>? entityFields;
 
   static Widget prepare({
     required Export export,
     required List<Filter>? filters,
+    List<EntityField>? entityFields,
   }) {
     return MultiBlocProvider(
       providers: [BlocProvider(create: (_) => EntityCustomQueryBloc())],
-      child: ButtonExport._(export: export, filters: filters),
+      child: ButtonExport._(
+        export: export,
+        filters: filters,
+        entityFields: entityFields,
+      ),
     );
   }
 
@@ -33,10 +43,15 @@ class ButtonExport extends StatelessWidget {
           loaded: (data) async {
             try {
               if (export.isPdf) {
+                final formattedData = FieldValueLabelResolver.formatRowsForExport(
+                  data.data,
+                  export.fields,
+                  entityFields,
+                );
                 final pdf = pw.Document()
                   ..addPage(
                     await pdfGeneral(
-                      data: data.data,
+                      data: formattedData,
                       title: export.name,
                       fields: export.fields,
                       printedBy:
@@ -48,8 +63,12 @@ class ButtonExport extends StatelessWidget {
                   filename: '${export.name}.pdf',
                 );
               } else {
-                final bytes =
-                    generalXlsxNoCode(context, data.data, export.fields);
+                final bytes = generalXlsxNoCode(
+                  context,
+                  data.data,
+                  export.fields,
+                  entityFields: entityFields,
+                );
                 final filename = '${export.name}.xlsx';
                 saveFileNocode(bytes, filename);
               }

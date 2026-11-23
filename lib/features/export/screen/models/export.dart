@@ -2,6 +2,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/export/screen/models/export_template.dart';
 import 'package:flx_nocode_flutter/features/export/screen/widgets/export_button.dart';
 import 'package:flx_nocode_flutter/features/export/screen/widgets/export_to_pdf.dart';
+import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/src/app/model/filter.dart';
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
@@ -118,8 +119,15 @@ class Export extends HiveObject {
   bool get isAll => typeMode == 'all';
 
   /// Constructs a [ButtonExport] widget configured for this export.
-  Widget buildButton({required List<Filter> filters}) {
-    return ButtonExport.prepare(export: this, filters: filters);
+  Widget buildButton({
+    required List<Filter> filters,
+    List<EntityField>? entityFields,
+  }) {
+    return ButtonExport.prepare(
+      export: this,
+      filters: filters,
+      entityFields: entityFields,
+    );
   }
 }
 

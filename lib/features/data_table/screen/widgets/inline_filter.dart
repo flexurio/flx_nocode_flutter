@@ -207,7 +207,8 @@ class _InlineFilterState extends State<InlineFilter> {
         filterType == 'select' ||
         filterType == 'dropdown' ||
         widget.config['options_source'] != null ||
-        widget.config['endpoint'] != null;
+        widget.config['endpoint'] != null ||
+        (widget.field.hasValueLabels && filterType != 'text');
 
     if (isSelect) {
       final optionsSource = widget.config['options_source']?.toString() ??

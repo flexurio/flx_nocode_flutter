@@ -325,6 +325,10 @@ class Component {
       id: baseId,
       label: label,
       value: '{{${field.reference}}}',
+      fieldRef: field.reference,
+      isChip: field.isChip,
+      chipColors: field.chipColors,
+      valueLabels: field.valueLabels,
     );
   }
 

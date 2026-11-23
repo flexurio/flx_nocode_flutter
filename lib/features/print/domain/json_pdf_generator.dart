@@ -1,4 +1,6 @@
 import 'dart:typed_data';
+import 'package:flx_nocode_flutter/features/field/domain/field_value_label_resolver.dart';
+import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/print/domain/pdf_generator/pdf_image_service.dart';
 import 'package:flx_nocode_flutter/features/print/domain/pdf_generator/strategies/canvas_layout_strategy.dart';
 import 'package:flx_nocode_flutter/features/print/domain/pdf_generator/strategies/document_layout_strategy.dart';
@@ -18,15 +20,25 @@ class JsonPdfGenerator {
     Map<String, dynamic> json, {
     Map<String, dynamic>? data,
     HttpRequestExecutor? executor,
+    List<EntityField>? entityFields,
   }) async {
     try {
       // 1. Initialize data context
-      final Map<String, dynamic> contextData =
+      Map<String, dynamic> contextData =
           data != null ? Map<String, dynamic>.from(data) : {};
 
       // 2. Fetch all http_data recursively
       await PdfDataUtils.fetchAllHttpData(json, contextData,
           executor: executor);
+
+      // 2b. Non-destructively enrich context & table rows with `<field>_label`
+      if (entityFields != null && entityFields.isNotEmpty) {
+        contextData = FieldValueLabelResolver.enrichPrintContext(
+          contextData,
+          entityFields,
+        );
+        FieldValueLabelResolver.enrichPrintJsonData(json, entityFields);
+      }
 
       // 3. Interpolate the JSON with the final data context
       final processed =

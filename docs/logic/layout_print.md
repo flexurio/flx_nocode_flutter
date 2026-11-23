@@ -48,6 +48,35 @@ The engine uses a double-brace syntax `{{variable}}` for dynamic data injection.
 *   **`{{data.key}}`**: Accesses data passed from the triggering action (e.g., `WorkflowContext`).
 *   **`{{backend_host}}`**: Automatically injected environment variable for API endpoints.
 *   **API Data**: Any keys returned by an `http_data` request (see below) are added to the root scope.
+*   **Formatted Field Labels (`{{<field>_label}}`)**: For any entity field configured with `value_labels` (or static `options_source: "values(...)"`), the engine non-destructively injects a sibling `<field>_label` key into both root data and nested table rows. Raw keys such as `{{status}}` remain untouched for conditions and queries, while `{{status_label}}` renders the human-readable label (e.g., `"Evaluasi & Persetujuan"`).
+
+### Formatted Field Labels (`{{<field>_label}}`):
+When an entity defines `value_labels` (or static `options_source: "values(...)"`) on its `fields`, `JsonPdfGenerator.generate` automatically enriches both the root context and nested table row lists with `<reference>_label` sibling keys.
+
+- **Non-destructive**: Raw keys such as `{{status}}` remain untouched (e.g., `"EVALUATION_APPROVAL"`), so URL queries (`status.eq={{filter.status}}`) and conditional logic continue working safely.
+- **Human-readable**: Use `{{status_label}}` in text components or table cell templates to render `"Evaluasi & Persetujuan"`.
+
+```json
+{
+  "content": [
+    {
+      "type": "text",
+      "value": "Status Dokumen: {{status_label}}",
+      "font_size": 11,
+      "is_bold": true
+    },
+    {
+      "type": "table",
+      "body": [
+        [
+          { "content": { "type": "text", "value": "{{deviation_no}}" }, "flex": 3 },
+          { "content": { "type": "text", "value": "{{status_label}}" }, "flex": 4 }
+        ]
+      ]
+    }
+  ]
+}
+```
 
 ### Dynamic Data Fetching (`http_data`):
 You can fetch external data directly within the print configuration. The result is automatically merged into the data context.

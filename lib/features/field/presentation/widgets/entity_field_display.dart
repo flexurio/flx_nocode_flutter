@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
+import 'package:flx_nocode_flutter/features/field/domain/field_value_label_resolver.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_tooltip.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
@@ -126,21 +127,24 @@ class EntityFieldDisplay {
         maxLines: 1,
       );
     } else {
+      final rawText = LayoutListTile.getValue(value);
       widget = Text(
-        LayoutListTile.getValue(value),
+        field.hasValueLabels ? field.resolveDisplayLabel(rawText) : rawText,
         overflow: TextOverflow.ellipsis,
         maxLines: 1,
       );
     }
 
+    final String rawStr = LayoutListTile.getValue(value);
     final String displayStr;
     if (widget is Text) {
-      displayStr = widget.data ?? value.toString();
+      displayStr = widget.data ?? rawStr;
     } else {
-      displayStr = value.toString();
+      displayStr = rawStr;
     }
 
-    final customColors = _resolveCustomColors(displayStr, field.backgroundColors, field.textColors);
+    // Always match colors against the raw code (e.g. CLOSED), not the translated display label.
+    final customColors = _resolveCustomColors(rawStr, field.backgroundColors, field.textColors);
     if (customColors.$1 != null) {
       widget = Builder(
         builder: (context) {
@@ -184,12 +188,13 @@ class EntityFieldDisplay {
       widget = Builder(
         builder: (context) {
           final isDark = Theme.of(context).brightness == Brightness.dark;
-          final baseColor = _resolveChipColor(displayStr, field.chipColors);
+          final baseColor =
+              FieldValueLabelResolver.resolveChipColor(rawStr, field.chipColors);
           final backgroundColor = baseColor.withValues(alpha: isDark ? 0.2 : 0.12);
           final textColor = isDark ? baseColor.lighten(0.1) : baseColor;
 
           Widget chipContent = Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
               color: backgroundColor,
               borderRadius: BorderRadius.circular(6),
@@ -205,6 +210,8 @@ class EntityFieldDisplay {
               style: TextStyle(
                 color: textColor,
                 fontSize: 12,
+                height: 1.2,
+                leadingDistribution: TextLeadingDistribution.even,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -243,57 +250,6 @@ class EntityFieldDisplay {
     return _maybeWrapWithTooltip(widget, field, displayStr);
   }
 
-  static Color _resolveChipColor(String value, Map<String, String>? customColors) {
-    final upperVal = value.toUpperCase();
-
-    if (customColors != null) {
-      for (final entry in customColors.entries) {
-        if (upperVal.contains(entry.key.toUpperCase())) {
-          final color = _parseHexColor(entry.value);
-          if (color != null) return color;
-        }
-      }
-    }
-
-    if (upperVal.contains('REJECT') || upperVal.contains('FAIL')) {
-      return const Color(0XFFE53935); // Red
-    }
-    if (upperVal.contains('APPROVE') ||
-        upperVal.contains('SUCCESS') ||
-        upperVal.contains('DONE') ||
-        upperVal.contains('OK')) {
-      return const Color(0XFF43A047); // Green
-    }
-    if (upperVal.contains('INPUT') ||
-        upperVal.contains('DRAFT') ||
-        upperVal.contains('PENDING')) {
-      return const Color(0XFF1E88E5); // Blue
-    }
-    if (upperVal.contains('CANCEL') || upperVal.contains('CLOSE')) {
-      return const Color(0XFF757575); // Grey
-    }
-    if (upperVal.contains('PROGRESS') ||
-        upperVal.contains('PROCESS') ||
-        upperVal.contains('ACTIVE')) {
-      return const Color(0XFFF57C00); // Orange
-    }
-
-    return const Color(0XFF607D8B); // Fallback Grey-Blue
-  }
-
-  static Color? _parseHexColor(String? hex) {
-    if (hex == null || hex.isEmpty) return null;
-    try {
-      String cleanHex = hex.replaceAll('#', '');
-      if (cleanHex.length == 6) {
-        cleanHex = 'FF' + cleanHex;
-      }
-      return Color(int.parse(cleanHex, radix: 16));
-    } catch (_) {
-      return null;
-    }
-  }
-
   static (Color?, Color?) _resolveCustomColors(
     String value,
     Map<String, String>? backgroundColors,
@@ -305,25 +261,41 @@ class EntityFieldDisplay {
 
     if (backgroundColors != null) {
       for (final entry in backgroundColors.entries) {
-        if (entry.key != '*' && upperVal.contains(entry.key.toUpperCase())) {
-          bg = _parseHexColor(entry.value);
+        if (entry.key != '*' && upperVal == entry.key.toUpperCase()) {
+          bg = FieldValueLabelResolver.parseHexColor(entry.value);
           break;
         }
       }
+      if (bg == null) {
+        for (final entry in backgroundColors.entries) {
+          if (entry.key != '*' && upperVal.contains(entry.key.toUpperCase())) {
+            bg = FieldValueLabelResolver.parseHexColor(entry.value);
+            break;
+          }
+        }
+      }
       if (bg == null && backgroundColors.containsKey('*')) {
-        bg = _parseHexColor(backgroundColors['*']!);
+        bg = FieldValueLabelResolver.parseHexColor(backgroundColors['*']!);
       }
     }
 
     if (textColors != null) {
       for (final entry in textColors.entries) {
-        if (entry.key != '*' && upperVal.contains(entry.key.toUpperCase())) {
-          text = _parseHexColor(entry.value);
+        if (entry.key != '*' && upperVal == entry.key.toUpperCase()) {
+          text = FieldValueLabelResolver.parseHexColor(entry.value);
           break;
         }
       }
+      if (text == null) {
+        for (final entry in textColors.entries) {
+          if (entry.key != '*' && upperVal.contains(entry.key.toUpperCase())) {
+            text = FieldValueLabelResolver.parseHexColor(entry.value);
+            break;
+          }
+        }
+      }
       if (text == null && textColors.containsKey('*')) {
-        text = _parseHexColor(textColors['*']!);
+        text = FieldValueLabelResolver.parseHexColor(textColors['*']!);
       }
     }
 
