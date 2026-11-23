@@ -1,3 +1,6 @@
+export 'core/access/access_control_config.dart';
+export 'core/access/access_policy_evaluator.dart';
+export 'core/access/capabilities_service.dart';
 export 'features/component/models/component.dart';
 export 'core/network/models/http_data.dart';
 export 'shared/services/http_request_executor.dart';

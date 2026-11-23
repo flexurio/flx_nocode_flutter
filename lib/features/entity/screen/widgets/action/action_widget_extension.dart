@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/core/access/access_policy_evaluator.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
@@ -29,7 +30,12 @@ extension ActionListWidgetExtension on List<ActionD> {
       if (parentData.isNotEmpty && !data.containsKey('parentData'))
         'parentData': parentData,
     };
-    return where((action) => action.isVisibleFor(evalData, parentData: parentData))
+    return where((action) => action.isVisibleFor(
+          evalData,
+          parentData: parentData,
+          entity: entity,
+          bypassPermission: bypassPermission,
+        ))
         .map((e) => e.buttonSingle(
               entity,
               context,
@@ -50,7 +56,12 @@ extension ActionListWidgetExtension on List<ActionD> {
     bool? bypassPermission,
     VoidCallback? onSuccessCallback,
   }) {
-    return where((action) => action.isVisibleForList(data, parentData: parentData))
+    return where((action) => action.isVisibleForList(
+          data,
+          parentData: parentData,
+          entity: entity,
+          bypassPermission: bypassPermission,
+        ))
         .map((e) => e.buttonMultiple(
               entity,
               context,
@@ -67,31 +78,46 @@ extension ActionListWidgetExtension on List<ActionD> {
 //             EXTENSION ON ACTIOND (WIDGETS)
 // ------------------------------------------------------
 extension ActionWidgetExtension on ActionD {
-  bool isVisibleFor(JsonMap data, {JsonList? parentData}) {
-    try {
-      if (rule == null) {
-        return true;
-      }
-
-      final evalData = <String, dynamic>{
-        ...data,
-        if (parentData != null && parentData.isNotEmpty && !data.containsKey('parent'))
-          'parent': parentData.last,
-        if (parentData != null && parentData.isNotEmpty && !data.containsKey('parentData'))
-          'parentData': parentData,
-      };
-
-      final result = rule!.evaluate(evalData);
-      return result;
-    } catch (e) {
-      debugPrint('Action rule evaluation failed: $e');
-      return true; // Fail open to avoid breaking UI
-    }
+  bool isVisibleFor(
+    JsonMap data, {
+    JsonList? parentData,
+    EntityCustom? entity,
+    bool? bypassPermission,
+    AccessPolicyEvaluator? evaluator,
+  }) {
+    final activeEvaluator = evaluator ?? AccessPolicyEvaluator.instance;
+    return activeEvaluator.canAccessAction(
+      this,
+      entity: entity,
+      data: data,
+      parentData: parentData,
+      bypassPermission: bypassPermission,
+    );
   }
 
-  bool isVisibleForList(JsonList data, {JsonList? parentData}) {
-    if (data.isEmpty) return isVisibleFor({}, parentData: parentData);
-    return data.every((item) => isVisibleFor(item, parentData: parentData));
+  bool isVisibleForList(
+    JsonList data, {
+    JsonList? parentData,
+    EntityCustom? entity,
+    bool? bypassPermission,
+    AccessPolicyEvaluator? evaluator,
+  }) {
+    if (data.isEmpty) {
+      return isVisibleFor(
+        {},
+        parentData: parentData,
+        entity: entity,
+        bypassPermission: bypassPermission,
+        evaluator: evaluator,
+      );
+    }
+    return data.every((item) => isVisibleFor(
+          item,
+          parentData: parentData,
+          entity: entity,
+          bypassPermission: bypassPermission,
+          evaluator: evaluator,
+        ));
   }
 
   Widget buildButtonRegular({
@@ -159,9 +185,9 @@ extension ActionWidgetExtension on ActionD {
   }) {
     final button = LightButton(
       title: name,
-      permission: ((bypassPermission ?? false) || entity.bypassAllPermissions)
-          ? null
-          : getPermission(entity.id),
+      // Visibility & capability access are evaluated synchronously by
+      // AccessPolicyEvaluator (avoiding legacy async Hive permission lookup).
+      permission: null,
       iconColor: _parseColor(iconColor),
       onPressed: () => executeSingle(
         entity: entity,
@@ -196,9 +222,9 @@ extension ActionWidgetExtension on ActionD {
 
     final button = LightButton(
       title: name,
-      permission: ((bypassPermission ?? false) || entity.bypassAllPermissions)
-          ? null
-          : getPermission(entity.id),
+      // Visibility & capability access are evaluated synchronously by
+      // AccessPolicyEvaluator (avoiding legacy async Hive permission lookup).
+      permission: null,
       action: actionType,
       iconColor: _parseColor(iconColor),
       onPressed: () async {

@@ -456,7 +456,8 @@ extension ActionExecutionExtension on ActionD {
                         child: MenuCustom.fromId(
                           entityId: target,
                           embedded: true,
-                          bypassPermission: true,
+                          bypassPermission: AccessPolicyEvaluator
+                              .instance.config.bypassAllPermissions,
                           initialFilters: resolvedFilters,
                           badges: badges,
                           parentData: [...parentData, data],

@@ -10,6 +10,8 @@
 // **************************************************************************
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:flx_nocode_flutter/core/access/access_control.widgetbook.dart'
+    as _flx_nocode_flutter_core_access_access_control_widgetbook;
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_chart.widgetbook.dart'
     as _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook;
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_dropdown.widgetbook.dart'
@@ -122,6 +124,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                             .buildNavigatePushMenuUseCase,
                   ),
                 ],
+              )
+            ],
+          )
+        ],
+      )
+    ],
+  ),
+  _widgetbook.WidgetbookFolder(
+    name: 'core',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'access',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'AccessControlShowcase',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name:
+                    'From JSON Config (2-Layer Capabilities & Hierarchical Rules)',
+                builder:
+                    _flx_nocode_flutter_core_access_access_control_widgetbook
+                        .accessControlShowcaseUseCase,
               )
             ],
           )
@@ -386,9 +410,9 @@ final directories = <_widgetbook.WidgetbookNode>[
                             builder:
                                 _flx_nocode_flutter_features_entity_screen_widgets_action_user_context_rules_widgetbook
                                     .buildUserContextRulesFromJsonUseCase,
-                          ),
+                          )
                         ],
-                      )
+                      ),
                     ],
                   )
                 ],
@@ -427,7 +451,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                                 .buildFieldValueLabelsFromJsonUseCase,
                       )
                     ],
-                  )
+                  ),
                 ],
               )
             ],

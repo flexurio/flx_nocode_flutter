@@ -1,3 +1,4 @@
+import 'package:flx_nocode_flutter/core/access/access_policy_evaluator.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart'
     as configuration;
@@ -28,10 +29,20 @@ class EntityCreateButtonOld extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (layoutForm == null) return const SizedBox.shrink();
+    final canCreate = AccessPolicyEvaluator.instance.canAccessBuiltInOperation(
+          entity: entity,
+          operation: 'write',
+          bypassPermission: bypassPermission,
+        ) &&
+        AccessPolicyEvaluator.instance.canAccessLayoutForm(
+          layoutForm!,
+          data: filters,
+          parentData: parentData,
+        );
+    if (!canCreate) return const SizedBox.shrink();
+
     return Button.small(
-      permission: (bypassPermission || entity.bypassAllPermissions)
-          ? null
-          : '${entity.id}_write',
+      permission: null,
       action: DataAction.create,
       onPressed: () async {
         final success = await Navigator.push(

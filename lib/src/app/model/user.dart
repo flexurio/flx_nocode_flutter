@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
+import 'package:flx_nocode_flutter/core/access/access_policy_evaluator.dart';
 
 class UserAppNocode extends User {
   UserAppNocode({
@@ -8,11 +9,15 @@ class UserAppNocode extends User {
     required this.role,
     String? rawId,
     List<String>? roles,
+    List<String>? capabilities,
     Map<String, dynamic>? claims,
   })  : rawId = (rawId != null && rawId.isNotEmpty)
             ? rawId
             : (id != null && id != 0 ? id.toString() : ''),
         roles = List.unmodifiable(roles ?? _extractRolesFromMap(claims, role)),
+        capabilities = List.unmodifiable(
+          capabilities ?? _extractCapabilitiesFromMap(claims),
+        ),
         claims = Map.unmodifiable(_normalizeClaims(claims)),
         super();
 
@@ -33,6 +38,7 @@ class UserAppNocode extends User {
     final normalizedClaims = _normalizeClaims(json);
     final roleStr = (json['cs'] ?? json['role'] ?? '').toString();
     final extractedRoles = _extractRolesFromMap(normalizedClaims, roleStr);
+    final extractedCapabilities = _extractCapabilitiesFromMap(normalizedClaims);
 
     return UserAppNocode(
       id: parsedId,
@@ -40,6 +46,7 @@ class UserAppNocode extends User {
       name: (json['nm'] ?? json['name'] ?? '').toString(),
       role: roleStr,
       roles: extractedRoles,
+      capabilities: extractedCapabilities,
       claims: normalizedClaims,
     );
   }
@@ -53,6 +60,10 @@ class UserAppNocode extends User {
 
   /// Normalized list of role identifiers extracted from JWT (`rl`, `roles`, `role`).
   final List<String> roles;
+
+  /// Normalized list of effective capabilities extracted from JWT
+  /// (`capabilities`, `cap`, `permissions`, `perms`, `scopes`, `scope`).
+  final List<String> capabilities;
 
   /// Complete map of decoded JWT claims (including any nested JSON object inside `cs`).
   final Map<String, dynamic> claims;
@@ -76,12 +87,14 @@ class UserAppNocode extends User {
   Map<String, dynamic> toContextMap({
     String? token,
     List<String>? permissions,
+    List<String>? capabilitiesOverride,
   }) {
     final effectiveId = rawId.isNotEmpty
         ? rawId
         : (id != null ? id.toString() : '');
     final csRaw = claims['cs'];
     final customValue = csRaw != null ? csRaw : role;
+    final effectiveCaps = capabilitiesOverride ?? capabilities;
 
     return <String, dynamic>{
       // 1. All raw JWT claims (e.g. nip, email, department_id, site_id, sub, etc.)
@@ -94,6 +107,7 @@ class UserAppNocode extends User {
           ? role
           : (roles.isNotEmpty ? roles.first : ''),
       'roles': roles,
+      'capabilities': effectiveCaps,
       'cs': customValue,
       'custom': customValue,
       if (!claims.containsKey('nip') &&
@@ -196,6 +210,24 @@ class UserAppNocode extends User {
     return collected;
   }
 
+  static List<String> _extractCapabilitiesFromMap(Map<String, dynamic>? json) {
+    if (json == null || json.isEmpty) return const [];
+    final combined = <String>{};
+    for (final key in const [
+      'capabilities',
+      'cap',
+      'permissions',
+      'perms',
+      'scopes',
+      'scope',
+    ]) {
+      if (json.containsKey(key) && json[key] != null) {
+        combined.addAll(AccessPolicyEvaluator.normalizeCapabilities(json[key]));
+      }
+    }
+    return List<String>.unmodifiable(combined);
+  }
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -204,6 +236,7 @@ class UserAppNocode extends User {
       'nm': name,
       'cs': role,
       if (roles.isNotEmpty) 'roles': roles,
+      if (capabilities.isNotEmpty) 'capabilities': capabilities,
     };
   }
 }

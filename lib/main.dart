@@ -84,6 +84,9 @@ Future<void> main() async {
     urlAuthApi: configuration.authUrl,
     withTwoFactor: false,
     onLoginSuccess: (accessToken, userPayload) async {
+      await CapabilitiesService.instance.syncFromBackend(
+        config: configuration.accessControl,
+      );
       return userPayload;
     },
   );
@@ -91,10 +94,18 @@ Future<void> main() async {
     authenticated: () {
       final user = UserRepositoryAppNocode.instance.userApp!;
       final name = user.name;
-      final permissions = UserRepositoryAppNocode.instance.permissions;
+      final effectivePermissions =
+          UserRepositoryAppNocode.instance.effectiveCapabilities;
+      final bypassAll = configuration.accessControl.bypassAllPermissions;
       return MenuPage.prepare(
-        bypassPermission: true,
+        bypassPermission: bypassAll,
         initialState: () async {
+          if (configuration.accessControl.capabilitiesEndpoint != null &&
+              !UserRepositoryAppNocode.instance.hasCapabilitiesLoaded) {
+            await CapabilitiesService.instance.syncFromBackend(
+              config: configuration.accessControl,
+            );
+          }
           final p = configuration.preload;
           for (final preload in p) {
             try {
@@ -115,11 +126,11 @@ Future<void> main() async {
         logoNamed: configuration.logoNamedUrl,
         logoUrl: configuration.logoUrl,
         appName: configuration.appName,
-        menu: configuration.menu(),
+        menu: configuration.menu(bypassPermission: bypassAll),
         accountSubtitle: '${user.id} - ${user.role}',
         onChangePassword: (context) {},
         searchData: (context, query) => [],
-        accountPermissions: permissions,
+        accountPermissions: effectivePermissions,
         accountName: name,
         onLogout: () => AuthenticationBloc.instance.add(
           const AuthenticationEvent.logout(),

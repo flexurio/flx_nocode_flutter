@@ -25,7 +25,7 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `confirm_message`| String| No | Message for the confirmation dialog (for `show_confirmation_dialog` or `workflow`). |
 | `target_variable`| String| No | Name of the variable to store the result in (for `set_variable` or `http` results). |
 | `value` | String | No | The value to set (supports JS interpolation for `set_variable`). |
-| `permission` | String | No | Override permission key. Default is `{entity_id}_{action_id}`. |
+| `permission` / `permissions` | String \| Array<String> | No | Required capability/permission(s) (OR match) evaluated synchronously via `AccessPolicyEvaluator` against user capabilities/permissions (supports `entity:action`, `entity_action`, wildcards, and `role:<name>`). When omitted, no legacy `{entity_id}_{action_id}` gate is fabricated. See [Access Control Documentation](../core/access_control.md). |
 | `export_format`| String | No | Format for export actions: `pdf`, `excel`, `csv`. |
 | `export_columns`| Array | No | List of columns to export `[{ "header": "Name", "body": "field_ref" }]`. |
 | `popup` | Boolean | No | If `true`, opening a layout form via `open_page` will automatically open it inside a modal dialog popup with a close button (**X** icon). Popups automatically cover full-screen backdrop including top navbar and sidebar. (Also supports `is_popup: true`). |

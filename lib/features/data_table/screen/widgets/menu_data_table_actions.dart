@@ -69,11 +69,16 @@ class MenuDataTableActions extends StatelessWidget {
             currentFilters: filters,
             onFilterChanged: onFilterChanged,
           ),
-        ..._buildHomeActions(context),
+        ..._buildHomeActions(context, evalData),
         refreshButton,
         ...entity.actionsHome
             .where((action) => action.type != ActionType.export)
-            .where((action) => action.isVisibleFor(evalData, parentData: parentData))
+            .where((action) => action.isVisibleFor(
+                  evalData,
+                  parentData: parentData,
+                  entity: entity,
+                  bypassPermission: bypassPermission,
+                ))
             .map((e) => e.buildButtonRegular(
                   context: context,
                   entity: entity,
@@ -95,7 +100,12 @@ class MenuDataTableActions extends StatelessWidget {
 
     exportButtons.addAll(entity.actionsHome
         .where((e) => e.type == ActionType.export)
-        .where((action) => action.isVisibleFor(evalData, parentData: parentData))
+        .where((action) => action.isVisibleFor(
+              evalData,
+              parentData: parentData,
+              entity: entity,
+              bypassPermission: bypassPermission,
+            ))
         .map((e) => e.buildButtonRegular(
               context: context,
               entity: entity,
@@ -113,8 +123,17 @@ class MenuDataTableActions extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildHomeActions(BuildContext context) {
-    final actions = entity.layoutForm.homeActionForms;
+  List<Widget> _buildHomeActions(
+    BuildContext context,
+    Map<String, dynamic> evalData,
+  ) {
+    final actions = entity.layoutForm.homeActionForms.where(
+      (action) => AccessPolicyEvaluator.instance.canAccessLayoutForm(
+        action,
+        data: evalData,
+        parentData: parentData,
+      ),
+    );
     return actions.map((action) {
       return LightButtonSmall(
         title: action.label,

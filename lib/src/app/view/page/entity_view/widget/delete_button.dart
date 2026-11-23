@@ -1,4 +1,5 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/core/access/access_policy_evaluator.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flutter/material.dart';
@@ -38,10 +39,15 @@ class EntityDeleteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final canDelete = AccessPolicyEvaluator.instance.canAccessBuiltInOperation(
+      entity: entity,
+      operation: 'delete',
+      bypassPermission: bypassPermission,
+    );
+    if (!canDelete) return const SizedBox.shrink();
+
     return LightButton(
-      permission: (bypassPermission || entity.bypassAllPermissions)
-          ? null
-          : '${entity.id}_delete',
+      permission: null,
       action: DataAction.delete,
       onPressed: () async {
         await _showConfirmationDialog(context);

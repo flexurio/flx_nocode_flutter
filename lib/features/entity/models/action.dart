@@ -1,4 +1,5 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart' hide TColumn;
+import 'package:flx_nocode_flutter/core/access/access_policy_evaluator.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
@@ -92,6 +93,7 @@ class ActionD extends HiveObject {
   final String? confirmMessage;
   final String? iconColor;
   final String? permission;
+  final List<String> permissions;
 
   // for success dialog with data
   final String? successTitle;
@@ -170,6 +172,7 @@ class ActionD extends HiveObject {
     this.confirmMessage,
     this.iconColor,
     this.permission,
+    this.permissions = const [],
     this.successTitle,
     this.successMessage,
     this.copyLabel,
@@ -224,6 +227,7 @@ class ActionD extends HiveObject {
     String? confirmMessage,
     String? iconColor,
     String? permission,
+    List<String>? permissions,
     String? successTitle,
     String? successMessage,
     String? copyLabel,
@@ -274,6 +278,7 @@ class ActionD extends HiveObject {
       confirmMessage: confirmMessage ?? this.confirmMessage,
       iconColor: iconColor ?? this.iconColor,
       permission: permission ?? this.permission,
+      permissions: permissions ?? this.permissions,
       successTitle: successTitle ?? this.successTitle,
       successMessage: successMessage ?? this.successMessage,
       copyLabel: copyLabel ?? this.copyLabel,
@@ -349,7 +354,10 @@ class ActionD extends HiveObject {
       confirmTitle: json['confirm_title'],
       confirmMessage: json['confirm_message'],
       iconColor: json['icon_color'],
-      permission: json['permission'],
+      permission: json['permission'] is String ? json['permission'] as String : null,
+      permissions: AccessPolicyEvaluator.parsePermissionList(
+        json['permissions'] ?? json['permission'],
+      ),
       successTitle: json['success_title'],
       successMessage: json['success_message'],
       copyLabel: json['copy_label'],
@@ -423,6 +431,7 @@ class ActionD extends HiveObject {
       'confirm_message': confirmMessage,
       'icon_color': iconColor,
       'permission': permission,
+      if (permissions.isNotEmpty) 'permissions': permissions,
       'success_title': successTitle,
       'success_message': successMessage,
       'copy_label': copyLabel,
@@ -472,8 +481,19 @@ class ActionD extends HiveObject {
     }
   }
 
+  /// Explicit capability/permission tokens declared on this action (without
+  /// fabricating a legacy `<entityId>_<id>` token when omitted).
+  List<String> get explicitPermissions {
+    if (permissions.isNotEmpty) return permissions;
+    if (permission != null && permission!.trim().isNotEmpty) {
+      return AccessPolicyEvaluator.parsePermissionList(permission);
+    }
+    return const [];
+  }
+
   String getPermission(String entityId) {
     if (permission != null && permission!.isNotEmpty) return permission!;
+    if (permissions.isNotEmpty) return permissions.first;
     return '${entityId}_$id';
   }
 }
