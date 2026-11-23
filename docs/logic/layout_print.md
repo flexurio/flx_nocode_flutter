@@ -30,10 +30,12 @@ The engine supports two primary layout modes:
 | `unit` | String | No | Measurement unit: `"pt"`, `"mm"`, `"cm"`, or `"in"`. (Default: `"pt"`) |
 | `page_size` | String/Array | No | Standard size (`"A4"`, `"LETTER"`) or custom array `[width, height]`. |
 | `orientation` | String | No | `"portrait"` or `"landscape"`. |
-| `margins` | Object/Num | No | Page margins. e.g., `20` or `{"top": 15, "left": 10}`. |
-| `header` | Array | No | Global components prepended to every page. |
+| `margins` | Object/Num | No | Page margins. e.g., `20` or `{"top": 15, "right": 15, "bottom": 15, "left": 15}`. (Alias: `margin`) |
+| `data_sources` | Object | No | Named external HTTP endpoints fetched in parallel and stored under `{{sources.<key>}}`. |
+| `watermark` | Object | No | Page-level watermark rendered on every page (`value`, `font_size`, `color`, `opacity`, `rotation`, `layer`, `repeat`, `visible_if`). |
+| `header` | Array | No | Global components prepended to every page. Supports both flow components (`row`, `table`, `text`) and absolute `x`/`y` components. |
 | `header_height`| Number | No | Reserved height for global header (Document mode only). |
-| `footer` | Array | No | Global components appended to every page. |
+| `footer` | Array | No | Global components appended to every page. Supports both flow components and absolute `x`/`y` components. |
 | `footer_height`| Number | No | Reserved height for global footer (Document mode only). |
 | `content` | Array | Yes* | List of components to render (Required for **Document** mode). |
 | `pages` | Array | Yes* | List of page definitions (Required for **Canvas** mode). |
@@ -46,8 +48,10 @@ The engine uses a double-brace syntax `{{variable}}` for dynamic data injection.
 
 ### Data Scopes:
 *   **`{{data.key}}`**: Accesses data passed from the triggering action (e.g., `WorkflowContext`).
+*   **`{{sources.<name>}}`**: Accesses named datasets fetched from root `data_sources` without overwriting `data`.
+*   **`{{_page.number}}` / `{{_page.total}}`**: Runtime current page number and total pages available inside `header` and `footer` (aliases: `{{page}}`, `{{pages}}`).
 *   **`{{backend_host}}`**: Automatically injected environment variable for API endpoints.
-*   **API Data**: Any keys returned by an `http_data` request (see below) are added to the root scope.
+*   **API Data**: Legacy inline `http_data` blocks are merged into the root scope.
 *   **Formatted Field Labels (`{{<field>_label}}`)**: For any entity field configured with `value_labels` (or static `options_source: "values(...)"`), the engine non-destructively injects a sibling `<field>_label` key into both root data and nested table rows. Raw keys such as `{{status}}` remain untouched for conditions and queries, while `{{status_label}}` renders the human-readable label (e.g., `"Evaluasi & Persetujuan"`).
 
 ### Formatted Field Labels (`{{<field>_label}}`):
@@ -78,18 +82,88 @@ When an entity defines `value_labels` (or static `options_source: "values(...)"`
 }
 ```
 
-### Dynamic Data Fetching (`http_data`):
-You can fetch external data directly within the print configuration. The result is automatically merged into the data context.
+### Dynamic Data Fetching (`data_sources`):
+You can fetch multiple external endpoints in parallel within the print configuration. Each named source is stored under its own isolated `sources.<name>` namespace (so multiple sources never overwrite each other or root `data`):
+
+| Key | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `http_data` | Object | *(required)* | Standard `HttpData` request definition (`method`, `url`, `headers`, `body`). |
+| `data_path` | String | `null` | Optional dot-separated path to extract from the JSON response (e.g. `"data"` or `"result.items"`). When omitted, `{ "data": [...] }` is automatically unwrapped to the list. |
+| `on_error` | String | `"empty"` | Error policy: `"empty"` falls back to `[]` so the rest of the PDF still renders; `"fail"` aborts PDF generation with an exception. |
 
 ```json
 "data_sources": {
-  "profile": {
+  "actions": {
     "http_data": {
       "method": "GET",
-      "url": "{{backend_host}}/users/{{data.user_id}}"
-    }
+      "url": "{{backend_host}}/capa/{{data.id}}/actions"
+    },
+    "data_path": "data",
+    "on_error": "empty"
+  },
+  "signatures": {
+    "http_data": {
+      "method": "GET",
+      "url": "{{backend_host}}/documents/{{data.id}}/signatures"
+    },
+    "data_path": "data",
+    "on_error": "empty"
   }
 }
+```
+
+### Root Watermark (`watermark`):
+Renders a full-page watermark on every page (in both **Document** and **Canvas** modes), controlled by the standard `flx_nocode_flutter` `visible_if` Rule object (`all` / `any` / `not`):
+
+| Key | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `value` | String | `""` | Watermark text (alias: `text`). Supports interpolation (e.g. `"DRAF - {{data.status_label}}"`). |
+| `image_url` | String | `null` | Optional image URL for logo/stamp watermark instead of text. |
+| `font_size` | Number | `42` | Font size in `pt`. |
+| `color` | String | `"#9E9E9E"` | Hex color string (e.g. `"#999999"` for draft, `"#D32F2F"` for obsolete). |
+| `opacity` | Number | `0.12` | Opacity between `0.0` and `1.0`. |
+| `rotation` | Number | `-30` | Rotation angle in degrees (alias: `angle`). |
+| `layer` | String | `"background"` | `"background"` (behind content) or `"foreground"` (over content). |
+| `repeat` | String | `"single"` | `"single"` (centered once per page) or `"tiled"` (3x2 repeating grid pattern). |
+| `visible_if` | Rule Object | `null` | Standard `Rule` (`all`/`any`/`not`) supporting flat keys and dot-paths (`official_no`, `data.official_no`). |
+
+```json
+"watermark": {
+  "value": "DRAF - NOMOR BELUM TERBIT",
+  "font_size": 36,
+  "color": "#999999",
+  "opacity": 0.12,
+  "rotation": -30,
+  "layer": "background",
+  "repeat": "single",
+  "visible_if": {
+    "all": [
+      { "field": "official_no", "op": "is_empty" }
+    ]
+  }
+}
+```
+
+### Header, Footer & Runtime Page Variables (`{{_page.*}}`):
+In **Document Mode**, `header` and `footer` automatically detect how to lay out their children:
+- **Flow mode (recommended for reports/CPOB):** When none of the components specify `x` or `y`, components flow vertically at full page width (`table`, `row`, `column`, `text`) and `header_height` / `footer_height` are optional.
+- **Absolute mode (backward-compatible):** When any component specifies `x` or `y`, components are placed inside a `Stack` using `header_height` / `footer_height`.
+
+Runtime page variables are interpolated per page in both `header` and `footer` (as well as Canvas pages):
+- `{{_page.number}}` / `{{_page.total}}` (preferred; avoids clashing with API `page` fields)
+- `{{page}}` / `{{pages}}` (convenience aliases)
+
+```json
+"footer": [
+  {
+    "type": "row",
+    "main_axis_alignment": "space_between",
+    "children": [
+      { "type": "text", "value": "Dokumen terkendali secara elektronik", "font_size": 7, "color": "#777777" },
+      { "type": "text", "value": "Halaman {{_page.number}} dari {{_page.total}}", "font_size": 7, "color": "#777777" }
+    ]
+  }
+]
 ```
 
 ---

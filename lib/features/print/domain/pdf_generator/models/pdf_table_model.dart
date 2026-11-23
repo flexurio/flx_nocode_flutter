@@ -41,6 +41,8 @@ class PdfTableModel {
   final List<dynamic> body;
   final List<dynamic> footer;
   final List<dynamic> data;
+  final bool hasDataBinding;
+  final String? emptyText;
   final pw.EdgeInsetsGeometry? cellPadding;
   final PdfColor? headerBgColor;
   final PdfColor? headerTextColor;
@@ -50,6 +52,8 @@ class PdfTableModel {
     this.body = const [],
     this.footer = const [],
     this.data = const [],
+    this.hasDataBinding = false,
+    this.emptyText,
     this.cellPadding,
     this.headerBgColor,
     this.headerTextColor,
@@ -71,11 +75,15 @@ class PdfTableModel {
       return section.map((item) => PdfTableColumnModel.fromJson(Map<String, dynamic>.from(item))).toList();
     }
 
+    final hasDataBinding = json.containsKey('data') && json['data'] != null;
+
     return PdfTableModel(
       header: parseSection(json['header']),
       body: parseSection(json['body']),
       footer: parseSection(json['footer']),
       data: json['data'] is List ? json['data'] as List : [],
+      hasDataBinding: hasDataBinding,
+      emptyText: json['empty_text']?.toString(),
       cellPadding: PdfUnitUtils.parseEdgeInsets(json['cell_padding'], defaultUnit),
       headerBgColor: json['header_background_color'] != null
           ? PdfColor.fromHex(json['header_background_color'].toString())

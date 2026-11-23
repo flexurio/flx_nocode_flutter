@@ -30,6 +30,8 @@ import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/layout_fo
     as _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook;
 import 'package:flx_nocode_flutter/features/print/presentation/usecases/concert_ticket_print.widgetbook.dart'
     as _flx_nocode_flutter_features_print_presentation_usecases_concert_ticket_print_widgetbook;
+import 'package:flx_nocode_flutter/features/print/presentation/usecases/cpob_capa_print.widgetbook.dart'
+    as _flx_nocode_flutter_features_print_presentation_usecases_cpob_capa_print_widgetbook;
 import 'package:flx_nocode_flutter/features/print/presentation/usecases/invoice_table_print.widgetbook.dart'
     as _flx_nocode_flutter_features_print_presentation_usecases_invoice_table_print_widgetbook;
 import 'package:flx_nocode_flutter/features/print/presentation/usecases/personnel_list_print.widgetbook.dart'
@@ -51,6 +53,18 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookComponent(
         name: 'PdfPreview',
         useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'CPOB CAPA Document (Standard E-Signature)',
+            builder:
+                _flx_nocode_flutter_features_print_presentation_usecases_cpob_capa_print_widgetbook
+                    .buildCpobCapaStandardEsignUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'CPOB CAPA Document (Watermark + Signature Block)',
+            builder:
+                _flx_nocode_flutter_features_print_presentation_usecases_cpob_capa_print_widgetbook
+                    .buildCpobCapaPrintUseCase,
+          ),
           _widgetbook.WidgetbookUseCase(
             name: 'Concert Ticket (Canvas Mode)',
             builder:
