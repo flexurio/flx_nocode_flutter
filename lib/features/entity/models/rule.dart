@@ -97,6 +97,10 @@ class Rule {
 }
 
 class Condition {
+  static final JsVariableProvider _variableProvider = JsVariableProvider();
+  static final RegExp _singleTemplatePathRegex =
+      RegExp(r'^\s*\{\{\s*([a-zA-Z0-9_\.]+)\s*\}\}\s*$');
+
   final String field;
   final String
       op; // '=', '!=', '>', '>=', '<', '<=', 'in', 'not_in', 'empty', 'not_empty', 'contains'
@@ -127,8 +131,9 @@ class Condition {
       };
 
   bool evaluate(Map<String, dynamic> state) {
-    final lhs = _resolveLhs(state);
-    final rhs = _resolveValue(state);
+    final allVars = _variableProvider.prepare(state);
+    final lhs = _resolveLhs(state, allVars);
+    final rhs = _resolveValue(state, allVars);
 
     switch (op) {
       case '=':
@@ -144,9 +149,9 @@ class Condition {
       case '<=':
         return _compare(lhs, rhs) <= 0;
       case 'in':
-        return rhs is Iterable ? rhs.contains(lhs) : false;
+        return rhs is Iterable ? _iterableContains(rhs, lhs) : false;
       case 'not_in':
-        return rhs is Iterable ? !rhs.contains(lhs) : true;
+        return rhs is Iterable ? !_iterableContains(rhs, lhs) : true;
       case 'is_empty':
         return _isEmpty(lhs);
       case 'is_not_empty':
@@ -156,32 +161,87 @@ class Condition {
       case 'is_not_null':
         return lhs != null;
       case 'contains':
-        if (lhs is Iterable) return lhs.contains(rhs);
-        if (lhs is String && rhs is String) return lhs.contains(rhs);
+        if (lhs is Iterable) return _iterableContains(lhs, rhs);
+        if (lhs is String && rhs != null) return lhs.contains(rhs.toString());
         return false;
       default:
         throw FormatException('Unsupported operator "$op" in visible_if');
     }
   }
 
-  dynamic _resolveLhs(Map<String, dynamic> state) {
-    if (field.contains('{{')) {
+  dynamic _resolveLhs(
+    Map<String, dynamic> state,
+    Map<String, dynamic> allVars,
+  ) {
+    if (field.contains('{{') || field.contains('[[')) {
+      final pathMatch = _singleTemplatePathRegex.firstMatch(field);
+      if (pathMatch != null) {
+        final lookup = _lookupPath(pathMatch.group(1)!, state, allVars);
+        if (lookup.found) return _coerceScalar(lookup.value);
+      }
       return _resolveStringExpression(field, state);
     }
+    final lookup = _lookupPath(field, state, allVars);
+    if (lookup.found) return lookup.value;
     return state[field];
   }
 
-  dynamic _resolveValue(Map<String, dynamic> state) {
-    if (value is String && (value as String).contains('{{')) {
-      return _resolveStringExpression(value as String, state);
-    }
-
+  dynamic _resolveValue(
+    Map<String, dynamic> state,
+    Map<String, dynamic> allVars,
+  ) {
     if (value is String) {
-      final numVal = num.tryParse(value as String);
+      final strVal = value as String;
+      if (strVal.contains('{{') || strVal.contains('[[')) {
+        final pathMatch = _singleTemplatePathRegex.firstMatch(strVal);
+        if (pathMatch != null) {
+          final lookup = _lookupPath(pathMatch.group(1)!, state, allVars);
+          if (lookup.found) return _coerceScalar(lookup.value);
+        }
+        return _resolveStringExpression(strVal, state);
+      }
+
+      final numVal = num.tryParse(strVal);
       if (numVal != null) return numVal;
     }
 
     return value;
+  }
+
+  static _PathLookup _lookupPath(
+    String path,
+    Map<String, dynamic> rawState,
+    Map<String, dynamic> allVars,
+  ) {
+    if (rawState.containsKey(path)) {
+      return _PathLookup(true, rawState[path]);
+    }
+    if (allVars.containsKey(path)) {
+      return _PathLookup(true, allVars[path]);
+    }
+
+    if (!path.contains('.')) {
+      return const _PathLookup(false, null);
+    }
+
+    final parts = path.split('.');
+    dynamic current = allVars;
+    for (final part in parts) {
+      if (current is Map && current.containsKey(part)) {
+        current = current[part];
+      } else {
+        return const _PathLookup(false, null);
+      }
+    }
+    return _PathLookup(true, current);
+  }
+
+  static dynamic _coerceScalar(dynamic val) {
+    if (val is String) {
+      final numVal = num.tryParse(val);
+      if (numVal != null) return numVal;
+    }
+    return val;
   }
 
   dynamic _resolveStringExpression(String input, Map<String, dynamic> state) {
@@ -200,9 +260,26 @@ class Condition {
     }
   }
 
+  static bool _iterableContains(Iterable container, dynamic target) {
+    if (container.contains(target)) return true;
+    if (target != null) {
+      final targetStr = target.toString();
+      return container.any((e) => e?.toString() == targetStr);
+    }
+    return false;
+  }
+
   static bool _equals(dynamic a, dynamic b) {
     // Strict but handles number/string/boolean gracefully
     if (a is num && b is num) return a == b;
+    if (a is num && b is String) {
+      final parsed = num.tryParse(b);
+      if (parsed != null) return a == parsed;
+    }
+    if (a is String && b is num) {
+      final parsed = num.tryParse(a);
+      if (parsed != null) return parsed == b;
+    }
     return a == b;
   }
 
@@ -261,4 +338,11 @@ class Condition {
 JsonMap _coerceJsonMap(dynamic v) {
   if (v is Map) return v.cast<String, dynamic>();
   throw const FormatException('Expected an object');
+}
+
+class _PathLookup {
+  final bool found;
+  final dynamic value;
+
+  const _PathLookup(this.found, this.value);
 }

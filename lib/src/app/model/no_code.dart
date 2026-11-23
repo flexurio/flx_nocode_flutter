@@ -18,8 +18,9 @@ class NoCode {
 
   static Future<void> setAuth(String accessToken) async {
     final data = extractPayloadFromJwt(accessToken);
-    final permission = data.containsKey('rl')
-        ? Access.fetchPermissions(data['rl'] as String)
+    final rawRl = data['rl'];
+    final permission = rawRl is String
+        ? Access.fetchPermissions(rawRl)
         : <String>[];
     UserRepositoryAppNocode.instance.setUserFromJwt(accessToken, permission);
   }

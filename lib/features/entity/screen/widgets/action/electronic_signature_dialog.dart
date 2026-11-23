@@ -90,7 +90,10 @@ class _ElectronicSignatureDialogState extends State<ElectronicSignatureDialog> {
     try {
       final user = UserRepositoryAppNocode.instance.userApp;
       if (user != null) {
+        final nipClaim = user.claims['nip']?.toString() ?? '';
+        if (nipClaim.isNotEmpty) return nipClaim;
         if (user.role.isNotEmpty) return user.role;
+        if (user.rawId.isNotEmpty) return user.rawId;
         return user.id.toString();
       }
     } catch (_) {}

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/field/models/display_source_model.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
+import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
 
@@ -274,7 +275,17 @@ class ReferenceLabelCache {
     String? accessToken,
   }) async {
     final token = accessToken ?? UserRepositoryAppNocode.instance.token ?? '';
-    final path = source.effectivePath;
+    var path = source.effectivePath;
+    if (path.startsWith('/') && !path.contains('backend_host')) {
+      try {
+        final host = Configuration.instance.backendHost;
+        if (host.isNotEmpty) {
+          final normalizedHost =
+              host.endsWith('/') ? host.substring(0, host.length - 1) : host;
+          path = '$normalizedHost$path';
+        }
+      } catch (_) {}
+    }
     final paramName = source.effectiveBatchParam;
 
     // Build filter map

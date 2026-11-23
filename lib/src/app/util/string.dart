@@ -41,6 +41,18 @@ extension StringReplaceExtension on String {
       (match) => Configuration.instance.backendHost,
     );
 
+    // {user.<claim>} — dynamic single-brace lookup against active userContext
+    final userContext = UserRepositoryAppNocode.instance.userContext;
+    url = url.replaceAllMapped(
+      RegExp(r'(?<!\{)\{user\.([a-zA-Z0-9_]+)\}(?!\})'),
+      (match) {
+        final claimKey = match.group(1)!;
+        if (!userContext.containsKey(claimKey)) return match.group(0)!;
+        final val = userContext[claimKey]?.toString() ?? '';
+        return urlEncode ? Uri.encodeComponent(val) : val;
+      },
+    );
+
     // {key} — but not when inside {{...}} (double braces)
     for (final key in data.keys) {
       final value = data[key];

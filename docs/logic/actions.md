@@ -260,9 +260,22 @@ A rule consists of `all` (AND), `any` (OR), or `not` (NOT) groups of conditions.
 
 ### Context Variables in Rules
 Action rules automatically have access to:
-- **Current row fields** (for row actions in `actions`): e.g. `is_detail`, `status`, `realization_submission`.
+- **Current row fields** (for row actions in `actions`): e.g. `is_detail`, `status`, `realization_submission`, `prepared_by`, `pic_nip`.
+- **`user` (Dynamic JWT User Context)**: All normalized properties and dynamic JWT claims of the logged-in user (e.g., `user.id`, `user.name`, `user.nip`, `user.cs`, `user.department_id`, `user.site_id`, and `user.roles` list).
 - **`parent`**: The direct parent record when rendering nested child or detail tables (automatically passed via `parentData.last`).
 - **`parentData`**: Complete list of ancestor records (e.g. `parentData[0]` for root header, `parentData[1]` for detail).
+
+### Example: Segregation of Duties (SoD) & Role Check (Best Practice)
+Use declarative path lookup and `contains` against `user.roles` and `{{ user.<claim> }}` (evaluated 100% natively in Dart without JS engine overhead):
+```json
+"rule": {
+  "all": [
+    { "field": "status", "op": "=", "value": "EVALUATION_APPROVAL" },
+    { "field": "prepared_by", "op": "!=", "value": "{{ user.nip }}" },
+    { "field": "user.roles", "op": "contains", "value": "plant_qa_manager" }
+  ]
+}
+```
 
 #### Table State Variables in `actions_home`
 When evaluating rules for top-level action buttons in `actions_home` (rendered via `MenuDataTableActions`), the evaluation data includes:

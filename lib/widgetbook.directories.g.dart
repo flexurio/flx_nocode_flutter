@@ -24,6 +24,8 @@ import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_pag
     as _flx_nocode_flutter_features_entity_screen_pages_enitity_view_page_widgetbook;
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/electronic_signature_dialog.widgetbook.dart'
     as _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook;
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/user_context_rules.widgetbook.dart'
+    as _flx_nocode_flutter_features_entity_screen_widgets_action_user_context_rules_widgetbook;
 import 'package:flx_nocode_flutter/features/field/presentation/widgets/field_display_source.widgetbook.dart'
     as _flx_nocode_flutter_features_field_presentation_widgets_field_display_source_widgetbook;
 import 'package:flx_nocode_flutter/features/field/presentation/widgets/field_value_labels.widgetbook.dart'
@@ -373,6 +375,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                             builder:
                                 _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook
                                     .buildElectronicSignatureDialogInlineUseCase,
+                          ),
+                        ],
+                      ),
+                      _widgetbook.WidgetbookComponent(
+                        name: 'UserContextRulesShowcase',
+                        useCases: [
+                          _widgetbook.WidgetbookUseCase(
+                            name: 'From JSON Config (Dynamic JWT Claims & SoD)',
+                            builder:
+                                _flx_nocode_flutter_features_entity_screen_widgets_action_user_context_rules_widgetbook
+                                    .buildUserContextRulesFromJsonUseCase,
                           ),
                         ],
                       )

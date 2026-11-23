@@ -8,8 +8,34 @@ class UserRepositoryAppNocode extends UserRepository {
   UserAppNocode? userApp;
   String? refreshToken;
 
+  /// Raw decoded JWT payload claims from the active access token.
+  Map<String, dynamic> get claims => userApp?.claims ?? const {};
+
+  /// Normalized list of roles from the active access token (`rl` / `roles` / `role`).
+  List<String> get roles => userApp?.roles ?? const [];
+
+  /// Unified user context map combining standard fields and all dynamic JWT claims.
+  Map<String, dynamic> get userContext =>
+      userApp?.toContextMap(
+        token: token ?? '',
+        permissions: permissions,
+      ) ??
+      <String, dynamic>{
+        'id': '',
+        'name': '',
+        'nm': '',
+        'role': '',
+        'roles': const <String>[],
+        'cs': '',
+        'custom': '',
+        'token': token ?? '',
+        'permissions': permissions,
+        'claims': const <String, dynamic>{},
+      };
+
   @override
-  bool checkPermission(String permission) => permissions.contains(permission);
+  bool checkPermission(String permission) =>
+      permissions.contains(permission) || roles.contains(permission);
 
   @override
   void setUserFromJwt(
@@ -21,9 +47,26 @@ class UserRepositoryAppNocode extends UserRepository {
     this.refreshToken = refreshToken;
     final userPayload = extractPayloadFromJwt(accessToken);
     userApp = UserAppNocode.fromJson(userPayload);
+    user = userApp;
     if (permission.isNotEmpty) {
       permissions = permission;
       setPermissions(permission);
+    }
+  }
+
+  /// Directly sets the active user from a decoded JWT payload map (useful for tests/widgetbook).
+  void setUserFromClaims(
+    Map<String, dynamic> claimsPayload, {
+    String? accessToken,
+    List<String>? permission,
+  }) {
+    if (accessToken != null) {
+      token = accessToken;
+    }
+    userApp = UserAppNocode.fromJson(claimsPayload);
+    user = userApp;
+    if (permission != null) {
+      permissions = permission;
     }
   }
 
