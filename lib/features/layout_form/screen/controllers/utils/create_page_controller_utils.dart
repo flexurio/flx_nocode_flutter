@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
@@ -78,6 +79,7 @@ class CreatePageControllerUtils {
           controller.text.replaceAll(RegExp(r'[^0-9]'), ''),
         ComponentNumberField c when c.isCurrency =>
           controller.text.replaceAll(RegExp(r'[^0-9]'), ''),
+        ComponentFieldArray _ => decodeFieldArrayValue(controller.text),
         _ => controller.text,
       };
     }
@@ -96,6 +98,23 @@ class CreatePageControllerUtils {
     }
 
     return data;
+  }
+
+  /// Decodes a serialized JSON list from a [ComponentFieldArray] controller
+  /// into a typed `List<Map<String, dynamic>>`.
+  static List<Map<String, dynamic>> decodeFieldArrayValue(String raw) {
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return <Map<String, dynamic>>[];
+    try {
+      final decoded = jsonDecode(trimmed);
+      if (decoded is List) {
+        return decoded
+            .whereType<Map>()
+            .map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e))
+            .toList();
+      }
+    } catch (_) {}
+    return <Map<String, dynamic>>[];
   }
 
   /// Formats a string [value] to a standard date/time format.

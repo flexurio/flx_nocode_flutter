@@ -6,8 +6,12 @@ import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart'
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 
 extension ComponentDatePickerWidgets on ComponentDatePicker {
-  Widget toWidget(JsonMap data) {
-    return _DatePickerWidget(component: this, data: data);
+  Widget toWidget(JsonMap data, {bool isSmall = false}) {
+    return _DatePickerWidget(
+      component: this,
+      data: data,
+      isSmall: isSmall,
+    );
   }
 
   Widget toMockWidget() {
@@ -68,10 +72,12 @@ extension ComponentDatePickerWidgets on ComponentDatePicker {
 class _DatePickerWidget extends StatefulWidget {
   final ComponentDatePicker component;
   final JsonMap data;
+  final bool isSmall;
 
   const _DatePickerWidget({
     required this.component,
     required this.data,
+    this.isSmall = false,
   });
 
   @override
@@ -80,12 +86,29 @@ class _DatePickerWidget extends StatefulWidget {
 
 class _DatePickerWidgetState extends State<_DatePickerWidget> {
   late TextEditingController _controller;
+  bool _ownsController = false;
+
+  bool get _isRowCell => widget.data['onRowChanged'] is Function;
 
   @override
   void initState() {
     super.initState();
     _initController();
     _setupListeners();
+  }
+
+  @override
+  void didUpdateWidget(covariant _DatePickerWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_isRowCell) {
+      final row = widget.data['row'] is Map ? widget.data['row'] as Map : null;
+      final targetField =
+          widget.data['columnBody']?.toString() ?? widget.component.id;
+      final rowText = row != null ? (row[targetField]?.toString() ?? '') : '';
+      if (_controller.text != rowText) {
+        _controller.text = rowText;
+      }
+    }
   }
 
   DateTime? _parseDate(String val) {
@@ -118,9 +141,22 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
             as Map<String, TextEditingController>? ??
         const {};
 
-    _controller = widget.data['controller'] as TextEditingController? ??
-        allControllers[widget.component.id] ??
-        TextEditingController();
+    if (_isRowCell) {
+      final row = widget.data['row'] is Map ? widget.data['row'] as Map : null;
+      final targetField =
+          widget.data['columnBody']?.toString() ?? widget.component.id;
+      final initialRowText =
+          row != null ? (row[targetField]?.toString() ?? '') : '';
+      _controller = TextEditingController(text: initialRowText);
+      _ownsController = true;
+      _controller.addListener(_onRowControllerChanged);
+    } else {
+      _controller = widget.data['controller'] as TextEditingController? ??
+          allControllers[widget.component.id] ??
+          TextEditingController();
+      _ownsController = widget.data['controller'] == null &&
+          !allControllers.containsKey(widget.component.id);
+    }
 
     if (_controller.text.isEmpty && widget.component.initialValue.isNotEmpty) {
       final variables =
@@ -179,8 +215,28 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
     }
   }
 
+  void _onRowControllerChanged() {
+    final onRowChanged = widget.data['onRowChanged'];
+    if (onRowChanged is Function) {
+      final row =
+          Map<String, dynamic>.from(widget.data['row'] as Map? ?? {});
+      final targetField =
+          widget.data['columnBody']?.toString() ?? widget.component.id;
+      if (row[targetField]?.toString() != _controller.text) {
+        row[targetField] = _controller.text;
+        onRowChanged(row);
+      }
+    }
+  }
+
   @override
   void dispose() {
+    if (_isRowCell) {
+      _controller.removeListener(_onRowControllerChanged);
+    }
+    if (_ownsController) {
+      _controller.dispose();
+    }
     final allControllers = widget.data['allControllers']
             as Map<String, TextEditingController>? ??
         const {};
@@ -224,12 +280,12 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
 
     return FieldDatePicker(
       controller: _controller,
-      labelText: widget.component.label,
+      labelText: widget.isSmall ? null : widget.component.label,
       initialSelectedDate: initialDate,
       minDate: min,
       maxDate: max,
       dateFormat: widget.component.dateFormat,
-      enabled: widget.component.enabled,
+      enabled: widget.component.enabled && widget.data['readOnly'] != true,
       validator: widget.component.required
           ? (value) {
               if (value == null) {

@@ -28,6 +28,7 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_f
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_multi_dropdown.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_conditional.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_user_name.dart';
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_field_array.dart';
 
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
@@ -70,7 +71,7 @@ extension ComponentWidget on Component {
     } else if (this.type == ComponentTextField.componentId) {
       resultWidget = (this as ComponentTextField).toWidget(fullData, isSmall: isSmall);
     } else if (this.type == ComponentDatePicker.componentId) {
-      resultWidget = (this as ComponentDatePicker).toWidget(fullData);
+      resultWidget = (this as ComponentDatePicker).toWidget(fullData, isSmall: isSmall);
     } else if (this.type == ComponentCheckbox.componentId) {
       resultWidget = (this as ComponentCheckbox).toWidget(fullData);
     } else if (this.type == ComponentDropdown.componentId) {
@@ -85,7 +86,7 @@ extension ComponentWidget on Component {
     } else if (this.type == ComponentIconButton.componentId) {
       resultWidget = (this as ComponentIconButton).toWidget(fullData);
     } else if (this.type == ComponentNumberField.componentId) {
-      resultWidget = (this as ComponentNumberField).toWidget(fullData);
+      resultWidget = (this as ComponentNumberField).toWidget(fullData, isSmall: isSmall);
     } else if (this.type == ComponentContainer.componentId) {
       resultWidget = (this as ComponentContainer).toWidget(data: fullData);
     } else if (this.type == ComponentSwitch.componentId) {
@@ -113,6 +114,8 @@ extension ComponentWidget on Component {
           .toWidget(fullData, isSmall: isSmall);
     } else if (this.type == ComponentUserName.componentId) {
       resultWidget = (this as ComponentUserName).toWidget(fullData);
+    } else if (this.type == ComponentFieldArray.componentId) {
+      resultWidget = (this as ComponentFieldArray).toWidget(fullData);
     } else {
       resultWidget = NoCodeError('Unknown component type: ${this.type}');
     }
@@ -185,6 +188,8 @@ extension ComponentWidget on Component {
       return (this as ComponentConditional).toMockWidget();
     } else if (this.type == ComponentUserName.componentId) {
       return (this as ComponentUserName).toMockWidget();
+    } else if (this.type == ComponentFieldArray.componentId) {
+      return (this as ComponentFieldArray).toMockWidget();
     }
 
     return Text('Mock Widget: $type');

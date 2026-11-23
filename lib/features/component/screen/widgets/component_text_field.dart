@@ -10,12 +10,17 @@ final _cellControllers = <String, TextEditingController>{};
 
 extension ComponentTextFieldWidgets on ComponentTextField {
   Widget toWidget(Map<String, dynamic> data, {bool isSmall = false}) {
+    final isRowCell = isSmall || data['onRowChanged'] is Function;
+    final effectiveEnabled = enabled && data['readOnly'] != true;
+
     TextEditingController? controller;
-    if (isSmall) {
+    if (isRowCell) {
       final tableId = data['tableId']?.toString() ?? 'table';
-      final rowIndex = data['rowIndex']?.toString() ?? 'row';
+      final rowIdentifier = data['rowKey']?.toString() ??
+          data['rowIndex']?.toString() ??
+          'row';
       final targetField = data['columnBody']?.toString() ?? id;
-      final cacheKey = '${tableId}_${rowIndex}_${targetField}';
+      final cacheKey = '${tableId}_${rowIdentifier}_${targetField}';
 
       final row = data['row'] is Map ? data['row'] as Map : null;
       var currentText = row != null ? (row[targetField]?.toString() ?? '') : '';
@@ -67,30 +72,72 @@ extension ComponentTextFieldWidgets on ComponentTextField {
     }
 
     if (isSmall) {
-      return FTextFieldSmall(
-        controller: controller!,
-        hintText: label,
-        textAlign: isCurrency ? TextAlign.end : TextAlign.start,
-        keyboardType: isCurrency ? TextInputType.number : null,
-        inputFormatters: isCurrency
-            ? [
-                CurrencyTextInputFormatter.currency(
-                  symbol: '',
-                  decimalDigits: 0,
-                  locale: 'en',
-                ),
-              ]
-            : null,
-        onChanged: (val) {
-          final onRowChanged = data['onRowChanged'];
-          if (onRowChanged is Function) {
-            final targetField = data['columnBody']?.toString() ?? id;
-            final row = Map<String, dynamic>.from(data['row'] as Map? ?? {});
-            if (row[targetField] != val) {
-              row[targetField] = val;
-              onRowChanged(row);
-            }
+      return FormField<String>(
+        initialValue: controller!.text,
+        validator: (_) {
+          final actualValue = controller!.text;
+          if (this.required && actualValue.trim().isEmpty) {
+            return '${label.isNotEmpty ? label : id} is required';
           }
+          return null;
+        },
+        builder: (fieldState) {
+          final fieldWidget = FTextFieldSmall(
+            controller: controller!,
+            hintText: label,
+            textAlign: isCurrency ? TextAlign.end : TextAlign.start,
+            keyboardType: isCurrency ? TextInputType.number : null,
+            inputFormatters: isCurrency
+                ? [
+                    CurrencyTextInputFormatter.currency(
+                      symbol: '',
+                      decimalDigits: 0,
+                      locale: 'en',
+                    ),
+                  ]
+                : null,
+            onChanged: (val) {
+              fieldState.didChange(val);
+              if (fieldState.hasError) {
+                fieldState.validate();
+              }
+              final onRowChanged = data['onRowChanged'];
+              if (onRowChanged is Function) {
+                final targetField = data['columnBody']?.toString() ?? id;
+                final row =
+                    Map<String, dynamic>.from(data['row'] as Map? ?? {});
+                if (row[targetField] != val) {
+                  row[targetField] = val;
+                  onRowChanged(row);
+                }
+              }
+            },
+          );
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IgnorePointer(
+                ignoring: !effectiveEnabled,
+                child: Opacity(
+                  opacity: effectiveEnabled ? 1.0 : 0.65,
+                  child: fieldWidget,
+                ),
+              ),
+              if (fieldState.hasError && fieldState.errorText != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4, left: 2),
+                  child: Text(
+                    fieldState.errorText!,
+                    style: TextStyle(
+                      color: Theme.of(fieldState.context).colorScheme.error,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+            ],
+          );
         },
       );
     }
@@ -121,7 +168,18 @@ extension ComponentTextFieldWidgets on ComponentTextField {
       maxLines: maxLines,
       labelText: label,
       helperText: helperText,
-      enabled: enabled,
+      enabled: effectiveEnabled,
+      onChanged: data['onRowChanged'] is Function
+          ? (val) {
+              final onRowChanged = data['onRowChanged'] as Function;
+              final targetField = data['columnBody']?.toString() ?? id;
+              final row = Map<String, dynamic>.from(data['row'] as Map? ?? {});
+              if (row[targetField] != val) {
+                row[targetField] = val;
+                onRowChanged(row);
+              }
+            }
+          : null,
       obscureText: obscure,
       isNumeric: isCurrency,
       inputFormatters: isCurrency

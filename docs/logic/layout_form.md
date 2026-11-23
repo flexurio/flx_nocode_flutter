@@ -52,9 +52,103 @@ If `multi_forms` is provided, the form renders as a **Wizard (Stepper)**. Each o
   "label": "New Request",
   "multi_forms": [
     { "id": "step1", "label": "Information", "components": [...] },
-    { "id": "step2", "label": "Review", "components": [...] }
+    { "id": "step2", "label": "Details", "components": [...] },
+    { "id": "step3", "label": "Review", "components": [...] }
   ],
   "submit_workflow": { ... }
+}
+```
+
+### Master-Detail Editable Rows Inside `multi_forms`
+
+For forms with **Step 1 Header -> Step 2 Editable Child Rows -> Step 3 Summary -> Single `POST` with `details`**, use the [`field_array`](../components/component_field_array.md) component:
+
+- **Step 2 (Input)**: Define a `field_array` with `constraints.min_rows` and per-cell `required: true`. Clicking **Next** automatically validates both row count / uniqueness and every required cell before advancing.
+- **Step 3 (Summary)**: Render a read-only `field_array` with `"read_only": true` and `"reference_id": "sources"` (matching Step 2's `id`) to display the live rows without editing controls.
+- **Final Submit**: Reference `{{ form.sources }}` directly in `submit_workflow.actions[].http.body` — it resolves as a native JSON array (not a JSON string):
+
+```json
+{
+  "id": "create_deviation",
+  "label": "Create Deviation",
+  "multi_forms": [
+    {
+      "id": "step_header",
+      "label": "Header",
+      "components": [
+        { "id": "title", "type": "text_field", "label": "Judul Deviasi", "required": true }
+      ]
+    },
+    {
+      "id": "step_sources",
+      "label": "Sumber",
+      "components": [
+        {
+          "id": "sources",
+          "type": "field_array",
+          "label": "Sumber Deviasi",
+          "constraints": { "min_rows": 1 },
+          "row_actions": { "add_label": "Tambah baris", "allow_delete": true },
+          "columns": [
+            {
+              "header": "Jenis sumber",
+              "body": "source_type",
+              "component": {
+                "type": "dropdown",
+                "required": true,
+                "options": ["Batch Record", "Inspeksi", "Keluhan"]
+              }
+            },
+            {
+              "header": "Nomor rekaman",
+              "body": "source_record_no",
+              "component": { "type": "text_field", "required": true }
+            },
+            {
+              "header": "Tanggal diketahui",
+              "body": "known_date",
+              "component": { "type": "date_picker", "date_format": "yyyy-MM-dd" }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "step_summary",
+      "label": "Ringkasan",
+      "components": [
+        { "id": "summary_title", "type": "field_display", "label": "Judul", "value": "{{ form.title }}" },
+        {
+          "id": "sources_summary",
+          "type": "field_array",
+          "reference_id": "sources",
+          "read_only": true,
+          "columns": [
+            { "header": "Jenis sumber", "body": "source_type" },
+            { "header": "Nomor rekaman", "body": "source_record_no" },
+            { "header": "Tanggal diketahui", "body": "known_date" }
+          ]
+        }
+      ]
+    }
+  ],
+  "submit_workflow": {
+    "type": "workflow",
+    "submitLabel": "Submit",
+    "actions": [
+      {
+        "type": "http",
+        "http": {
+          "method": "POST",
+          "url": "{{ backend_host }}/deviations",
+          "body": {
+            "title": "{{ form.title }}",
+            "details": "{{ form.sources }}"
+          }
+        }
+      }
+    ]
+  }
 }
 ```
 

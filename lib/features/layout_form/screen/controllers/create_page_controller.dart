@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
@@ -167,7 +168,10 @@ class CreatePageController extends GetxController {
       for (final entry in initialData.entries) {
         final ctrl = ctrls[entry.key];
         if (ctrl != null) {
-          ctrl.text = entry.value?.toString() ?? '';
+          final val = entry.value;
+          ctrl.text = (val is List || val is Map)
+              ? jsonEncode(val)
+              : (val?.toString() ?? '');
         }
       }
     }

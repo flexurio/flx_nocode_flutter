@@ -16,6 +16,8 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_c
     as _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook;
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_dropdown.widgetbook.dart'
     as _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook;
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_field_array.widgetbook.dart'
+    as _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook;
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_multi_dropdown.widgetbook.dart'
     as _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook;
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table.widgetbook.dart'
@@ -193,6 +195,35 @@ final directories = <_widgetbook.WidgetbookNode>[
                         _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook
                             .donutChartUseCase,
                   )
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ComponentFieldArray',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Card Presentation (JSON)',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
+                            .liveComponentFieldArrayCards,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Editable Table + Validation (JSON)',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
+                            .liveComponentFieldArrayTable,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Mock Design (Table)',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
+                            .mockComponentFieldArrayDesign,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Read-Only Summary Mode (JSON)',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
+                            .readOnlyComponentFieldArray,
+                  ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
