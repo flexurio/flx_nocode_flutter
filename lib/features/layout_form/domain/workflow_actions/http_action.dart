@@ -67,14 +67,25 @@ class HttpAction implements WorkflowAction {
           debugPrint('    [HttpAction] Resolved Body: $resolvedBody');
         }
 
+        final headersMap = resolvedHeaders.map<String, String>(
+          (k, v) => MapEntry(k.toString(), '$v'),
+        );
+
+        // Auto-inject X-Signature-Token if present in context signature and not explicitly set
+        final sigToken = ctx.signature['token'] ?? ctx.signature['signature_token'];
+        if (sigToken != null &&
+            sigToken.toString().isNotEmpty &&
+            !headersMap.containsKey('X-Signature-Token') &&
+            !headersMap.containsKey('x-signature-token')) {
+          headersMap['X-Signature-Token'] = sigToken.toString();
+        }
+
         final resolved = HttpData(
           method:
               Template.resolve(http.method, ctx)?.toString().toUpperCase() ??
                   http.method.toUpperCase(),
           url: Template.resolve(http.url, ctx)?.toString() ?? http.url,
-          headers: resolvedHeaders.map<String, String>(
-            (k, v) => MapEntry(k.toString(), '$v'),
-          ),
+          headers: headersMap,
           body: resolvedBody.map<String, dynamic>(
             (k, v) => MapEntry(k.toString(), v),
           ),

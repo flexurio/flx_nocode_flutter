@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
+import 'package:flx_nocode_flutter/features/field/domain/field_value_label_resolver.dart';
+import 'package:flx_nocode_flutter/features/field/models/display_source_model.dart';
 import 'package:hive_ce/hive.dart';
 
 /// Represents a single field definition in a dynamic entity configuration.
@@ -63,8 +65,17 @@ class EntityField extends HiveObject {
   /// Whether to render this field as a chip.
   final bool? isChip;
 
-  /// Custom color overrides for chips based on values.
+  /// Custom color overrides for chips based on raw values.
   final Map<String, String>? chipColors;
+
+  /// Maps raw system/database codes (e.g. `EVALUATION_APPROVAL`) to human-readable
+  /// display labels (e.g. `Evaluasi & Persetujuan`).
+  ///
+  /// Accepted JSON keys: `value_labels` (recommended), `valueLabels`, or
+  /// `chip_labels` / `chipLabels` (backward-compatible alias).
+  /// Applies to both chip and non-chip fields across table, detail, filter,
+  /// export, and print.
+  final Map<String, String>? valueLabels;
 
   /// Additional options for dropdown/lookup type fields.
   final FieldOptions? options;
@@ -87,6 +98,9 @@ class EntityField extends HiveObject {
   /// Optional action triggered when clicking this field/cell.
   final ActionD? action;
 
+  /// Optional remote lookup specification for foreign-key / relational references.
+  final DisplaySourceModel? displaySource;
+
   /// Creates a new [EntityField] configuration.
   EntityField({
     required this.label,
@@ -106,6 +120,7 @@ class EntityField extends HiveObject {
     this.isTooltip,
     this.isChip,
     this.chipColors,
+    this.valueLabels,
     this.options,
     this.backgroundColors,
     this.textColors,
@@ -113,6 +128,7 @@ class EntityField extends HiveObject {
     this.isBadge,
     this.iconName,
     this.action,
+    this.displaySource,
   });
 
   /// Creates an [EntityField] instance from JSON.
@@ -147,7 +163,15 @@ class EntityField extends HiveObject {
       isCopyable: json['is_copyable'] as bool?,
       isTooltip: json['is_tooltip'] as bool?,
       isChip: json['is_chip'] as bool?,
-      chipColors: (json['chip_colors'] as Map?)?.cast<String, String>(),
+      chipColors: FieldValueLabelResolver.parseStringMap(
+        json['chip_colors'] ?? json['chipColors'],
+      ),
+      valueLabels: FieldValueLabelResolver.parseStringMap(
+        json['value_labels'] ??
+            json['valueLabels'] ??
+            json['chip_labels'] ??
+            json['chipLabels'],
+      ),
       backgroundColors: json['background_colors'] is Map
           ? (json['background_colors'] as Map).cast<String, String>()
           : (json['background_colors'] is String
@@ -167,6 +191,9 @@ class EntityField extends HiveObject {
               ? ActionD.fromJson(
                   Map<String, dynamic>.from(json['click_action'] as Map))
               : null),
+      displaySource: DisplaySourceModel.fromDynamic(
+        json['display_source'] ?? json['displaySource'],
+      ),
     );
   }
 
@@ -196,6 +223,7 @@ class EntityField extends HiveObject {
     bool? isTooltip,
     bool? isChip,
     Map<String, String>? chipColors,
+    Map<String, String>? valueLabels,
     FieldOptions? options,
     Map<String, String>? backgroundColors,
     Map<String, String>? textColors,
@@ -203,6 +231,7 @@ class EntityField extends HiveObject {
     bool? isBadge,
     String? iconName,
     ActionD? action,
+    DisplaySourceModel? displaySource,
   }) {
     return EntityField(
       label: label ?? this.label,
@@ -222,6 +251,7 @@ class EntityField extends HiveObject {
       isTooltip: isTooltip ?? this.isTooltip,
       isChip: isChip ?? this.isChip,
       chipColors: chipColors ?? this.chipColors,
+      valueLabels: valueLabels ?? this.valueLabels,
       options: options ?? this.options,
       backgroundColors: backgroundColors ?? this.backgroundColors,
       textColors: textColors ?? this.textColors,
@@ -229,13 +259,48 @@ class EntityField extends HiveObject {
       isBadge: isBadge ?? this.isBadge,
       iconName: iconName ?? this.iconName,
       action: action ?? this.action,
+      displaySource: displaySource ?? this.displaySource,
     );
   }
+
+  /// Effective remote reference display specification.
+  /// Falls back to auto-deriving from [optionsSource] if [displaySource] is null
+  /// and [optionsSource] starts with `backend.`.
+  DisplaySourceModel? get effectiveDisplaySource {
+    if (displaySource != null) return displaySource;
+    if (optionsSource != null && optionsSource!.trim().startsWith('backend.')) {
+      return DisplaySourceModel.fromDynamic(optionsSource);
+    }
+    return null;
+  }
+
+  /// Effective mapping of raw code -> human-readable display label,
+  /// combining static `options_source` (`values(...)`) with explicit `valueLabels`.
+  Map<String, String> get effectiveValueLabels =>
+      FieldValueLabelResolver.effectiveLabels(
+        valueLabels: valueLabels,
+        optionsSource: optionsSource,
+      );
+
+  /// Whether this field defines any static or dynamic code -> label mappings
+  /// (either via `value_labels`/`chip_labels`, static `options_source`, or `display_source`).
+  bool get hasValueLabels =>
+      effectiveValueLabels.isNotEmpty || effectiveDisplaySource != null;
+
+  /// Resolves [rawValue] to its display label using this field's configuration.
+  String resolveDisplayLabel(dynamic rawValue) =>
+      FieldValueLabelResolver.resolveLabel(
+        rawValue,
+        valueLabels: valueLabels,
+        optionsSource: optionsSource,
+        displaySource: effectiveDisplaySource,
+      );
 
   /// Converts this field definition into JSON map.
   Map<String, dynamic> toJson() {
     return {
       if (action != null) 'action': action!.toJson(),
+      if (displaySource != null) 'display_source': displaySource!.toJson(),
       'options_source': optionsSource,
       'column_width': columnWidth,
       'label': label,
@@ -253,6 +318,7 @@ class EntityField extends HiveObject {
       'is_tooltip': isTooltip,
       'is_chip': isChip,
       'chip_colors': chipColors,
+      if (valueLabels != null) 'value_labels': valueLabels,
       if (isPinned != null) 'is_pinned': isPinned,
       if (isBadge != null) 'is_badge': isBadge,
       if (iconName != null) 'icon': iconName,

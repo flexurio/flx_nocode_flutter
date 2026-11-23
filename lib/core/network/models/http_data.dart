@@ -261,10 +261,21 @@ extension HttpDataExtension on HttpData {
   }
 
   Map<String, String> _interpolateHeaders(JsonMap data) {
-    return headers.map((key, value) {
+    final interpolated = headers.map((key, value) {
       final processed = value.renderWithData(data).interpolateJavascript(data);
       return MapEntry(key, processed);
     });
+
+    // Auto-propagate X-Signature-Token if present in data['signature']['token'] or data['signature_token']
+    if (!interpolated.containsKey('X-Signature-Token') && !interpolated.containsKey('x-signature-token')) {
+      final sigToken = (data['signature'] is Map ? data['signature']['token'] ?? data['signature']['signature_token'] : null) ??
+          data['signature_token'];
+      if (sigToken != null && sigToken.toString().isNotEmpty) {
+        interpolated['X-Signature-Token'] = sigToken.toString();
+      }
+    }
+
+    return interpolated;
   }
 
   Map<String, dynamic> _interpolateBody(JsonMap data) {

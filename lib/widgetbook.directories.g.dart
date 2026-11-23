@@ -10,10 +10,14 @@
 // **************************************************************************
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:flx_nocode_flutter/core/access/access_control.widgetbook.dart'
+    as _flx_nocode_flutter_core_access_access_control_widgetbook;
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_chart.widgetbook.dart'
     as _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook;
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_dropdown.widgetbook.dart'
     as _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook;
+import 'package:flx_nocode_flutter/features/component/screen/widgets/component_field_array.widgetbook.dart'
+    as _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook;
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_multi_dropdown.widgetbook.dart'
     as _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook;
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table.widgetbook.dart'
@@ -22,10 +26,20 @@ import 'package:flx_nocode_flutter/features/data_table/screen/widgets/entity_dat
     as _flx_nocode_flutter_features_data_table_screen_widgets_entity_data_table_widgetbook;
 import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_page.widgetbook.dart'
     as _flx_nocode_flutter_features_entity_screen_pages_enitity_view_page_widgetbook;
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/electronic_signature_dialog.widgetbook.dart'
+    as _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook;
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/user_context_rules.widgetbook.dart'
+    as _flx_nocode_flutter_features_entity_screen_widgets_action_user_context_rules_widgetbook;
+import 'package:flx_nocode_flutter/features/field/presentation/widgets/field_display_source.widgetbook.dart'
+    as _flx_nocode_flutter_features_field_presentation_widgets_field_display_source_widgetbook;
+import 'package:flx_nocode_flutter/features/field/presentation/widgets/field_value_labels.widgetbook.dart'
+    as _flx_nocode_flutter_features_field_presentation_widgets_field_value_labels_widgetbook;
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/layout_form.widgetbook.dart'
     as _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook;
 import 'package:flx_nocode_flutter/features/print/presentation/usecases/concert_ticket_print.widgetbook.dart'
     as _flx_nocode_flutter_features_print_presentation_usecases_concert_ticket_print_widgetbook;
+import 'package:flx_nocode_flutter/features/print/presentation/usecases/cpob_capa_print.widgetbook.dart'
+    as _flx_nocode_flutter_features_print_presentation_usecases_cpob_capa_print_widgetbook;
 import 'package:flx_nocode_flutter/features/print/presentation/usecases/invoice_table_print.widgetbook.dart'
     as _flx_nocode_flutter_features_print_presentation_usecases_invoice_table_print_widgetbook;
 import 'package:flx_nocode_flutter/features/print/presentation/usecases/personnel_list_print.widgetbook.dart'
@@ -47,6 +61,18 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookComponent(
         name: 'PdfPreview',
         useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'CPOB CAPA Document (Standard E-Signature)',
+            builder:
+                _flx_nocode_flutter_features_print_presentation_usecases_cpob_capa_print_widgetbook
+                    .buildCpobCapaStandardEsignUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'CPOB CAPA Document (Watermark + Signature Block)',
+            builder:
+                _flx_nocode_flutter_features_print_presentation_usecases_cpob_capa_print_widgetbook
+                    .buildCpobCapaPrintUseCase,
+          ),
           _widgetbook.WidgetbookUseCase(
             name: 'Concert Ticket (Canvas Mode)',
             builder:
@@ -108,6 +134,28 @@ final directories = <_widgetbook.WidgetbookNode>[
     ],
   ),
   _widgetbook.WidgetbookFolder(
+    name: 'core',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'access',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'AccessControlShowcase',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name:
+                    'From JSON Config (2-Layer Capabilities & Hierarchical Rules)',
+                builder:
+                    _flx_nocode_flutter_core_access_access_control_widgetbook
+                        .accessControlShowcaseUseCase,
+              )
+            ],
+          )
+        ],
+      )
+    ],
+  ),
+  _widgetbook.WidgetbookFolder(
     name: 'features',
     children: [
       _widgetbook.WidgetbookFolder(
@@ -147,6 +195,35 @@ final directories = <_widgetbook.WidgetbookNode>[
                         _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook
                             .donutChartUseCase,
                   )
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'ComponentFieldArray',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Card Presentation (JSON)',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
+                            .liveComponentFieldArrayCards,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Editable Table + Validation (JSON)',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
+                            .liveComponentFieldArrayTable,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Mock Design (Table)',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
+                            .mockComponentFieldArrayDesign,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Read-Only Summary Mode (JSON)',
+                    builder:
+                        _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
+                            .readOnlyComponentFieldArray,
+                  ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
@@ -325,6 +402,87 @@ final directories = <_widgetbook.WidgetbookNode>[
                       )
                     ],
                   )
+                ],
+              ),
+              _widgetbook.WidgetbookFolder(
+                name: 'widgets',
+                children: [
+                  _widgetbook.WidgetbookFolder(
+                    name: 'action',
+                    children: [
+                      _widgetbook.WidgetbookComponent(
+                        name: 'ElectronicSignatureDialog',
+                        useCases: [
+                          _widgetbook.WidgetbookUseCase(
+                            name: 'Default Approval',
+                            builder:
+                                _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook
+                                    .buildElectronicSignatureDialogUseCase,
+                          ),
+                          _widgetbook.WidgetbookUseCase(
+                            name: 'From JSON Config',
+                            builder:
+                                _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook
+                                    .buildElectronicSignatureFromJsonUseCase,
+                          ),
+                          _widgetbook.WidgetbookUseCase(
+                            name: 'Inline Dialog Preview',
+                            builder:
+                                _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook
+                                    .buildElectronicSignatureDialogInlineUseCase,
+                          ),
+                        ],
+                      ),
+                      _widgetbook.WidgetbookComponent(
+                        name: 'UserContextRulesShowcase',
+                        useCases: [
+                          _widgetbook.WidgetbookUseCase(
+                            name: 'From JSON Config (Dynamic JWT Claims & SoD)',
+                            builder:
+                                _flx_nocode_flutter_features_entity_screen_widgets_action_user_context_rules_widgetbook
+                                    .buildUserContextRulesFromJsonUseCase,
+                          )
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ],
+          )
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'field',
+        children: [
+          _widgetbook.WidgetbookFolder(
+            name: 'presentation',
+            children: [
+              _widgetbook.WidgetbookFolder(
+                name: 'widgets',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'FieldDisplaySourceShowcase',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'From JSON Config',
+                        builder:
+                            _flx_nocode_flutter_features_field_presentation_widgets_field_display_source_widgetbook
+                                .buildFieldDisplaySourceFromJsonUseCase,
+                      )
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'FieldValueLabelsShowcase',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'From JSON Config',
+                        builder:
+                            _flx_nocode_flutter_features_field_presentation_widgets_field_value_labels_widgetbook
+                                .buildFieldValueLabelsFromJsonUseCase,
+                      )
+                    ],
+                  ),
                 ],
               )
             ],

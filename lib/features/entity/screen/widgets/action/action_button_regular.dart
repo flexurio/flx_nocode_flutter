@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/core/access/access_policy_evaluator.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/pages/create_page.dart';
@@ -10,6 +11,7 @@ class ActionButtonRegular extends StatefulWidget {
   final EntityCustom entity;
   final List<Map<String, dynamic>> parentData;
   final Map<String, dynamic> filters;
+  final Map<String, dynamic>? evalData;
   final VoidCallback onSuccess;
   final bool? bypassPermission;
 
@@ -19,6 +21,7 @@ class ActionButtonRegular extends StatefulWidget {
     required this.entity,
     required this.parentData,
     required this.filters,
+    this.evalData,
     required this.onSuccess,
     this.bypassPermission,
     this.expanded = false,
@@ -226,16 +229,23 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
 
   @override
   Widget build(BuildContext context) {
+    final canAccess = AccessPolicyEvaluator.instance.canAccessAction(
+      widget.actionD,
+      entity: widget.entity,
+      data: widget.evalData ?? widget.filters,
+      parentData: widget.parentData,
+      bypassPermission: widget.bypassPermission,
+    );
+    if (!canAccess) return const SizedBox.shrink();
+
     return LightButtonSmall(
       title: widget.actionD.name,
       action: widget.actionD.action,
       iconColor: _parseColor(widget.actionD.iconColor),
       onPressed: _onPressed,
       status: _status,
-      permissions: ((widget.bypassPermission ?? false) ||
-              widget.entity.bypassAllPermissions)
-          ? null
-          : [widget.actionD.getPermission(widget.entity.id)],
+      // Evaluated synchronously above by AccessPolicyEvaluator.
+      permissions: null,
       iconOverride: _actionIcon(widget.actionD),
       expanded: widget.expanded,
     );

@@ -4,13 +4,35 @@ This document describes the variables and helper functions available for use wit
 
 ## Global Variables
 
-These variables are always available throughout the application context.
+These variables are always available throughout the application context (in `{{ ... }}` interpolation, `Rule` / `visible_if` evaluation, `submit_workflow`, and single-brace `{...}` URL templates).
 
 | Key | Description | Example Usage |
 | :--- | :--- | :--- |
+| `user` | **Dynamic JWT User Object** containing normalized fields (`user.id`, `user.name`, `user.roles`, `user.capabilities`, `user.cs`, `user.custom`, `user.token`, `user.permissions`) **plus every raw claim present in the active JWT payload** (e.g. `user.nip`, `user.department_id`, `user.site_id`, `user.email`, or any JSON keys unpacked from `cs`). `user.capabilities` combines both JWT-embedded and server-synced (`/auth/capabilities`) capabilities consistently across UI rules, JS interpolation, and `submit_workflow`. | `{{ user.nip }}`, `{{ user.roles }}`, `{{ user.capabilities }}` |
+| `jwt` / `user_claims` | Raw decoded JWT payload claims map from the active access token. | `{{ jwt.sub }}`, `{{ jwt.nip }}` |
+| `user_roles` | Normalized array of role names extracted from JWT (`rl`, `roles`, or `role`, automatically stripping `/127` bitmask suffixes). | `[[ user_roles ]]` |
+| `user_id` / `auth_nik` | The unique identifier of the currently logged-in user. | `User: {{ user_id }}` |
+| `user_name` | The display name (`nm` or `name`) of the currently logged-in user. | `{{ user_name }}` |
+| `user_custom` | The raw custom claim (`cs`) from the active JWT token. | `{{ user_custom }}` |
 | `auth_token` | The authentication token used for HTTP requests. | `Bearer {{ auth_token }}` |
-| `user_id` | The unique identifier of the currently logged-in user. | `User: {{ user_id }}` |
 | `backend_host` | The base URL of the backend server. | `{{ backend_host }}/api/resource` |
+
+### Dynamic `user.<claim>` Resolution (Best Practice)
+
+Rather than hardcoding project-specific variables in the engine, **any claim included in the JWT payload** is automatically exposed under `user.<claim>`:
+- If the JWT contains `"nip": "EMP-QA-001"`, access it via `{{ user.nip }}` (or `{user.nip}` in single-brace URL templates).
+- If the JWT contains `"cs": "EMP-QA-001"` without an explicit `nip` claim, `{{ user.cs }}`, `{{ user.custom }}`, and `{{ user.nip }}` automatically resolve to `"EMP-QA-001"`.
+- If the JWT contains a JSON-serialized object in `cs` (e.g. `"cs": "{\"nip\":\"EMP-01\",\"shift\":\"A\"}"`), its keys are unpacked automatically so `{{ user.nip }}` and `{{ user.shift }}` work out of the box.
+- In declarative `Rule` / `visible_if` conditions, dot-paths like `"field": "user.roles"` or `"value": "{{ user.nip }}"` are resolved **natively in Dart** without invoking the JavaScript runtime:
+  ```json
+  "rule": {
+    "all": [
+      { "field": "status", "op": "=", "value": "EVALUATION_APPROVAL" },
+      { "field": "prepared_by", "op": "!=", "value": "{{ user.nip }}" },
+      { "field": "user.roles", "op": "contains", "value": "plant_qa_manager" }
+    ]
+  }
+  ```
 
 ## Contextual Variables
 
@@ -26,6 +48,8 @@ These variables are available depending on the specific UI component or action b
 | `parentData` | List of all ancestor records in hierarchical navigation or sub-detail views (`parentData.0`, `parentData.1`, etc.). |
 | `vars` | Local variables defined within a specific scope or action. |
 | `http` | Data returned from an HTTP request (used in post-request actions). |
+| `signature` | Verified electronic signature payload (`signature.token`, `signature.meaning`, `signature.signer_name`, `signature.signer_nip`, `signature.signed_at`) available after `ElectronicSignatureDialog` confirmation. |
+| `table` | Current data table state (`table.is_empty`, `table.count`, `table.status`) available in `actions_home` and `homeActionForms` visibility rules (`Rule`). |
 
 ## Custom Global Variables
 

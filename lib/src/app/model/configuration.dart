@@ -2,6 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
+import 'package:flx_nocode_flutter/core/access/access_control_config.dart';
+import 'package:flx_nocode_flutter/core/access/access_policy_evaluator.dart';
+import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart' as core;
 import 'package:flutter/material.dart';
@@ -22,6 +25,7 @@ class Configuration extends HiveObject {
   final String? entityRegistration;
   final bool showLandingPage;
   final List<GlobalVariable> variables;
+  final AccessControlConfig accessControl;
 
   Configuration({
     required this.menuGroups,
@@ -36,6 +40,7 @@ class Configuration extends HiveObject {
     required this.preload,
     required this.showLandingPage,
     this.variables = const [],
+    this.accessControl = const AccessControlConfig(),
   });
 
   Configuration copyWith({
@@ -51,6 +56,7 @@ class Configuration extends HiveObject {
     List<String>? preload,
     bool? showLandingPage,
     List<GlobalVariable>? variables,
+    AccessControlConfig? accessControl,
   }) {
     return Configuration(
       variables: variables ?? this.variables,
@@ -65,11 +71,15 @@ class Configuration extends HiveObject {
       logoNamedUrl: logoNamedUrl ?? this.logoNamedUrl,
       authUrl: authUrl ?? this.authUrl,
       entityRegistration: entityRegistration ?? this.entityRegistration,
+      accessControl: accessControl ?? this.accessControl,
     );
   }
 
   factory Configuration.fromJson(Map<String, dynamic> json) {
     try {
+      final rawAccessControl = json['access_control'];
+      final legacyBypass = json['bypass_all_permissions'] == true ||
+          json['bypass_permission'] == true;
       return Configuration(
         showLandingPage: json['show_landing_page'] ?? false,
         preload: (json['preload'] as List<dynamic>?)
@@ -97,6 +107,12 @@ class Configuration extends HiveObject {
                 ?.map((e) => GlobalVariable.fromJson(e))
                 .toList() ??
             [],
+        accessControl: AccessControlConfig.fromJson(
+          rawAccessControl is Map
+              ? Map<String, dynamic>.from(rawAccessControl)
+              : null,
+          legacyBypass: legacyBypass,
+        ),
       );
     } catch (e) {
       throw Exception('Failed to parse configuration: $e');
@@ -170,26 +186,55 @@ class Configuration extends HiveObject {
       'preload': preload,
       'entity_registration': entityRegistration,
       'variables': variables.map((e) => e.toJson()).toList(),
+      'access_control': accessControl.toJson(),
     };
   }
 
-  List<core.Menu1> menu() {
-    return menuGroups
+  /// Returns [menuGroups] filtered through [AccessPolicyEvaluator], pruning
+  /// any empty [Menu] and [MenuGroup].
+  List<MenuGroup> filteredMenuGroups({
+    AccessPolicyEvaluator? evaluator,
+    bool? bypassPermission,
+  }) {
+    final activeEvaluator = evaluator ??
+        AccessPolicyEvaluator(config: accessControl);
+    return activeEvaluator.filterMenuGroups(
+      menuGroups,
+      bypassPermission: bypassPermission ?? accessControl.bypassAllPermissions,
+    );
+  }
+
+  List<core.Menu1> menu({
+    AccessPolicyEvaluator? evaluator,
+    bool? bypassPermission,
+  }) {
+    final effectiveBypass =
+        bypassPermission ?? accessControl.bypassAllPermissions;
+    final visibleGroups = filteredMenuGroups(
+      evaluator: evaluator,
+      bypassPermission: effectiveBypass,
+    );
+    return visibleGroups
         .map(
-          (e) => core.Menu1(
-            label: e.label,
-            menu: e.menu
+          (group) => core.Menu1(
+            label: group.label,
+            menu: group.menu
                 .map(
-                  (e) => core.Menu2(
-                    label: e.label,
+                  (m) => core.Menu2(
+                    label: m.label,
                     icon: Icons.list,
-                    menu: e.menuSub
+                    menu: m.menuSub
                         .map(
-                          (e) => core.Menu3(
-                            label: e.label,
+                          (sub) => core.Menu3(
+                            label: sub.label,
                             home: MenuCustom.fromId(
-                                entityId: e.entity, parentData: []),
-                            permission: e.entity + '_read',
+                              entityId: sub.entity,
+                              parentData: [],
+                              bypassPermission: effectiveBypass,
+                            ),
+                            // Access has already been evaluated synchronously
+                            // by AccessPolicyEvaluator (Single Source of Truth).
+                            permission: null,
                           ),
                         )
                         .toList(),
@@ -282,24 +327,42 @@ class Company extends HiveObject {
 class MenuGroup extends HiveObject {
   final String label;
   final List<Menu> menu;
+  final Rule? rule;
+  final List<String> permissions;
 
-  MenuGroup({required this.label, required this.menu});
+  MenuGroup({
+    required this.label,
+    required this.menu,
+    this.rule,
+    this.permissions = const [],
+  });
 
   MenuGroup copyWith({
     String? label,
     List<Menu>? menu,
+    Rule? rule,
+    List<String>? permissions,
   }) {
     return MenuGroup(
       label: label ?? this.label,
       menu: menu ?? this.menu,
+      rule: rule ?? this.rule,
+      permissions: permissions ?? this.permissions,
     );
   }
 
   factory MenuGroup.fromJson(Map<String, dynamic> json) {
+    final rawRule = json['rule'] ?? json['visible_if'];
     return MenuGroup(
       label: json['label'],
       menu:
           (json['menu'] as List<dynamic>).map((e) => Menu.fromJson(e)).toList(),
+      rule: rawRule is Map
+          ? Rule.fromMap(Map<String, dynamic>.from(rawRule))
+          : null,
+      permissions: AccessPolicyEvaluator.parsePermissionList(
+        json['permissions'] ?? json['permission'],
+      ),
     );
   }
 
@@ -307,6 +370,8 @@ class MenuGroup extends HiveObject {
     return {
       'label': label,
       'menu': menu.map((e) => e.toJson()).toList(),
+      if (rule != null) 'rule': rule!.toMap(),
+      if (permissions.isNotEmpty) 'permissions': permissions,
     };
   }
 }
@@ -315,32 +380,47 @@ class Menu extends HiveObject {
   final String label;
   final String icon;
   final List<MenuSub> menuSub;
+  final Rule? rule;
+  final List<String> permissions;
 
   Menu({
     required this.label,
     required this.icon,
     required this.menuSub,
+    this.rule,
+    this.permissions = const [],
   });
 
   Menu copyWith({
     String? label,
     String? icon,
     List<MenuSub>? menuSub,
+    Rule? rule,
+    List<String>? permissions,
   }) {
     return Menu(
       label: label ?? this.label,
       icon: icon ?? this.icon,
       menuSub: menuSub ?? this.menuSub,
+      rule: rule ?? this.rule,
+      permissions: permissions ?? this.permissions,
     );
   }
 
   factory Menu.fromJson(Map<String, dynamic> json) {
+    final rawRule = json['rule'] ?? json['visible_if'];
     return Menu(
       label: json['label'],
-      icon: json['icon'],
+      icon: json['icon'] ?? '',
       menuSub: (json['menu_sub'] as List<dynamic>)
           .map((e) => MenuSub.fromJson(e))
           .toList(),
+      rule: rawRule is Map
+          ? Rule.fromMap(Map<String, dynamic>.from(rawRule))
+          : null,
+      permissions: AccessPolicyEvaluator.parsePermissionList(
+        json['permissions'] ?? json['permission'],
+      ),
     );
   }
 
@@ -349,6 +429,8 @@ class Menu extends HiveObject {
       'label': label,
       'icon': icon,
       'menu_sub': menuSub.map((e) => e.toJson()).toList(),
+      if (rule != null) 'rule': rule!.toMap(),
+      if (permissions.isNotEmpty) 'permissions': permissions,
     };
   }
 }
@@ -356,23 +438,41 @@ class Menu extends HiveObject {
 class MenuSub extends HiveObject {
   final String label;
   final String entity;
+  final Rule? rule;
+  final List<String> permissions;
 
-  MenuSub({required this.label, required this.entity});
+  MenuSub({
+    required this.label,
+    required this.entity,
+    this.rule,
+    this.permissions = const [],
+  });
 
   MenuSub copyWith({
     String? label,
     String? entity,
+    Rule? rule,
+    List<String>? permissions,
   }) {
     return MenuSub(
       label: label ?? this.label,
       entity: entity ?? this.entity,
+      rule: rule ?? this.rule,
+      permissions: permissions ?? this.permissions,
     );
   }
 
   factory MenuSub.fromJson(Map<String, dynamic> json) {
+    final rawRule = json['rule'] ?? json['visible_if'];
     return MenuSub(
       label: json['label'],
       entity: json['entity'],
+      rule: rawRule is Map
+          ? Rule.fromMap(Map<String, dynamic>.from(rawRule))
+          : null,
+      permissions: AccessPolicyEvaluator.parsePermissionList(
+        json['permissions'] ?? json['permission'],
+      ),
     );
   }
 
@@ -380,6 +480,8 @@ class MenuSub extends HiveObject {
     return {
       'label': label,
       'entity': entity,
+      if (rule != null) 'rule': rule!.toMap(),
+      if (permissions.isNotEmpty) 'permissions': permissions,
     };
   }
 }

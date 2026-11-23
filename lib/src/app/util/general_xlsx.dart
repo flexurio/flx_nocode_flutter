@@ -1,11 +1,14 @@
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
+import 'package:flx_nocode_flutter/features/field/domain/field_value_label_resolver.dart';
+import 'package:flx_nocode_flutter/features/field/models/field.dart';
 
 List<int> generalXlsxNoCode(
   BuildContext? context,
   List<Map<String, dynamic>> data,
-  List<String> fields,
-) {
+  List<String> fields, {
+  List<EntityField>? entityFields,
+}) {
   for (final field in fields) {
     if (data.isNotEmpty && !data[0].containsKey(field)) {
       throw Exception(
@@ -14,6 +17,8 @@ List<int> generalXlsxNoCode(
       );
     }
   }
+
+  final labelFields = FieldValueLabelResolver.indexFieldsWithLabels(entityFields);
 
   final excel = Excel.createExcel();
   final sheet = excel['Sheet1'];
@@ -32,7 +37,12 @@ List<int> generalXlsxNoCode(
       final val = row[field];
       if (val == null) {
         return TextCellValue('-');
-      } else if (val is int) {
+      }
+      final labelField = labelFields[field];
+      if (labelField != null) {
+        return TextCellValue(labelField.resolveDisplayLabel(val));
+      }
+      if (val is int) {
         return IntCellValue(val);
       } else if (val is double) {
         return DoubleCellValue(val);

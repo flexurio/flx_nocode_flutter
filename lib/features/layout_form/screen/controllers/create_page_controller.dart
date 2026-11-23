@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
@@ -9,6 +10,8 @@ import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:flx_nocode_flutter/features/entity/models/action_signature.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/electronic_signature_dialog.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/src/app/resource/user_repository.dart';
@@ -34,6 +37,8 @@ class CreatePageController extends GetxController {
     required this.parentData,
     this.filters = const {},
     this.httpRequestExecutor,
+    this.actionSignature,
+    this.actionName,
   });
 
   /// The entity template for this form.
@@ -41,6 +46,13 @@ class CreatePageController extends GetxController {
 
   /// Optional executor for HTTP requests, primarily for testing.
   final HttpRequestExecutor? httpRequestExecutor;
+
+  /// Optional e-signature configuration passed from an opening [ActionD]
+  /// (`open_page`), used as fallback when `submit_workflow.signature` is not set.
+  final ActionSignature? actionSignature;
+
+  /// Optional action display name for the e-signature dialog header.
+  final String? actionName;
 
   /// Target layout form identifier.
   final String layoutFormId;
@@ -165,7 +177,10 @@ class CreatePageController extends GetxController {
       for (final entry in initialData.entries) {
         final ctrl = ctrls[entry.key];
         if (ctrl != null) {
-          ctrl.text = entry.value?.toString() ?? '';
+          final val = entry.value;
+          ctrl.text = (val is List || val is Map)
+              ? jsonEncode(val)
+              : (val?.toString() ?? '');
         }
       }
     }
@@ -242,7 +257,7 @@ class CreatePageController extends GetxController {
   /// Validates the form and triggers the submit workflow defined in the layout form.
   ///
   /// Supports both standard and multi-step validation.
-  void submit(BuildContext context) {
+  void submit(BuildContext context) async {
     if (layoutForm.multiForms.isNotEmpty) {
       bool allValid = true;
       for (final key in stepFormKeys) {
@@ -256,6 +271,26 @@ class CreatePageController extends GetxController {
       return;
     }
 
+    // Check for e-signature requirement (workflow-level takes precedence over action-level)
+    SignatureResult? signatureResult;
+    final sigConfig = layoutForm.submitWorkflow?.signature ?? actionSignature;
+    if (sigConfig != null) {
+      signatureResult = await ElectronicSignatureDialog.prompt(
+        context: context,
+        signature: sigConfig,
+        actionName: layoutForm.submitWorkflow?.submitLabel ?? actionName,
+      );
+      if (signatureResult == null || !context.mounted) {
+        // User cancelled, verification failed, or widget was unmounted
+        return;
+      }
+    }
+
+    final effectiveSignatureMap = signatureResult?.toMap() ??
+        (initialDataInput?['signature'] is Map
+            ? Map<String, dynamic>.from(initialDataInput!['signature'] as Map)
+            : null);
+
     if (layoutForm.submitWorkflow != null) {
       Get.find<EntityController>(tag: 'entity_ctrl_$layoutFormId')
           .submitWorkflow(
@@ -267,6 +302,7 @@ class CreatePageController extends GetxController {
           if (parentData.isNotEmpty) 'parent': parentData.last,
           if (parentData.isNotEmpty) 'parentData': parentData,
         },
+        signature: effectiveSignatureMap,
         workflow: layoutForm.submitWorkflow!.toMap(),
         uiBridge: ProductionUiBridge(
           layoutFormId: layoutFormId,

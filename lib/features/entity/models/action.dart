@@ -1,7 +1,9 @@
 import 'package:flx_core_flutter/flx_core_flutter.dart' hide TColumn;
+import 'package:flx_nocode_flutter/core/access/access_policy_evaluator.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
 import 'package:flx_nocode_flutter/features/component/models/component.dart';
+import 'package:flx_nocode_flutter/features/entity/models/action_signature.dart';
 import 'package:hive/hive.dart';
 
 enum ActionType {
@@ -91,6 +93,7 @@ class ActionD extends HiveObject {
   final String? confirmMessage;
   final String? iconColor;
   final String? permission;
+  final List<String> permissions;
 
   // for success dialog with data
   final String? successTitle;
@@ -146,6 +149,9 @@ class ActionD extends HiveObject {
   /// Optional badges list to apply or override on target entity view
   final List<dynamic>? badges;
 
+  /// Optional electronic signature requirements before executing the action.
+  final ActionSignature? signature;
+
   ActionD({
     required this.isMultiple,
     required this.onSuccess,
@@ -166,6 +172,7 @@ class ActionD extends HiveObject {
     this.confirmMessage,
     this.iconColor,
     this.permission,
+    this.permissions = const [],
     this.successTitle,
     this.successMessage,
     this.copyLabel,
@@ -188,6 +195,7 @@ class ActionD extends HiveObject {
     this.filters,
     this.params,
     this.badges,
+    this.signature,
   }) {
     if (type == ActionType.openPage || type == ActionType.showDialog) {
       final isTableView = viewType == 'table' || (targetEntityId != null && targetEntityId!.isNotEmpty);
@@ -219,6 +227,7 @@ class ActionD extends HiveObject {
     String? confirmMessage,
     String? iconColor,
     String? permission,
+    List<String>? permissions,
     String? successTitle,
     String? successMessage,
     String? copyLabel,
@@ -241,8 +250,10 @@ class ActionD extends HiveObject {
     List<dynamic>? filters,
     Map<String, dynamic>? params,
     List<dynamic>? badges,
+    ActionSignature? signature,
   }) {
     return ActionD(
+      signature: signature ?? this.signature,
       exportFormat: exportFormat ?? this.exportFormat,
       exportColumns: exportColumns ?? this.exportColumns,
       value: value ?? this.value,
@@ -267,6 +278,7 @@ class ActionD extends HiveObject {
       confirmMessage: confirmMessage ?? this.confirmMessage,
       iconColor: iconColor ?? this.iconColor,
       permission: permission ?? this.permission,
+      permissions: permissions ?? this.permissions,
       successTitle: successTitle ?? this.successTitle,
       successMessage: successMessage ?? this.successMessage,
       copyLabel: copyLabel ?? this.copyLabel,
@@ -342,7 +354,10 @@ class ActionD extends HiveObject {
       confirmTitle: json['confirm_title'],
       confirmMessage: json['confirm_message'],
       iconColor: json['icon_color'],
-      permission: json['permission'],
+      permission: json['permission'] is String ? json['permission'] as String : null,
+      permissions: AccessPolicyEvaluator.parsePermissionList(
+        json['permissions'] ?? json['permission'],
+      ),
       successTitle: json['success_title'],
       successMessage: json['success_message'],
       copyLabel: json['copy_label'],
@@ -380,6 +395,9 @@ class ActionD extends HiveObject {
           ? Map<String, dynamic>.from(json['params'] as Map)
           : null,
       badges: json['badges'] is List ? (json['badges'] as List) : null,
+      signature: json.containsKey('signature')
+          ? ActionSignature.fromJson(json['signature'])
+          : null,
     );
   }
 
@@ -402,6 +420,7 @@ class ActionD extends HiveObject {
       if (filters != null) 'filters': filters,
       if (params != null) 'params': params,
       if (badges != null) 'badges': badges,
+      if (signature != null) 'signature': signature!.toJson(),
       'icon': icon,
       'icon_code': iconCode,
       if (rule != null) 'rule': rule!.toMap(),
@@ -412,6 +431,7 @@ class ActionD extends HiveObject {
       'confirm_message': confirmMessage,
       'icon_color': iconColor,
       'permission': permission,
+      if (permissions.isNotEmpty) 'permissions': permissions,
       'success_title': successTitle,
       'success_message': successMessage,
       'copy_label': copyLabel,
@@ -461,8 +481,19 @@ class ActionD extends HiveObject {
     }
   }
 
+  /// Explicit capability/permission tokens declared on this action (without
+  /// fabricating a legacy `<entityId>_<id>` token when omitted).
+  List<String> get explicitPermissions {
+    if (permissions.isNotEmpty) return permissions;
+    if (permission != null && permission!.trim().isNotEmpty) {
+      return AccessPolicyEvaluator.parsePermissionList(permission);
+    }
+    return const [];
+  }
+
   String getPermission(String entityId) {
     if (permission != null && permission!.isNotEmpty) return permission!;
+    if (permissions.isNotEmpty) return permissions.first;
     return '${entityId}_$id';
   }
 }

@@ -121,6 +121,7 @@ class PdfTableComponent {
     }
 
     // Render Body
+    bool showEmptyBanner = false;
     if (model.body.isNotEmpty) {
       if (model.data.isNotEmpty) {
         // Dynamic data-driven rows
@@ -130,14 +131,21 @@ class PdfTableComponent {
         int rowIndex = 0;
         for (final rawRow in model.data) {
           if (rawRow is! Map) continue;
-          final context = {
+          final context = <String, dynamic>{
+            'item': rawRow,
             'data': rawRow,
             'index': rowIndex,
-            'no': rowIndex + 1
+            'no': rowIndex + 1,
           };
           tableRows.add(buildRow(template, rowContext: context));
           rowIndex++;
         }
+      } else if (model.emptyText != null &&
+          model.emptyText!.trim().isNotEmpty) {
+        showEmptyBanner = true;
+      } else if (model.hasDataBinding && _bodyContainsPlaceholders(model.body)) {
+        // Dynamic table bound to an empty list without empty_text: do not leak
+        // raw `{{item.*}}` / `{{data.*}}` placeholders into the PDF.
       } else {
         // Static rows
         if (model.body.first is List) {
@@ -161,13 +169,46 @@ class PdfTableComponent {
       }
     }
 
-
-    return pw.Table(
+    final tableWidget = pw.Table(
       columnWidths: columnWidths,
       border: pw.TableBorder.all(color: PdfColors.grey, width: 0.5),
       defaultVerticalAlignment: pw.TableCellVerticalAlignment.full,
       children: tableRows,
     );
+
+    if (showEmptyBanner) {
+      return pw.Column(
+        mainAxisSize: pw.MainAxisSize.min,
+        crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+        children: [
+          if (tableRows.isNotEmpty) tableWidget,
+          pw.Container(
+            padding: cellPadding,
+            decoration: pw.BoxDecoration(
+              border: pw.Border(
+                left: const pw.BorderSide(color: PdfColors.grey, width: 0.5),
+                right: const pw.BorderSide(color: PdfColors.grey, width: 0.5),
+                bottom: const pw.BorderSide(color: PdfColors.grey, width: 0.5),
+                top: tableRows.isEmpty
+                    ? const pw.BorderSide(color: PdfColors.grey, width: 0.5)
+                    : pw.BorderSide.none,
+              ),
+            ),
+            alignment: pw.Alignment.center,
+            child: pw.Text(
+              model.emptyText!,
+              style: pw.TextStyle(
+                fontSize: 9,
+                fontStyle: pw.FontStyle.italic,
+                color: PdfColors.grey700,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return tableWidget;
   }
 
   static pw.Alignment _parseAlignment(String? align) {
@@ -197,5 +238,23 @@ class PdfTableComponent {
     }
 
     return pw.Alignment(x, y);
+  }
+
+  static bool _bodyContainsPlaceholders(List<dynamic> body) {
+    bool containsInJson(dynamic node) {
+      if (node is String) return node.contains('{{') && node.contains('}}');
+      if (node is Map) return node.values.any(containsInJson);
+      if (node is List) return node.any(containsInJson);
+      return false;
+    }
+
+    for (final item in body) {
+      if (item is List) {
+        if (_bodyContainsPlaceholders(item)) return true;
+      } else if (item is PdfTableColumnModel) {
+        if (containsInJson(item.content.rawJson)) return true;
+      }
+    }
+    return false;
   }
 }

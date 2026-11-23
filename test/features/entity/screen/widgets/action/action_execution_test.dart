@@ -4,7 +4,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action.dart';
 import 'package:flx_nocode_flutter/src/app/model/user.dart';
-import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
 
 class MockEntityCustom extends Mock implements EntityCustom {}
 
@@ -56,6 +55,7 @@ void main() {
 
     // Provide some entity settings
     when(() => entity.id).thenReturn('test_entity');
+    when(() => entity.fields).thenReturn(const []);
 
     await tester.pumpWidget(MaterialApp(
       home: Scaffold(

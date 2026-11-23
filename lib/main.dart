@@ -84,48 +84,15 @@ Future<void> main() async {
     urlAuthApi: configuration.authUrl,
     withTwoFactor: false,
     onLoginSuccess: (accessToken, userPayload) async {
+      await CapabilitiesService.instance.syncFromBackend(
+        config: configuration.accessControl,
+        accessToken: accessToken,
+      );
       return userPayload;
     },
   );
   final home = AuthenticationBuilder(
-    authenticated: () {
-      final user = UserRepositoryAppNocode.instance.userApp!;
-      final name = user.name;
-      final permissions = UserRepositoryAppNocode.instance.permissions;
-      return MenuPage.prepare(
-        bypassPermission: true,
-        initialState: () async {
-          final p = configuration.preload;
-          for (final preload in p) {
-            try {
-              final e = await EntityCustom.getEntity(preload);
-              EntityCustomRepository.instance.fetch(
-                accessToken: UserRepositoryAppNocode.instance.token ?? '',
-                pageOptions: PageOptions.emptyNoLimit(),
-                method: e!.backend.readAll!.method,
-                path: e.backend.readAll!.urlWithValues,
-                filterMap: {},
-                cachedDurationSeconds: e.backend.readAll!.cacheDurationSeconds,
-              );
-            } catch (e) {
-              print('Error preload $preload $e');
-            }
-          }
-        },
-        logoNamed: configuration.logoNamedUrl,
-        logoUrl: configuration.logoUrl,
-        appName: configuration.appName,
-        menu: configuration.menu(),
-        accountSubtitle: '${user.id} - ${user.role}',
-        onChangePassword: (context) {},
-        searchData: (context, query) => [],
-        accountPermissions: permissions,
-        accountName: name,
-        onLogout: () => AuthenticationBloc.instance.add(
-          const AuthenticationEvent.logout(),
-        ),
-      );
-    },
+    authenticated: () => _AuthenticatedMenuShell(configuration: configuration),
     unAuthenticated: signInPage,
   );
 
@@ -163,4 +130,93 @@ Future<void> main() async {
       );
     },
   );
+}
+
+/// Ensures server-driven capabilities (`AccessControlConfig.capabilitiesEndpoint`)
+/// are synchronized BEFORE constructing [MenuPage] on both fresh login and
+/// cold-start session restore, eliminating fail-open race conditions.
+class _AuthenticatedMenuShell extends StatefulWidget {
+  const _AuthenticatedMenuShell({required this.configuration});
+
+  final Configuration configuration;
+
+  @override
+  State<_AuthenticatedMenuShell> createState() =>
+      _AuthenticatedMenuShellState();
+}
+
+class _AuthenticatedMenuShellState extends State<_AuthenticatedMenuShell> {
+  late Future<void> _capabilitiesReady;
+
+  @override
+  void initState() {
+    super.initState();
+    _capabilitiesReady = _ensureCapabilitiesLoaded();
+  }
+
+  Future<void> _ensureCapabilitiesLoaded() async {
+    final accessControl = widget.configuration.accessControl;
+    if (accessControl.bypassAllPermissions) return;
+    if (accessControl.capabilitiesEndpoint != null &&
+        !UserRepositoryAppNocode.instance.hasCapabilitiesLoaded) {
+      await CapabilitiesService.instance.syncFromBackend(
+        config: accessControl,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<void>(
+      future: _capabilitiesReady,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final user = UserRepositoryAppNocode.instance.userApp!;
+        final name = user.name;
+        final effectivePermissions =
+            UserRepositoryAppNocode.instance.effectiveCapabilities;
+        final bypassAll = widget.configuration.accessControl.bypassAllPermissions;
+
+        return MenuPage.prepare(
+          bypassPermission: bypassAll,
+          initialState: () async {
+            final p = widget.configuration.preload;
+            for (final preload in p) {
+              try {
+                final e = await EntityCustom.getEntity(preload);
+                EntityCustomRepository.instance.fetch(
+                  accessToken: UserRepositoryAppNocode.instance.token ?? '',
+                  pageOptions: PageOptions.emptyNoLimit(),
+                  method: e!.backend.readAll!.method,
+                  path: e.backend.readAll!.urlWithValues,
+                  filterMap: {},
+                  cachedDurationSeconds:
+                      e.backend.readAll!.cacheDurationSeconds,
+                );
+              } catch (e) {
+                debugPrint('Error preload $preload $e');
+              }
+            }
+          },
+          logoNamed: widget.configuration.logoNamedUrl,
+          logoUrl: widget.configuration.logoUrl,
+          appName: widget.configuration.appName,
+          menu: widget.configuration.menu(bypassPermission: bypassAll),
+          accountSubtitle: '${user.id} - ${user.role}',
+          onChangePassword: (context) {},
+          searchData: (context, query) => [],
+          accountPermissions: effectivePermissions,
+          accountName: name,
+          onLogout: () => AuthenticationBloc.instance.add(
+            const AuthenticationEvent.logout(),
+          ),
+        );
+      },
+    );
+  }
 }

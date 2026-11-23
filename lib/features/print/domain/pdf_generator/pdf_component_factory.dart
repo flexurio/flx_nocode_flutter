@@ -1,5 +1,8 @@
+import 'package:flx_nocode_flutter/features/print/domain/pdf_generator/components/pdf_grid_component.dart';
+import 'package:flx_nocode_flutter/features/print/domain/pdf_generator/components/pdf_signature_block_component.dart';
 import 'package:flx_nocode_flutter/features/print/domain/pdf_generator/components/pdf_table_component.dart';
 import 'package:flx_nocode_flutter/features/print/domain/pdf_generator/utils/pdf_unit_utils.dart';
+import 'package:flx_nocode_flutter/features/print/domain/pdf_generator/utils/pdf_visibility_utils.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
@@ -7,12 +10,22 @@ class PdfComponentFactory {
   static pw.Widget buildComponent(
     Map<String, dynamic> comp,
     String defaultUnit,
-    Map<String, pw.ImageProvider> imageCache,
-  ) {
+    Map<String, pw.ImageProvider> imageCache, {
+    Map<String, dynamic> contextData = const {},
+  }) {
+    if (!PdfVisibilityUtils.isVisible(comp['visible_if'], contextData)) {
+      return pw.SizedBox();
+    }
+
     final x = PdfUnitUtils.convertToPt(comp['x'], defaultUnit);
     final y = PdfUnitUtils.convertToPt(comp['y'], defaultUnit);
 
-    pw.Widget widget = buildRawComponent(comp, defaultUnit, imageCache);
+    pw.Widget widget = buildRawComponent(
+      comp,
+      defaultUnit,
+      imageCache,
+      contextData: contextData,
+    );
 
     final rotation = comp['rotation'] as num?;
     if (rotation != null) {
@@ -29,11 +42,102 @@ class PdfComponentFactory {
     );
   }
 
+  /// Builds a top-level flow component in Document mode.
+  ///
+  /// Returns a list of widgets so multi-row spanning components (`grid`,
+  /// `signature_block` with `keep_together: false`) can paginate cleanly
+  /// between rows inside `pw.MultiPage`.
+  static List<pw.Widget> buildFlowComponents(
+    Map<String, dynamic> comp,
+    String defaultUnit,
+    Map<String, pw.ImageProvider> imageCache, {
+    Map<String, dynamic> contextData = const {},
+  }) {
+    if (!PdfVisibilityUtils.isVisible(comp['visible_if'], contextData)) {
+      return const [];
+    }
+
+    final type = comp['type'] as String?;
+    final marginVal = comp['margin'];
+    final marginPadding = marginVal != null
+        ? PdfUnitUtils.parseEdgeInsets(marginVal, defaultUnit)
+        : null;
+
+    if (type == 'grid') {
+      final widgets = PdfGridComponent.buildWidgets(
+        comp,
+        defaultUnit,
+        imageCache,
+        (c, u, cache, {Map<String, dynamic>? contextData}) => buildRawComponent(
+          c,
+          u,
+          cache,
+          contextData: contextData ?? const {},
+        ),
+        rootContext: contextData,
+      );
+      return _applyFlowMargin(widgets, marginPadding);
+    }
+
+    if (type == 'signature_block') {
+      final widgets = PdfSignatureBlockComponent.buildWidgets(
+        comp,
+        defaultUnit,
+        imageCache,
+      );
+      return _applyFlowMargin(widgets, marginPadding);
+    }
+
+    pw.Widget widget = buildRawComponent(
+      comp,
+      defaultUnit,
+      imageCache,
+      contextData: contextData,
+    );
+
+    if (marginPadding != null && type != 'container') {
+      widget = pw.Padding(padding: marginPadding, child: widget);
+    }
+
+    return [widget];
+  }
+
+  static List<pw.Widget> _applyFlowMargin(
+    List<pw.Widget> widgets,
+    pw.EdgeInsetsGeometry? margin,
+  ) {
+    if (widgets.isEmpty || margin == null) return widgets;
+    if (widgets.length == 1) {
+      return [pw.Padding(padding: margin, child: widgets.first)];
+    }
+    final resolved = margin.resolve(pw.TextDirection.ltr);
+    return [
+      if (resolved.top > 0) pw.SizedBox(height: resolved.top),
+      ...widgets.map(
+        (w) => (resolved.left > 0 || resolved.right > 0)
+            ? pw.Padding(
+                padding: pw.EdgeInsets.only(
+                  left: resolved.left,
+                  right: resolved.right,
+                ),
+                child: w,
+              )
+            : w,
+      ),
+      if (resolved.bottom > 0) pw.SizedBox(height: resolved.bottom),
+    ];
+  }
+
   static pw.Widget buildRawComponent(
     Map<String, dynamic> comp,
     String defaultUnit,
-    Map<String, pw.ImageProvider> imageCache,
-  ) {
+    Map<String, pw.ImageProvider> imageCache, {
+    Map<String, dynamic> contextData = const {},
+  }) {
+    if (!PdfVisibilityUtils.isVisible(comp['visible_if'], contextData)) {
+      return pw.SizedBox();
+    }
+
     final type = comp['type'] as String?;
     final width = comp['width'] != null
         ? PdfUnitUtils.convertToPt(comp['width'], defaultUnit)
@@ -47,11 +151,22 @@ class PdfComponentFactory {
     switch (type) {
       case 'text':
         final isBold = comp['is_bold'] as bool? ?? false;
+        PdfColor? textColor;
+        final colorStr = comp['color']?.toString();
+        if (colorStr != null && colorStr.trim().isNotEmpty) {
+          try {
+            textColor = PdfColor.fromHex(colorStr.trim());
+          } catch (_) {}
+        }
         widget = pw.Text(
           comp['value']?.toString() ?? '',
+          textAlign: _parseTextAlign(comp['align']?.toString()),
+          softWrap: comp['soft_wrap'] is bool ? comp['soft_wrap'] as bool : null,
+          maxLines: comp['max_lines'] is int ? comp['max_lines'] as int : null,
           style: pw.TextStyle(
             fontSize: PdfUnitUtils.convertToPt(comp['font_size'] ?? 12, 'pt'),
             fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal,
+            color: textColor,
           ),
         );
         break;
@@ -134,7 +249,38 @@ class PdfComponentFactory {
         break;
       case 'table':
         widget = PdfTableComponent.build(
-            comp, defaultUnit, imageCache, buildRawComponent);
+          comp,
+          defaultUnit,
+          imageCache,
+          (c, u, cache) => buildRawComponent(
+            c,
+            u,
+            cache,
+            contextData: contextData,
+          ),
+        );
+        break;
+      case 'grid':
+        widget = PdfGridComponent.build(
+          comp,
+          defaultUnit,
+          imageCache,
+          (c, u, cache, {Map<String, dynamic>? contextData}) =>
+              buildRawComponent(
+            c,
+            u,
+            cache,
+            contextData: contextData ?? const {},
+          ),
+          rootContext: contextData,
+        );
+        break;
+      case 'signature_block':
+        widget = PdfSignatureBlockComponent.build(
+          comp,
+          defaultUnit,
+          imageCache,
+        );
         break;
       case 'column':
         final childrenJson = comp['children'] as List<dynamic>? ?? [];
@@ -143,9 +289,27 @@ class PdfComponentFactory {
               (comp['align'] ?? comp['cross_axis_alignment'])?.toString()),
           mainAxisAlignment: _parseMainAxisAlignment(
               (comp['valign'] ?? comp['main_axis_alignment'])?.toString()),
-          children: childrenJson.map((c) {
-            if (c is! Map) return pw.SizedBox();
-            return buildRawComponent(Map<String, dynamic>.from(c), defaultUnit, imageCache);
+          children: childrenJson.whereType<Map>().map((c) {
+            final childMap = Map<String, dynamic>.from(c);
+            if (!PdfVisibilityUtils.isVisible(
+                childMap['visible_if'], contextData)) {
+              return pw.SizedBox();
+            }
+            var childWidget = buildRawComponent(
+              childMap,
+              defaultUnit,
+              imageCache,
+              contextData: contextData,
+            );
+            final childMargin = childMap['margin'];
+            if (childMargin != null && childMap['type'] != 'container') {
+              final padding =
+                  PdfUnitUtils.parseEdgeInsets(childMargin, defaultUnit);
+              if (padding != null) {
+                childWidget = pw.Padding(padding: padding, child: childWidget);
+              }
+            }
+            return childWidget;
           }).toList(),
         );
         break;
@@ -156,23 +320,39 @@ class PdfComponentFactory {
               (comp['align'] ?? comp['main_axis_alignment'])?.toString()),
           crossAxisAlignment: _parseCrossAxisAlignment(
               (comp['valign'] ?? comp['cross_axis_alignment'])?.toString()),
-          children: childrenJson.map((c) {
-            if (c is! Map) return pw.SizedBox();
-            return buildRawComponent(Map<String, dynamic>.from(c), defaultUnit, imageCache);
+          children: childrenJson.whereType<Map>().map((c) {
+            final childMap = Map<String, dynamic>.from(c);
+            if (!PdfVisibilityUtils.isVisible(
+                childMap['visible_if'], contextData)) {
+              return pw.SizedBox();
+            }
+            return buildRawComponent(
+              childMap,
+              defaultUnit,
+              imageCache,
+              contextData: contextData,
+            );
           }).toList(),
         );
         break;
       case 'container':
         final childJson = comp['child'] as Map<String, dynamic>?;
-        final padding = PdfUnitUtils.parseEdgeInsets(comp['padding'], defaultUnit);
-        final margin = PdfUnitUtils.parseEdgeInsets(comp['margin'], defaultUnit);
+        final padding =
+            PdfUnitUtils.parseEdgeInsets(comp['padding'], defaultUnit);
+        final margin =
+            PdfUnitUtils.parseEdgeInsets(comp['margin'], defaultUnit);
         final borderColorStr = comp['border_color']?.toString();
         final borderWidth = (comp['border_width'] as num?)?.toDouble();
         final bgColorStr = comp['background_color']?.toString();
 
         pw.Widget? childWidget;
         if (childJson != null) {
-          childWidget = buildRawComponent(childJson, defaultUnit, imageCache);
+          childWidget = buildRawComponent(
+            childJson,
+            defaultUnit,
+            imageCache,
+            contextData: contextData,
+          );
         }
 
         pw.BoxDecoration? decoration;
@@ -216,6 +396,23 @@ class PdfComponentFactory {
     }
 
     return widget;
+  }
+
+  static pw.TextAlign? _parseTextAlign(String? align) {
+    if (align == null) return null;
+    switch (align.toLowerCase()) {
+      case 'center':
+        return pw.TextAlign.center;
+      case 'right':
+      case 'end':
+        return pw.TextAlign.right;
+      case 'justify':
+        return pw.TextAlign.justify;
+      case 'left':
+      case 'start':
+      default:
+        return pw.TextAlign.left;
+    }
   }
 
   static pw.CrossAxisAlignment _parseCrossAxisAlignment(String? alignment) {
@@ -263,5 +460,4 @@ class PdfComponentFactory {
         return pw.MainAxisAlignment.start;
     }
   }
-
 }

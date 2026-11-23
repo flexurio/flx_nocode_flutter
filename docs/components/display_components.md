@@ -44,7 +44,9 @@ Renders a read-only labeled value.
 | `widthMode` | String | `hug` | `fill`, `hug`, or `fixed`. |
 | `flex` | Integer | - | Flex factor. |
 | `is_chip` / `isChip` | Boolean | `false` | Whether to render the field value as a colored status chip. |
-| `chip_colors` / `chipColors` | Object | - | Map of custom color overrides for chips (key is status name, value is hex color). |
+| `field_ref` / `fieldRef` | String | - | Optional reference to an `EntityField.reference` to inherit its `value_labels`, static `options_source`, and `chip_colors` without duplicating config. Also auto-inferred for simple templates like `{{current.status}}`. |
+| `value_labels` / `chip_labels` | Object | - | Optional local override mapping raw status/enum codes to display labels. |
+| `chip_colors` / `chipColors` | Object | - | Map of custom color overrides for chips (matched against the raw code before label translation, exact match first). |
 
 Example:
 
@@ -58,20 +60,39 @@ Example:
 }
 ```
 
-Example with Status Chip:
+Example with Status Chip (Recommended — inheriting from `EntityField` via `field_ref`):
+
+```json
+{
+  "id": "status_display",
+  "type": "field_display",
+  "label": "Status",
+  "value": "{{current.status}}",
+  "field_ref": "status",
+  "is_chip": true
+}
+```
+
+> When rendered inside an entity view (`EntityViewPage` / `LayoutForm.toWidget(..., entityFields: entity.fields)`), `field_display` inherits `value_labels`, static `options_source`, and `chip_colors` from the matching `EntityField`. If `field_ref` is omitted, simple templates like `{{current.status}}` or `{{status}}` automatically infer the reference.
+
+Example with Standalone / Local Override:
 
 ```json
 {
   "id": "rv_status",
   "type": "field_display",
   "label": "Status",
-  "value": "{{data.status}}",
+  "value": "{{current.status}}",
   "is_chip": true,
+  "value_labels": {
+    "DRAFT": "Draf",
+    "EVALUATION_APPROVAL": "Evaluasi & Persetujuan",
+    "CLOSED": "Ditutup"
+  },
   "chip_colors": {
-    "REJECT": "#E53935",
-    "APPROVE": "#43A047",
-    "INPUT": "#1E88E5",
-    "CANCEL": "#757575"
+    "DRAFT": "#9E9E9E",
+    "EVALUATION_APPROVAL": "#F57C00",
+    "CLOSED": "#2E7D32"
   }
 }
 ```

@@ -28,6 +28,7 @@ export 'package:flx_nocode_flutter/features/component/models/component_multi_dro
 export 'package:flx_nocode_flutter/features/component/models/component_conditional.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
 export 'package:flx_nocode_flutter/features/component/models/component_user_name.dart';
+export 'package:flx_nocode_flutter/features/component/models/component_field_array.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_input_base.dart';
 import 'package:flx_nocode_flutter/features/component/models/c_column.dart';
 import 'package:flx_nocode_flutter/features/component/models/c_row.dart';
@@ -57,6 +58,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_form.dart
 import 'package:flx_nocode_flutter/features/component/models/component_multi_dropdown.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_conditional.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_user_name.dart';
+import 'package:flx_nocode_flutter/features/component/models/component_field_array.dart';
 
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
@@ -175,6 +177,9 @@ class Component {
       case ComponentType.userName:
         component = ComponentUserName.fromMap(map);
         break;
+      case ComponentType.fieldArray:
+        component = ComponentFieldArray.fromMap(map);
+        break;
 
       default:
         throw FormatException('Unknown component type "$type"');
@@ -253,6 +258,8 @@ class Component {
         return ComponentConditional.empty(Component._generateId(type));
       case ComponentType.userName:
         return ComponentUserName.empty(Component._generateId(type));
+      case ComponentType.fieldArray:
+        return ComponentFieldArray.empty(Component._generateId(type));
 
       default:
         throw FormatException('Unknown component type "$type"');
@@ -325,6 +332,10 @@ class Component {
       id: baseId,
       label: label,
       value: '{{${field.reference}}}',
+      fieldRef: field.reference,
+      isChip: field.isChip,
+      chipColors: field.chipColors,
+      valueLabels: field.valueLabels,
     );
   }
 
@@ -371,6 +382,7 @@ class ComponentType {
   static const String form = 'form';
   static const String conditional = 'conditional';
   static const String userName = 'user_name';
+  static const String fieldArray = 'field_array';
 
   static const List<ComponentTypeEntry> values = [
     ComponentTypeEntry(id: table, label: 'Table'),
@@ -401,6 +413,7 @@ class ComponentType {
     ComponentTypeEntry(id: form, label: 'Form'),
     ComponentTypeEntry(id: conditional, label: 'Conditional'),
     ComponentTypeEntry(id: userName, label: 'User Name'),
+    ComponentTypeEntry(id: fieldArray, label: 'Field Array'),
   ];
 
   static String labelOf(String type) => values

@@ -28,6 +28,7 @@ The `SubmitWorkflow` object is the root configuration for submission logic.
 | `lock_ui_while_submitting` | Boolean | No | `true` | If true, disables the form UI during execution. |
 | `submit_label` | String | No | - | Custom label for the primary submit button. |
 | `show_submit_button` | Boolean | No | `true` | Whether to display the default submit button. |
+| `signature` | Object | No | - | E-Signature configuration (CPOB/GMP). Prompts for password and meaning before workflow runs, and auto-injects `X-Signature-Token` header. |
 | `actions` | Array<Action> | Yes | - | The main sequence of actions to execute. |
 | `on_success` | Array<Action> | No | `[]` | Actions to run if the main sequence completes without errors. |
 | `on_error` | Array<Action> | No | `[]` | Actions to run if any action in the sequence fails. |
@@ -44,6 +45,7 @@ Workflows support dynamic data through the `{{ }}` interpolation syntax.
 - `{{ vars }}`: Temporary variables created during the workflow (via `set_var` or `loop` item var).
 - `{{ http.STEP_NAME }}`: Results of previous HTTP steps (contains `status`, `data`, and `headers`).
 - `{{ auth }}`: Current user authentication state (permissions, token).
+- `{{ signature }}`: E-Signature metadata if `signature` config is present (`{{ signature.token }}`, `{{ signature.meaning }}`, `{{ signature.signer_name }}`).
 - `{{ parent }}` / `{{ parentData }}`: Ancestor navigation data when navigating across multi-level entities (e.g. `{{ parent.id }}`).
 - `{{ filter }}` / `{{ filters }}`: Active page filters applied to the current context.
 

@@ -171,6 +171,13 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
           orElse: PageOptions<Map<String, dynamic>>.empty,
         );
 
+        if (pageOptions.data.isNotEmpty && widget.entity.fields.isNotEmpty) {
+          ReferenceLabelCache.instance.ensureLoadedForRows(
+            pageOptions.data,
+            widget.entity.fields,
+          );
+        }
+
         final activeLayoutTable =
             Map<String, int>.from(widget.entity.layoutTable);
         for (final layout in widget.entity.customeLayout) {

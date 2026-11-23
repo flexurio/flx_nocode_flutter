@@ -1,5 +1,6 @@
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
+import '../models/pdf_watermark_model.dart';
 
 abstract class PdfLayoutStrategy {
   Future<void> build({
@@ -10,5 +11,7 @@ abstract class PdfLayoutStrategy {
     required Map<String, pw.ImageProvider> imageCache,
     required List<dynamic> globalHeader,
     required List<dynamic> globalFooter,
+    Map<String, dynamic> contextData = const {},
+    PdfWatermarkModel? watermark,
   });
 }

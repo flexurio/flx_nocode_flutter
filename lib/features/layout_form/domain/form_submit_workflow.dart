@@ -130,6 +130,7 @@ class WorkflowContext {
   final Map<String, dynamic> data;
   final Map<String, dynamic> vars;
   final Map<String, HttpResult> http;
+  final Map<String, dynamic> signature;
 
   final AuthContext auth;
   final HttpExecutor httpExecutor;
@@ -144,11 +145,13 @@ class WorkflowContext {
     this.data = const {},
     Map<String, dynamic>? vars,
     Map<String, HttpResult>? http,
+    Map<String, dynamic>? signature,
     required this.auth,
     required this.httpExecutor,
     this.validator,
   })  : vars = vars ?? <String, dynamic>{},
-        http = http ?? <String, HttpResult>{};
+        http = http ?? <String, HttpResult>{},
+        signature = signature ?? <String, dynamic>{};
 }
 
 /// ============================================================================
@@ -398,14 +401,29 @@ class Template {
 
 class _WorkflowScopeBuilder {
   static Map<String, dynamic> build(WorkflowContext ctx) {
+    final userContext = _safeGetUserContext(ctx.auth.permissions);
+    final userId = (userContext['id'] ?? '').toString();
+    final userName = (userContext['name'] ?? '').toString();
+    final userRoles = userContext['roles'] is List
+        ? (userContext['roles'] as List)
+        : const <String>[];
+    final userClaims = userContext['claims'] is Map
+        ? (userContext['claims'] as Map)
+        : const <String, dynamic>{};
+
     final scope = <String, dynamic>{
       'form': _sanitize(ctx.form),
       'record': _sanitize(ctx.record),
       'data': _sanitize(ctx.data),
       'vars': _sanitize(ctx.vars),
+      'signature': _sanitize(ctx.signature),
+      'user': _sanitize(userContext),
+      'jwt': _sanitize(userClaims),
       'auth': <String, dynamic>{
         'token': _safeGetToken(),
         'permissions': ctx.auth.permissions,
+        'roles': _sanitize(userRoles),
+        'claims': _sanitize(userClaims),
       },
       'http': ctx.http.map(
         (k, v) => MapEntry(k, <String, dynamic>{
@@ -414,7 +432,12 @@ class _WorkflowScopeBuilder {
           'headers': _sanitize(v.headers),
         }),
       ),
-      'user_id': _safeGetUserId(),
+      'user_id': userId,
+      'auth_nik': userId,
+      'user_name': userName,
+      'user_roles': _sanitize(userRoles),
+      'user_claims': _sanitize(userClaims),
+      'user_custom': _sanitize(userContext['cs'] ?? ''),
     };
 
     // Add globals from Configuration
@@ -448,11 +471,19 @@ class _WorkflowScopeBuilder {
     }
   }
 
-  static String _safeGetUserId() {
+  static Map<String, dynamic> _safeGetUserContext(List<String> permissions) {
     try {
-      return UserRepositoryAppNocode.instance.userApp?.id?.toString() ?? '';
+      final repo = UserRepositoryAppNocode.instance;
+      if (repo.userApp != null) {
+        return repo.userApp!.toContextMap(
+          token: repo.token ?? '',
+          permissions: permissions.isNotEmpty ? permissions : repo.permissions,
+          capabilitiesOverride: repo.effectiveCapabilities,
+        );
+      }
+      return repo.userContext;
     } catch (_) {
-      return '';
+      return const <String, dynamic>{};
     }
   }
 

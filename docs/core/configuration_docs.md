@@ -18,6 +18,7 @@ The root of the JSON file is a single object that contains all configuration pro
 | `preload`            | Array<String> | No       | A list of entity IDs to preload data for when the application starts (cached in Hive via `cache_duration`). |
 | `company`            | Object        | Yes      | An object containing details about the company. See [Company Object](#company-object).                  |
 | `theme`              | Object        | Yes      | An object defining the application's color scheme. See [Theme Object](#theme-object).                   |
+| `access_control`     | Object        | No       | Centralized 2-layer access control settings (server-driven capabilities & bypass flag). See [Access Control Object](#access-control-object) and [Access Control Documentation](access_control.md). |
 | `menu_group`         | Array<Object> | Yes      | An array of objects that define the structure of the navigation menu. See [Menu Group Object](#menu-group-object). |
 
 ---
@@ -55,33 +56,51 @@ Defines the primary colors for the application's UI theme.
 | `color`      | String | Yes      | The primary theme color in hex format (e.g., `"#4A90E2"`).               |
 | `color_soft` | String | Yes      | A softer or lighter shade of the primary color (e.g., `"#BDE5F8"`).      |
 
+### Access Control Object
+
+Configures centralized 2-layer access control (`AccessPolicyEvaluator`). See [Access Control Documentation](access_control.md) for full details.
+
+| Key                                 | Type    | Required | Default | Description |
+| ----------------------------------- | ------- | -------- | ------- | ----------- |
+| `bypass_all_permissions`            | Boolean | No       | `false` | Secure by default. When `true`, bypasses Layer 1 capability checks (for dev/studio preview). |
+| `capabilities_endpoint`             | String  | No       | `null`  | Backend endpoint returning effective capabilities (e.g., `"{{backend_host}}/auth/capabilities"`). |
+| `auto_check_entity_read`            | Boolean | No       | `true`  | Automatically enforces `<entity>:read` on `menu_sub` when capabilities are loaded. |
+| `default_allow_when_unrestricted`   | Boolean | No       | `true`  | Allows items with no explicit capability or rule when no capability matrix restricts them. |
+| `allow_role_as_permission_fallback` | Boolean | No       | `false` | Optional legacy fallback allowing role names inside `permission` fields. |
+
 ### Menu Group Object
 
 Represents a top-level section in the navigation menu, often used to group related items.
 
-| Key     | Type          | Required | Description                                                              |
-| ------- | ------------- | -------- | ------------------------------------------------------------------------ |
-| `label` | String        | Yes      | The display text for the menu group header (e.g., "Master Data").        |
-| `menu`  | Array<Object> | Yes      | An array of menu items within this group. See [Menu Object](#menu-object). |
+| Key           | Type                     | Required | Description                                                                                             |
+| ------------- | ------------------------ | -------- | ------------------------------------------------------------------------------------------------------- |
+| `label`       | String                   | Yes      | The display text for the menu group header (e.g., "Master Data").                                       |
+| `menu`        | Array<Object>            | Yes      | An array of menu items within this group. See [Menu Object](#menu-object).                              |
+| `rule`        | Object (`Rule`)          | No       | Optional declarative visibility rule (alias: `visible_if`) evaluated against `user.*`. Inherited by children. |
+| `permissions` | String \| Array<String>  | No       | Optional required capability/permission(s) (alias: `permission`, OR match). Inherited by children.      |
 
 ### Menu Object
 
-Represents a second-level menu item, which contains one or more sub-menu items.
+Represents a second-level menu item, which contains one or more sub-menu items. Automatically hidden if all child `menu_sub` items are hidden.
 
-| Key        | Type          | Required | Description                                                                    |
-| ---------- | ------------- | -------- | ------------------------------------------------------------------------------ |
-| `label`    | String        | Yes      | The display text for this menu item (e.g., "Management").                      |
-| `icon`     | String        | Yes      | The icon to be displayed next to the label (e.g., a Font Awesome class like `fa fa-database`). |
-| `menu_sub` | Array<Object> | Yes      | An array of sub-menu items. See [Menu Sub Object](#menu-sub-object).           |
+| Key           | Type                     | Required | Description                                                                                             |
+| ------------- | ------------------------ | -------- | ------------------------------------------------------------------------------------------------------- |
+| `label`       | String                   | Yes      | The display text for this menu item (e.g., "Management").                                               |
+| `icon`        | String                   | Yes      | The icon to be displayed next to the label (e.g., a Font Awesome class like `fa fa-database`).          |
+| `menu_sub`    | Array<Object>            | Yes      | An array of sub-menu items. See [Menu Sub Object](#menu-sub-object).                                    |
+| `rule`        | Object (`Rule`)          | No       | Optional declarative visibility rule (alias: `visible_if`) evaluated against `user.*`. Inherited by children. |
+| `permissions` | String \| Array<String>  | No       | Optional required capability/permission(s) (alias: `permission`, OR match). Inherited by children.      |
 
 ### Menu Sub Object
 
 Represents the final, clickable menu item that navigates to a specific entity view.
 
-| Key      | Type   | Required | Description                                                              |
-| -------- | ------ | -------- | ------------------------------------------------------------------------ |
-| `label`  | String | Yes      | The display text for the sub-menu item (e.g., "Users").                  |
-| `entity` | String | Yes      | The unique identifier of the entity that this menu item will open.       |
+| Key           | Type                     | Required | Description                                                                                             |
+| ------------- | ------------------------ | -------- | ------------------------------------------------------------------------------------------------------- |
+| `label`       | String                   | Yes      | The display text for the sub-menu item (e.g., "Users").                                                 |
+| `entity`      | String                   | Yes      | The unique identifier of the entity that this menu item will open. When capabilities are loaded and `auto_check_entity_read` is `true`, automatically checks `<entity>:read`. |
+| `rule`        | Object (`Rule`)          | No       | Optional declarative visibility rule (alias: `visible_if`) evaluated against `user.*`.                  |
+| `permissions` | String \| Array<String>  | No       | Optional required capability/permission(s) (alias: `permission`, OR match), overriding auto `<entity>:read`. |
 
 ---
 

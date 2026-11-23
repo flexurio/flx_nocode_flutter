@@ -29,6 +29,7 @@ Many components share these layout and behavioral properties:
 | `field_display` | Display | Read-only label and value pair. |
 | `image` | Display | Image from URL. |
 | `table` | Display/Data | Configurable data grid. |
+| [`field_array`](./component_field_array.md) | Input/Collection | First-class repeatable editable rows (`table` or `card` presentation) with native array output and per-cell validation. |
 | `list_view` | Display/Data | Repeated item renderer from HTTP, local reference, or inline data. |
 | [`text_field`](./inputs/text_field.md) | Input | Text entry. |
 | [`number_field`](./inputs/number_field.md) | Input | Numeric entry. |

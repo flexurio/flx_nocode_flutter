@@ -20,6 +20,8 @@ import 'package:flx_nocode_flutter/src/app/util/picker_file.dart';
 import 'package:flx_nocode_flutter/features/print/domain/json_pdf_generator.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
+import 'package:flx_nocode_flutter/features/entity/models/action_signature.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/electronic_signature_dialog.dart';
 
 import 'action_confirm_dialog_extension.dart';
 import 'action_handler_extension.dart';
@@ -54,6 +56,36 @@ extension ActionExecutionExtension on ActionD {
         return;
       }
     }
+
+    // For `openPage`, defer e-signature to CreatePageController.submit() so the
+    // user fills & validates the form first, then signs right before submit.
+    // For `showConfirmationDialog`, prompt e-signature inside `onConfirm` so
+    // confirmation happens before password verification.
+    final deferSignatureToTarget =
+        type == ActionType.openPage || type == ActionType.showConfirmationDialog;
+
+    SignatureResult? signatureResult;
+    if (signature != null && !deferSignatureToTarget) {
+      signatureResult = await ElectronicSignatureDialog.prompt(
+        context: context,
+        signature: signature!,
+        actionName: name,
+      );
+      if (signatureResult == null || !context.mounted) {
+        // User aborted e-signature verification
+        return;
+      }
+    }
+
+    // Merge signature payload into context data if verified
+    final effectiveData = signatureResult != null
+        ? <String, dynamic>{
+            ...data,
+            'signature': signatureResult.toMap(),
+            'signature_token': signatureResult.token,
+            'signature_meaning': signatureResult.meaning,
+          }
+        : data;
 
     switch (type) {
       case ActionType.listJsonViewAsTable:
@@ -96,7 +128,7 @@ extension ActionExecutionExtension on ActionD {
         await _handlePrint(
           entity: entity,
           context: context,
-          data: data,
+          data: effectiveData,
           onSuccessCallback: onSuccessCallback,
         );
         break;
@@ -110,7 +142,7 @@ extension ActionExecutionExtension on ActionD {
           onConfirm: (ctx) => executeHttpSingle(
             entity,
             ctx,
-            data,
+            effectiveData,
             onSuccessCallback: onSuccessCallback,
           ),
         );
@@ -120,7 +152,7 @@ extension ActionExecutionExtension on ActionD {
         await executeWorkflowSingle(
           entity,
           context,
-          data,
+          effectiveData,
           onSuccessCallback: onSuccessCallback,
         );
         break;
@@ -143,16 +175,18 @@ extension ActionExecutionExtension on ActionD {
                 layoutFormId: layoutFormId!,
                 showSubmitButton: showSubmitButton,
                 parentData: parentData,
-                data: data,
+                data: effectiveData,
                 filters: const {},
                 width: width,
+                actionSignature: signature,
+                actionName: name,
                 onSuccess: (responseData) async {
                   onSuccessCallback?.call();
                   await handleOnSuccessSingle(
                     entity: entity,
                     context: context,
                     responseData: responseData,
-                    data: data,
+                    data: effectiveData,
                     onSuccessCallback: onSuccessCallback,
                   );
                 },
@@ -163,19 +197,21 @@ extension ActionExecutionExtension on ActionD {
           await Navigator.push(
             context,
             CreatePage.route(
-              data: data,
+              data: effectiveData,
               entity: entity,
               embedded: false,
               layoutFormId: layoutFormId!,
               width: width,
               showSubmitButton: showSubmitButton,
+              actionSignature: signature,
+              actionName: name,
               onSuccess: (responseData) async {
                 onSuccessCallback?.call();
                 await handleOnSuccessSingle(
                   entity: entity,
                   context: context,
                   responseData: responseData,
-                  data: data,
+                  data: effectiveData,
                   onSuccessCallback: onSuccessCallback,
                 );
               },
@@ -431,7 +467,8 @@ extension ActionExecutionExtension on ActionD {
                         child: MenuCustom.fromId(
                           entityId: target,
                           embedded: true,
-                          bypassPermission: true,
+                          bypassPermission: AccessPolicyEvaluator
+                              .instance.config.bypassAllPermissions,
                           initialFilters: resolvedFilters,
                           badges: badges,
                           parentData: [...parentData, data],
@@ -497,11 +534,26 @@ extension ActionExecutionExtension on ActionD {
           label: name,
           confirmationMessageText: confirmMessage,
           onConfirm: (ctx) async {
+            var confirmedData = effectiveData;
+            if (signature != null) {
+              final confirmedSig = await ElectronicSignatureDialog.prompt(
+                context: ctx,
+                signature: signature!,
+                actionName: name,
+              );
+              if (confirmedSig == null || !ctx.mounted) return;
+              confirmedData = <String, dynamic>{
+                ...effectiveData,
+                'signature': confirmedSig.toMap(),
+                'signature_token': confirmedSig.token,
+                'signature_meaning': confirmedSig.meaning,
+              };
+            }
             if (http != null) {
               await executeHttpSingle(
                 entity,
                 ctx,
-                data,
+                confirmedData,
                 onSuccessCallback: onSuccessCallback,
               );
             } else {
@@ -509,7 +561,7 @@ extension ActionExecutionExtension on ActionD {
                 entity: entity,
                 context: context,
                 responseData: null,
-                data: data,
+                data: confirmedData,
                 onSuccessCallback: onSuccessCallback,
               );
             }
@@ -741,10 +793,16 @@ extension ActionExecutionExtension on ActionD {
                   list.first.keys.toList();
 
               if (exportFormat == 'pdf') {
+                final formattedList =
+                    FieldValueLabelResolver.formatRowsForExport(
+                  list,
+                  fields,
+                  entity.fields,
+                );
                 final pdf = pw.Document()
                   ..addPage(
                     await pdfGeneral(
-                      data: list,
+                      data: formattedList,
                       title: name,
                       fields: fields,
                       printedBy:
@@ -756,7 +814,12 @@ extension ActionExecutionExtension on ActionD {
                   filename: '$name.pdf',
                 );
               } else {
-                final bytes = generalXlsxNoCode(context, list, fields);
+                final bytes = generalXlsxNoCode(
+                  context,
+                  list,
+                  fields,
+                  entityFields: entity.fields,
+                );
                 saveFileNocode(bytes, '$name.xlsx');
               }
               Toast(context).success('Export success');
@@ -809,9 +872,14 @@ extension ActionExecutionExtension on ActionD {
           final definition = WorkflowDefinition.fromJson(workflow!);
           final executor = GetxHttpExecutor();
 
+          final signatureMap = data['signature'] is Map
+              ? Map<String, dynamic>.from(data['signature'] as Map)
+              : <String, dynamic>{};
+
           final workflowCtx = WorkflowContext(
             form: formMap,
             data: recordMap,
+            signature: signatureMap,
             auth: AuthContext(
               permissions: UserRepositoryAppNocode.instance.permissions,
             ),
@@ -1023,6 +1091,7 @@ extension ActionExecutionExtension on ActionD {
         final pdfBytes = await JsonPdfGenerator.generate(
           layoutJson,
           data: contextData,
+          entityFields: entity.fields,
         );
 
         if (context.mounted) {

@@ -88,9 +88,19 @@ class _FDropDownSearchEntityState extends State<FDropDownSearchEntity> {
       _errorMessage = null;
     });
     try {
-      _options =
-          await OptionsSource(optionsSource: widget.entityField.optionsSource)
-              .options(parentData: widget.parentData);
+      final hasOptionsSource = widget.entityField.optionsSource != null &&
+          widget.entityField.optionsSource!.isNotEmpty;
+      if (hasOptionsSource) {
+        _options =
+            await OptionsSource(optionsSource: widget.entityField.optionsSource)
+                .options(parentData: widget.parentData);
+      } else if (widget.entityField.hasValueLabels) {
+        _options = Map<dynamic, dynamic>.from(
+          widget.entityField.effectiveValueLabels,
+        );
+      } else {
+        _options = {};
+      }
       _loading = false;
       print('[FDropDownSearchEntity] newValue');
       setState(() {});

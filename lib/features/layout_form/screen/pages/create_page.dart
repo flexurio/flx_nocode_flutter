@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
+import 'package:flx_nocode_flutter/features/entity/models/action_signature.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/entity_create_view.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
@@ -27,6 +28,8 @@ class CreatePage extends StatelessWidget {
     this.popup = false,
     this.width,
     this.showSubmitButton,
+    this.actionSignature,
+    this.actionName,
   });
 
   final Map<String, dynamic>? data;
@@ -41,6 +44,8 @@ class CreatePage extends StatelessWidget {
   final bool popup;
   final double? width;
   final bool? showSubmitButton;
+  final ActionSignature? actionSignature;
+  final String? actionName;
 
   static Widget prepare({
     Key? key,
@@ -57,6 +62,8 @@ class CreatePage extends StatelessWidget {
     bool popup = false,
     double? width,
     bool? showSubmitButton,
+    ActionSignature? actionSignature,
+    String? actionName,
   }) {
     if (configuration != null) {
       Configuration.instance = configuration;
@@ -80,7 +87,9 @@ class CreatePage extends StatelessWidget {
       autoBackWhenSuccess: autoBackWhenSuccess,
       popup: popup,
       width: width,
-          showSubmitButton: showSubmitButton,
+      showSubmitButton: showSubmitButton,
+      actionSignature: actionSignature,
+      actionName: actionName,
     );
   }
 
@@ -96,8 +105,10 @@ class CreatePage extends StatelessWidget {
     bool popup = false,
     double? width,
     bool? showSubmitButton,
+    ActionSignature? actionSignature,
+    String? actionName,
   }) {
-    print('CreatePage.route: layoutFormId: $layoutFormId');
+    debugPrint('CreatePage.route: layoutFormId: $layoutFormId');
     return PageTransition(
       opaque: true,
       type: PageTransitionType.rightToLeft,
@@ -112,7 +123,9 @@ class CreatePage extends StatelessWidget {
         autoBackWhenSuccess: autoBackWhenSuccess,
         popup: popup,
         width: width,
-          showSubmitButton: showSubmitButton,
+        showSubmitButton: showSubmitButton,
+        actionSignature: actionSignature,
+        actionName: actionName,
       ),
     );
   }
@@ -127,6 +140,8 @@ class CreatePage extends StatelessWidget {
         initialDataInput: data,
         parentData: parentData,
         filters: filters,
+        actionSignature: actionSignature,
+        actionName: actionName,
       ),
       builder: (controller) {
         if (controller.hasError.value) {

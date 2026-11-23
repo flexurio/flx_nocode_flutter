@@ -198,12 +198,16 @@ class EntityController extends GetxController {
     required Map<String, dynamic> form,
     required Map<String, dynamic> data,
     required Map<String, dynamic> workflow,
+    Map<String, dynamic>? signature,
     UiBridge? uiBridge,
   }) async {
     _state.value = const EntityState.loading();
     _logSection('WORKFLOW', '🚀 Starting Workflow Submission');
     _logKV('Form (User Input)', form);
     _logKV('Data (Record)', data);
+    if (signature != null && signature.isNotEmpty) {
+      _logKV('Signature', signature);
+    }
 
     try {
       final definition = WorkflowDefinition.fromJson(workflow);
@@ -212,6 +216,7 @@ class EntityController extends GetxController {
       final ctx = WorkflowContext(
         form: form,
         data: data,
+        signature: signature,
         auth: AuthContext(
           permissions: UserRepositoryAppNocode.instance.permissions,
         ),

@@ -2,6 +2,9 @@
 
 The `ComponentTable` is a powerful component designed to display dynamic data fetched from an API in a grid format. It supports custom column widths, deep data paths, and even nested components within table cells.
 
+> **When to use `field_array` instead of `table`:**
+> If you are building **editable child rows inside a form or `multi_forms` wizard** (with built-in Add/Delete row buttons, `min_rows`/`max_rows`/`unique_by` validation, per-cell `required` validation, and native JSON array output in `{{ form.<id> }}`), use [`field_array`](./component_field_array.md) instead of `table`. Keep using `table` for server-backed data grids (`http`), row actions, and legacy configs that rely on `JSON.parse(form.<table_id>)`.
+
 ## Component Properties
 
 | Key | Type | Required | Description |
