@@ -332,18 +332,18 @@ When relational tables store raw foreign-key identifiers (e.g. `capa_category_id
 
 ### Design Principles
 
-1. **Anti-N+1 Batch Fetching (DataLoader Pattern)**:
-   When rendering a table page or exporting records, `ReferenceLabelCache` automatically groups distinct IDs per column into a single batch HTTP request (e.g. `GET /plant_capa_categories?id.in=1,2,3`).
-2. **Global In-Memory TTL Cache**:
-   Resolved references are stored in memory (`cache_ttl_seconds`, default 300s) and shared across all screens, preventing redundant network requests on navigation.
+1. **Anti-N+1 Batch Fetching & Per-ID In-Flight Coalescing (DataLoader Pattern)**:
+   When rendering a table page or exporting records, `ReferenceLabelCache.ensureLoadedForRows` groups distinct IDs per column into a single batch HTTP request (e.g. `GET /plant_capa_categories?id.in=1,2,3`). Every in-flight ID is indexed individually (`_inFlightByKey`), so concurrent single-cell `resolveOne()` calls automatically attach to the active page batch without firing duplicate single-ID HTTP requests.
+2. **Template-Scoped Global In-Memory TTL Cache & Logout Hygiene**:
+   Resolved references are stored in memory keyed by `(path, key, labelTemplate, rawValue)` (`cache_ttl_seconds`, default 300s). Including `labelTemplate` in the cache key ensures two fields referencing the same entity with different formats (e.g. `{{item.code}} - {{item.name}}` vs `{{item.name}}`) never collide. Calling `UserRepositoryAppNocode.logout()` automatically clears `ReferenceLabelCache` for shared-workstation GMP/CPOB safety.
 3. **Automatic Auto-Derivation from `options_source`**:
    If a field already defines an `options_source` with `backend.<entity>({key}:{label})` (e.g. in form dropdowns), `display_source` is auto-derived automatically with zero duplicate configuration.
 4. **Consistency Across 5 Surfaces**:
-   - **Table**: Renders `"KODE - NAMA"` synchronously from cache (or asynchronously via `FutureBuilder`).
+   - **Table**: Renders `"KODE - NAMA"` synchronously from cache (or coalesces onto the page batch via `FutureBuilder`).
    - **Detail**: Component `field_display` automatically resolves foreign-key labels via `field_ref`.
    - **Filter**: `InlineFilter` automatically displays searchable options while emitting raw foreign key IDs.
-   - **Export XLSX**: `generalXlsxNoCode` formats cells with resolved display labels.
-   - **Print PDF**: `layout_print` enriches `<field>_label` placeholders in print templates.
+   - **Export XLSX**: `generalXlsxNoCode` formats cells with resolved display labels after `ButtonExport` preloads all rows.
+   - **Print PDF**: `JsonPdfGenerator` preloads foreign keys for both root `contextData` and nested `sources.*` lists, enriching `<field>_label` placeholders non-destructively.
 
 ### Schema & Properties
 

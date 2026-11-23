@@ -37,6 +37,8 @@ class CreatePageController extends GetxController {
     required this.parentData,
     this.filters = const {},
     this.httpRequestExecutor,
+    this.actionSignature,
+    this.actionName,
   });
 
   /// The entity template for this form.
@@ -44,6 +46,13 @@ class CreatePageController extends GetxController {
 
   /// Optional executor for HTTP requests, primarily for testing.
   final HttpRequestExecutor? httpRequestExecutor;
+
+  /// Optional e-signature configuration passed from an opening [ActionD]
+  /// (`open_page`), used as fallback when `submit_workflow.signature` is not set.
+  final ActionSignature? actionSignature;
+
+  /// Optional action display name for the e-signature dialog header.
+  final String? actionName;
 
   /// Target layout form identifier.
   final String layoutFormId;
@@ -262,20 +271,25 @@ class CreatePageController extends GetxController {
       return;
     }
 
-    // Check for e-signature requirement
+    // Check for e-signature requirement (workflow-level takes precedence over action-level)
     SignatureResult? signatureResult;
-    final sigConfig = layoutForm.submitWorkflow?.signature;
+    final sigConfig = layoutForm.submitWorkflow?.signature ?? actionSignature;
     if (sigConfig != null) {
       signatureResult = await ElectronicSignatureDialog.prompt(
         context: context,
         signature: sigConfig,
-        actionName: layoutForm.submitWorkflow?.submitLabel,
+        actionName: layoutForm.submitWorkflow?.submitLabel ?? actionName,
       );
-      if (signatureResult == null) {
-        // User cancelled or signature verification failed
+      if (signatureResult == null || !context.mounted) {
+        // User cancelled, verification failed, or widget was unmounted
         return;
       }
     }
+
+    final effectiveSignatureMap = signatureResult?.toMap() ??
+        (initialDataInput?['signature'] is Map
+            ? Map<String, dynamic>.from(initialDataInput!['signature'] as Map)
+            : null);
 
     if (layoutForm.submitWorkflow != null) {
       Get.find<EntityController>(tag: 'entity_ctrl_$layoutFormId')
@@ -288,7 +302,7 @@ class CreatePageController extends GetxController {
           if (parentData.isNotEmpty) 'parent': parentData.last,
           if (parentData.isNotEmpty) 'parentData': parentData,
         },
-        signature: signatureResult?.toMap(),
+        signature: effectiveSignatureMap,
         workflow: layoutForm.submitWorkflow!.toMap(),
         uiBridge: ProductionUiBridge(
           layoutFormId: layoutFormId,

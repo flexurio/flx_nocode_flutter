@@ -1,5 +1,6 @@
 import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
 import 'package:flx_nocode_flutter/core/access/access_policy_evaluator.dart';
+import 'package:flx_nocode_flutter/features/field/domain/reference_label_cache.dart';
 import 'package:flx_nocode_flutter/src/app/model/user.dart';
 import 'package:hive/hive.dart';
 
@@ -138,5 +139,6 @@ class UserRepositoryAppNocode extends UserRepository {
     permissions = <String>[];
     _capabilities = const [];
     _capabilitiesExplicitlyLoaded = false;
+    ReferenceLabelCache.instance.clear();
   }
 }

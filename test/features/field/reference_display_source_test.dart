@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_field_display.dart';
-import 'package:flx_nocode_flutter/features/data_table/screen/widgets/inline_filter.dart';
-import 'package:flx_nocode_flutter/features/field/domain/field_value_label_resolver.dart';
-import 'package:flx_nocode_flutter/features/field/domain/reference_label_cache.dart';
-import 'package:flx_nocode_flutter/features/field/models/display_source_model.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_display.dart';
-import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/layout_form.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/src/app/util/general_xlsx.dart';
 
@@ -493,6 +488,74 @@ void main() {
       );
 
       expect(find.text('SITE-CKR - Pabrik Cikarang'), findsOneWidget);
+    });
+  });
+
+  group('ReferenceLabelCache In-Flight Coalescing & Isolation', () {
+    test('resolveOne coalesces onto active resolveBatch without duplicate HTTP calls', () async {
+      int fetchCount = 0;
+      ReferenceLabelCache.instance.customFetcher = ({
+        required String path,
+        required String batchParam,
+        required List<String> ids,
+        String? url,
+      }) async {
+        fetchCount++;
+        await Future<void>.delayed(const Duration(milliseconds: 30));
+        return [
+          {'id': 1, 'code': 'C1', 'name': 'Cat One'},
+          {'id': 2, 'code': 'C2', 'name': 'Cat Two'},
+          {'id': 3, 'code': 'C3', 'name': 'Cat Three'},
+        ];
+      };
+
+      const source = DisplaySourceModel(
+        path: '/plant_capa_categories',
+        key: 'id',
+        label: '{{item.code}} - {{item.name}}',
+      );
+
+      // Simulate EntityDataTable firing batch + 3 cells calling resolveOne concurrently
+      final batchFuture = ReferenceLabelCache.instance.resolveBatch(source, [1, 2, 3]);
+      final cell1Future = ReferenceLabelCache.instance.resolveOne(source, 1);
+      final cell2Future = ReferenceLabelCache.instance.resolveOne(source, 2);
+      final cell3Future = ReferenceLabelCache.instance.resolveOne(source, 3);
+
+      final results = await Future.wait([batchFuture, cell1Future, cell2Future, cell3Future]);
+      expect(fetchCount, 1);
+      expect(results[1], 'C1 - Cat One');
+      expect(results[2], 'C2 - Cat Two');
+      expect(results[3], 'C3 - Cat Three');
+    });
+
+    test('cache keys isolate different label templates on the same entity', () async {
+      ReferenceLabelCache.instance.customFetcher = ({
+        required String path,
+        required String batchParam,
+        required List<String> ids,
+        String? url,
+      }) async {
+        return [
+          {'nip': 'EMP-01', 'name': 'Budi Santoso'},
+        ];
+      };
+
+      const fullSource = DisplaySourceModel(
+        path: '/users',
+        key: 'nip',
+        label: '{{item.nip}} - {{item.name}}',
+      );
+      const nameOnlySource = DisplaySourceModel(
+        path: '/users',
+        key: 'nip',
+        label: '{{item.name}}',
+      );
+
+      final fullLabel = await ReferenceLabelCache.instance.resolveOne(fullSource, 'EMP-01');
+      final nameLabel = await ReferenceLabelCache.instance.resolveOne(nameOnlySource, 'EMP-01');
+
+      expect(fullLabel, 'EMP-01 - Budi Santoso');
+      expect(nameLabel, 'Budi Santoso');
     });
   });
 }

@@ -4,22 +4,49 @@ Fitur **Built-in E-Signature** menyediakan dialog konfirmasi tanda tangan elektr
 
 ---
 
-## 1. Alur Kerja (Execution Flow)
+## 1. Alur Kerja & Urutan Eksekusi (Execution Flow Matrix)
 
-1. Pengguna menekan tombol aksi (`ActionD`) atau tombol **Submit** pada `layout_form` (`SubmitWorkflow`) yang memiliki konfigurasi `signature`.
-2. Jika aksi memiliki validasi form (`validate: true` atau form submit), validasi form dijalankan terlebih dahulu.
-3. Muncul modal **Tanda Tangan Elektronik** yang menampilkan:
-   - Nama dan NIP pengguna yang sedang login (dari session JWT aktif).
+Urutan munculnya dialog **Tanda Tangan Elektronik** disesuaikan secara otomatis berdasarkan jenis aksi agar selaras dengan pengalaman pengguna dan kepatuhan regulatori:
+
+| Konteks / Tipe Aksi | Urutan Eksekusi | Sumber Konfigurasi & Precedence |
+| :--- | :--- | :--- |
+| **`ActionType.http` / `ActionType.workflow`** | Klik tombol → (validasi form jika `validate: true`) → **Dialog E-Signature** → Eksekusi HTTP / Workflow dengan header `X-Signature-Token`. | `action.signature` |
+| **`ActionType.show_confirmation_dialog`** | Klik tombol → **Dialog Konfirmasi** → Pengguna klik Konfirmasi → **Dialog E-Signature** → Eksekusi HTTP / `on_success` dengan `X-Signature-Token`. | `action.signature` |
+| **`ActionType.open_page`** (Popup / Full Page) | Klik tombol → Form terbuka → Pengguna mengisi & klik Submit → **Validasi Form** → **Dialog E-Signature** → `submit_workflow` berjalan dengan `{{ signature.* }}` & header `X-Signature-Token`. | `submit_workflow.signature` (prioritas utama), fallback ke `action.signature` |
+| **`layout_form.submit_workflow`** (Standalone) | Klik Submit → **Validasi Form** (termasuk multi-step & `field_array`) → **Dialog E-Signature** → `submit_workflow` berjalan. | `submit_workflow.signature` |
+
+### Detail Proses Verifikasi
+1. Dialog **Tanda Tangan Elektronik** menampilkan:
+   - Nama dan NIP pengguna yang sedang login (dari session JWT aktif: `claims['nip']` → `role` → `rawId` → `id`).
    - Pilihan **Makna Tanda Tangan (*Signature Meaning*)** (misal: *"Disetujui"*, *"Ditinjau"*, *"Ditolak"*).
-   - Input **Kata Sandi Konfirmasi** (*obscure* dengan toggle visibility).
-4. Saat pengguna menekan **Tanda Tangani & Lanjutkan**, frontend mengirim `POST` ke endpoint verifikasi:
+   - Input **Kata Sandi Konfirmasi** (*obscure* dengan toggle visibility; nilai kata sandi dikirim **apa adanya tanpa `.trim()`** agar kata sandi dengan spasi tetap valid).
+2. Saat pengguna menekan **Tanda Tangani & Lanjutkan**, frontend mengirim `POST` ke endpoint verifikasi:
    - `verify_url` jika dikonfigurasi (mendukung interpolasi `{{backend_host}}`), atau
    - `POST {{backend_host}}/auth/verify-password` secara default.
    - Tidak ada fallback atau token dummy; jika verifikasi gagal atau server tidak mengembalikan `signature_token`, dialog menampilkan pesan error dan eksekusi dihentikan.
-5. Jika verifikasi berhasil:
-   - Token dan metadata tanda tangan diinjeksi ke scope interpolasi (`{{ signature.token }}`, `{{ signature.meaning }}`, `{{ signature.signer_name }}`, `{{ signature.signer_nip }}`).
-   - Header `X-Signature-Token` otomatis disisipkan ke seluruh HTTP request pada aksi maupun workflow terkait.
-   - Aksi / workflow dilanjutkan.
+3. Jika verifikasi berhasil:
+   - Token dan metadata tanda tangan diinjeksi ke scope interpolasi (`{{ signature.token }}`, `{{ signature.meaning }}`, `{{ signature.signer_name }}`, `{{ signature.signer_nip }}`, `{{ signature.signed_at }}`).
+   - Header `X-Signature-Token` otomatis disisipkan ke seluruh HTTP request pada aksi (`HttpDataExtension`) maupun workflow (`HttpAction`), kecuali jika header `X-Signature-Token` sudah diset eksplisit.
+
+### Kontrak API Verifikasi Backend
+- **Request**: `POST {{backend_host}}/auth/verify-password` (atau `verify_url`)
+  - Header: `Authorization: Bearer <access_token>`
+  - Body JSON:
+    ```json
+    {
+      "meaning": "APPROVED",
+      "password": "<exact_user_password>",
+      "nip": "EMP-01"
+    }
+    ```
+- **Response yang diterima** (mendukung root maupun envelope `data`):
+  ```json
+  { "signature_token": "eyJhbGciOi..." }
+  ```
+  atau:
+  ```json
+  { "data": { "signature_token": "eyJhbGciOi..." } }
+  ```
 
 ---
 

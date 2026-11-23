@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flx_nocode_flutter/features/entity/models/rule.dart';
 
 /// Evaluates `visible_if` rules in `layout_print` using the standard
@@ -22,7 +23,7 @@ class PdfVisibilityUtils {
       return rule.evaluate(flattened);
     } catch (e) {
       // Fail open on malformed rules so PDF generation does not crash.
-      print('PDF visible_if evaluation warning: $e');
+      debugPrint('PDF visible_if evaluation warning: $e');
       return true;
     }
   }

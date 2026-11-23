@@ -16,17 +16,25 @@ class CapabilitiesService {
   /// Loads effective capabilities from [config.capabilitiesEndpoint] if set.
   ///
   /// Returns the normalized capability list on success, or `null` if no
-  /// endpoint is configured or if the request fails (non-fatal).
+  /// endpoint is configured or if no token is available.
+  ///
+  /// When [failClosed] is `true` (default), a network/HTTP error explicitly
+  /// marks capabilities as loaded with an empty list (`[]`) so menu/action
+  /// checks fail closed instead of falling back to unrestricted access.
   Future<List<String>?> syncFromBackend({
     required AccessControlConfig config,
     UserRepositoryAppNocode? userRepository,
+    String? accessToken,
     Dio? dio,
+    bool failClosed = true,
   }) async {
     final rawEndpoint = config.capabilitiesEndpoint?.trim();
     if (rawEndpoint == null || rawEndpoint.isEmpty) return null;
 
     final repo = userRepository ?? UserRepositoryAppNocode.instance;
-    final token = repo.token;
+    final token = (accessToken != null && accessToken.isNotEmpty)
+        ? accessToken
+        : repo.token;
     if (token == null || token.isEmpty) return null;
 
     String resolvedUrl = rawEndpoint;
@@ -56,6 +64,9 @@ class CapabilitiesService {
       debugPrint(
         '[CapabilitiesService] Failed to sync capabilities from "$resolvedUrl": $e',
       );
+      if (failClosed && !repo.hasCapabilitiesLoaded) {
+        repo.setCapabilities(const <String>[]);
+      }
       return null;
     }
   }

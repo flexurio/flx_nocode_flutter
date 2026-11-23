@@ -37,8 +37,21 @@ class SignatureMeaningOption {
 /// to select an electronic signature meaning and confirm their password
 /// before executing the action/workflow.
 class ActionSignature {
+  final List<String> _rawMeanings;
+  final List<SignatureMeaningOption>? _meaningOptions;
+
   /// Available signature meaning options (supports string or {label, value}).
-  final List<SignatureMeaningOption> meaningOptions;
+  List<SignatureMeaningOption> get meaningOptions {
+    if (_meaningOptions != null && _meaningOptions.isNotEmpty) {
+      return _meaningOptions;
+    }
+    if (_rawMeanings.isNotEmpty) {
+      return _rawMeanings
+          .map((m) => SignatureMeaningOption(label: m, value: m))
+          .toList(growable: false);
+    }
+    return const [SignatureMeaningOption(label: 'Disetujui', value: 'Disetujui')];
+  }
 
   /// Available signature meaning values (e.g., ["Disetujui", "Ditinjau", "Ditolak"]).
   List<String> get meanings => meaningOptions.map((e) => e.value).toList();
@@ -71,8 +84,8 @@ class ActionSignature {
     this.description,
     this.requireMeaning = true,
     this.requirePassword = true,
-  }) : meaningOptions = meaningOptions ??
-            const [SignatureMeaningOption(label: 'Disetujui', value: 'Disetujui')];
+  })  : _rawMeanings = meanings,
+        _meaningOptions = meaningOptions;
 
   factory ActionSignature.fromJson(dynamic json) {
     if (json == null) return const ActionSignature();

@@ -120,8 +120,7 @@ class _DatePickerWidgetState extends State<_DatePickerWidget> {
     final fmt = widget.component.dateFormat;
     if (fmt != null && fmt.isNotEmpty) {
       try {
-        parsed = DateFormat(fmt).parse(str);
-        if (parsed != null) return parsed;
+        return DateFormat(fmt).parse(str);
       } catch (_) {}
     }
 

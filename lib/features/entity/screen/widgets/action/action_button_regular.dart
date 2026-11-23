@@ -11,6 +11,7 @@ class ActionButtonRegular extends StatefulWidget {
   final EntityCustom entity;
   final List<Map<String, dynamic>> parentData;
   final Map<String, dynamic> filters;
+  final Map<String, dynamic>? evalData;
   final VoidCallback onSuccess;
   final bool? bypassPermission;
 
@@ -20,6 +21,7 @@ class ActionButtonRegular extends StatefulWidget {
     required this.entity,
     required this.parentData,
     required this.filters,
+    this.evalData,
     required this.onSuccess,
     this.bypassPermission,
     this.expanded = false,
@@ -230,7 +232,7 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
     final canAccess = AccessPolicyEvaluator.instance.canAccessAction(
       widget.actionD,
       entity: widget.entity,
-      data: widget.filters,
+      data: widget.evalData ?? widget.filters,
       parentData: widget.parentData,
       bypassPermission: widget.bypassPermission,
     );

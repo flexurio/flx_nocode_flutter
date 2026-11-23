@@ -46,25 +46,41 @@ class ReferenceLabelCache {
 
   static set instance(ReferenceLabelCache val) => _instance = val;
 
-  /// Internal memory store: key = `"{effectivePath}:{key}:{rawValue}"`.
+  /// Internal memory store: key = `"{effectivePath}:{key}[:{labelTemplate}]:{rawValue}"`.
   final Map<String, _CachedReferenceEntry> _cache = {};
 
-  /// In-flight batch requests to prevent redundant network calls:
-  /// key = `"{effectivePath}:{key}:{sortedIds}"`.
-  final Map<String, Future<Map<String, String>>> _inFlightBatchRequests = {};
+  /// Per-ID in-flight futures so single-cell lookups (`resolveOne`) join an
+  /// active page-level batch (`ensureLoadedForRows` / `resolveBatch`) instead
+  /// of issuing duplicate single-ID HTTP requests.
+  final Map<String, Future<String?>> _inFlightByKey = {};
 
   /// Optional custom batch fetcher hook for testing and Widgetbook mock data.
   ReferenceBatchFetcher? customFetcher;
 
   /// Builds a deterministic cache key.
-  static String buildCacheKey(String pathOrEntity, String key, dynamic rawValue) {
-    return '$pathOrEntity:$key:${rawValue.toString().trim()}';
+  ///
+  /// When [labelTemplate] is provided, it scopes the entry to that format
+  /// template so two fields pointing to the same entity with different label
+  /// templates (e.g. `{{item.code}} - {{item.name}}` vs `{{item.name}}`) never
+  /// collide.
+  static String buildCacheKey(
+    String pathOrEntity,
+    String key,
+    dynamic rawValue, {
+    String labelTemplate = '',
+  }) {
+    final normalizedTemplate = labelTemplate.trim();
+    final raw = rawValue.toString().trim();
+    if (normalizedTemplate.isEmpty) {
+      return '$pathOrEntity:$key:$raw';
+    }
+    return '$pathOrEntity:$key:$normalizedTemplate:$raw';
   }
 
   /// Clears all cached items and resets in-flight requests.
   void clear() {
     _cache.clear();
-    _inFlightBatchRequests.clear();
+    _inFlightByKey.clear();
   }
 
   /// Explicitly seeds a display label into the cache (e.g. for testing or pre-joined data).
@@ -73,10 +89,16 @@ class ReferenceLabelCache {
     String key,
     dynamic rawValue,
     String label, {
+    String labelTemplate = '',
     Duration ttl = const Duration(minutes: 5),
   }) {
     if (rawValue == null) return;
-    final cKey = buildCacheKey(pathOrEntity, key, rawValue);
+    final cKey = buildCacheKey(
+      pathOrEntity,
+      key,
+      rawValue,
+      labelTemplate: labelTemplate,
+    );
     _cache[cKey] = _CachedReferenceEntry(
       label: label,
       expiresAt: DateTime.now().add(ttl),
@@ -89,10 +111,22 @@ class ReferenceLabelCache {
     final rawStr = rawValue.toString().trim();
     if (rawStr.isEmpty) return '';
 
-    final cKey = buildCacheKey(source.effectivePath, source.key, rawStr);
-    final entry = _cache[cKey];
-    if (entry != null && !entry.isExpired) {
-      return entry.label;
+    final scopedKey = buildCacheKey(
+      source.effectivePath,
+      source.key,
+      rawStr,
+      labelTemplate: source.label,
+    );
+    final scopedEntry = _cache[scopedKey];
+    if (scopedEntry != null && !scopedEntry.isExpired) {
+      return scopedEntry.label;
+    }
+
+    // Fallback to template-agnostic entry (e.g. manually seeded via `seed()`)
+    final genericKey = buildCacheKey(source.effectivePath, source.key, rawStr);
+    final genericEntry = _cache[genericKey];
+    if (genericEntry != null && !genericEntry.isExpired) {
+      return genericEntry.label;
     }
     return null;
   }
@@ -119,6 +153,9 @@ class ReferenceLabelCache {
   }
 
   /// Asynchronously resolves a list of [rawValues] in a single batched HTTP request.
+  ///
+  /// Any ID already being fetched by an in-flight batch is awaited directly
+  /// without issuing a duplicate network call.
   Future<Map<String, String>> resolveBatch(
     DisplaySourceModel source,
     List<dynamic> rawValues, {
@@ -128,6 +165,7 @@ class ReferenceLabelCache {
     if (rawValues.isEmpty) return result;
 
     final missingIds = <String>{};
+    final pendingById = <String, Future<String?>>{};
 
     for (final raw in rawValues) {
       if (raw == null) continue;
@@ -137,36 +175,66 @@ class ReferenceLabelCache {
       final cached = getCached(source, strVal);
       if (cached != null) {
         result[strVal] = cached;
+        continue;
+      }
+
+      final cKey = buildCacheKey(
+        source.effectivePath,
+        source.key,
+        strVal,
+        labelTemplate: source.label,
+      );
+      final existingInFlight = _inFlightByKey[cKey];
+      if (existingInFlight != null) {
+        pendingById[strVal] = existingInFlight;
       } else {
         missingIds.add(strVal);
       }
     }
 
-    if (missingIds.isEmpty) {
-      return result;
-    }
+    Future<Map<String, String>>? newBatchFuture;
+    final registeredKeys = <String>[];
 
-    final sortedIds = missingIds.toList()..sort();
-    final inFlightKey =
-        '${source.effectivePath}:${source.key}:${sortedIds.join(',')}';
-
-    Future<Map<String, String>>? inFlight = _inFlightBatchRequests[inFlightKey];
-
-    if (inFlight == null) {
-      inFlight = _executeBatchFetch(
+    if (missingIds.isNotEmpty) {
+      final sortedIds = missingIds.toList()..sort();
+      newBatchFuture = _executeBatchFetch(
         source,
         sortedIds,
         accessToken: accessToken,
       );
-      _inFlightBatchRequests[inFlightKey] = inFlight;
+
+      for (final id in sortedIds) {
+        final cKey = buildCacheKey(
+          source.effectivePath,
+          source.key,
+          id,
+          labelTemplate: source.label,
+        );
+        registeredKeys.add(cKey);
+        _inFlightByKey[cKey] = newBatchFuture.then((map) => map[id]);
+      }
     }
 
     try {
-      final fetchedLabels = await inFlight;
-      result.addAll(fetchedLabels);
+      if (newBatchFuture != null) {
+        final fetchedLabels = await newBatchFuture;
+        result.addAll(fetchedLabels);
+      }
+      if (pendingById.isNotEmpty) {
+        final entries = pendingById.entries.toList();
+        final resolvedValues = await Future.wait(entries.map((e) => e.value));
+        for (var i = 0; i < entries.length; i++) {
+          final val = resolvedValues[i];
+          if (val != null) {
+            result[entries[i].key] = val;
+          }
+        }
+      }
       return result;
     } finally {
-      _inFlightBatchRequests.remove(inFlightKey);
+      for (final cKey in registeredKeys) {
+        _inFlightByKey.remove(cKey);
+      }
     }
   }
 
@@ -238,6 +306,7 @@ class ReferenceLabelCache {
             source.key,
             keyVal,
             formatted,
+            labelTemplate: source.label,
             ttl: ttl,
           );
         }
@@ -254,6 +323,7 @@ class ReferenceLabelCache {
             source.key,
             id,
             fallbackVal,
+            labelTemplate: source.label,
             ttl: const Duration(seconds: 60),
           );
         }

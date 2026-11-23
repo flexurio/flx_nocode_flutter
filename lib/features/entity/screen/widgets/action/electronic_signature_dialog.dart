@@ -111,7 +111,7 @@ class _ElectronicSignatureDialogState extends State<ElectronicSignatureDialog> {
       _errorMessage = null;
     });
 
-    final password = _passwordController.text.trim();
+    final password = _passwordController.text;
     final meaning = _selectedMeaning;
 
     try {
@@ -322,7 +322,7 @@ class _ElectronicSignatureDialogState extends State<ElectronicSignatureDialog> {
                 ),
                 const SizedBox(height: 6),
                 DropdownButtonFormField<String>(
-                  value: _selectedMeaning,
+                  initialValue: _selectedMeaning,
                   isExpanded: true,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(

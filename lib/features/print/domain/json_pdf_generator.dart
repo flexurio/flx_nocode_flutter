@@ -45,8 +45,21 @@ class JsonPdfGenerator {
 
       // 2c. Non-destructively enrich context & table rows with `<field>_label`
       if (entityFields != null && entityFields.isNotEmpty) {
+        final rowsToPreload = <Map<String, dynamic>>[contextData];
+        final sources = contextData['sources'];
+        if (sources is Map) {
+          for (final entry in sources.values) {
+            if (entry is List) {
+              for (final item in entry) {
+                if (item is Map) {
+                  rowsToPreload.add(Map<String, dynamic>.from(item));
+                }
+              }
+            }
+          }
+        }
         await ReferenceLabelCache.instance.ensureLoadedForRows(
-          [contextData],
+          rowsToPreload,
           entityFields,
         );
         contextData = FieldValueLabelResolver.enrichPrintContext(

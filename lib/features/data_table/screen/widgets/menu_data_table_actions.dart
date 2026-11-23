@@ -84,6 +84,7 @@ class MenuDataTableActions extends StatelessWidget {
                   entity: entity,
                   parentData: parentData,
                   filters: filters.toMap(),
+                  evalData: evalData,
                   bypassPermission: bypassPermission,
                   onSuccess: onRefresh,
                 )),
@@ -111,6 +112,7 @@ class MenuDataTableActions extends StatelessWidget {
               entity: entity,
               parentData: parentData,
               filters: filters.toMap(),
+              evalData: evalData,
               bypassPermission: bypassPermission,
               onSuccess: onRefresh,
             )));

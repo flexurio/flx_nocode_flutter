@@ -5,7 +5,6 @@ import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/electro
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/submit_workflow/submit_workflow.dart';
 import 'package:flx_nocode_flutter/src/app/model/configuration.dart';
-import 'package:flx_nocode_flutter/features/layout_form/models/submit_workflow.dart' as model;
 import 'package:flx_nocode_flutter/features/layout_form/domain/form_submit_workflow.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 

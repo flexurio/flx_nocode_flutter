@@ -83,6 +83,14 @@ Capabilities are automatically loaded into `UserRepositoryAppNocode.instance` fr
 - **Wildcards**: `*` / `*:*` grants all capabilities; `capas:*` / `capas_*` grants all operations on `capas`.
 - **Explicit Role Prefix**: `role:<role_name>` inside `permissions` explicitly checks `user.roles`.
 - **Fail-Closed Empty List**: If the backend explicitly returns `[]` (`setCapabilities([])`), `hasCapabilitiesLoaded` is `true` and all capability-gated items are denied.
+- **Fail-Closed on Network Error**: When `capabilities_endpoint` is configured and the HTTP fetch fails (timeout, 5xx, offline), `CapabilitiesService.syncFromBackend` marks capabilities as loaded with `[]` (`failClosed: true` by default) so the UI never falls back to showing unrestricted menus.
+
+### Startup & Login Synchronization Lifecycle
+To prevent fail-open race conditions on both fresh login and browser refresh / cold-start session restore:
+1. **Fresh Login (`onLoginSuccess`)**: Passes the newly issued `accessToken` directly to `CapabilitiesService.instance.syncFromBackend(...)`.
+2. **Authenticated Shell (`_AuthenticatedMenuShell` in `main.dart`)**: Before invoking `configuration.menu(bypassPermission: bypassAll)` or passing `accountPermissions` to `MenuPage`, the shell awaits `CapabilitiesService.instance.syncFromBackend(...)` if `capabilities_endpoint` is configured and capabilities are not yet loaded.
+3. **Workflow & Interpolation Parity**: Server-driven `effectiveCapabilities` are exposed consistently across `AccessPolicyEvaluator`, `JsVariableProvider` (`{{ user.capabilities }}`), and `FormSubmitWorkflow` (`_WorkflowScopeBuilder`).
+4. **Logout Hygiene**: `UserRepositoryAppNocode.logout()` resets `_capabilities`, `_capabilitiesExplicitlyLoaded`, `permissions`, and clears `ReferenceLabelCache`.
 
 ---
 
@@ -155,7 +163,7 @@ Each level of the navigation hierarchy supports optional `rule` (alias: `visible
 
 ### `actions` & `actions_home`
 - **`permissions` / `permission`** (Layer 1): Accepts a single string or array of strings (OR match). When omitted, the engine does **not** fabricate a legacy `<entity_id>_<action_id>` requirement, so unrestricted actions remain visible when `bypass_all_permissions: false`.
-- **`rule`** (Layer 2): Always evaluated natively in Dart against `data`, `parent`, `user.roles`, `user.capabilities`, and all dynamic `user.<claim>` fields — even if `bypass_all_permissions: true`.
+- **`rule`** (Layer 2): Always evaluated natively in Dart against `data`, `parent`, `table` (`table.is_empty`, `table.count`, `table.status` on `actions_home` / `ActionButtonRegular`), `user.roles`, `user.capabilities`, and all dynamic `user.<claim>` fields — even if `bypass_all_permissions: true`.
 
 ```json
 {

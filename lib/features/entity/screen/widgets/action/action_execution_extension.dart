@@ -57,14 +57,21 @@ extension ActionExecutionExtension on ActionD {
       }
     }
 
+    // For `openPage`, defer e-signature to CreatePageController.submit() so the
+    // user fills & validates the form first, then signs right before submit.
+    // For `showConfirmationDialog`, prompt e-signature inside `onConfirm` so
+    // confirmation happens before password verification.
+    final deferSignatureToTarget =
+        type == ActionType.openPage || type == ActionType.showConfirmationDialog;
+
     SignatureResult? signatureResult;
-    if (signature != null) {
+    if (signature != null && !deferSignatureToTarget) {
       signatureResult = await ElectronicSignatureDialog.prompt(
         context: context,
         signature: signature!,
         actionName: name,
       );
-      if (signatureResult == null) {
+      if (signatureResult == null || !context.mounted) {
         // User aborted e-signature verification
         return;
       }
@@ -171,6 +178,8 @@ extension ActionExecutionExtension on ActionD {
                 data: effectiveData,
                 filters: const {},
                 width: width,
+                actionSignature: signature,
+                actionName: name,
                 onSuccess: (responseData) async {
                   onSuccessCallback?.call();
                   await handleOnSuccessSingle(
@@ -194,6 +203,8 @@ extension ActionExecutionExtension on ActionD {
               layoutFormId: layoutFormId!,
               width: width,
               showSubmitButton: showSubmitButton,
+              actionSignature: signature,
+              actionName: name,
               onSuccess: (responseData) async {
                 onSuccessCallback?.call();
                 await handleOnSuccessSingle(
@@ -523,11 +534,26 @@ extension ActionExecutionExtension on ActionD {
           label: name,
           confirmationMessageText: confirmMessage,
           onConfirm: (ctx) async {
+            var confirmedData = effectiveData;
+            if (signature != null) {
+              final confirmedSig = await ElectronicSignatureDialog.prompt(
+                context: ctx,
+                signature: signature!,
+                actionName: name,
+              );
+              if (confirmedSig == null || !ctx.mounted) return;
+              confirmedData = <String, dynamic>{
+                ...effectiveData,
+                'signature': confirmedSig.toMap(),
+                'signature_token': confirmedSig.token,
+                'signature_meaning': confirmedSig.meaning,
+              };
+            }
             if (http != null) {
               await executeHttpSingle(
                 entity,
                 ctx,
-                effectiveData,
+                confirmedData,
                 onSuccessCallback: onSuccessCallback,
               );
             } else {
@@ -535,7 +561,7 @@ extension ActionExecutionExtension on ActionD {
                 entity: entity,
                 context: context,
                 responseData: null,
-                data: effectiveData,
+                data: confirmedData,
                 onSuccessCallback: onSuccessCallback,
               );
             }

@@ -478,6 +478,7 @@ class _WorkflowScopeBuilder {
         return repo.userApp!.toContextMap(
           token: repo.token ?? '',
           permissions: permissions.isNotEmpty ? permissions : repo.permissions,
+          capabilitiesOverride: repo.effectiveCapabilities,
         );
       }
       return repo.userContext;

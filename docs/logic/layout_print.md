@@ -172,7 +172,7 @@ Runtime page variables are interpolated per page in both `header` and `footer` (
 
 To keep the documentation organized, all available UI components (Text, Image, Table, Containers, etc.) and their properties are documented in a separate file:
 
-👉 **[View Component Library Documentation](file:///Users/suhal/Documents/Development/projects/vneu/flx_studio/packages/flx_nocode_flutter/docs/logic/layout_print_components.md)**
+👉 **[View Component Library Documentation](./layout_print_components.md)**
 
 ---
 
@@ -192,9 +192,11 @@ To trigger a print layout from an interaction (e.g., clicking a "Print" button),
 
 ### Execution Flow:
 1.  **Resolve Config**: Engine fetches the `LayoutPrint` with the matching ID.
-2.  **Fetch Data**: All `http_data` blocks are executed recursively.
-3.  **Interpolate**: The entire JSON config is processed with the merged data context.
-4.  **Render**: The PDF is generated and presented in the system's PDF viewer.
+2.  **Fetch `data_sources` (Parallel & Isolated)**: Named endpoints in root `data_sources` are fetched in parallel into `contextData['sources'][<key>]` without mutating root `data`.
+3.  **Fetch Inline `http_data`**: Any legacy component-level `http_data` blocks are fetched recursively.
+4.  **Enrich Labels & Foreign Keys**: `ReferenceLabelCache` preloads foreign-key references across both root `contextData` and nested `sources.*` lists, then `FieldValueLabelResolver` non-destructively injects `<field>_label` siblings.
+5.  **Interpolate & Preload Images**: JSON config is interpolated (preserving `visible_if`, dynamic `table.body`, and `grid.item_template` for per-item evaluation), and all static/dynamic image URLs are preloaded.
+6.  **Evaluate `visible_if` & Render**: Declarative `Rule` maps (`all` / `any` / `not`) control component and watermark visibility; runtime `{{_page.number}}`/`{{_page.total}}` (`{{page}}`/`{{pages}}`) are interpolated per page.
 
 ---
 

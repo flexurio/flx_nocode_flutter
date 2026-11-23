@@ -8,7 +8,7 @@ These variables are always available throughout the application context (in `{{ 
 
 | Key | Description | Example Usage |
 | :--- | :--- | :--- |
-| `user` | **Dynamic JWT User Object** containing normalized fields (`user.id`, `user.name`, `user.roles`, `user.cs`, `user.custom`, `user.token`, `user.permissions`) **plus every raw claim present in the active JWT payload** (e.g. `user.nip`, `user.department_id`, `user.site_id`, `user.email`, or any JSON keys unpacked from `cs`). | `{{ user.nip }}`, `{{ user.department_id }}`, `{{ user.roles }}` |
+| `user` | **Dynamic JWT User Object** containing normalized fields (`user.id`, `user.name`, `user.roles`, `user.capabilities`, `user.cs`, `user.custom`, `user.token`, `user.permissions`) **plus every raw claim present in the active JWT payload** (e.g. `user.nip`, `user.department_id`, `user.site_id`, `user.email`, or any JSON keys unpacked from `cs`). `user.capabilities` combines both JWT-embedded and server-synced (`/auth/capabilities`) capabilities consistently across UI rules, JS interpolation, and `submit_workflow`. | `{{ user.nip }}`, `{{ user.roles }}`, `{{ user.capabilities }}` |
 | `jwt` / `user_claims` | Raw decoded JWT payload claims map from the active access token. | `{{ jwt.sub }}`, `{{ jwt.nip }}` |
 | `user_roles` | Normalized array of role names extracted from JWT (`rl`, `roles`, or `role`, automatically stripping `/127` bitmask suffixes). | `[[ user_roles ]]` |
 | `user_id` / `auth_nik` | The unique identifier of the currently logged-in user. | `User: {{ user_id }}` |
@@ -48,6 +48,8 @@ These variables are available depending on the specific UI component or action b
 | `parentData` | List of all ancestor records in hierarchical navigation or sub-detail views (`parentData.0`, `parentData.1`, etc.). |
 | `vars` | Local variables defined within a specific scope or action. |
 | `http` | Data returned from an HTTP request (used in post-request actions). |
+| `signature` | Verified electronic signature payload (`signature.token`, `signature.meaning`, `signature.signer_name`, `signature.signer_nip`, `signature.signed_at`) available after `ElectronicSignatureDialog` confirmation. |
+| `table` | Current data table state (`table.is_empty`, `table.count`, `table.status`) available in `actions_home` and `homeActionForms` visibility rules (`Rule`). |
 
 ## Custom Global Variables
 

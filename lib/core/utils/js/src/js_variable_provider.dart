@@ -16,11 +16,21 @@ class JsVariableProvider {
       userRepo = UserRepositoryAppNocode.instance;
     } catch (_) {}
 
-    final userContext = userRepo?.userContext ?? const <String, dynamic>{};
+    Map<String, dynamic> userContext = const <String, dynamic>{};
+    List<String> effectiveRoles = const <String>[];
+    Map<String, dynamic> effectiveClaims = const <String, dynamic>{};
+    try {
+      userContext = userRepo?.userContext ?? const <String, dynamic>{};
+    } catch (_) {}
+    try {
+      effectiveRoles = userRepo?.roles ?? const <String>[];
+    } catch (_) {}
+    try {
+      effectiveClaims = userRepo?.claims ?? const <String, dynamic>{};
+    } catch (_) {}
+
     final effectiveUserId = (userContext['id'] ?? '').toString();
     final effectiveUserName = (userContext['name'] ?? '').toString();
-    final effectiveRoles = userRepo?.roles ?? const <String>[];
-    final effectiveClaims = userRepo?.claims ?? const <String, dynamic>{};
     final effectiveCustom = userContext['cs'] ?? '';
 
     final allVars = <String, dynamic>{

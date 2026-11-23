@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flx_nocode_flutter/core/network/models/http_data.dart';
 import 'package:flx_nocode_flutter/shared/services/http_request_executor.dart';
 
@@ -42,7 +43,7 @@ class PdfDataUtils {
           final extracted = _extractDataPath(result.data, dataPath);
           sourcesMap[key] = extracted ?? [];
         } else {
-          print(
+          debugPrint(
               'PDF data_sources[$key] Error: ${httpData.url} - ${result.message}');
           if (onError == 'fail') {
             throw Exception(
@@ -51,7 +52,7 @@ class PdfDataUtils {
           sourcesMap[key] = [];
         }
       } catch (e) {
-        print('PDF data_sources[$key] Exception: $e');
+        debugPrint('PDF data_sources[$key] Exception: $e');
         if (onError == 'fail') rethrow;
         sourcesMap[key] = [];
       }
