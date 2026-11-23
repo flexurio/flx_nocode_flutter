@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flx_nocode_flutter/features/field/domain/field_value_label_resolver.dart';
+import 'package:flx_nocode_flutter/features/field/domain/reference_label_cache.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/print/domain/pdf_generator/models/pdf_watermark_model.dart';
 import 'package:flx_nocode_flutter/features/print/domain/pdf_generator/pdf_image_service.dart';
@@ -44,6 +45,10 @@ class JsonPdfGenerator {
 
       // 2c. Non-destructively enrich context & table rows with `<field>_label`
       if (entityFields != null && entityFields.isNotEmpty) {
+        await ReferenceLabelCache.instance.ensureLoadedForRows(
+          [contextData],
+          entityFields,
+        );
         contextData = FieldValueLabelResolver.enrichPrintContext(
           contextData,
           entityFields,

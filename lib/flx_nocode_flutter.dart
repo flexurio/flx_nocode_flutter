@@ -6,6 +6,8 @@ export 'features/data_table/screen/widgets/entity_data_table.dart';
 export 'features/entity/screen/pages/enitity_view_page.dart';
 export 'features/export/screen/models/export.dart';
 export 'features/field/domain/field_value_label_resolver.dart';
+export 'features/field/domain/reference_label_cache.dart';
+export 'features/field/models/display_source_model.dart';
 export 'features/field/models/field.dart';
 export 'features/layout_form/domain/extensions/layout_form_extensions.dart';
 export 'features/layout_form/domain/extensions/layout_form_list_extensions.dart';

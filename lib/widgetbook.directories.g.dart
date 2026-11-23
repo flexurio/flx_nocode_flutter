@@ -24,6 +24,8 @@ import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_pag
     as _flx_nocode_flutter_features_entity_screen_pages_enitity_view_page_widgetbook;
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/electronic_signature_dialog.widgetbook.dart'
     as _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook;
+import 'package:flx_nocode_flutter/features/field/presentation/widgets/field_display_source.widgetbook.dart'
+    as _flx_nocode_flutter_features_field_presentation_widgets_field_display_source_widgetbook;
 import 'package:flx_nocode_flutter/features/field/presentation/widgets/field_value_labels.widgetbook.dart'
     as _flx_nocode_flutter_features_field_presentation_widgets_field_value_labels_widgetbook;
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/layout_form.widgetbook.dart'
@@ -391,6 +393,17 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookFolder(
                 name: 'widgets',
                 children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'FieldDisplaySourceShowcase',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'From JSON Config',
+                        builder:
+                            _flx_nocode_flutter_features_field_presentation_widgets_field_display_source_widgetbook
+                                .buildFieldDisplaySourceFromJsonUseCase,
+                      )
+                    ],
+                  ),
                   _widgetbook.WidgetbookComponent(
                     name: 'FieldValueLabelsShowcase',
                     useCases: [

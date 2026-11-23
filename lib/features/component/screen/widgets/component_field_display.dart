@@ -3,6 +3,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/core/utils/js/string_js_interpolation.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_field_display.dart';
 import 'package:flx_nocode_flutter/features/field/domain/field_value_label_resolver.dart';
+import 'package:flx_nocode_flutter/features/field/domain/reference_label_cache.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/shared/services/employee_cache.dart';
@@ -126,6 +127,29 @@ extension ComponentFieldDisplayWidgets on ComponentFieldDisplay {
       return TileDataVertical(
         label: label,
         child: buildContent(resolvedValue),
+      );
+    }
+
+    final displaySource = referencedField?.effectiveDisplaySource;
+    if (displaySource != null) {
+      final cached =
+          ReferenceLabelCache.instance.getCached(displaySource, resolvedValue);
+      if (cached != null) {
+        return TileDataVertical(
+          label: label,
+          child: buildContent(cached),
+        );
+      }
+      return FutureBuilder<String?>(
+        future: ReferenceLabelCache.instance
+            .resolveOne(displaySource, resolvedValue),
+        builder: (context, snapshot) {
+          final text = snapshot.data ?? resolvedValue;
+          return TileDataVertical(
+            label: label,
+            child: buildContent(text),
+          );
+        },
       );
     }
 

@@ -221,10 +221,11 @@ Keep data type, visual presentation, and value mapping orthogonal:
 
 When resolving a raw value to its display label (`FieldValueLabelResolver`), the engine checks in order:
 1. **`value_labels`** (or backward-compatible aliases `valueLabels`, `chip_labels`, `chipLabels`) — exact key match first, then case-insensitive key match.
-2. **Static `options_source`** (`values('KEY':'Label', ...)`) — exact key match first, then case-insensitive key match. Dynamic `backend.*` sources are not resolved synchronously here.
-3. **Raw fallback** — returns `rawValue.toString()` unchanged so newly added backend codes never break the UI.
+2. **Static `options_source`** (`values('KEY':'Label', ...)`) — exact key match first, then case-insensitive key match.
+3. **Dynamic `display_source`** (or auto-derived from `backend.<entity>` in `options_source`) — resolved and cached in memory via `ReferenceLabelCache`.
+4. **Raw fallback** — returns `rawValue.toString()` unchanged so newly added backend codes never break the UI.
 
-If both `value_labels` and static `options_source` are defined on the same field, `value_labels` overrides matching keys from `options_source`.
+If both `value_labels` and static `options_source` or `display_source` are defined on the same field, `value_labels` overrides matching keys.
 
 ### Raw Code vs Display Label Contract
 
@@ -321,6 +322,83 @@ Colors are always resolved from the **raw code** before translating to the displ
 
 // Print template (layout_print) — raw {{status}} preserved, {{status_label}} formatted
 { "type": "text", "value": "Status: {{status_label}}" }
+```
+
+---
+
+## Foreign Key Reference Resolution (`display_source`)
+
+When relational tables store raw foreign-key identifiers (e.g. `capa_category_id: 3`, `site_id: 1`, `pic_nip: "SPV-QC-01"`), use `display_source` on `EntityField` to resolve and format them into human-readable labels (e.g. `"CAT-01 - Deviasi Mayor"`) automatically across all UI and export surfaces.
+
+### Design Principles
+
+1. **Anti-N+1 Batch Fetching (DataLoader Pattern)**:
+   When rendering a table page or exporting records, `ReferenceLabelCache` automatically groups distinct IDs per column into a single batch HTTP request (e.g. `GET /plant_capa_categories?id.in=1,2,3`).
+2. **Global In-Memory TTL Cache**:
+   Resolved references are stored in memory (`cache_ttl_seconds`, default 300s) and shared across all screens, preventing redundant network requests on navigation.
+3. **Automatic Auto-Derivation from `options_source`**:
+   If a field already defines an `options_source` with `backend.<entity>({key}:{label})` (e.g. in form dropdowns), `display_source` is auto-derived automatically with zero duplicate configuration.
+4. **Consistency Across 5 Surfaces**:
+   - **Table**: Renders `"KODE - NAMA"` synchronously from cache (or asynchronously via `FutureBuilder`).
+   - **Detail**: Component `field_display` automatically resolves foreign-key labels via `field_ref`.
+   - **Filter**: `InlineFilter` automatically displays searchable options while emitting raw foreign key IDs.
+   - **Export XLSX**: `generalXlsxNoCode` formats cells with resolved display labels.
+   - **Print PDF**: `layout_print` enriches `<field>_label` placeholders in print templates.
+
+### Schema & Properties
+
+| Key | Type | Default | Description |
+| --- | --- | --- | --- |
+| `path` | `String` | Required* | Relative API path (e.g. `/plant_capa_categories`). Auto-prefixed with `backend_host`. |
+| `entity` | `String` | Optional | Alias for `path` (e.g. `"plant_capa_categories"`). |
+| `key` | `String` | `"id"` | Identifier column on the referenced endpoint. |
+| `label` | `String` | `"{{item.name}}"` | Label template string. Supports `{{item.code}} - {{item.name}}`, `{code} - {name}`, or dot notation `{{item.department.name}}`. |
+| `batch_param` | `String` | `"{key}.in"` | Query parameter for batch fetching (e.g. `id.in`, `nip.in`). |
+| `cache_ttl_seconds` | `int` | `300` | In-memory cache duration in seconds. |
+| `fallback` | `String` | `"raw"` | Fallback value if item not found: `"raw"` (returns raw ID), `"empty"` (`""`), or `"dash"` (`"-"`). |
+| `url` | `String` | Optional | Direct custom URL format (backward-compatible). |
+
+### Example Configurations
+
+#### Standard Foreign Key Field
+```json
+{
+  "reference": "capa_category_id",
+  "label": "Kategori CAPA",
+  "type": "number",
+  "display_source": {
+    "path": "/plant_capa_categories",
+    "key": "id",
+    "label": "{{item.code}} - {{item.name}}",
+    "batch_param": "id.in",
+    "cache_ttl_seconds": 600
+  }
+}
+```
+
+#### User / Employee NIP Reference
+```json
+{
+  "reference": "pic_nip",
+  "label": "Penanggung Jawab (PIC)",
+  "type": "text",
+  "display_source": {
+    "path": "/users",
+    "key": "nip",
+    "batch_param": "nip.in",
+    "label": "{{item.nip}} - {{item.name}}"
+  }
+}
+```
+
+#### Shorthand Backend Syntax (Compatible with `options_source`)
+```json
+{
+  "reference": "site_id",
+  "label": "Pabrik / Site",
+  "type": "number",
+  "display_source": "backend.plant_sites({id}:{code} - {name})"
+}
 ```
 
 ---

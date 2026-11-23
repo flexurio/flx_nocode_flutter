@@ -4,6 +4,7 @@ import 'package:flx_authentication_flutter/flx_authentication_flutter.dart';
 import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/field/domain/extensions/entity_field_extensions.dart';
 import 'package:flx_nocode_flutter/features/field/domain/field_value_label_resolver.dart';
+import 'package:flx_nocode_flutter/features/field/domain/reference_label_cache.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/field/presentation/widgets/entity_field_tooltip.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
@@ -32,7 +33,35 @@ class EntityFieldDisplay {
 
     late Widget widget;
 
-    if (field.isDateTime) {
+    if (field.effectiveDisplaySource != null) {
+      final source = field.effectiveDisplaySource!;
+      final cached = ReferenceLabelCache.instance.getCached(source, value);
+      if (cached != null) {
+        widget = Text(
+          cached,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        );
+      } else {
+        widget = FutureBuilder<String?>(
+          future: ReferenceLabelCache.instance.resolveOne(source, value),
+          builder: (context, snapshot) {
+            return Text(
+              snapshot.data ?? LayoutListTile.getValue(value),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            );
+          },
+        );
+      }
+    } else if (field.hasValueLabels) {
+      final rawText = LayoutListTile.getValue(value);
+      widget = Text(
+        field.resolveDisplayLabel(rawText),
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+      );
+    } else if (field.isDateTime) {
       final fmt = field.dateTimeFormat;
       try {
         final date = DateTime.tryParse(value.toString()) ??
@@ -129,7 +158,7 @@ class EntityFieldDisplay {
     } else {
       final rawText = LayoutListTile.getValue(value);
       widget = Text(
-        field.hasValueLabels ? field.resolveDisplayLabel(rawText) : rawText,
+        rawText,
         overflow: TextOverflow.ellipsis,
         maxLines: 1,
       );
@@ -139,8 +168,13 @@ class EntityFieldDisplay {
     final String displayStr;
     if (widget is Text) {
       displayStr = widget.data ?? rawStr;
+    } else if (field.effectiveDisplaySource != null) {
+      final cached = ReferenceLabelCache.instance
+          .getCached(field.effectiveDisplaySource!, value);
+      displayStr = cached ?? rawStr;
     } else {
-      displayStr = rawStr;
+      displayStr =
+          field.hasValueLabels ? field.resolveDisplayLabel(rawStr) : rawStr;
     }
 
     // Always match colors against the raw code (e.g. CLOSED), not the translated display label.
@@ -193,6 +227,43 @@ class EntityFieldDisplay {
           final backgroundColor = baseColor.withValues(alpha: isDark ? 0.2 : 0.12);
           final textColor = isDark ? baseColor.lighten(0.1) : baseColor;
 
+          Widget chipLabel = Text(
+            displayStr,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 12,
+              height: 1.2,
+              leadingDistribution: TextLeadingDistribution.even,
+              fontWeight: FontWeight.bold,
+            ),
+          );
+
+          if (field.effectiveDisplaySource != null &&
+              ReferenceLabelCache.instance
+                      .getCached(field.effectiveDisplaySource!, value) ==
+                  null) {
+            chipLabel = FutureBuilder<String?>(
+              future: ReferenceLabelCache.instance
+                  .resolveOne(field.effectiveDisplaySource!, value),
+              builder: (context, snapshot) {
+                return Text(
+                  snapshot.data ?? displayStr,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 12,
+                    height: 1.2,
+                    leadingDistribution: TextLeadingDistribution.even,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              },
+            );
+          }
+
           Widget chipContent = Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
@@ -203,18 +274,7 @@ class EntityFieldDisplay {
                 width: 1,
               ),
             ),
-            child: Text(
-              displayStr,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 12,
-                height: 1.2,
-                leadingDistribution: TextLeadingDistribution.even,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            child: chipLabel,
           );
 
           if (onTap != null) {

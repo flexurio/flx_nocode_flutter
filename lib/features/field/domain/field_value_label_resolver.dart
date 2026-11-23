@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flx_nocode_flutter/features/field/domain/reference_label_cache.dart';
+import 'package:flx_nocode_flutter/features/field/models/display_source_model.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 
 /// Centralized domain helper for resolving raw field codes into human-readable
@@ -8,7 +10,8 @@ import 'package:flx_nocode_flutter/features/field/models/field.dart';
 /// Resolution priority for labels:
 /// 1. Explicit [valueLabels] (or its backward-compatible `chip_labels` alias)
 /// 2. Static `values('KEY':'Label',...)` entries in [optionsSource]
-/// 3. Raw value fallback (graceful degradation when backend adds new codes)
+/// 3. Cached remote reference lookup via [displaySource] in [ReferenceLabelCache]
+/// 4. Raw value fallback (graceful degradation when backend adds new codes)
 class FieldValueLabelResolver {
   const FieldValueLabelResolver._();
 
@@ -62,11 +65,13 @@ class FieldValueLabelResolver {
   /// 2. Case-insensitive key match in [valueLabels]
   /// 3. Exact key match in static [optionsSource]
   /// 4. Case-insensitive key match in static [optionsSource]
-  /// 5. Fallback to `rawValue.toString()`
+  /// 5. Cached remote reference lookup via [displaySource] in [ReferenceLabelCache]
+  /// 6. Fallback to `rawValue.toString()`
   static String resolveLabel(
     dynamic rawValue, {
     Map<String, String>? valueLabels,
     String? optionsSource,
+    DisplaySourceModel? displaySource,
   }) {
     if (rawValue == null) return '';
     final raw = rawValue.toString();
@@ -78,6 +83,14 @@ class FieldValueLabelResolver {
     final staticMap = extractStaticOptions(optionsSource);
     final fromStatic = _lookupLabel(raw, staticMap);
     if (fromStatic != null) return fromStatic;
+
+    final effectiveSource =
+        displaySource ?? DisplaySourceModel.fromDynamic(optionsSource);
+    if (effectiveSource != null) {
+      final cached =
+          ReferenceLabelCache.instance.getCached(effectiveSource, raw);
+      if (cached != null) return cached;
+    }
 
     return raw;
   }

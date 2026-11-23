@@ -214,7 +214,10 @@ class _InlineFilterState extends State<InlineFilter> {
       final optionsSource = widget.config['options_source']?.toString() ??
           (widget.config['endpoint'] != null
               ? 'backend.${widget.config['endpoint']}'
-              : widget.field.optionsSource);
+              : (widget.field.optionsSource ??
+                  (widget.field.effectiveDisplaySource != null
+                      ? 'backend.${widget.field.effectiveDisplaySource!.effectivePath.replaceFirst('/', '')}({${widget.field.effectiveDisplaySource!.key}}:${widget.field.effectiveDisplaySource!.label})'
+                      : null)));
 
       final selectField = widget.field.copyWith(
         type: 'select',

@@ -42,6 +42,12 @@ class ButtonExport extends StatelessWidget {
         state.maybeWhen(
           loaded: (data) async {
             try {
+              if (entityFields != null && entityFields!.isNotEmpty) {
+                await ReferenceLabelCache.instance.ensureLoadedForRows(
+                  data.data,
+                  entityFields!,
+                );
+              }
               if (export.isPdf) {
                 final formattedData = FieldValueLabelResolver.formatRowsForExport(
                   data.data,

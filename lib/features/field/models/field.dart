@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/field/domain/field_value_label_resolver.dart';
+import 'package:flx_nocode_flutter/features/field/models/display_source_model.dart';
 import 'package:hive_ce/hive.dart';
 
 /// Represents a single field definition in a dynamic entity configuration.
@@ -97,6 +98,9 @@ class EntityField extends HiveObject {
   /// Optional action triggered when clicking this field/cell.
   final ActionD? action;
 
+  /// Optional remote lookup specification for foreign-key / relational references.
+  final DisplaySourceModel? displaySource;
+
   /// Creates a new [EntityField] configuration.
   EntityField({
     required this.label,
@@ -124,6 +128,7 @@ class EntityField extends HiveObject {
     this.isBadge,
     this.iconName,
     this.action,
+    this.displaySource,
   });
 
   /// Creates an [EntityField] instance from JSON.
@@ -186,6 +191,9 @@ class EntityField extends HiveObject {
               ? ActionD.fromJson(
                   Map<String, dynamic>.from(json['click_action'] as Map))
               : null),
+      displaySource: DisplaySourceModel.fromDynamic(
+        json['display_source'] ?? json['displaySource'],
+      ),
     );
   }
 
@@ -223,6 +231,7 @@ class EntityField extends HiveObject {
     bool? isBadge,
     String? iconName,
     ActionD? action,
+    DisplaySourceModel? displaySource,
   }) {
     return EntityField(
       label: label ?? this.label,
@@ -250,7 +259,19 @@ class EntityField extends HiveObject {
       isBadge: isBadge ?? this.isBadge,
       iconName: iconName ?? this.iconName,
       action: action ?? this.action,
+      displaySource: displaySource ?? this.displaySource,
     );
+  }
+
+  /// Effective remote reference display specification.
+  /// Falls back to auto-deriving from [optionsSource] if [displaySource] is null
+  /// and [optionsSource] starts with `backend.`.
+  DisplaySourceModel? get effectiveDisplaySource {
+    if (displaySource != null) return displaySource;
+    if (optionsSource != null && optionsSource!.trim().startsWith('backend.')) {
+      return DisplaySourceModel.fromDynamic(optionsSource);
+    }
+    return null;
   }
 
   /// Effective mapping of raw code -> human-readable display label,
@@ -261,9 +282,10 @@ class EntityField extends HiveObject {
         optionsSource: optionsSource,
       );
 
-  /// Whether this field defines any static code -> label mappings
-  /// (either via `value_labels`/`chip_labels` or static `options_source`).
-  bool get hasValueLabels => effectiveValueLabels.isNotEmpty;
+  /// Whether this field defines any static or dynamic code -> label mappings
+  /// (either via `value_labels`/`chip_labels`, static `options_source`, or `display_source`).
+  bool get hasValueLabels =>
+      effectiveValueLabels.isNotEmpty || effectiveDisplaySource != null;
 
   /// Resolves [rawValue] to its display label using this field's configuration.
   String resolveDisplayLabel(dynamic rawValue) =>
@@ -271,12 +293,14 @@ class EntityField extends HiveObject {
         rawValue,
         valueLabels: valueLabels,
         optionsSource: optionsSource,
+        displaySource: effectiveDisplaySource,
       );
 
   /// Converts this field definition into JSON map.
   Map<String, dynamic> toJson() {
     return {
       if (action != null) 'action': action!.toJson(),
+      if (displaySource != null) 'display_source': displaySource!.toJson(),
       'options_source': optionsSource,
       'column_width': columnWidth,
       'label': label,
