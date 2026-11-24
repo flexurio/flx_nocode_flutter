@@ -137,5 +137,58 @@ void main() {
       expect(options['PROMOTION EXPENSE'], 'PROMOTION EXPENSE');
       expect(options['TRAVEL EXPENSE'], 'TRAVEL EXPENSE');
     });
+
+    test('extractBackend caches results and does not hit repository again', () async {
+      final mockRepo = MockEntityCustomRepository();
+      EntityCustomRepository.instance = mockRepo;
+      OptionsSource.clearCache();
+
+      final source = OptionsSource(
+        optionsSource:
+            'backend.vw_lbb_expense_transaction_detail_search({description}:{description})?lbb_expense_transaction_header_id.eq={parent.header_id}',
+      );
+
+      final parentData = [
+        {'header_id': 'EVENT/2026/09/001'}
+      ];
+
+      when(() => mockRepo.fetch(
+            accessToken: any(named: 'accessToken'),
+            pageOptions: any(named: 'pageOptions'),
+            method: any(named: 'method'),
+            path: any(named: 'path'),
+            filterMap: any(named: 'filterMap'),
+            headers: any(named: 'headers'),
+            cachedDurationSeconds: any(named: 'cachedDurationSeconds'),
+            mockEnabled: any(named: 'mockEnabled'),
+            mockData: any(named: 'mockData'),
+          )).thenAnswer((invocation) async {
+        return PageOptions<Map<String, dynamic>>.emptyNoLimit().copyWith(
+          data: [
+            {'description': 'PROMOTION EXPENSE'},
+          ],
+        );
+      });
+
+      // First call -> hits repo
+      final res1 = await source.extractBackend(parentData: parentData);
+      expect(res1['PROMOTION EXPENSE'], 'PROMOTION EXPENSE');
+
+      // Second call -> should use cache
+      final res2 = await source.extractBackend(parentData: parentData);
+      expect(res2['PROMOTION EXPENSE'], 'PROMOTION EXPENSE');
+
+      verify(() => mockRepo.fetch(
+            accessToken: any(named: 'accessToken'),
+            pageOptions: any(named: 'pageOptions'),
+            method: any(named: 'method'),
+            path: any(named: 'path'),
+            filterMap: any(named: 'filterMap'),
+            headers: any(named: 'headers'),
+            cachedDurationSeconds: any(named: 'cachedDurationSeconds'),
+            mockEnabled: any(named: 'mockEnabled'),
+            mockData: any(named: 'mockData'),
+          )).called(1);
+    });
   });
 }

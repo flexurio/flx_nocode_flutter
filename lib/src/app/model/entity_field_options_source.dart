@@ -68,6 +68,15 @@ class OptionsSource {
   final String? optionsSource;
   OptionsSource({required this.optionsSource});
 
+  static final Map<String, Map<dynamic, dynamic>> _cache = {};
+  static final Map<String, Future<Map<dynamic, dynamic>>> _inFlightRequests = {};
+
+  /// Clears in-memory cache and pending in-flight requests.
+  static void clearCache() {
+    _cache.clear();
+    _inFlightRequests.clear();
+  }
+
   /// Returns options as a `Map<dynamic, dynamic>` from either:
   /// - `values(...)` → static key-value pairs
   /// - `backend.entity({key}:{value})[?query]` → dynamic entity
@@ -124,8 +133,9 @@ class OptionsSource {
   /// Steps:
   /// 1) Parse the backend pattern into [BackendSource].
   /// 2) Resolve query placeholder values from `parentData`.
-  /// 3) Call `EntityCustomRepository.instance.fetch(...)`.
-  /// 4) Build `{item[key]: item[value]}` from the response.
+  /// 3) Check memory cache and in-flight requests to avoid redundant REST hits.
+  /// 4) Call `EntityCustomRepository.instance.fetch(...)`.
+  /// 5) Build `{item[key]: item[value]}` from the response and cache it.
   ///
   /// Placeholders:
   /// - `{page[i].field}` supports nested fields like `{page[0].user.profile.nip}`.
@@ -136,8 +146,42 @@ class OptionsSource {
   Future<Map<dynamic, dynamic>> extractBackend({
     required List<Map<String, dynamic>> parentData,
   }) async {
+    final backend = backendSource(parentData: parentData);
+    final resolvedQueryParams =
+        _resolveQueryParams(backend.queryParams, parentData);
+
+    final sortedParams = resolvedQueryParams.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+    final paramsKey =
+        sortedParams.map((e) => '${e.key}=${e.value}').join('&');
+    final cacheKey =
+        '${backend.entity}|${backend.key}:${backend.value}|$paramsKey';
+
+    if (_cache.containsKey(cacheKey)) {
+      return _cache[cacheKey]!;
+    }
+
+    if (_inFlightRequests.containsKey(cacheKey)) {
+      return await _inFlightRequests[cacheKey]!;
+    }
+
+    final future = _fetchBackend(backend, resolvedQueryParams);
+    _inFlightRequests[cacheKey] = future;
+
     try {
-      final backend = backendSource(parentData: parentData);
+      final result = await future;
+      _cache[cacheKey] = result;
+      return result;
+    } finally {
+      _inFlightRequests.remove(cacheKey);
+    }
+  }
+
+  Future<Map<dynamic, dynamic>> _fetchBackend(
+    BackendSource backend,
+    Map<String, String> resolvedQueryParams,
+  ) async {
+    try {
       final entity = await EntityCustom.getEntity(backend.entity);
       final options = <dynamic, dynamic>{};
 
@@ -162,10 +206,6 @@ class OptionsSource {
         print(
             '[OptionsSource] Entity ${backend.entity} config not found; falling back to direct GET $path');
       }
-
-      // Resolve placeholders in query params using parentData
-      final resolvedQueryParams =
-          _resolveQueryParams(backend.queryParams, parentData);
 
       final data = await EntityCustomRepository.instance.fetch(
         accessToken: UserRepositoryAppNocode.instance.token ?? '',
