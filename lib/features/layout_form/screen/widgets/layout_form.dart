@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component.dart';
 import 'package:flx_nocode_flutter/features/field/models/field.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
+import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/multi_form_widget.dart';
 
 extension LayoutFormWidget on LayoutForm {
   Widget toWidget(
@@ -25,7 +25,7 @@ extension LayoutFormWidget on LayoutForm {
           .toList(growable: false);
       final titles = multiForms.map((f) => f.label).toList(growable: false);
 
-      return MultiForm(
+      return MultiFormWidget(
         children: children,
         titles: titles,
         page: currentPage,

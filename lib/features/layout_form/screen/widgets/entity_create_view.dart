@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
+import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/multi_form_widget.dart';
 import 'package:get/get.dart';
 
 class CreateForm extends StatelessWidget {
@@ -156,7 +157,7 @@ class CreateForm extends StatelessWidget {
 
   Widget _buildFormContent(CreatePageController controller) {
     if (layoutForm.multiForms.isNotEmpty) {
-      return Obx(() => MultiForm(
+      return Obx(() => MultiFormWidget(
             page: controller.currentPage.value,
             titles: layoutForm.multiForms.map((e) => e.label).toList(),
             children: List.generate(layoutForm.multiForms.length, (index) {

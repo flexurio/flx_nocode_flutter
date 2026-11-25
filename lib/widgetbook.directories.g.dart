@@ -543,6 +543,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                     .interactiveTableFormUseCase,
           ),
           _widgetbook.WidgetbookUseCase(
+            name: 'Multi-Form Popup (Long Step Titles)',
+            builder:
+                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
+                    .multiFormPopupLongTitlesUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
             name: 'Multi-Step Wizard',
             builder:
                 _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
