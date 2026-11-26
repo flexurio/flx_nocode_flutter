@@ -83,6 +83,7 @@ Future<void> main() async {
     // signUpPage: signUpPage,
     urlAuthApi: configuration.authUrl,
     withTwoFactor: false,
+    authMethod: 'POST',
     onLoginSuccess: (accessToken, userPayload) async {
       await CapabilitiesService.instance.syncFromBackend(
         config: configuration.accessControl,
