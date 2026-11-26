@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
 import '../components/pdf_watermark_component.dart';
@@ -24,10 +25,7 @@ class DocumentLayoutStrategy implements PdfLayoutStrategy {
     final dynamic rawContent = processedJson['content'];
     final List<dynamic> content = rawContent is List ? rawContent : [];
 
-    final pageMargin = _parsePageMargins(
-      processedJson['margins'] ?? processedJson['margin'],
-      unit,
-    );
+    final pageMargin = resolvePageMargins(processedJson, unit);
 
     final showWatermark = watermark != null &&
         watermark.hasContent &&
@@ -97,12 +95,29 @@ class DocumentLayoutStrategy implements PdfLayoutStrategy {
     );
   }
 
+  /// Resolves page margins, falling back to `margin` or default 20pt when `margins` is empty.
+  @visibleForTesting
+  static pw.EdgeInsetsGeometry resolvePageMargins(
+    Map<String, dynamic> processedJson,
+    String unit,
+  ) {
+    final rawMargins = processedJson['margins'];
+    final hasExplicitMargins =
+        (rawMargins is Map && rawMargins.isNotEmpty) ||
+        (rawMargins is! Map && rawMargins != null);
+    return _parsePageMargins(
+      hasExplicitMargins ? rawMargins : processedJson['margin'],
+      unit,
+    );
+  }
+
   static pw.EdgeInsetsGeometry _parsePageMargins(
     dynamic rawMargin,
     String unit,
   ) {
     if (rawMargin == null) return const pw.EdgeInsets.all(20.0);
     if (rawMargin is Map) {
+      if (rawMargin.isEmpty) return const pw.EdgeInsets.all(20.0);
       return PdfUnitUtils.parseEdgeInsets(rawMargin, unit) ??
           const pw.EdgeInsets.all(20.0);
     }

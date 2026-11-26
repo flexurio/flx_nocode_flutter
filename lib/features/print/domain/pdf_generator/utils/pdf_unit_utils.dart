@@ -47,6 +47,7 @@ class PdfUnitUtils {
       return val > 0 ? pw.EdgeInsets.all(val) : null;
     }
     if (value is Map) {
+      if (value.isEmpty) return null;
       return pw.EdgeInsets.only(
         left: convertToPt(value['left'] ?? 0, unit),
         top: convertToPt(value['top'] ?? 0, unit),

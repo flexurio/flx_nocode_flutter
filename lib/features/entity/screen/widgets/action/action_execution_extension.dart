@@ -1130,30 +1130,25 @@ extension ActionExecutionExtension on ActionD {
   }) async {
     final request = http?.toRequestConfig(data);
     final rawUrl = request?.url ?? (value is String ? value as String : null);
-    var url = rawUrl?.renderWithData(data).interpolateJavascript(data);
+    final initialUrl = rawUrl?.renderWithData(data).interpolateJavascript(data);
 
-    if (url == null || url.isEmpty) {
+    if (initialUrl == null || initialUrl.isEmpty) {
       Toast(context).fail('No URL found for download');
       return;
     }
 
     try {
-      final hasDirectValue = value is String && (value as String).isNotEmpty;
-      final shouldLoadMetadata =
-          http != null && !hasDirectValue && !_looksLikePdfUrl(url);
-
-      if (shouldLoadMetadata) {
-        final metadata = await http!.execute(data);
-        if (!metadata.isSuccess) {
-          Toast(context)
-              .fail(metadata.message ?? 'Failed to load download data');
-          return;
-        }
-
-        final documentUrl = _extractDocumentUrl(metadata.data);
-        if (documentUrl != null && documentUrl.isNotEmpty) {
-          url = _normalizeDocumentUrl(documentUrl, request?.url ?? url);
-        }
+      final resolved = await resolveDocumentRequest(
+        data: data,
+        metadataFailureFallback: 'Failed to load download data',
+        requestConfig: request,
+      );
+      final url = resolved.url;
+      if (url == null || url.isEmpty) {
+        Toast(context).fail(
+          resolved.errorMessage ?? 'Failed to load download data',
+        );
+        return;
       }
 
       final response =
@@ -1218,28 +1213,25 @@ extension ActionExecutionExtension on ActionD {
   }) async {
     final request = http?.toRequestConfig(data);
     final rawUrl = request?.url ?? (value is String ? value as String : null);
-    var url = rawUrl?.renderWithData(data).interpolateJavascript(data);
+    final initialUrl = rawUrl?.renderWithData(data).interpolateJavascript(data);
 
-    if (url == null || url.isEmpty) {
+    if (initialUrl == null || initialUrl.isEmpty) {
       Toast(context).fail('No PDF URL found');
       return;
     }
 
     try {
-      final hasDirectValue = value is String && (value as String).isNotEmpty;
-      final shouldLoadMetadata =
-          http != null && !hasDirectValue && !_looksLikePdfUrl(url);
-      if (shouldLoadMetadata) {
-        final metadata = await http!.execute(data);
-        if (!metadata.isSuccess) {
-          Toast(context).fail(metadata.message ?? 'Failed to load PDF data');
-          return;
-        }
-
-        final documentUrl = _extractDocumentUrl(metadata.data);
-        if (documentUrl != null && documentUrl.isNotEmpty) {
-          url = _normalizeDocumentUrl(documentUrl, request?.url ?? url);
-        }
+      final resolved = await resolveDocumentRequest(
+        data: data,
+        metadataFailureFallback: 'Failed to load PDF data',
+        requestConfig: request,
+      );
+      final url = resolved.url;
+      if (url == null || url.isEmpty) {
+        Toast(context).fail(
+          resolved.errorMessage ?? 'Failed to load PDF data',
+        );
+        return;
       }
 
       final response =
@@ -1271,6 +1263,77 @@ extension ActionExecutionExtension on ActionD {
     } catch (e) {
       Toast(context).fail('Failed to load PDF');
     }
+  }
+
+  /// Resolves the effective document URL for download and PDF preview actions.
+  @visibleForTesting
+  Future<({String? url, String? errorMessage})> resolveDocumentRequest({
+    required JsonMap data,
+    required String metadataFailureFallback,
+    HttpRequestConfig? requestConfig,
+    Future<HttpRequestResult> Function(HttpData http, JsonMap data)?
+        executeHttp,
+  }) async {
+    final request = requestConfig ?? http?.toRequestConfig(data);
+    final rawUrl = request?.url ?? (value is String ? value as String : null);
+    var url = rawUrl?.renderWithData(data).interpolateJavascript(data);
+
+    if (url == null || url.isEmpty) {
+      return (url: null, errorMessage: null);
+    }
+
+    final hasDirectValue = value is String && (value as String).isNotEmpty;
+    final shouldLoadMetadata =
+        http != null && !hasDirectValue && !_looksLikePdfUrl(url);
+    final backendHost = Configuration.instance.backendHost;
+
+    if (shouldLoadMetadata) {
+      final metadata = executeHttp != null
+          ? await executeHttp(http!, data)
+          : await http!.execute(data);
+      if (!metadata.isSuccess) {
+        return (
+          url: null,
+          errorMessage: metadata.message ?? metadataFailureFallback,
+        );
+      }
+
+      final documentUrl = _extractDocumentUrl(metadata.data);
+      if (documentUrl != null && documentUrl.isNotEmpty) {
+        final metadataBaseUrl =
+            resolveMetadataBaseUrl(request?.url, backendHost);
+        url = normalizeDocumentUrl(documentUrl, metadataBaseUrl);
+      }
+    } else {
+      url = normalizeDocumentUrl(url, backendHost);
+    }
+
+    return (url: url, errorMessage: null);
+  }
+
+  /// Chooses the base URL for normalizing URLs returned by a metadata endpoint.
+  @visibleForTesting
+  String resolveMetadataBaseUrl(String? requestUrl, String backendHost) {
+    final candidate = requestUrl?.trim() ?? '';
+    final candidateUri = Uri.tryParse(candidate);
+    if (candidateUri != null &&
+        candidateUri.hasAuthority &&
+        !isInternalOrLoopbackHost(candidateUri.host)) {
+      return candidate;
+    }
+
+    final trimmedBackend = backendHost.trim();
+    final backendUri = Uri.tryParse(trimmedBackend);
+    if (backendUri != null &&
+        backendUri.hasAuthority &&
+        backendUri.host.toLowerCase() != '0.0.0.0') {
+      return trimmedBackend;
+    }
+
+    if (candidateUri != null && candidateUri.hasAuthority) {
+      return candidate;
+    }
+    return trimmedBackend;
   }
 
   bool _looksLikePdfUrl(String url) {
@@ -1305,15 +1368,50 @@ extension ActionExecutionExtension on ActionD {
     return null;
   }
 
-  String _normalizeDocumentUrl(String documentUrl, String baseUrl) {
-    final documentUri = Uri.tryParse(documentUrl);
-    final baseUri = Uri.tryParse(baseUrl);
+  /// Normalizes relative, loopback, or internal `/static/` URLs against [baseUrl].
+  @visibleForTesting
+  String normalizeDocumentUrl(String documentUrl, String baseUrl) {
+    final trimmedDoc = documentUrl.trim();
+    final documentUri =
+        Uri.tryParse(trimmedDoc) ?? Uri.tryParse(Uri.encodeFull(trimmedDoc));
+    final baseUri = Uri.tryParse(baseUrl.trim());
 
     if (documentUri == null) return documentUrl;
-    if (baseUri == null) return documentUri.toString();
+    if (baseUri == null || !baseUri.hasAuthority) return documentUri.toString();
+
+    final originUri = Uri(
+      scheme: baseUri.scheme,
+      host: baseUri.host,
+      port: baseUri.hasPort ? baseUri.port : null,
+    );
+
+    if (!documentUri.hasScheme || !documentUri.hasAuthority) {
+      final normalizedPath = documentUri.path.startsWith('/')
+          ? documentUri.path
+          : '/${documentUri.path}';
+      return originUri
+          .replace(
+            path: normalizedPath,
+            query: documentUri.hasQuery ? documentUri.query : null,
+          )
+          .toString();
+    }
+
+    final baseHost = baseUri.host.toLowerCase();
+    if (baseHost == '0.0.0.0') {
+      return documentUri.toString();
+    }
 
     final host = documentUri.host.toLowerCase();
-    if (host == 'localhost' || host == '127.0.0.1') {
+    final isLoopbackOrWildcard = host == 'localhost' ||
+        host == '127.0.0.1' ||
+        host == '0.0.0.0' ||
+        host == '::1';
+    final isInternalStaticMismatch = documentUri.path.startsWith('/static/') &&
+        isInternalOrLoopbackHost(host) &&
+        host != baseHost;
+
+    if (isLoopbackOrWildcard || isInternalStaticMismatch) {
       return documentUri
           .replace(
             scheme: baseUri.scheme,
@@ -1324,5 +1422,46 @@ extension ActionExecutionExtension on ActionD {
     }
 
     return documentUri.toString();
+  }
+
+  /// Returns true for loopback, wildcard, private IPv4, or internal Docker/dev hostnames.
+  @visibleForTesting
+  bool isInternalOrLoopbackHost(String rawHost) {
+    final host = rawHost.trim().toLowerCase();
+    if (host.isEmpty) return false;
+
+    if (host == 'localhost' ||
+        host == '127.0.0.1' ||
+        host == '0.0.0.0' ||
+        host == '::1' ||
+        host == '[::1]') {
+      return true;
+    }
+
+    // Single-label internal/Docker service hostnames (e.g. "backend", "api").
+    if (!host.contains('.') && !host.contains(':')) {
+      return true;
+    }
+
+    if (host.endsWith('.local') ||
+        host.endsWith('.internal') ||
+        host.endsWith('.localhost')) {
+      return true;
+    }
+
+    final octets = host.split('.');
+    if (octets.length == 4) {
+      final parts = octets.map(int.tryParse).toList();
+      if (parts.every((p) => p != null && p >= 0 && p <= 255)) {
+        final a = parts[0]!;
+        final b = parts[1]!;
+        if (a == 10 || a == 127) return true;
+        if (a == 192 && b == 168) return true;
+        if (a == 172 && b >= 16 && b <= 31) return true;
+        if (a == 169 && b == 254) return true;
+      }
+    }
+
+    return false;
   }
 }
