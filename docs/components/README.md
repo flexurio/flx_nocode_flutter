@@ -29,7 +29,7 @@ Many components share these layout and behavioral properties:
 | `field_display` | Display | Read-only label and value pair. |
 | `image` | Display | Image from URL. |
 | `table` | Display/Data | Configurable data grid. |
-| [`field_array`](./component_field_array.md) | Input/Collection | First-class repeatable editable rows (`table` or `card` presentation) with native array output and per-cell validation. |
+| [`field_array`](./field_array.md) | Input/Collection | First-class repeatable editable rows (`table` or `card` presentation) with native array output and per-cell validation. |
 | `list_view` | Display/Data | Repeated item renderer from HTTP, local reference, or inline data. |
 | [`text_field`](./inputs/text_field.md) | Input | Text entry. |
 | [`number_field`](./inputs/number_field.md) | Input | Numeric entry. |
@@ -56,7 +56,7 @@ Many components share these layout and behavioral properties:
 | `user_name` | Display | Nocode component to display a user's name from their ID (nip/user_id). |
 
 > **Note on User Resolution**:
-> Resolusi nama user berdasarkan ID/NIP didukung secara native menggunakan komponen `user_name`. Anda juga bisa me-resolve nama user di dalam komponen `field_display` menggunakan properti `valueType` dengan opsi `"user_name"`, `"user_name_with_id"`, atau `"user_id"`.
+> Resolving user names from ID/NIP is natively supported via the `user_name` component. You can also resolve user names inside `field_display` by setting `valueType` to `"user_name"`, `"user_name_with_id"`, or `"user_id"`.
 
 ## Data Binding Notes
 
@@ -70,11 +70,11 @@ Use `dependsOn` on inputs and data-driven components when an option list or remo
 
 Detailed documentation for each category of components:
 
-- [**Input Components**](./input_components.md): Fields for user data entry (`text_field`, `dropdown`, etc.).
-- [**Display Components**](./display_components.md): Elements for presenting information (`text`, `field_display`, `table`).
-- [**Interaction Components**](./interaction_components.md): Buttons and clickable elements.
-- [**Layout Components**](./layout_components.md): Containers for arranging UI elements (`row`, `column`, `container`).
-- [**Other Components**](./other_components.md): Selection toggles, dividers, and other UI utilities.
+- [**Input Components**](./inputs/README.md): Fields for user data entry (`text_field`, `dropdown`, etc.).
+- [**Display Components**](./display.md): Elements for presenting information (`text`, `field_display`, `table`).
+- [**Interaction Components**](./interaction.md): Buttons and clickable elements.
+- [**Layout Components**](./layout.md): Containers for arranging UI elements (`row`, `column`, `container`).
+- [**Other Components**](./other.md): Selection toggles, dividers, and other UI utilities.
 - [**Chart Components**](./charts.md): Data visualization tools.
-- [**Logic Components**](./component_conditional.md): Dynamic UI switching (`conditional`).
-- [**Form Component**](./component_form.md): Nested validation group (`form`).
+- [**Logic Components**](./conditional.md): Dynamic UI switching (`conditional`).
+- [**Form Component**](./form.md): Nested validation group (`form`).

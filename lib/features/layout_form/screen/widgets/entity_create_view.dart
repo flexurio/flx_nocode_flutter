@@ -3,6 +3,7 @@ import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 
 import 'package:flx_nocode_flutter/features/layout_form/domain/extensions/layout_form_extensions.dart';
+import 'package:flx_nocode_flutter/features/layout_form/domain/popup_size_resolver.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
 import 'package:flx_nocode_flutter/src/app/bloc/entity/entity_controller.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/enitty_create_form/enitty_create_form.dart';
@@ -42,7 +43,7 @@ class CreateForm extends StatelessWidget {
   final bool noHeader;
   final LayoutForm layoutForm;
   final bool popup;
-  final double? width;
+  final Object? width;
   final bool? showSubmitButton;
 
   @override
@@ -104,12 +105,20 @@ class CreateForm extends StatelessWidget {
 
 
           final isPopup = popup || layoutForm.popup;
+          final resolvedPopupWidth = isPopup
+              ? PopupSizeResolver.resolve(
+                  layoutForm: layoutForm,
+                  viewportWidth: MediaQuery.of(context).size.width,
+                  actionWidth: width,
+                  formWidth: layoutForm.width,
+                )
+              : null;
           return isPopup
               ? Form(
                   key: controller.formKey,
                   child: CardForm(
                     popup: true,
-                    width: width ?? 400,
+                    width: resolvedPopupWidth,
                     title: controller.title,
                     icon: layoutForm.isHome ? Icons.home : Icons.edit_note,
                     actions: (showSubmitButton ?? layoutForm.showSubmitButton) ? [
@@ -148,7 +157,7 @@ class CreateForm extends StatelessWidget {
                           ? DataAction.reprocess
                           : controller.action,
                       suffixText: controller.headerSuffix,
-                      width: width,
+                      width: width is num ? (width as num).toDouble() : null,
                     ));
         });
       },

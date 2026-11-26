@@ -4,7 +4,7 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flx_nocode_flutter/features/component/models/component_field_array.dart';
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_field_array.dart';
 
-@UseCase(name: 'Mock Design (Table)', type: ComponentFieldArray)
+@UseCase(name: 'Mock Design (Table)', type: ComponentFieldArray, path: '[Components]/Data')
 Widget mockComponentFieldArrayDesign(BuildContext context) {
   const jsonRaw = '''
   {
@@ -63,7 +63,7 @@ Widget mockComponentFieldArrayDesign(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Editable Table + Validation (JSON)', type: ComponentFieldArray)
+@UseCase(name: 'Editable Table + Validation (JSON)', type: ComponentFieldArray, path: '[Components]/Data')
 Widget liveComponentFieldArrayTable(BuildContext context) {
   const jsonRaw = '''
   {
@@ -133,7 +133,7 @@ Widget liveComponentFieldArrayTable(BuildContext context) {
   return _FieldArrayWidgetbookPlayground(component: component);
 }
 
-@UseCase(name: 'Card Presentation (JSON)', type: ComponentFieldArray)
+@UseCase(name: 'Card Presentation (JSON)', type: ComponentFieldArray, path: '[Components]/Data')
 Widget liveComponentFieldArrayCards(BuildContext context) {
   const jsonRaw = '''
   {
@@ -193,7 +193,7 @@ Widget liveComponentFieldArrayCards(BuildContext context) {
   return _FieldArrayWidgetbookPlayground(component: component);
 }
 
-@UseCase(name: 'Read-Only Summary Mode (JSON)', type: ComponentFieldArray)
+@UseCase(name: 'Read-Only Summary Mode (JSON)', type: ComponentFieldArray, path: '[Components]/Data')
 Widget readOnlyComponentFieldArray(BuildContext context) {
   const jsonRaw = '''
   {

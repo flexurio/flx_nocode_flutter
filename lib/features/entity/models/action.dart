@@ -89,6 +89,10 @@ class ActionD extends HiveObject {
 
   final bool isMultiple;
   final double? width;
+  final String? widthPreset;
+
+  /// Effective width spec (`width` pixel number or `widthPreset` token such as `'lg'`, `'xl'`, `'80%'`).
+  Object? get effectiveWidth => width ?? widthPreset;
   final String? confirmTitle;
   final String? confirmMessage;
   final String? iconColor;
@@ -168,6 +172,7 @@ class ActionD extends HiveObject {
     required this.type,
     required this.name,
     this.width,
+    this.widthPreset,
     this.confirmTitle,
     this.confirmMessage,
     this.iconColor,
@@ -223,6 +228,7 @@ class ActionD extends HiveObject {
     Rule? rule,
     VisibilityHttpD? visibilityHttp,
     double? width,
+    String? widthPreset,
     String? confirmTitle,
     String? confirmMessage,
     String? iconColor,
@@ -260,6 +266,7 @@ class ActionD extends HiveObject {
       validate: validate ?? this.validate,
       showSubmitButton: showSubmitButton ?? this.showSubmitButton,
       width: width ?? this.width,
+      widthPreset: widthPreset ?? this.widthPreset,
       isMultiple: isMultiple ?? this.isMultiple,
       id: id ?? this.id,
       type: type ?? this.type,
@@ -350,7 +357,8 @@ class ActionD extends HiveObject {
           : VisibilityHttpD.fromJson(
               Map<String, dynamic>.from(json['visibility_http'] as Map),
             ),
-      width: json['width']?.toDouble(),
+      width: json['width'] is num ? (json['width'] as num).toDouble() : null,
+      widthPreset: json['width'] is String ? json['width'] as String : null,
       confirmTitle: json['confirm_title'],
       confirmMessage: json['confirm_message'],
       iconColor: json['icon_color'],
@@ -426,7 +434,7 @@ class ActionD extends HiveObject {
       if (rule != null) 'rule': rule!.toMap(),
       if (visibilityHttp != null) 'visibility_http': visibilityHttp!.toJson(),
       if (http != null) 'http': http!.toJson(),
-      'width': width,
+      'width': width ?? widthPreset,
       'confirm_title': confirmTitle,
       'confirm_message': confirmMessage,
       'icon_color': iconColor,

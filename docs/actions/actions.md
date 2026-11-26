@@ -45,7 +45,7 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `filters` | Array\<Object\> | No | List of filters to pass to the target view `[{ "reference": "tahun", "value": "{{row.tahun}}" }]`. Supports JS interpolation. |
 | `params` | Object | No | Parameter map to pass to the target view (e.g. `{ "tahun.eq": "{{row.tahun}}" }`). Supports JS interpolation. |
 | `title` | String | No | Custom window/dialog title. If omitted, uses action `name`. |
-| `workflow` | Object | No* | The workflow configuration to execute (required for `workflow` type). See [Submit Workflow](./submit_workflow.md). |
+| `workflow` | Object | No* | The workflow configuration to execute (required for `workflow` type). See [Submit Workflow](../forms/submit_workflow.md). |
 
 ---
 
@@ -72,7 +72,7 @@ This document outlines the structure of the `Action` object (`ActionD`), used to
 | `clear_form` | Clears all form inputs. | - |
 | `workflow` | Executes a custom workflow definition. | `workflow` |
 
-> **💡 `workflow` is a valid action type.** Using `"type": "workflow"` will execute a custom workflow definition. See [submit_workflow.md](./submit_workflow.md) for details on how to configure the `workflow` object structure.
+> **💡 `workflow` is a valid action type.** Using `"type": "workflow"` will execute a custom workflow definition. See [submit_workflow.md](../forms/submit_workflow.md) for details on how to configure the `workflow` object structure.
 
 
 ---

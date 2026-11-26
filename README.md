@@ -24,19 +24,21 @@ This "no-code" approach allows for rapid iteration and deployment. You can chang
 
 The heart of this framework is the `configuration.json` file, which must be located in the `asset/configuration/` directory. This file controls every aspect of the application's appearance and behavior.
 
-A detailed guide to the structure of this file, including all available fields and a complete example, can be found in our documentation.
+A detailed guide to the structure of this file, including all available fields and a complete example, can be found in our documentation:
 
-**[➡️ Read the Configuration JSON Documentation](./docs/configuration_docs.md)**
+**[➡️ Documentation Hub](./docs/README.md)**
 
-**[➡️ Read the Entity JSON Documentation](./docs/entity.md)**
+**[➡️ Read the Configuration JSON Documentation](./docs/core/configuration.md)**
 
-**[➡️ Read the Variables Documentation](./docs/variables.md)**
+**[➡️ Read the Entity JSON Documentation](./docs/core/entity.md)**
 
-**[➡️ Read the Components Documentation](./docs/components.md)**
+**[➡️ Read the Variables Documentation](./docs/core/variables.md)**
 
-**[➡️ Read the String Interpolation Documentation](./docs/string_interpolation.md)**
+**[➡️ Read the Components Documentation](./docs/components/README.md)**
 
-**[➡️ Read the Submit Workflow JSON Documentation](./docs/submit_workflow.md)**
+**[➡️ Read the String Interpolation Documentation](./docs/core/string_interpolation.md)**
+
+**[➡️ Read the Submit Workflow JSON Documentation](./docs/forms/submit_workflow.md)**
 
 ## Getting Started
 

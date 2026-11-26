@@ -177,7 +177,7 @@ extension ActionExecutionExtension on ActionD {
                 parentData: parentData,
                 data: effectiveData,
                 filters: const {},
-                width: width,
+                width: effectiveWidth,
                 actionSignature: signature,
                 actionName: name,
                 onSuccess: (responseData) async {
@@ -201,7 +201,7 @@ extension ActionExecutionExtension on ActionD {
               entity: entity,
               embedded: false,
               layoutFormId: layoutFormId!,
-              width: width,
+              width: effectiveWidth,
               showSubmitButton: showSubmitButton,
               actionSignature: signature,
               actionName: name,
@@ -501,7 +501,7 @@ extension ActionExecutionExtension on ActionD {
               parentData: parentData,
               data: data,
               filters: const {},
-              width: width,
+              width: effectiveWidth,
               onSuccess: (responseData) async {
                 onSuccessCallback?.call();
                 await handleOnSuccessSingle(

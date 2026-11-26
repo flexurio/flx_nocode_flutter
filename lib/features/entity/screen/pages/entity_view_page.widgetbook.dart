@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 
-@UseCase(name: 'Default', type: EntityViewPage)
+@UseCase(
+  name: 'Default',
+  type: EntityViewPage,
+  path: '[Data & Fields]/Pages',
+)
 Widget buildEntityViewPageUseCase(BuildContext context) {
   const jsonRaw = '''
 {

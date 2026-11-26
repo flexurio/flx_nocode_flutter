@@ -62,7 +62,7 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
                 parentData: widget.parentData,
                 data: contextualData,
                 filters: widget.filters,
-                width: action.width,
+                width: action.effectiveWidth,
                 showSubmitButton: action.showSubmitButton,
                 onSuccess: (responseData) async {
                   widget.onSuccess();
@@ -151,7 +151,7 @@ class _ActionButtonRegularState extends State<ActionButtonRegular> {
                   parentData: widget.parentData,
                   data: contextualData,
                   filters: widget.filters,
-                  width: action.width,
+                  width: action.effectiveWidth,
                   showSubmitButton: action.showSubmitButton,
                   onSuccess: (responseData) async {
                     widget.onSuccess();

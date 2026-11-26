@@ -9,12 +9,11 @@ import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
 import 'package:flx_nocode_flutter/features/layout_form/screen/controllers/create_page_controller.dart';
 import 'package:flx_nocode_flutter/src/app/resource/entity_custom.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:flx_core_flutter/flx_core_flutter.dart';
 import 'layout_form.dart';
 
 class MockDio extends Mock implements Dio {}
 
-@UseCase(name: 'Simple Form (From JSON)', type: Column)
+@UseCase(name: 'Simple Form (From JSON)', type: LayoutForm, path: '[Forms]')
 Widget simpleLayoutFormUseCase(BuildContext context) {
   const jsonRaw = '''
   {
@@ -70,7 +69,7 @@ Widget simpleLayoutFormUseCase(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Multi-Step Wizard', type: Column)
+@UseCase(name: 'Multi-Step Wizard', type: LayoutForm, path: '[Forms]')
 Widget wizardLayoutFormUseCase(BuildContext context) {
   const jsonRaw = '''
   {
@@ -140,7 +139,7 @@ Widget wizardLayoutFormUseCase(BuildContext context) {
   });
 }
 
-@UseCase(name: 'Interactive Table Form', type: Column)
+@UseCase(name: 'Interactive Table Form', type: LayoutForm, path: '[Forms]')
 Widget interactiveTableFormUseCase(BuildContext context) {
   const layoutId = 'interactive_inventory';
   const jsonRaw = '''
@@ -355,7 +354,7 @@ Widget interactiveTableFormUseCase(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Date Restriction by Month', type: Column)
+@UseCase(name: 'Date Restriction by Month', type: LayoutForm, path: '[Forms]')
 Widget dateRestrictionLayoutFormUseCase(BuildContext context) {
   const layoutId = 'date_restriction';
   const jsonRaw = '''
@@ -447,7 +446,7 @@ Widget dateRestrictionLayoutFormUseCase(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Date Restriction (Interactive)', type: Column)
+@UseCase(name: 'Date Restriction (Interactive)', type: LayoutForm, path: '[Forms]')
 Widget interactiveDateRestrictionUseCase(BuildContext context) {
   const layoutId = 'date_restriction_interactive';
   const jsonRaw = '''
@@ -546,136 +545,5 @@ Widget interactiveDateRestrictionUseCase(BuildContext context) {
         );
       });
     },
-  );
-}
-
-@UseCase(name: 'Popup Form (With Close Button X)', type: Column)
-Widget popupFormUseCase(BuildContext context) {
-  return Center(
-    child: SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
-      child: CardForm(
-        popup: true,
-        width: 500,
-        title: 'Lihat Detail Outbox',
-        icon: Icons.tune,
-        onClose: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Close button X pressed!')),
-          );
-        },
-        actions: [
-          ElevatedButton(
-            onPressed: () {},
-            child: const Text('Close'),
-          ),
-        ],
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: const [
-            Text('Phone Number: 6283105084189'),
-            SizedBox(height: 12),
-            Text('Status: sent'),
-            SizedBox(height: 12),
-            Text('Type: activate_installation'),
-            SizedBox(height: 12),
-            Text('Message: Kode OTP anda 1395'),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
-@UseCase(name: 'Multi-Form Popup (Long Step Titles)', type: Column)
-Widget multiFormPopupLongTitlesUseCase(BuildContext context) {
-  const jsonRaw = '''
-  {
-    "id": "multi_form_popup_long_titles",
-    "label": "Evaluasi & Persetujuan Dokumen Peristiwa Mutu CPOB",
-    "multi_forms": [
-      {
-        "id": "step_1",
-        "label": "Langkah 1: Informasi Umum Perusahaan, Identitas Pemohon & Klasifikasi Dokumen",
-        "components": [
-          { "id": "doc_no", "type": "text_field", "label": "Nomor Dokumen", "required": true },
-          { "id": "site_name", "type": "text_field", "label": "Lokasi / Site Pabrik", "required": true }
-        ]
-      },
-      {
-        "id": "step_2",
-        "label": "Langkah 2: Rincian Investigasi Akar Masalah (Root Cause Analysis) & Dampak Kualitas",
-        "components": [
-          { "id": "root_cause", "type": "text_field", "label": "Akar Masalah Utama", "required": true },
-          { "id": "impact_summary", "type": "text_field", "label": "Ringkasan Dampak Produk" }
-        ]
-      },
-      {
-        "id": "step_3",
-        "label": "Langkah 3: Rencana Tindakan Perbaikan dan Pencegahan (CAPA) Jangka Panjang",
-        "components": [
-          { "id": "corrective_action", "type": "text_field", "label": "Tindakan Perbaikan" },
-          { "id": "due_date", "type": "date_picker", "label": "Target Tanggal Selesai" }
-        ]
-      },
-      {
-        "id": "step_4",
-        "label": "Langkah 4: Verifikasi Efektivitas, Tinjauan QA Manager & Persetujuan Akhir",
-        "components": [
-          { "id": "qa_notes", "type": "text_field", "label": "Catatan Tinjauan QA Manager" }
-        ]
-      }
-    ]
-  }
-  ''';
-
-  final map = json.decode(jsonRaw) as Map<String, dynamic>;
-  final form = LayoutForm.fromMap(map);
-
-  return Center(
-    child: ElevatedButton.icon(
-      icon: const Icon(Icons.open_in_new),
-      label: const Text('Buka Multi-Form Popup'),
-      onPressed: () {
-        var pageIndex = 0;
-        showDialog<void>(
-          context: context,
-          builder: (dialogContext) {
-            return StatefulBuilder(
-              builder: (context, setState) {
-                final isLast = pageIndex >= form.multiForms.length - 1;
-                return CardForm(
-                  popup: true,
-                  width: 720,
-                  title: form.label,
-                  icon: Icons.assignment_outlined,
-                  onClose: () => Navigator.of(dialogContext).pop(),
-                  actions: [
-                    TextButton(
-                      onPressed: pageIndex > 0
-                          ? () => setState(() => pageIndex--)
-                          : null,
-                      child: const Text('Back'),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: isLast
-                          ? () => Navigator.of(dialogContext).pop()
-                          : () => setState(() => pageIndex++),
-                      child: Text(isLast ? 'Selesai' : 'Next'),
-                    ),
-                  ],
-                  child: SizedBox(
-                    width: 680,
-                    child: form.toWidget({'page': pageIndex}),
-                  ),
-                );
-              },
-            );
-          },
-        );
-      },
-    ),
   );
 }

@@ -3,7 +3,11 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 import 'package:flx_nocode_flutter/features/view/screen/widgets/view.dart';
 
-@UseCase(name: 'Large Button', type: DView)
+@UseCase(
+  name: 'Large Button',
+  type: DView,
+  path: '[Components]/Views',
+)
 Widget buildDViewButtonLargeUseCase(BuildContext context) {
   // Mock EntityCustom
   final entity = EntityCustom.empty().copyWith(
@@ -62,7 +66,11 @@ Widget buildDViewButtonLargeUseCase(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Loading', type: DView)
+@UseCase(
+  name: 'Loading',
+  type: DView,
+  path: '[Components]/Views',
+)
 Widget buildDViewButtonLoadingUseCase(BuildContext context) {
   final dView = DView.empty();
 

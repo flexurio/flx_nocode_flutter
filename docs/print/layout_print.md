@@ -172,7 +172,7 @@ Runtime page variables are interpolated per page in both `header` and `footer` (
 
 To keep the documentation organized, all available UI components (Text, Image, Table, Containers, etc.) and their properties are documented in a separate file:
 
-👉 **[View Component Library Documentation](./layout_print_components.md)**
+👉 **[View Component Library Documentation](./print_components.md)**
 
 ---
 

@@ -334,7 +334,11 @@ const List<Map<String, dynamic>> _sampleDeviationRows = [
   },
 ];
 
-@UseCase(name: 'From JSON Config', type: FieldValueLabelsShowcase)
+@UseCase(
+  name: 'From JSON Config',
+  type: FieldValueLabelsShowcase,
+  path: '[Data & Fields]',
+)
 Widget buildFieldValueLabelsFromJsonUseCase(BuildContext context) {
   final rawJson = context.knobs.string(
     label: 'Entity JSON Config',

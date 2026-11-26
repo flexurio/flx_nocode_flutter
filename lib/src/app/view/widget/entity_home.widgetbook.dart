@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 
-@UseCase(name: 'Default', type: MenuCustom)
+@UseCase(
+  name: 'Default',
+  type: MenuCustom,
+  path: '[Data & Fields]/Pages',
+)
 Widget buildMenuCustomUseCase(BuildContext context) {
   const jsonRaw = '''
 {

@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart';
 import 'package:flx_nocode_flutter/flx_nocode_flutter.dart';
 
-@UseCase(name: 'From JSON (Users)', type: MenuDataTableCustom)
+@UseCase(
+  name: 'From JSON (Users)',
+  type: MenuDataTableCustom,
+  path: '[Data & Fields]',
+)
 Widget buildMenuDataTableCustomFromJsonUseCase(BuildContext context) {
   const jsonRaw = '''
 {

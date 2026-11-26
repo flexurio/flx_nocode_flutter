@@ -13,10 +13,10 @@
 | `title` | String | No | Explicit page title. If omitted, submit forms use the entity title without a `submit` prefix. |
 | `popup` | Boolean | No | If `true`, the form renders automatically inside a modal dialog popup with a close button (**X** icon) in the header. Popups automatically cover full-screen backdrop including top navbar and sidebar. (Also supports `is_popup: true` or `type: "popup"`). |
 | `submit_button` | Boolean | No | Controls whether bottom action buttons (Cancel / Submit bar) are shown. Default is `true`. Set to `false` to hide bottom action buttons (e.g. for view-only detail popups). |
-| `components` | Array | No* | List of [UI Components](./components.md) to render. *Required if `multi_forms` is not used. |
+| `components` | Array | No* | List of [UI Components](../components/README.md) to render. *Required if `multi_forms` is not used. |
 | `multi_forms` | Array | No | List of `LayoutForm` objects for [Multi-Step Wizards](#3-multi-step-forms). |
-| `visible_if` | Object | No | A [Rule](./actions.md#4-rule-based-visibility) determining when this form is available. |
-| `buttons` | Array | No | Custom [Action](./actions.md) buttons for the form footer. |
+| `visible_if` | Object | No | A [Rule](../actions/actions.md#4-rule-based-visibility) determining when this form is available. |
+| `buttons` | Array | No | Custom [Action](../actions/actions.md) buttons for the form footer. |
 | `submit_workflow`| Object | No | Configuration for form submission. See [Submit Workflow Documentation](./submit_workflow.md). |
 | `on_init` | Array/Obj| No | Actions or Workflow to execute when the form is opened. |
 
@@ -61,7 +61,7 @@ If `multi_forms` is provided, the form renders as a **Wizard (Stepper)**. Each o
 
 ### Master-Detail Editable Rows Inside `multi_forms`
 
-For forms with **Step 1 Header -> Step 2 Editable Child Rows -> Step 3 Summary -> Single `POST` with `details`**, use the [`field_array`](../components/component_field_array.md) component:
+For forms with **Step 1 Header -> Step 2 Editable Child Rows -> Step 3 Summary -> Single `POST` with `details`**, use the [`field_array`](../components/field_array.md) component:
 
 - **Step 2 (Input)**: Define a `field_array` with `constraints.min_rows` and per-cell `required: true`. Clicking **Next** automatically validates both row count / uniqueness and every required cell before advancing.
 - **Step 3 (Summary)**: Render a read-only `field_array` with `"read_only": true` and `"reference_id": "sources"` (matching Step 2's `id`) to display the live rows without editing controls.
@@ -157,7 +157,7 @@ For forms with **Step 1 Header -> Step 2 Editable Child Rows -> Step 3 Summary -
 ## 4. Initialization Logic (`on_init`)
 
 `on_init` allows you to fetch data or set variables as soon as the form opens. It supports two formats:
-1.  **Legacy**: An array of [Action](./actions.md) objects.
+1.  **Legacy**: An array of [Action](../actions/actions.md) objects.
 2.  **Workflow**: A [SubmitWorkflow](./submit_workflow.md) object.
 
 **Example: Fetching user profile on init**
@@ -178,7 +178,7 @@ For forms with **Step 1 Header -> Step 2 Editable Child Rows -> Step 3 Summary -
 
 ## 5. Templating in Forms
 
-Forms provide a rich context for [Interpolation](./string_interpolation.md):
+Forms provide a rich context for [Interpolation](../core/string_interpolation.md):
 
 - `{{form.id}}`: Access the value of a component in the **current form**.
 - `{{data.id}}`: Access the original record's data (available in `update` and `view` modes).
@@ -191,8 +191,8 @@ Forms provide a rich context for [Interpolation](./string_interpolation.md):
 
 Forms are composed of various components ranging from simple inputs to complex nested layouts.
 
-- For a full list of available components and their properties, see [UI Components Documentation](./components.md).
-- To understand how to create complex grid layouts using `row`, `column`, and `container`, refer to the [Layout Section in Components](./components.md#2-layout-components).
+- For a full list of available components and their properties, see [UI Components Documentation](../components/README.md).
+- To understand how to create complex grid layouts using `row`, `column`, and `container`, refer to the [Layout Section in Components](../components/layout.md).
 
 ---
 

@@ -547,7 +547,11 @@ const List<Map<String, dynamic>> _sampleCapaRows = [
   },
 ];
 
-@UseCase(name: 'From JSON Config', type: FieldDisplaySourceShowcase)
+@UseCase(
+  name: 'From JSON Config',
+  type: FieldDisplaySourceShowcase,
+  path: '[Data & Fields]',
+)
 Widget buildFieldDisplaySourceFromJsonUseCase(BuildContext context) {
   final rawJson = context.knobs.string(
     label: 'Entity JSON Config',

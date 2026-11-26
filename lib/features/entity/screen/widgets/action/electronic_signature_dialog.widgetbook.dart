@@ -16,7 +16,11 @@ void _ensureDemoUser() {
   );
 }
 
-@UseCase(name: 'Default Approval', type: ElectronicSignatureDialog)
+@UseCase(
+  name: 'Default Approval',
+  type: ElectronicSignatureDialog,
+  path: '[Popups]/Dialogs',
+)
 Widget buildElectronicSignatureDialogUseCase(BuildContext context) {
   _ensureDemoUser();
   final actionTitle = context.knobs.string(
@@ -95,7 +99,11 @@ Widget buildElectronicSignatureDialogUseCase(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Inline Dialog Preview', type: ElectronicSignatureDialog)
+@UseCase(
+  name: 'Inline Dialog Preview',
+  type: ElectronicSignatureDialog,
+  path: '[Popups]/Dialogs',
+)
 Widget buildElectronicSignatureDialogInlineUseCase(BuildContext context) {
   _ensureDemoUser();
   final meaningList = ['Disetujui', 'Ditinjau QA', 'Disetujui dengan Catatan', 'Ditolak'];
@@ -135,7 +143,11 @@ Widget buildElectronicSignatureDialogInlineUseCase(BuildContext context) {
   );
 }
 
-@UseCase(name: 'From JSON Config', type: ElectronicSignatureDialog)
+@UseCase(
+  name: 'From JSON Config',
+  type: ElectronicSignatureDialog,
+  path: '[Popups]/Dialogs',
+)
 Widget buildElectronicSignatureFromJsonUseCase(BuildContext context) {
   _ensureDemoUser();
 

@@ -22,12 +22,18 @@ import 'package:flx_nocode_flutter/features/component/screen/widgets/component_m
     as _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook;
 import 'package:flx_nocode_flutter/features/component/screen/widgets/component_table.widgetbook.dart'
     as _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook;
+import 'package:flx_nocode_flutter/features/component/screen/widgets/symbol_picker_dialog.widgetbook.dart'
+    as _flx_nocode_flutter_features_component_screen_widgets_symbol_picker_dialog_widgetbook;
 import 'package:flx_nocode_flutter/features/data_table/screen/widgets/entity_data_table.widgetbook.dart'
     as _flx_nocode_flutter_features_data_table_screen_widgets_entity_data_table_widgetbook;
-import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_page.widgetbook.dart'
-    as _flx_nocode_flutter_features_entity_screen_pages_enitity_view_page_widgetbook;
+import 'package:flx_nocode_flutter/features/entity/screen/pages/entity_view_page.widgetbook.dart'
+    as _flx_nocode_flutter_features_entity_screen_pages_entity_view_page_widgetbook;
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/confirmation_dialog.widgetbook.dart'
+    as _flx_nocode_flutter_features_entity_screen_widgets_action_confirmation_dialog_widgetbook;
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/electronic_signature_dialog.widgetbook.dart'
     as _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook;
+import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/json_table_viewer.widgetbook.dart'
+    as _flx_nocode_flutter_features_entity_screen_widgets_action_json_table_viewer_widgetbook;
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/user_context_rules.widgetbook.dart'
     as _flx_nocode_flutter_features_entity_screen_widgets_action_user_context_rules_widgetbook;
 import 'package:flx_nocode_flutter/features/field/presentation/widgets/field_display_source.widgetbook.dart'
@@ -36,6 +42,8 @@ import 'package:flx_nocode_flutter/features/field/presentation/widgets/field_val
     as _flx_nocode_flutter_features_field_presentation_widgets_field_value_labels_widgetbook;
 import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/layout_form.widgetbook.dart'
     as _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook;
+import 'package:flx_nocode_flutter/features/layout_form/screen/widgets/popup_form.widgetbook.dart'
+    as _flx_nocode_flutter_features_layout_form_screen_widgets_popup_form_widgetbook;
 import 'package:flx_nocode_flutter/features/print/presentation/usecases/concert_ticket_print.widgetbook.dart'
     as _flx_nocode_flutter_features_print_presentation_usecases_concert_ticket_print_widgetbook;
 import 'package:flx_nocode_flutter/features/print/presentation/usecases/cpob_capa_print.widgetbook.dart'
@@ -46,6 +54,10 @@ import 'package:flx_nocode_flutter/features/print/presentation/usecases/personne
     as _flx_nocode_flutter_features_print_presentation_usecases_personnel_list_print_widgetbook;
 import 'package:flx_nocode_flutter/features/print/presentation/usecases/product_catalog_print.widgetbook.dart'
     as _flx_nocode_flutter_features_print_presentation_usecases_product_catalog_print_widgetbook;
+import 'package:flx_nocode_flutter/features/print/presentation/widgets/pdf_preview_dialog.widgetbook.dart'
+    as _flx_nocode_flutter_features_print_presentation_widgets_pdf_preview_dialog_widgetbook;
+import 'package:flx_nocode_flutter/features/print/presentation/widgets/print_filter_dialog.widgetbook.dart'
+    as _flx_nocode_flutter_features_print_presentation_widgets_print_filter_dialog_widgetbook;
 import 'package:flx_nocode_flutter/features/view/screen/widgets/view.widgetbook.dart'
     as _flx_nocode_flutter_features_view_screen_widgets_view_widgetbook;
 import 'package:flx_nocode_flutter/src/app/view/widget/entity_home.widgetbook.dart'
@@ -55,6 +67,516 @@ import 'package:flx_nocode_flutter/src/app/view/widget/no_code_navigate_push_men
 import 'package:widgetbook/widgetbook.dart' as _widgetbook;
 
 final directories = <_widgetbook.WidgetbookNode>[
+  _widgetbook.WidgetbookCategory(
+    name: 'Access & Rules',
+    children: [
+      _widgetbook.WidgetbookComponent(
+        name: 'AccessControlShowcase',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name:
+                'From JSON Config (2-Layer Capabilities & Hierarchical Rules)',
+            builder: _flx_nocode_flutter_core_access_access_control_widgetbook
+                .accessControlShowcaseUseCase,
+          )
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'UserContextRulesShowcase',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'From JSON Config (Dynamic JWT Claims & SoD)',
+            builder:
+                _flx_nocode_flutter_features_entity_screen_widgets_action_user_context_rules_widgetbook
+                    .buildUserContextRulesFromJsonUseCase,
+          )
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
+    name: 'Components',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'Charts',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ComponentBarChart',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Bar Chart',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook
+                        .barChartUseCase,
+              )
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ComponentChart',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Chart Mocks',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook
+                        .chartMocksUseCase,
+              )
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ComponentDonutChart',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Donut Chart',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook
+                        .donutChartUseCase,
+              )
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ComponentPieChart',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Pie Chart',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook
+                        .pieChartUseCase,
+              )
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Data',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ComponentFieldArray',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Card Presentation (JSON)',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
+                        .liveComponentFieldArrayCards,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Editable Table + Validation (JSON)',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
+                        .liveComponentFieldArrayTable,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Mock Design (Table)',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
+                        .mockComponentFieldArrayDesign,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Read-Only Summary Mode (JSON)',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
+                        .readOnlyComponentFieldArray,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ComponentTable',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Live Widget (Local Data)',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
+                        .mockComponentTableLive,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Mock Design',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
+                        .mockComponentTableDesign,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Reactive Form Integration',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
+                        .mockComponentTableReactiveForm,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'With Dropdown Component',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
+                        .mockComponentTableWithDropdown,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'With Row Actions',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
+                        .mockComponentTableWithActions,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Inputs',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ComponentDropdownWidget',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Fill Width',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
+                        .mockComponentDropdownFill,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Fixed Width',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
+                        .mockComponentDropdownFixed,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Hug Content',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
+                        .mockComponentDropdownHug,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Live Widget (Local Data)',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
+                        .mockComponentDropdownLive,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Mock Design (From JSON)',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
+                        .mockComponentDropdownDesign,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ComponentMultiDropdownWidget',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Fill Width',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
+                        .mockComponentMultiDropdownFill,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Fixed Width',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
+                        .mockComponentMultiDropdownFixed,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Hug Content',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
+                        .mockComponentMultiDropdownHug,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Live Widget (Local Data)',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
+                        .mockComponentMultiDropdownLive,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Mock Design (From JSON)',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
+                        .mockComponentMultiDropdownDesign,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Views',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'DView',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Large Button',
+                builder:
+                    _flx_nocode_flutter_features_view_screen_widgets_view_widgetbook
+                        .buildDViewButtonLargeUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Loading',
+                builder:
+                    _flx_nocode_flutter_features_view_screen_widgets_view_widgetbook
+                        .buildDViewButtonLoadingUseCase,
+              ),
+            ],
+          )
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
+    name: 'Data & Fields',
+    children: [
+      _widgetbook.WidgetbookComponent(
+        name: 'FieldDisplaySourceShowcase',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'From JSON Config',
+            builder:
+                _flx_nocode_flutter_features_field_presentation_widgets_field_display_source_widgetbook
+                    .buildFieldDisplaySourceFromJsonUseCase,
+          )
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'FieldValueLabelsShowcase',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'From JSON Config',
+            builder:
+                _flx_nocode_flutter_features_field_presentation_widgets_field_value_labels_widgetbook
+                    .buildFieldValueLabelsFromJsonUseCase,
+          )
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'MenuDataTableCustom',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'From JSON (Users)',
+            builder:
+                _flx_nocode_flutter_features_data_table_screen_widgets_entity_data_table_widgetbook
+                    .buildMenuDataTableCustomFromJsonUseCase,
+          )
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Pages',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'EntityViewPage',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Default',
+                builder:
+                    _flx_nocode_flutter_features_entity_screen_pages_entity_view_page_widgetbook
+                        .buildEntityViewPageUseCase,
+              )
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'MenuCustom',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Default',
+                builder:
+                    _flx_nocode_flutter_src_app_view_widget_entity_home_widgetbook
+                        .buildMenuCustomUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Navigate Push Menu (Initial Value Test)',
+                builder:
+                    _flx_nocode_flutter_src_app_view_widget_no_code_navigate_push_menu_widgetbook
+                        .buildNavigatePushMenuUseCase,
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
+    name: 'Forms',
+    children: [
+      _widgetbook.WidgetbookComponent(
+        name: 'LayoutForm',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Date Restriction (Interactive)',
+            builder:
+                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
+                    .interactiveDateRestrictionUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Date Restriction by Month',
+            builder:
+                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
+                    .dateRestrictionLayoutFormUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Interactive Table Form',
+            builder:
+                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
+                    .interactiveTableFormUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Multi-Step Wizard',
+            builder:
+                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
+                    .wizardLayoutFormUseCase,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'Simple Form (From JSON)',
+            builder:
+                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
+                    .simpleLayoutFormUseCase,
+          ),
+        ],
+      )
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
+    name: 'Popups',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'Dialogs',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CardConfirmation',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Destructive Delete Preview (Inline)',
+                builder:
+                    _flx_nocode_flutter_features_entity_screen_widgets_action_confirmation_dialog_widgetbook
+                        .destructiveConfirmationInlineUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Interactive Action Confirmation',
+                builder:
+                    _flx_nocode_flutter_features_entity_screen_widgets_action_confirmation_dialog_widgetbook
+                        .interactiveConfirmationDialogUseCase,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ElectronicSignatureDialog',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Default Approval',
+                builder:
+                    _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook
+                        .buildElectronicSignatureDialogUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'From JSON Config',
+                builder:
+                    _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook
+                        .buildElectronicSignatureFromJsonUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Inline Dialog Preview',
+                builder:
+                    _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook
+                        .buildElectronicSignatureDialogInlineUseCase,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'JsonTableViewer',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Draggable JSON Table Popup',
+                builder:
+                    _flx_nocode_flutter_features_entity_screen_widgets_action_json_table_viewer_widgetbook
+                        .draggableJsonTablePopupUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Inline JSON Table Viewer',
+                builder:
+                    _flx_nocode_flutter_features_entity_screen_widgets_action_json_table_viewer_widgetbook
+                        .inlineJsonTableViewerUseCase,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'PdfPreviewDialog',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Interactive PDF Preview Popup',
+                builder:
+                    _flx_nocode_flutter_features_print_presentation_widgets_pdf_preview_dialog_widgetbook
+                        .interactivePdfPreviewDialogUseCase,
+              )
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'PrintFilterDialog',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Inline Print Filter Preview',
+                builder:
+                    _flx_nocode_flutter_features_print_presentation_widgets_print_filter_dialog_widgetbook
+                        .inlinePrintFilterDialogUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Interactive Print Filter Popup',
+                builder:
+                    _flx_nocode_flutter_features_print_presentation_widgets_print_filter_dialog_widgetbook
+                        .interactivePrintFilterDialogUseCase,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'SymbolPickerDialog',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Inline Dialog Preview',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_symbol_picker_dialog_widgetbook
+                        .inlineSymbolPickerUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Interactive Symbol Picker',
+                builder:
+                    _flx_nocode_flutter_features_component_screen_widgets_symbol_picker_dialog_widgetbook
+                        .interactiveSymbolPickerUseCase,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Forms',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CardForm',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Inline Popup Card (With Close Button X)',
+                builder:
+                    _flx_nocode_flutter_features_layout_form_screen_widgets_popup_form_widgetbook
+                        .inlinePopupCardUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Multi-Step Form Popup (Long Step Titles)',
+                builder:
+                    _flx_nocode_flutter_features_layout_form_screen_widgets_popup_form_widgetbook
+                        .multiFormPopupLongTitlesUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Popup Width Variants (Auto + Presets + Custom)',
+                builder:
+                    _flx_nocode_flutter_features_layout_form_screen_widgets_popup_form_widgetbook
+                        .popupWidthVariantsUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Scrollable Long Form Popup',
+                builder:
+                    _flx_nocode_flutter_features_layout_form_screen_widgets_popup_form_widgetbook
+                        .scrollableLongFormPopupUseCase,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Single-Form Popup (From JSON)',
+                builder:
+                    _flx_nocode_flutter_features_layout_form_screen_widgets_popup_form_widgetbook
+                        .singleFormPopupUseCase,
+              ),
+            ],
+          )
+        ],
+      ),
+    ],
+  ),
   _widgetbook.WidgetbookCategory(
     name: 'Print',
     children: [
@@ -96,475 +618,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             builder:
                 _flx_nocode_flutter_features_print_presentation_usecases_product_catalog_print_widgetbook
                     .buildProductCatalogTableUseCase,
-          ),
-        ],
-      )
-    ],
-  ),
-  _widgetbook.WidgetbookFolder(
-    name: 'app',
-    children: [
-      _widgetbook.WidgetbookFolder(
-        name: 'view',
-        children: [
-          _widgetbook.WidgetbookFolder(
-            name: 'widget',
-            children: [
-              _widgetbook.WidgetbookComponent(
-                name: 'MenuCustom',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Default',
-                    builder:
-                        _flx_nocode_flutter_src_app_view_widget_entity_home_widgetbook
-                            .buildMenuCustomUseCase,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Navigate Push Menu (Initial Value Test)',
-                    builder:
-                        _flx_nocode_flutter_src_app_view_widget_no_code_navigate_push_menu_widgetbook
-                            .buildNavigatePushMenuUseCase,
-                  ),
-                ],
-              )
-            ],
-          )
-        ],
-      )
-    ],
-  ),
-  _widgetbook.WidgetbookFolder(
-    name: 'core',
-    children: [
-      _widgetbook.WidgetbookFolder(
-        name: 'access',
-        children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'AccessControlShowcase',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name:
-                    'From JSON Config (2-Layer Capabilities & Hierarchical Rules)',
-                builder:
-                    _flx_nocode_flutter_core_access_access_control_widgetbook
-                        .accessControlShowcaseUseCase,
-              )
-            ],
-          )
-        ],
-      )
-    ],
-  ),
-  _widgetbook.WidgetbookFolder(
-    name: 'features',
-    children: [
-      _widgetbook.WidgetbookFolder(
-        name: 'component',
-        children: [
-          _widgetbook.WidgetbookFolder(
-            name: 'models',
-            children: [
-              _widgetbook.WidgetbookComponent(
-                name: 'ComponentBarChart',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Bar Chart',
-                    builder:
-                        _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook
-                            .barChartUseCase,
-                  )
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ComponentChart',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Chart Mocks',
-                    builder:
-                        _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook
-                            .chartMocksUseCase,
-                  )
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ComponentDonutChart',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Donut Chart',
-                    builder:
-                        _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook
-                            .donutChartUseCase,
-                  )
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ComponentFieldArray',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Card Presentation (JSON)',
-                    builder:
-                        _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
-                            .liveComponentFieldArrayCards,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Editable Table + Validation (JSON)',
-                    builder:
-                        _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
-                            .liveComponentFieldArrayTable,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Mock Design (Table)',
-                    builder:
-                        _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
-                            .mockComponentFieldArrayDesign,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Read-Only Summary Mode (JSON)',
-                    builder:
-                        _flx_nocode_flutter_features_component_screen_widgets_component_field_array_widgetbook
-                            .readOnlyComponentFieldArray,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ComponentPieChart',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Pie Chart',
-                    builder:
-                        _flx_nocode_flutter_features_component_screen_widgets_component_chart_widgetbook
-                            .pieChartUseCase,
-                  )
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ComponentTable',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Live Widget (Local Data)',
-                    builder:
-                        _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
-                            .mockComponentTableLive,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Mock Design',
-                    builder:
-                        _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
-                            .mockComponentTableDesign,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Reactive Form Integration',
-                    builder:
-                        _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
-                            .mockComponentTableReactiveForm,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'With Dropdown Component',
-                    builder:
-                        _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
-                            .mockComponentTableWithDropdown,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'With Row Actions',
-                    builder:
-                        _flx_nocode_flutter_features_component_screen_widgets_component_table_widgetbook
-                            .mockComponentTableWithActions,
-                  ),
-                ],
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookFolder(
-            name: 'screen',
-            children: [
-              _widgetbook.WidgetbookFolder(
-                name: 'widgets',
-                children: [
-                  _widgetbook.WidgetbookComponent(
-                    name: 'ComponentDropdownWidget',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Fill Width',
-                        builder:
-                            _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
-                                .mockComponentDropdownFill,
-                      ),
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Fixed Width',
-                        builder:
-                            _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
-                                .mockComponentDropdownFixed,
-                      ),
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Hug Content',
-                        builder:
-                            _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
-                                .mockComponentDropdownHug,
-                      ),
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Live Widget (Local Data)',
-                        builder:
-                            _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
-                                .mockComponentDropdownLive,
-                      ),
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Mock Design (From JSON)',
-                        builder:
-                            _flx_nocode_flutter_features_component_screen_widgets_component_dropdown_widgetbook
-                                .mockComponentDropdownDesign,
-                      ),
-                    ],
-                  ),
-                  _widgetbook.WidgetbookComponent(
-                    name: 'ComponentMultiDropdownWidget',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Fill Width',
-                        builder:
-                            _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
-                                .mockComponentMultiDropdownFill,
-                      ),
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Fixed Width',
-                        builder:
-                            _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
-                                .mockComponentMultiDropdownFixed,
-                      ),
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Hug Content',
-                        builder:
-                            _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
-                                .mockComponentMultiDropdownHug,
-                      ),
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Live Widget (Local Data)',
-                        builder:
-                            _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
-                                .mockComponentMultiDropdownLive,
-                      ),
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Mock Design (From JSON)',
-                        builder:
-                            _flx_nocode_flutter_features_component_screen_widgets_component_multi_dropdown_widgetbook
-                                .mockComponentMultiDropdownDesign,
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            ],
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
-        name: 'data_table',
-        children: [
-          _widgetbook.WidgetbookFolder(
-            name: 'screen',
-            children: [
-              _widgetbook.WidgetbookFolder(
-                name: 'widgets',
-                children: [
-                  _widgetbook.WidgetbookComponent(
-                    name: 'MenuDataTableCustom',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'From JSON (Users)',
-                        builder:
-                            _flx_nocode_flutter_features_data_table_screen_widgets_entity_data_table_widgetbook
-                                .buildMenuDataTableCustomFromJsonUseCase,
-                      )
-                    ],
-                  )
-                ],
-              )
-            ],
-          )
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
-        name: 'entity',
-        children: [
-          _widgetbook.WidgetbookFolder(
-            name: 'screen',
-            children: [
-              _widgetbook.WidgetbookFolder(
-                name: 'pages',
-                children: [
-                  _widgetbook.WidgetbookComponent(
-                    name: 'EntityViewPage',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'Default',
-                        builder:
-                            _flx_nocode_flutter_features_entity_screen_pages_enitity_view_page_widgetbook
-                                .buildEntityViewPageUseCase,
-                      )
-                    ],
-                  )
-                ],
-              ),
-              _widgetbook.WidgetbookFolder(
-                name: 'widgets',
-                children: [
-                  _widgetbook.WidgetbookFolder(
-                    name: 'action',
-                    children: [
-                      _widgetbook.WidgetbookComponent(
-                        name: 'ElectronicSignatureDialog',
-                        useCases: [
-                          _widgetbook.WidgetbookUseCase(
-                            name: 'Default Approval',
-                            builder:
-                                _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook
-                                    .buildElectronicSignatureDialogUseCase,
-                          ),
-                          _widgetbook.WidgetbookUseCase(
-                            name: 'From JSON Config',
-                            builder:
-                                _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook
-                                    .buildElectronicSignatureFromJsonUseCase,
-                          ),
-                          _widgetbook.WidgetbookUseCase(
-                            name: 'Inline Dialog Preview',
-                            builder:
-                                _flx_nocode_flutter_features_entity_screen_widgets_action_electronic_signature_dialog_widgetbook
-                                    .buildElectronicSignatureDialogInlineUseCase,
-                          ),
-                        ],
-                      ),
-                      _widgetbook.WidgetbookComponent(
-                        name: 'UserContextRulesShowcase',
-                        useCases: [
-                          _widgetbook.WidgetbookUseCase(
-                            name: 'From JSON Config (Dynamic JWT Claims & SoD)',
-                            builder:
-                                _flx_nocode_flutter_features_entity_screen_widgets_action_user_context_rules_widgetbook
-                                    .buildUserContextRulesFromJsonUseCase,
-                          )
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ],
-          )
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
-        name: 'field',
-        children: [
-          _widgetbook.WidgetbookFolder(
-            name: 'presentation',
-            children: [
-              _widgetbook.WidgetbookFolder(
-                name: 'widgets',
-                children: [
-                  _widgetbook.WidgetbookComponent(
-                    name: 'FieldDisplaySourceShowcase',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'From JSON Config',
-                        builder:
-                            _flx_nocode_flutter_features_field_presentation_widgets_field_display_source_widgetbook
-                                .buildFieldDisplaySourceFromJsonUseCase,
-                      )
-                    ],
-                  ),
-                  _widgetbook.WidgetbookComponent(
-                    name: 'FieldValueLabelsShowcase',
-                    useCases: [
-                      _widgetbook.WidgetbookUseCase(
-                        name: 'From JSON Config',
-                        builder:
-                            _flx_nocode_flutter_features_field_presentation_widgets_field_value_labels_widgetbook
-                                .buildFieldValueLabelsFromJsonUseCase,
-                      )
-                    ],
-                  ),
-                ],
-              )
-            ],
-          )
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
-        name: 'view',
-        children: [
-          _widgetbook.WidgetbookFolder(
-            name: 'models',
-            children: [
-              _widgetbook.WidgetbookComponent(
-                name: 'DView',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Large Button',
-                    builder:
-                        _flx_nocode_flutter_features_view_screen_widgets_view_widgetbook
-                            .buildDViewButtonLargeUseCase,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Loading',
-                    builder:
-                        _flx_nocode_flutter_features_view_screen_widgets_view_widgetbook
-                            .buildDViewButtonLoadingUseCase,
-                  ),
-                ],
-              )
-            ],
-          )
-        ],
-      ),
-    ],
-  ),
-  _widgetbook.WidgetbookFolder(
-    name: 'widgets',
-    children: [
-      _widgetbook.WidgetbookComponent(
-        name: 'Column',
-        useCases: [
-          _widgetbook.WidgetbookUseCase(
-            name: 'Date Restriction (Interactive)',
-            builder:
-                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
-                    .interactiveDateRestrictionUseCase,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Date Restriction by Month',
-            builder:
-                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
-                    .dateRestrictionLayoutFormUseCase,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Interactive Table Form',
-            builder:
-                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
-                    .interactiveTableFormUseCase,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Multi-Form Popup (Long Step Titles)',
-            builder:
-                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
-                    .multiFormPopupLongTitlesUseCase,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Multi-Step Wizard',
-            builder:
-                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
-                    .wizardLayoutFormUseCase,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Popup Form (With Close Button X)',
-            builder:
-                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
-                    .popupFormUseCase,
-          ),
-          _widgetbook.WidgetbookUseCase(
-            name: 'Simple Form (From JSON)',
-            builder:
-                _flx_nocode_flutter_features_layout_form_screen_widgets_layout_form_widgetbook
-                    .simpleLayoutFormUseCase,
           ),
         ],
       )

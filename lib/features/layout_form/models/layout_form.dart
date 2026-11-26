@@ -27,6 +27,7 @@ class LayoutForm extends HiveObject {
       onInit; // Map<String, dynamic> (Workflow) or List<ActionD> (Legacy)
   final bool popup;
   final bool? submitButton;
+  final Object? width;
 
   List<String> get componentIds => components.map((e) => e.id).toList();
   bool get useNewForm => components.isNotEmpty;
@@ -79,7 +80,8 @@ class LayoutForm extends HiveObject {
         submitWorkflow = null,
         onInit = null,
         popup = false,
-        submitButton = null;
+        submitButton = null,
+        width = null;
 
   LayoutForm({
     required this.id,
@@ -93,6 +95,7 @@ class LayoutForm extends HiveObject {
     dynamic onInit,
     this.popup = false,
     this.submitButton,
+    this.width,
   })  : assert(label.trim().isNotEmpty, 'label is required'),
         buttons = List<ButtonAction>.unmodifiable(buttons ?? const []),
         submitWorkflow = submitWorkflow,
@@ -224,6 +227,10 @@ class LayoutForm extends HiveObject {
             ? (map['show_submit_button'] == true)
             : null);
 
+    final rawWidth = map['width'];
+    final Object? parsedWidth =
+        (rawWidth is num || rawWidth is String) ? rawWidth : null;
+
     return LayoutForm(
       id: id,
       components: components ?? const [],
@@ -238,6 +245,7 @@ class LayoutForm extends HiveObject {
       onInit: onInit,
       popup: popup,
       submitButton: submitButton,
+      width: parsedWidth,
     );
   }
 
@@ -248,6 +256,7 @@ class LayoutForm extends HiveObject {
       if (title != null && title!.isNotEmpty) 'title': title,
       if (popup) 'popup': true,
       if (submitButton != null) 'submit_button': submitButton,
+      if (width != null) 'width': width,
       'components': components.map((e) => e.toMap()).toList(growable: false),
     };
 
@@ -290,6 +299,7 @@ class LayoutForm extends HiveObject {
     dynamic onInit,
     bool? popup,
     bool? submitButton,
+    Object? width,
   }) {
     return LayoutForm(
       id: id ?? this.id,
@@ -303,6 +313,7 @@ class LayoutForm extends HiveObject {
       onInit: onInit ?? this.onInit,
       popup: popup ?? this.popup,
       submitButton: submitButton ?? this.submitButton,
+      width: width ?? this.width,
     );
   }
 

@@ -114,7 +114,7 @@ Example with User Resolution:
 ### `table`
 Displays data in a grid.
 
-**See the dedicated [ComponentTable Documentation](./component_table.md) for full details.**
+**See the dedicated [ComponentTable Documentation](./table.md) for full details.**
 
 ---
 

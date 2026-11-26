@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:mocktail/mocktail.dart';
 import 'component_table.dart';
 
-@UseCase(name: 'Mock Design', type: ComponentTable)
+@UseCase(name: 'Mock Design', type: ComponentTable, path: '[Components]/Data')
 Widget mockComponentTableDesign(BuildContext context) {
   const jsonRaw = '''
   {
@@ -34,7 +34,7 @@ Widget mockComponentTableDesign(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Live Widget (Local Data)', type: ComponentTable)
+@UseCase(name: 'Live Widget (Local Data)', type: ComponentTable, path: '[Components]/Data')
 Widget mockComponentTableLive(BuildContext context) {
   const jsonRaw = '''
   {
@@ -73,7 +73,7 @@ class MockHttpRequestExecutor extends Mock implements HttpRequestExecutor {}
 
 class HttpRequestConfigFake extends Fake implements HttpRequestConfig {}
 
-@UseCase(name: 'With Dropdown Component', type: ComponentTable)
+@UseCase(name: 'With Dropdown Component', type: ComponentTable, path: '[Components]/Data')
 Widget mockComponentTableWithDropdown(BuildContext context) {
   // 1. Setup Mock Executor
   if (!Get.isRegistered<HttpRequestExecutor>()) {
@@ -167,7 +167,7 @@ Widget mockComponentTableWithDropdown(BuildContext context) {
   );
 }
 
-@UseCase(name: 'With Row Actions', type: ComponentTable)
+@UseCase(name: 'With Row Actions', type: ComponentTable, path: '[Components]/Data')
 Widget mockComponentTableWithActions(BuildContext context) {
   const jsonRaw = '''
   {
@@ -234,7 +234,7 @@ Widget mockComponentTableWithActions(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Reactive Form Integration', type: ComponentTable)
+@UseCase(name: 'Reactive Form Integration', type: ComponentTable, path: '[Components]/Data')
 Widget mockComponentTableReactiveForm(BuildContext context) {
   // 1. Setup Form Controllers
   final detailTableController = TextEditingController();

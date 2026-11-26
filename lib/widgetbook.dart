@@ -21,6 +21,7 @@ class WidgetbookApp extends StatelessWidget {
     return Widgetbook.material(
       directories: directories,
       addons: [
+        ViewportAddon(Viewports.all),
         MaterialThemeAddon(
           themes: [
             WidgetbookTheme(
@@ -33,6 +34,7 @@ class WidgetbookApp extends StatelessWidget {
             ),
           ],
         ),
+        TextScaleAddon(min: 0.8, max: 2.0),
       ],
     );
   }

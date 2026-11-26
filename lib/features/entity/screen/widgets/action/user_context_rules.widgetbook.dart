@@ -593,7 +593,11 @@ const List<Map<String, dynamic>> _sampleSodRows = [
   },
 ];
 
-@UseCase(name: 'From JSON Config (Dynamic JWT Claims & SoD)', type: UserContextRulesShowcase)
+@UseCase(
+  name: 'From JSON Config (Dynamic JWT Claims & SoD)',
+  type: UserContextRulesShowcase,
+  path: '[Access & Rules]',
+)
 Widget buildUserContextRulesFromJsonUseCase(BuildContext context) {
   final entityJson = context.knobs.string(
     label: 'Entity JSON Config',

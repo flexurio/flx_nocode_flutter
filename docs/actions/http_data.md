@@ -1,6 +1,6 @@
 # HttpData JSON Documentation
 
-`HttpData` is a reusable configuration object used to define network requests within the NOCode framework. It is used in [Entity Backend](./entity.md#backend-object), [Field Options](./field.md#field-options-object), and [Actions](./actions.md).
+`HttpData` is a reusable configuration object used to define network requests within the NOCode framework. It is used in [Entity Backend](../core/entity.md#backend-object), [Field Options](../core/field.md#field-options-object), and [Actions](./actions.md).
 
 ---
 

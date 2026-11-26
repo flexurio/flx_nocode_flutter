@@ -15,7 +15,7 @@ Triggers an action when clicked.
 | `variant` | String | `primary` | `primary`, `secondary`, `outline`, `ghost`, `destructive`. |
 | `size` | String | `medium` | `small`, `medium`, `large`. |
 | `color` | String | `#2196F3` | Hex color or semantic color name. |
-| `onClick` / `on_click` | Object | - | Action to execute. See [Action Documentation](../logic/actions.md). |
+| `onClick` / `on_click` | Object | - | Action to execute. See [Action Documentation](../actions/actions.md). |
 | `widthMode` | String | `hug` | `fill`, `hug`, or `fixed`. |
 | `width` | Double | - | Fixed width. |
 | `flex` | Integer | - | Flex factor in parent layout. |

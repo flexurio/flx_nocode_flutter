@@ -42,7 +42,7 @@ class CreatePage extends StatelessWidget {
   final bool noHeader;
   final String layoutFormId;
   final bool popup;
-  final double? width;
+  final Object? width;
   final bool? showSubmitButton;
   final ActionSignature? actionSignature;
   final String? actionName;
@@ -60,7 +60,7 @@ class CreatePage extends StatelessWidget {
     required FutureOr<void> Function(Map<String, dynamic>? data) onSuccess,
     Configuration? configuration,
     bool popup = false,
-    double? width,
+    Object? width,
     bool? showSubmitButton,
     ActionSignature? actionSignature,
     String? actionName,
@@ -103,7 +103,7 @@ class CreatePage extends StatelessWidget {
     required List<Map<String, dynamic>> parentData,
     bool autoBackWhenSuccess = true,
     bool popup = false,
-    double? width,
+    Object? width,
     bool? showSubmitButton,
     ActionSignature? actionSignature,
     String? actionName,

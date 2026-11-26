@@ -13,7 +13,7 @@ The root of the JSON file is a single object that contains all the properties fo
 | `description` | String | Yes | A brief summary of the entity's purpose. |
 | `fields` | Array<Object> | Yes | An array of objects defining the data schema for the entity. See the [Field Documentation](./field.md) for more details. |
 | `backend` | Object | Yes | Defines the API endpoints for CRUD operations. See [Backend Object](#backend-object). |
-| `layout_form` | Array<Object> | No | An array of objects that define the layout of the entity's creation and editing form. See the [Layout Form Documentation](./layout_form.md) for details. |
+| `layout_form` | Array<Object> | No | An array of objects that define the layout of the entity's creation and editing form. See the [Layout Form Documentation](../forms/layout_form.md) for details. |
 | `layout_list_tile`| Object | No | Defines the layout for displaying a single entity instance in a list. See [Layout List Tile Object](#layout-list-tile-object). |
 | `layout_table` | Object | No | A map defining the columns and their flex-based widths in a data table view. The key is the field reference, and the value is an integer flex factor. |
 | `custome_layout`| Array<Object> | No | An array of custom table column layout presets that can be dynamically switched using checkboxes. Defaults to showing only root `layout_table` columns when all checkboxes are unchecked. |
@@ -217,7 +217,7 @@ Defines the properties of a single API endpoint.
 
 ### Layout Form Object
 
-Defines the layout of the entity's creation and editing forms. For a more detailed explanation, see the [Layout Form Documentation](./layout_form.md).
+Defines the layout of the entity's creation and editing forms. For a more detailed explanation, see the [Layout Form Documentation](../forms/layout_form.md).
 
 ### Layout List Tile Object
 
@@ -324,7 +324,7 @@ Defines a custom table layout configuration. Multiple custom layouts can be defi
 
 ### Export and Action Objects
 
-These objects define custom behaviors. Their structure can vary. Please refer to the source code for `Export` for detailed implementation. For the `Action` object, see the [Action Documentation](./actions.md).
+These objects define custom behaviors. Their structure can vary. Please refer to the source code for `Export` for detailed implementation. For the `Action` object, see the [Action Documentation](../actions/actions.md).
 
 ---
 

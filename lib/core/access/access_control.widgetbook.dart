@@ -669,6 +669,7 @@ const String _defaultActionsJson = '''
 @UseCase(
   name: 'From JSON Config (2-Layer Capabilities & Hierarchical Rules)',
   type: AccessControlShowcase,
+  path: '[Access & Rules]',
 )
 Widget accessControlShowcaseUseCase(BuildContext context) {
   final menuJson = context.knobs.string(

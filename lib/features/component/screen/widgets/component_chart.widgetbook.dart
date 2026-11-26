@@ -6,7 +6,7 @@ import 'component_donut_chart.dart';
 import 'component_pie_chart.dart';
 import 'component_bar_chart.dart';
 
-@UseCase(name: 'Donut Chart', type: ComponentDonutChart)
+@UseCase(name: 'Donut Chart', type: ComponentDonutChart, path: '[Components]/Charts')
 Widget donutChartUseCase(BuildContext context) {
   const jsonRaw = '''
   {
@@ -39,7 +39,7 @@ Widget donutChartUseCase(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Pie Chart', type: ComponentPieChart)
+@UseCase(name: 'Pie Chart', type: ComponentPieChart, path: '[Components]/Charts')
 Widget pieChartUseCase(BuildContext context) {
   const jsonRaw = '''
   {
@@ -72,7 +72,7 @@ Widget pieChartUseCase(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Bar Chart', type: ComponentBarChart)
+@UseCase(name: 'Bar Chart', type: ComponentBarChart, path: '[Components]/Charts')
 Widget barChartUseCase(BuildContext context) {
   const jsonRaw = '''
   {
@@ -106,7 +106,7 @@ Widget barChartUseCase(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Chart Mocks', type: ComponentChart)
+@UseCase(name: 'Chart Mocks', type: ComponentChart, path: '[Components]/Charts')
 Widget chartMocksUseCase(BuildContext context) {
   final donut = ComponentDonutChart.empty('donut_mock');
   final pie = ComponentPieChart.empty('pie_mock');

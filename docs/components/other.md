@@ -2,7 +2,7 @@
 
 Miscellaneous components for visual utilities and cross-category references.
 
-Input-like components such as `checkbox`, `switch`, `radio`, and `date_picker` are documented in [Input Components](./input_components.md). Dynamic branching is documented in [Conditional Component](./component_conditional.md).
+Input-like components such as `checkbox`, `switch`, `radio`, and `date_picker` are documented in [Input Components](./inputs/README.md). Dynamic branching is documented in [Conditional Component](./conditional.md).
 
 ---
 

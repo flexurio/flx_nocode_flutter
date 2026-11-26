@@ -6,7 +6,7 @@ import 'package:flx_nocode_flutter/features/component/models/component_multi_dro
 import 'component_multi_dropdown.dart';
 import 'component_multi_dropdown_widget.dart';
 
-@UseCase(name: 'Mock Design (From JSON)', type: ComponentMultiDropdownWidget)
+@UseCase(name: 'Mock Design (From JSON)', type: ComponentMultiDropdownWidget, path: '[Components]/Inputs')
 Widget mockComponentMultiDropdownDesign(BuildContext context) {
   const jsonRaw = '''
   {
@@ -27,7 +27,7 @@ Widget mockComponentMultiDropdownDesign(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Live Widget (Local Data)', type: ComponentMultiDropdownWidget)
+@UseCase(name: 'Live Widget (Local Data)', type: ComponentMultiDropdownWidget, path: '[Components]/Inputs')
 Widget mockComponentMultiDropdownLive(BuildContext context) {
   const jsonRaw = '''
   {
@@ -47,7 +47,7 @@ Widget mockComponentMultiDropdownLive(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Fill Width', type: ComponentMultiDropdownWidget)
+@UseCase(name: 'Fill Width', type: ComponentMultiDropdownWidget, path: '[Components]/Inputs')
 Widget mockComponentMultiDropdownFill(BuildContext context) {
   return Padding(
     padding: const EdgeInsets.all(16.0),
@@ -61,7 +61,7 @@ Widget mockComponentMultiDropdownFill(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Fixed Width', type: ComponentMultiDropdownWidget)
+@UseCase(name: 'Fixed Width', type: ComponentMultiDropdownWidget, path: '[Components]/Inputs')
 Widget mockComponentMultiDropdownFixed(BuildContext context) {
   return Padding(
     padding: const EdgeInsets.all(16.0),
@@ -76,7 +76,7 @@ Widget mockComponentMultiDropdownFixed(BuildContext context) {
   );
 }
 
-@UseCase(name: 'Hug Content', type: ComponentMultiDropdownWidget)
+@UseCase(name: 'Hug Content', type: ComponentMultiDropdownWidget, path: '[Components]/Inputs')
 Widget mockComponentMultiDropdownHug(BuildContext context) {
   return Padding(
     padding: const EdgeInsets.all(16.0),
