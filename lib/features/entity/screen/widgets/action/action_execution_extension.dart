@@ -1142,6 +1142,10 @@ extension ActionExecutionExtension on ActionD {
       final shouldLoadMetadata =
           http != null && !hasDirectValue && !_looksLikePdfUrl(url);
 
+      final fallbackBaseUrl = (request?.url.isNotEmpty ?? false)
+          ? request!.url
+          : Configuration.instance.backendHost;
+
       if (shouldLoadMetadata) {
         final metadata = await http!.execute(data);
         if (!metadata.isSuccess) {
@@ -1152,8 +1156,10 @@ extension ActionExecutionExtension on ActionD {
 
         final documentUrl = _extractDocumentUrl(metadata.data);
         if (documentUrl != null && documentUrl.isNotEmpty) {
-          url = _normalizeDocumentUrl(documentUrl, request?.url ?? url);
+          url = _normalizeDocumentUrl(documentUrl, fallbackBaseUrl);
         }
+      } else {
+        url = _normalizeDocumentUrl(url, fallbackBaseUrl);
       }
 
       final response =
@@ -1229,6 +1235,10 @@ extension ActionExecutionExtension on ActionD {
       final hasDirectValue = value is String && (value as String).isNotEmpty;
       final shouldLoadMetadata =
           http != null && !hasDirectValue && !_looksLikePdfUrl(url);
+      final fallbackBaseUrl = (request?.url.isNotEmpty ?? false)
+          ? request!.url
+          : Configuration.instance.backendHost;
+
       if (shouldLoadMetadata) {
         final metadata = await http!.execute(data);
         if (!metadata.isSuccess) {
@@ -1238,8 +1248,10 @@ extension ActionExecutionExtension on ActionD {
 
         final documentUrl = _extractDocumentUrl(metadata.data);
         if (documentUrl != null && documentUrl.isNotEmpty) {
-          url = _normalizeDocumentUrl(documentUrl, request?.url ?? url);
+          url = _normalizeDocumentUrl(documentUrl, fallbackBaseUrl);
         }
+      } else {
+        url = _normalizeDocumentUrl(url, fallbackBaseUrl);
       }
 
       final response =
@@ -1306,14 +1318,39 @@ extension ActionExecutionExtension on ActionD {
   }
 
   String _normalizeDocumentUrl(String documentUrl, String baseUrl) {
-    final documentUri = Uri.tryParse(documentUrl);
-    final baseUri = Uri.tryParse(baseUrl);
+    final trimmedDoc = documentUrl.trim();
+    final documentUri =
+        Uri.tryParse(trimmedDoc) ?? Uri.tryParse(Uri.encodeFull(trimmedDoc));
+    final baseUri = Uri.tryParse(baseUrl.trim());
 
     if (documentUri == null) return documentUrl;
-    if (baseUri == null) return documentUri.toString();
+    if (baseUri == null || !baseUri.hasAuthority) return documentUri.toString();
+
+    final originUri = Uri(
+      scheme: baseUri.scheme,
+      host: baseUri.host,
+      port: baseUri.hasPort ? baseUri.port : null,
+    );
+
+    if (!documentUri.hasScheme || !documentUri.hasAuthority) {
+      final normalizedPath = documentUri.path.startsWith('/')
+          ? documentUri.path
+          : '/${documentUri.path}';
+      return originUri
+          .replace(
+            path: normalizedPath,
+            query: documentUri.hasQuery ? documentUri.query : null,
+          )
+          .toString();
+    }
 
     final host = documentUri.host.toLowerCase();
-    if (host == 'localhost' || host == '127.0.0.1') {
+    final isLocalhost = host == 'localhost' || host == '127.0.0.1';
+    final isBackendStaticMismatch =
+        documentUri.path.startsWith('/static/') &&
+        host != baseUri.host.toLowerCase();
+
+    if (isLocalhost || isBackendStaticMismatch) {
       return documentUri
           .replace(
             scheme: baseUri.scheme,

@@ -32,6 +32,8 @@ void main() {
       expect(specific?.left, 5);
       expect(specific?.top, 15);
       expect(specific?.right, 0);
+
+      expect(PdfUnitUtils.parseEdgeInsets(<String, dynamic>{}, 'mm'), isNull);
     });
   });
 }

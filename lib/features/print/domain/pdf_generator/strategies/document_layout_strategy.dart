@@ -24,8 +24,12 @@ class DocumentLayoutStrategy implements PdfLayoutStrategy {
     final dynamic rawContent = processedJson['content'];
     final List<dynamic> content = rawContent is List ? rawContent : [];
 
+    final rawMargins = processedJson['margins'];
+    final hasExplicitMargins =
+        (rawMargins is Map && rawMargins.isNotEmpty) ||
+        (rawMargins is! Map && rawMargins != null);
     final pageMargin = _parsePageMargins(
-      processedJson['margins'] ?? processedJson['margin'],
+      hasExplicitMargins ? rawMargins : processedJson['margin'],
       unit,
     );
 
@@ -103,6 +107,7 @@ class DocumentLayoutStrategy implements PdfLayoutStrategy {
   ) {
     if (rawMargin == null) return const pw.EdgeInsets.all(20.0);
     if (rawMargin is Map) {
+      if (rawMargin.isEmpty) return const pw.EdgeInsets.all(20.0);
       return PdfUnitUtils.parseEdgeInsets(rawMargin, unit) ??
           const pw.EdgeInsets.all(20.0);
     }
