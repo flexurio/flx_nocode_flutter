@@ -85,14 +85,19 @@ class EntityViewPage extends StatelessWidget {
       ),
       body: BlocBuilder<EntityCustomQueryBloc, EntityCustomQueryState>(
         builder: (context, state) {
+          final viewForm = entity.layoutForm.view;
           return SingleFormPanel(
             hideHeader: embedded ? true : false,
             action: DataAction.view,
             entity: entity.coreEntity,
             size: SingleFormPanelSize.large,
             children: [
-              entity.layoutForm.view?.toWidget(
-                    data,
+              viewForm?.toWidget(
+                    {
+                      ...data,
+                      'entity': entity,
+                      'layoutFormId': viewForm.id,
+                    },
                     entityFields: entity.fields,
                   ) ??
                   NoCodeError('Layout not found'),

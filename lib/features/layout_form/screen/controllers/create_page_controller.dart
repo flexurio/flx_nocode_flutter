@@ -100,6 +100,8 @@ class CreatePageController extends GetxController {
   /// Reload listeners for table components inside this form.
   final Map<String, VoidCallback> tableReloadListeners = {};
 
+  bool _isReloading = false;
+
   @override
   void onInit() {
     super.onInit();
@@ -172,20 +174,118 @@ class CreatePageController extends GetxController {
       }
     }
 
-    // Apply prepared initial values to controllers.
-    if (initialData.isNotEmpty) {
-      for (final entry in initialData.entries) {
-        final ctrl = ctrls[entry.key];
-        if (ctrl != null) {
-          final val = entry.value;
-          ctrl.text = (val is List || val is Map)
-              ? jsonEncode(val)
-              : (val?.toString() ?? '');
-        }
-      }
-    }
+    _syncControllersFromInitialData(ctrls);
 
     controllers.value = ctrls;
+  }
+
+  void _syncControllersFromInitialData(Map<String, TextEditingController> ctrls) {
+    if (initialData.isEmpty) return;
+    for (final entry in initialData.entries) {
+      final ctrl = ctrls[entry.key];
+      if (ctrl != null) {
+        final val = entry.value;
+        ctrl.text = (val is List || val is Map)
+            ? jsonEncode(val)
+            : (val?.toString() ?? '');
+      }
+    }
+  }
+
+  Map<String, dynamic>? _extractRecordMap(Object? raw) {
+    if (raw is Map<String, dynamic>) {
+      if (raw.containsKey('data')) {
+        final nested = raw['data'];
+        if (nested is Map) {
+          return Map<String, dynamic>.from(nested);
+        }
+        if (nested is List && nested.isNotEmpty && nested.first is Map) {
+          return Map<String, dynamic>.from(nested.first as Map);
+        }
+      }
+      return raw;
+    }
+    if (raw is Map) {
+      return _extractRecordMap(Map<String, dynamic>.from(raw));
+    }
+    return null;
+  }
+
+  /// Reloads the current record (when [entity.backend.read] is available),
+  /// re-runs any [LayoutForm.onInit] actions, notifies embedded table reload
+  /// listeners, and triggers a form rebuild so updated data renders immediately.
+  Future<void> reloadData() async {
+    if (_isReloading) return;
+    _isReloading = true;
+    try {
+      final readEndpoint = entity.backend.read;
+      final recordId =
+          (initialData['id'] ?? initialDataInput?['id'])?.toString() ?? '';
+      if (readEndpoint != null &&
+          readEndpoint.url.isNotEmpty &&
+          recordId.isNotEmpty) {
+        try {
+          final scope = <String, dynamic>{
+            if (initialDataInput != null) ...initialDataInput!,
+            ...initialData,
+            'id': recordId,
+            if (parentData.isNotEmpty) 'parent': parentData.last,
+            if (parentData.isNotEmpty) 'parentData': parentData,
+          };
+          final existingHeaders =
+              readEndpoint.headers ?? const <String, String>{};
+          final hasAuthHeader = existingHeaders.keys
+              .any((k) => k.toLowerCase() == 'authorization');
+          final httpData = HttpData(
+            method: readEndpoint.method.isEmpty ? 'GET' : readEndpoint.method,
+            url: readEndpoint.url.replaceAll(
+              '{id}',
+              Uri.encodeComponent(recordId),
+            ),
+            headers: {
+              ...existingHeaders,
+              if (!hasAuthHeader) 'Authorization': 'Bearer {{auth_token}}',
+            },
+            body: const {},
+            mockEnabled: readEndpoint.mockEnabled,
+            mockData: readEndpoint.mockData,
+          );
+          final res =
+              await httpData.execute(scope, executor: httpRequestExecutor);
+          if (res.isSuccess) {
+            final fetched = _extractRecordMap(res.data);
+            if (fetched != null && fetched.isNotEmpty) {
+              final merged = <String, dynamic>{
+                ...initialData,
+                ...fetched,
+              };
+              final processed = CreatePageControllerUtils.prepareInitialData(
+                initialDataInput: merged,
+                components: layoutForm.allComponents,
+                parentData: parentData,
+              );
+              initialData.assignAll(processed);
+              _syncControllersFromInitialData(controllers);
+            }
+          }
+        } catch (e) {
+          debugPrint('[CreatePageController] reloadData read error: $e');
+        }
+      }
+
+      if (layoutForm.onInit != null) {
+        await _executeOnInitActions();
+      }
+
+      for (final listener in tableReloadListeners.values) {
+        listener();
+      }
+
+      initialData.refresh();
+      formVersion.value++;
+    } finally {
+      _isReloading = false;
+    }
   }
 
   /// Prepares form keys for multi-step layouts.

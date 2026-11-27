@@ -304,12 +304,14 @@ class _MenuDataTableCustomState extends State<MenuDataTableCustom> {
     final actionPrimary = activeEntity.actionPrimary;
 
     if (actionPrimary != null) {
-      await actionPrimary.executeSingle(
+      await actionPrimary.executeAndRefreshOnClose(
         entity: activeEntity,
         context: context,
         data: data,
         parentData: parentData,
-        onSuccessCallback: () => _fetch(),
+        onRefresh: () {
+          if (mounted) _fetch();
+        },
       );
       return;
     }
