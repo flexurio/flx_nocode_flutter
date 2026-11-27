@@ -43,6 +43,34 @@ bool _hasVariableValue(Object? value) =>
     value is String ? value.isNotEmpty : value != null;
 
 extension ActionExecutionExtension on ActionD {
+  /// Executes a single action and guarantees [onRefresh] runs when a page/dialog
+  /// action closes without triggering its own form submit callback (e.g. a
+  /// read-only detail view that contains inner action buttons).
+  Future<void> executeAndRefreshOnClose({
+    required EntityCustom entity,
+    required BuildContext context,
+    required JsonMap data,
+    required List<Map<String, dynamic>> parentData,
+    required VoidCallback onRefresh,
+  }) async {
+    var refreshedByCallback = false;
+    await executeSingle(
+      entity: entity,
+      context: context,
+      data: data,
+      parentData: parentData,
+      onSuccessCallback: () {
+        refreshedByCallback = true;
+        onRefresh();
+      },
+    );
+    if (!refreshedByCallback &&
+        context.mounted &&
+        (type == ActionType.openPage || type == ActionType.showDialog)) {
+      onRefresh();
+    }
+  }
+
   Future<void> executeSingle({
     required EntityCustom entity,
     required BuildContext context,
@@ -855,6 +883,10 @@ extension ActionExecutionExtension on ActionD {
       return;
     }
 
+    WorkflowRunResult? workflowResult;
+    String? workflowErrorMessage;
+    Object? rawError;
+
     await showConfirmDialog(
       context: context,
       action: action,
@@ -891,32 +923,47 @@ extension ActionExecutionExtension on ActionD {
             definition,
             ui: ProductionUiBridge(
               layoutFormId: data['layoutFormId']?.toString(),
+              buildContext: context,
             ),
           ).run(workflowCtx);
 
-          if (result.isSuccess) {
-            Toast(context).success('Workflow completed successfully');
-            await handleOnSuccessSingle(
-              entity: entity,
-              context: context,
-              responseData: result.data,
-              data: data,
-              onSuccessCallback: onSuccessCallback,
-            );
-          } else {
-            final message = workflowCtx.vars['last_error']?.toString() ??
+          workflowResult = result;
+          if (!result.isSuccess) {
+            workflowErrorMessage = workflowCtx.vars['last_error']?.toString() ??
                 result.error?.message ??
                 'Workflow failed';
-            Toast(context).fail(message);
-            handleOnFailure(context, message);
           }
         } catch (e) {
-          final message = e.toString();
-          Toast(context).fail(message);
-          handleOnFailure(context, message, raw: e);
+          workflowErrorMessage = e.toString();
+          rawError = e;
         }
       },
     );
+
+    if (!context.mounted) return;
+    if (workflowResult == null && workflowErrorMessage == null) {
+      return;
+    }
+
+    // Run post-workflow UI actions after the confirmation dialog closes so
+    // `navigate_back` and `refresh` act on the page rather than the dialog.
+    if (workflowResult?.isSuccess == true) {
+      final msg = (successMessage != null && successMessage!.trim().isNotEmpty)
+          ? successMessage!.trim()
+          : 'Update completed successfully';
+      Toast(context).success(msg);
+      await handleOnSuccessSingle(
+        entity: entity,
+        context: context,
+        responseData: workflowResult!.data,
+        data: data,
+        onSuccessCallback: onSuccessCallback,
+      );
+    } else {
+      final message = workflowErrorMessage ?? 'Workflow failed';
+      Toast(context).fail(message);
+      handleOnFailure(context, message, raw: rawError);
+    }
   }
 
   Future<void> executeHttpSingle(

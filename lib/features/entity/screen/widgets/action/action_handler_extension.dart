@@ -166,7 +166,18 @@ extension ActionSuccessHandlerExtension on ActionD {
           break;
         case ActionType.refresh:
           print('[ActionLogic] 🔃 Executing onSuccess refresh');
-          onSuccessCallback?.call();
+          if (onSuccessCallback != null) {
+            onSuccessCallback();
+          } else {
+            final layoutId =
+                (data['rootLayoutFormId'] ?? data['layoutFormId'])?.toString();
+            if (layoutId != null &&
+                Get.isRegistered<CreatePageController>(
+                    tag: 'create_page_$layoutId')) {
+              await Get.find<CreatePageController>(tag: 'create_page_$layoutId')
+                  .reloadData();
+            }
+          }
           break;
         case ActionType.navigateBack:
           print('[ActionLogic] 🔙 Executing onSuccess navigateBack');

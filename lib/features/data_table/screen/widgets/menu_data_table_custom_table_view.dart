@@ -146,12 +146,12 @@ class MenuDataTableCustomTableView extends StatelessWidget {
             };
           } else if (index == 0 && entity.actionPrimary != null) {
             cellOnTap = () async {
-              await entity.actionPrimary!.executeSingle(
+              await entity.actionPrimary!.executeAndRefreshOnClose(
                 entity: entity,
                 context: context,
                 data: row,
                 parentData: parentData,
-                onSuccessCallback: () => onRefresh(),
+                onRefresh: onRefresh,
               );
             };
           } else if (index == 0 && !embedded) {

@@ -92,7 +92,10 @@ class EntityViewPage extends StatelessWidget {
             size: SingleFormPanelSize.large,
             children: [
               entity.layoutForm.view?.toWidget(
-                    data,
+                    {
+                      ...data,
+                      'entity': entity,
+                    },
                     entityFields: entity.fields,
                   ) ??
                   NoCodeError('Layout not found'),
