@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:flx_nocode_flutter/features/entity/models/action.dart';
 import 'package:flx_nocode_flutter/features/entity/models/entity.dart';
+import 'package:flx_nocode_flutter/features/entity/screen/pages/enitity_view_page.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_execution_extension.dart';
 import 'package:flx_nocode_flutter/features/entity/screen/widgets/action/action_handler_extension.dart';
 import 'package:flx_nocode_flutter/features/layout_form/models/layout_form.dart';
@@ -217,6 +219,144 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(refreshCalls, 1);
+    });
+
+    testWidgets(
+        'reloadData ignores re-entrant calls while an in-flight reload is still running',
+        (tester) async {
+      const layoutId = 'detail_page';
+      var fetchCount = 0;
+      final firstResponse = Completer<HttpRequestResult>();
+
+      final fakeExecutor = _FakeHttpRequestExecutor((config) {
+        fetchCount++;
+        return firstResponse.future;
+      });
+
+      final form = LayoutForm.fromMap({
+        'id': layoutId,
+        'label': 'Detail',
+        'components': [
+          {'id': 'status', 'type': 'text_field', 'label': 'Status'},
+        ],
+      });
+
+      final entity = EntityCustom.empty().copyWith(
+        id: 'change_controls',
+        layoutForm: [form],
+        backend: Backend(
+          others: const [],
+          read: BackendEndpoint(
+            method: 'GET',
+            url: 'https://example.com/headers/{id}',
+          ),
+        ),
+      );
+
+      final controller = Get.put(
+        CreatePageController(
+          entity: entity,
+          layoutFormId: layoutId,
+          initialDataInput: {'id': 'CC-001', 'status': 'INPUT'},
+          parentData: const [],
+          httpRequestExecutor: fakeExecutor,
+        ),
+        tag: 'create_page_$layoutId',
+      );
+
+      await tester.runAsync(() async {
+        final first = controller.reloadData();
+        final second = controller.reloadData();
+        firstResponse.complete(
+          HttpRequestResult.success(
+            statusCode: 200,
+            data: {'id': 'CC-001', 'status': 'APPROVED'},
+          ),
+        );
+        await Future.wait([first, second]);
+      });
+
+      expect(fetchCount, 1);
+      expect(controller.initialData['status'], 'APPROVED');
+    });
+
+    testWidgets(
+        'EntityViewPage injects entity and layoutFormId so actions inside view page resolve controller tag',
+        (tester) async {
+      const viewLayoutId = 'detail_page';
+      var reloaded = false;
+
+      final fakeExecutor = _FakeHttpRequestExecutor((config) async {
+        reloaded = true;
+        return HttpRequestResult.success(
+          statusCode: 200,
+          data: {'id': 'CC-001', 'status': 'UPDATED'},
+        );
+      });
+
+      final viewForm = LayoutForm.fromMap({
+        'id': viewLayoutId,
+        'label': 'Detail',
+        'components': [
+          {
+            'id': 'btn_refresh',
+            'type': 'button',
+            'text': 'Reload',
+            'color': '#2196F3',
+            'on_click': {
+              'id': 'refresh_act',
+              'type': 'set_variable',
+              'name': 'Refresh',
+              'target_variable': 'status',
+              'value': 'LOCAL_UPDATED',
+              'on_success': ['refresh'],
+            },
+          },
+        ],
+      });
+
+      final entity = EntityCustom.empty().copyWith(
+        id: 'change_controls',
+        layoutForm: [viewForm],
+        backend: Backend(
+          others: const [],
+          read: BackendEndpoint(
+            method: 'GET',
+            url: 'https://example.com/headers/{id}',
+          ),
+        ),
+      );
+
+      Get.put(
+        CreatePageController(
+          entity: entity,
+          layoutFormId: viewLayoutId,
+          initialDataInput: {'id': 'CC-001', 'status': 'INITIAL'},
+          parentData: const [],
+          httpRequestExecutor: fakeExecutor,
+        ),
+        tag: 'create_page_$viewLayoutId',
+      );
+
+      await tester.pumpWidget(
+        GetMaterialApp(
+          home: EntityViewPage.prepare(
+            entity: entity,
+            data: {'id': 'CC-001', 'status': 'INITIAL'},
+            embedded: true,
+            dummy: true,
+            parentData: const [],
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.runAsync(() async {
+        await tester.tap(find.text('Reload'));
+        await tester.pump();
+      });
+
+      expect(reloaded, isTrue);
     });
   });
 }

@@ -44,8 +44,13 @@ bool _hasVariableValue(Object? value) =>
 
 extension ActionExecutionExtension on ActionD {
   /// Executes a single action and guarantees [onRefresh] runs when a page/dialog
-  /// action closes without triggering its own form submit callback (e.g. a
-  /// read-only detail view that contains inner action buttons).
+  /// action closes without triggering its own form submit callback.
+  ///
+  /// Specifically covers read-only detail pages (`show_submit_button: false`)
+  /// and `navigate_back` flows where the route pops before an internal submit
+  /// callback fires. When `onSuccessCallback` already ran during the page's
+  /// lifecycle ([submittedInternally] == true), the fallback is skipped to avoid
+  /// a duplicate refresh.
   Future<void> executeAndRefreshOnClose({
     required EntityCustom entity,
     required BuildContext context,
@@ -53,18 +58,18 @@ extension ActionExecutionExtension on ActionD {
     required List<Map<String, dynamic>> parentData,
     required VoidCallback onRefresh,
   }) async {
-    var refreshedByCallback = false;
+    var submittedInternally = false;
     await executeSingle(
       entity: entity,
       context: context,
       data: data,
       parentData: parentData,
       onSuccessCallback: () {
-        refreshedByCallback = true;
+        submittedInternally = true;
         onRefresh();
       },
     );
-    if (!refreshedByCallback &&
+    if (!submittedInternally &&
         context.mounted &&
         (type == ActionType.openPage || type == ActionType.showDialog)) {
       onRefresh();
